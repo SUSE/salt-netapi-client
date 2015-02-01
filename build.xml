@@ -9,6 +9,7 @@
   <property name="dir-src-test" value="src/test/java" />
   <property name="dir-src-test-resources" value="src/test/resources" />
   <property name="dir-lib" value="lib" />
+  <property name="dir-testlib" value="testlib" />
   <property name="dir-bin" value="bin" />
   <property name="dir-dist" value="dist" />
 
@@ -26,6 +27,9 @@
   <path id="classpath-tests">
     <path refid="classpath-build" />
     <fileset dir="${dir-dist}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${dir-testlib}">
       <include name="**/*.jar" />
     </fileset>
   </path>
@@ -70,7 +74,7 @@
   <!-- Build tests -->
   <target name="build-tests" depends="dist-jar, init-tests">
     <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-test}" destdir="${dir-bin}" includeantruntime="false">
-      <include name="**/test/*.java" />
+      <exclude name="**/main/**" />
       <classpath refid="classpath-tests" />
     </javac>
   </target>
