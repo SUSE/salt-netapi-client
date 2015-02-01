@@ -78,4 +78,30 @@ public class SaltStackClientMockTests {
     }
 
 
+    @Test
+    public void RunTestPing() {
+
+        SaltStackRunResults results = null;
+
+	String expectedRequestBody = "[{\"username\":\"user\",\"password\":\"pass\",\"eauth\":\"pam\",\"client\":\"local\",\"tgt\":\"*\",\"fun\":\"test.ping\"}]";
+        String responseBody = "{\"return\": [{\"minion-1\": true}]}";
+
+        try {
+            driver.addExpectation(onRequestTo("/run").withMethod(Method.POST).
+                                                      withHeader("Accept", "application/json").
+                                                      withBody(expectedRequestBody, "application/json"),
+                                  giveResponse(responseBody));
+
+            results = client.run("user", "pass", "pam", "local", "*", "test.ping", null, null);
+	} catch (Exception e) {
+
+        }
+
+        assertNotNull(results);
+        // not JSON, but a List<Map<String,String>>.toString(); 
+        assertEquals("[{minion-1=true}]", results.getResults().toString());
+
+
+    }
+
 }
