@@ -11,6 +11,7 @@
   <property name="dir-lib" value="lib" />
   <property name="dir-bin" value="bin" />
   <property name="dir-dist" value="dist" />
+  <property name="dir-test-report" value="test-output" />
 
   <!-- Load properties from file -->
   <property file="${basedir}/buildconf/build.properties" />
@@ -34,6 +35,7 @@
   <target name="clean">
     <delete dir="${dir-bin}" />
     <delete dir="${dir-dist}" />
+    <delete dir="${dir-test-report}" />
   </target>
 
   <!-- Init -->
@@ -59,6 +61,7 @@
   <target name="init-tests">
     <delete dir="${dir-bin}" />
     <mkdir dir="${dir-bin}" />
+    <mkdir dir="${dir-test-report}" />
     <copy includeemptydirs="false" todir="${dir-bin}">
       <fileset dir="${dir-src-test}">
         <exclude name="**/*.java" />
@@ -70,7 +73,6 @@
   <!-- Build tests -->
   <target name="build-tests" depends="dist-jar, init-tests">
     <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-test}" destdir="${dir-bin}" includeantruntime="false">
-      <include name="**/test/*.java" />
       <classpath refid="classpath-tests" />
     </javac>
   </target>
@@ -78,24 +80,23 @@
   <!-- Create jar file, exclude tests  -->
   <target name="dist-jar" depends="build-jar">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" basedir="${dir-bin}">
-      <exclude name="**/test/**" />
-    </jar>
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" basedir="${dir-bin}" />
   </target>
 
   <!-- Create jar file, include the tests ONLY  -->
   <target name="dist-tests" depends="build-tests">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar" basedir="${dir-bin}">
-      <include name="**/test/**" />
-    </jar>
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar" basedir="${dir-bin}" />
   </target>
 
   <!-- Run tests using built artifacts -->
-  <target name="run-tests" depends="dist-jar, dist-tests">
+  <target name="run-tests" depends="dist-tests">
     <junit printsummary="yes" haltonfailure="yes">
+      <formatter type="plain" />
       <classpath refid="classpath-tests" />
-      <!-- Add tests here -->
+      <batchtest fork="yes" todir="${dir-test-report}">
+        <fileset dir="${dir-src-test}" includes="**/*Test.java"/>
+      </batchtest>
     </junit>
   </target>
 
