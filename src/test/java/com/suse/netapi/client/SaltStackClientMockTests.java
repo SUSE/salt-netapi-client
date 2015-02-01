@@ -77,6 +77,8 @@ public class SaltStackClientMockTests {
         assertNotNull(authToken);
     }
 
+    // TODO: test logout
+    // TODO: test failing login with wrong password
 
     @Test
     public void RunTestPing() {
@@ -98,10 +100,12 @@ public class SaltStackClientMockTests {
         }
 
         assertNotNull(results);
-        // not JSON, but a List<Map<String,String>>.toString(); 
+        // not JSON, but a List<Map<String,String>>.toString(), maybe TODO: make nicer
         assertEquals("[{minion-1=true}]", results.getResults().toString());
 
 
     }
+
+    // TODO: test with results from more than one minion
 
 }
