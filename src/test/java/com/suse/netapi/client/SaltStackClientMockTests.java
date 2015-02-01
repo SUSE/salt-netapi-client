@@ -53,4 +53,29 @@ public class SaltStackClientMockTests {
         assertNotNull(authToken);
     }
 
+    @Test
+    public void LoginWithEauthParamSuccessful() {
+
+        SaltStackToken authToken = null;
+
+        String expectedRequestBody = "{\"username\":\"user\",\"password\":\"pass\",\"eauth\":\"pam\"}";
+        String responseBody = "{\"return\": [{\"perms\": [\".*\"], \"start\": 1422790143.013817, \"token\":" +
+                              " \"7f966bcf66ffc36ca168b7d330fcb0321645a801\", \"expire\": 1422833343.013818, \"user\": \"user\", \"eauth\": \"pam\"}]}"; 
+
+
+        try {
+            driver.addExpectation(
+                onRequestTo("/login").withMethod(Method.POST).withBody(expectedRequestBody, "application/json"),
+                giveResponse(responseBody));
+
+            authToken = client.login("user", "pass", "pam");
+
+        } catch (Exception e) {
+            fail ("Exception thrown, message: " + e.getMessage());
+        }
+
+        assertNotNull(authToken);
+    }
+
+
 }

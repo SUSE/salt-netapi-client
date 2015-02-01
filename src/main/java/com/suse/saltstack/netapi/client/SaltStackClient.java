@@ -72,12 +72,12 @@ public class SaltStackClient {
      * @return authentication token as {@link SaltStackToken}
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackToken login(String username, String password)
+    public SaltStackToken login(String username, String password, String eauth)
             throws SaltStackException {
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
-        json.addProperty("eauth", "auto");
+        json.addProperty("eauth"   , eauth);
         SaltStackTokenResult result = new SaltStackConnection("/login", config).
                 getResult(SaltStackTokenResult.class, json.toString());
 
@@ -85,6 +85,19 @@ public class SaltStackClient {
         SaltStackToken token = result.getResult().get(0);
         config.put(SaltStackClientConfig.TOKEN, token.getToken());
         return token;
+    }
+
+    /**
+     * Perform login and return the token.
+     *
+     * POST /login
+     *
+     * @return authentication token as {@link SaltStackToken}
+     * @throws SaltStackException if anything goes wrong
+     */
+    public SaltStackToken login(String username, String password)
+            throws SaltStackException {
+        return login(username, password, "auto");
     }
 
     /**
