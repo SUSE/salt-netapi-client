@@ -101,6 +101,10 @@
     <junit printsummary="yes" haltonfailure="yes">
       <classpath refid="classpath-tests" />
       <!-- Add tests here -->
+      <test name="com.suse.saltstack.netapi.client.SaltStackClientMockTests"
+            todir="${dir-testreports}">
+        <formatter type="plain" />
+      </test>
     </junit>
   </target>
 
