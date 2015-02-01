@@ -1,5 +1,13 @@
+# Eclipse
 /.classpath
 /.project
 /.settings/
+
+# IntelliJ IDEA
+.idea
+*.iml
+
+# Build and tests
 /bin/
 /dist/
+/test-output/
