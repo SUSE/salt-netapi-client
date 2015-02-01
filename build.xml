@@ -12,6 +12,7 @@
   <property name="dir-testlib" value="testlib" />
   <property name="dir-bin" value="bin" />
   <property name="dir-dist" value="dist" />
+  <property name="dir-testreports" value="testreports" />
 
   <!-- Load properties from file -->
   <property file="${basedir}/buildconf/build.properties" />
