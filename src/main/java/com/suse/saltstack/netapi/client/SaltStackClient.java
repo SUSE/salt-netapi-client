@@ -77,7 +77,7 @@ public class SaltStackClient {
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
-        json.addProperty("eauth"   , eauth);
+        json.addProperty("eauth", eauth);
         SaltStackTokenResult result = new SaltStackConnection("/login", config).
                 getResult(SaltStackTokenResult.class, json.toString());
 
@@ -173,10 +173,11 @@ public class SaltStackClient {
      * @return object representing the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackRunResults run(String username, String password, String eauth, String client, String target,
-            String function, List<String> args, Map<String, String> kwargs) throws SaltStackException {
+    public SaltStackRunResults run(String username, String password, String eauth, 
+            String client, String target, String function, List<String> args, 
+            Map<String, String> kwargs) throws SaltStackException {
 
-	JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
         json.addProperty("eauth",    eauth);

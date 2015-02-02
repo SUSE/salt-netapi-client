@@ -8,12 +8,15 @@ public class SaltStackClientIntegrationTests {
 
     public static void main(String[] args) {
 
-	if (args.length != 3) {
-            System.out.println("Usage:\n\tjava com.suse.saltstack.netapi.tests.SaltStackClientIntegrationTests <URI> <username> <password>");
+        if (args.length != 3) {
+            System.out.println(
+                    "Usage:\n\t" +
+                    "java com.suse.saltstack.netapi.tests.SaltStackClientIntegrationTests" +
+                    " <URI> <username> <password>");
             System.exit(1);
         }
 
-	String URI      = args[0];
+        String URI      = args[0];
         String username = args[1];
         String password = args[2];
 
@@ -23,10 +26,11 @@ public class SaltStackClientIntegrationTests {
 
             System.out.println("Token: " + authToken.getToken());
 
-            SaltStackRunResults results = client.run(username, password, "pam", "local", "*", "test.ping", null, null);
+            SaltStackRunResults results = 
+                    client.run(username, password, "pam", "local", "*", "test.ping", 
+                            null, null);
 
-	    System.out.println("Results: " + results.getResults().toString());
-	
+            System.out.println("Results: " + results.getResults().toString());
 
         } catch (Exception e) {
             System.out.println("exception");
