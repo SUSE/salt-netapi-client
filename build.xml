@@ -11,7 +11,7 @@
   <property name="dir-lib" value="lib" />
   <property name="dir-bin" value="bin" />
   <property name="dir-dist" value="dist" />
-  <property name="dir-test-report" value="test-report" />
+  <property name="dir-test-reports" value="test-reports" />
 
   <!-- Load properties from file -->
   <property file="${basedir}/buildconf/build.properties" />
@@ -35,7 +35,7 @@
   <target name="clean">
     <delete dir="${dir-bin}" />
     <delete dir="${dir-dist}" />
-    <delete dir="${dir-test-report}" />
+    <delete dir="${dir-test-reports}" />
   </target>
 
   <!-- Init -->
@@ -61,7 +61,7 @@
   <target name="init-tests">
     <delete dir="${dir-bin}" />
     <mkdir dir="${dir-bin}" />
-    <mkdir dir="${dir-test-report}" />
+    <mkdir dir="${dir-test-reports}" />
     <copy includeemptydirs="false" todir="${dir-bin}">
       <fileset dir="${dir-src-test}">
         <exclude name="**/*.java" />
@@ -93,7 +93,7 @@
   <target name="run-tests" depends="dist-tests">
     <junit printsummary="yes" haltonfailure="yes">
       <classpath refid="classpath-tests" />
-      <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest" todir="${dir-test-report}">
+      <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest" todir="${dir-test-reports}">
         <formatter type="plain" />
       </test>
     </junit>

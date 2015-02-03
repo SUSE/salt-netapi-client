@@ -10,4 +10,4 @@
 # Build and test artifacts
 /bin/
 /dist/
-/test-report/
+/test-reports/
