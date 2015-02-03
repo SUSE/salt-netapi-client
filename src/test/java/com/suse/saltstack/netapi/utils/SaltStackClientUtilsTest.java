@@ -1,13 +1,13 @@
 package com.suse.saltstack.netapi.utils;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * SaltStackClientUtils class unit-tests.
@@ -17,8 +17,12 @@ public class SaltStackClientUtilsTest {
     @Test
     public void testCloseQuietly() throws IOException {
         // Mocked InputStream that throws IOException when closed more than once.
-        InputStream is = new InputStream() {
+        class MockedInputStream extends InputStream {
             private boolean closed = false;
+
+            boolean isClosed() {
+                return closed;
+            }
 
             @Override
             public int read() throws IOException {
@@ -35,7 +39,9 @@ public class SaltStackClientUtilsTest {
         };
 
         // Close valid stream
+        MockedInputStream is = new MockedInputStream();
         SaltStackClientUtils.closeQuietly(is);
+        assertTrue(is.isClosed());
 
         // Close already closed stream, don't throw exception
         SaltStackClientUtils.closeQuietly(is);
