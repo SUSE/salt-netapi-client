@@ -4,8 +4,8 @@
 /.settings/
 
 # IntelliJ IDEA
-.idea
-*.iml
+/.idea/
+/*.iml
 
 # Build and tests
 /bin/
