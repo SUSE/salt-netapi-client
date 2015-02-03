@@ -92,11 +92,10 @@
   <!-- Run tests using built artifacts -->
   <target name="run-tests" depends="dist-tests">
     <junit printsummary="yes" haltonfailure="yes">
-      <formatter type="plain" />
       <classpath refid="classpath-tests" />
-      <batchtest fork="yes" todir="${dir-test-report}">
-        <fileset dir="${dir-src-test}" includes="**/*Test.java"/>
-      </batchtest>
+      <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest" todir="${dir-test-report}">
+        <formatter type="plain" />
+      </test>
     </junit>
   </target>
 
