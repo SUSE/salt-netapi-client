@@ -42,12 +42,6 @@ public class SaltStackClientUtilsTest {
         MockedInputStream is = new MockedInputStream();
         SaltStackClientUtils.closeQuietly(is);
         assertTrue(is.isClosed());
-
-        // Close already closed stream, don't throw exception
-        SaltStackClientUtils.closeQuietly(is);
-
-        // Close null stream, don't throw exception
-        SaltStackClientUtils.closeQuietly(null);
     }
 
     @Test
