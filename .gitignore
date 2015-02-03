@@ -7,7 +7,7 @@
 /.idea/
 /*.iml
 
-# Build and tests
+# Build and test artifacts
 /bin/
 /dist/
 /test-report/
