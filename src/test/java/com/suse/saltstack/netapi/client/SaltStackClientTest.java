@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.net.HttpURLConnection;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 
@@ -41,7 +43,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalTo(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
-                        .withStatus(200)
+                        .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
                         .withBody(JSON_LOGIN_RESPONSE)));
 
@@ -57,7 +59,7 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass");
     }
 }
