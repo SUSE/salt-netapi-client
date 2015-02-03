@@ -48,9 +48,10 @@ public class SaltStackClientUtilsTest {
     public void testStringToStream() {
         final String TEST_STRING = "SUSE";
         InputStream is = SaltStackClientUtils.stringToStream(TEST_STRING);
-        Scanner scanner = new Scanner(is);
-        String result = scanner.nextLine();
-        assertEquals("Result doesn't match test string", result, TEST_STRING);
+        try (Scanner scanner = new Scanner(is)) {
+            String result = scanner.nextLine();
+            assertEquals("Result doesn't match test string", result, TEST_STRING);
+        }
     }
 
     @Test
