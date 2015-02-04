@@ -20,13 +20,28 @@ public class SaltStackClient {
     /** The configuration object */
     private final SaltStackClientConfig config = new SaltStackClientConfig();
 
+    /** The connection factory object */
+    private SaltStackConnectionFactory connectionFactory;
+
     /**
      * Constructor for connecting to a given URL.
      *
      * @param url the SaltStack URL
-     * @throws URISyntaxException
+     * @throws SaltStackException
      */
     public SaltStackClient(String url) throws SaltStackException {
+        this(url, new SaltStackJDKConnectionFactory());
+    }
+
+    /**
+     * Constructor for connecting to a given URL using a specific connection factory.
+     *
+     * @param url the SaltStack URL
+     * @param connectionFactory Connection Factory implementation
+     * @throws SaltStackException
+     */
+    public SaltStackClient(String url, SaltStackConnectionFactory connectionFactory)
+            throws SaltStackException {
         // Put the URL in the config
         if (url != null) {
             try {
@@ -35,6 +50,7 @@ public class SaltStackClient {
                 throw new SaltStackException(e);
             }
         }
+        this.connectionFactory = connectionFactory;
     }
 
     /**
@@ -74,11 +90,24 @@ public class SaltStackClient {
      */
     public SaltStackToken login(String username, String password)
             throws SaltStackException {
+        return login(username, password, SaltStackAPIConstants.LOGIN_EAUTH_AUTO);
+    }
+
+    /**
+     * Perform login and return the token. Allows specifying the eauth parameter.
+     *
+     * POST /login
+     *
+     * @return authentication token as {@link SaltStackToken}
+     * @throws SaltStackException if anything goes wrong
+     */
+    public SaltStackToken login(String username, String password, String eauth)
+            throws SaltStackException {
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
-        json.addProperty("eauth", "auto");
-        SaltStackTokenResult result = new SaltStackConnection("/login", config).
+        json.addProperty("eauth", eauth);
+        SaltStackTokenResult result = connectionFactory.create("/login", config).
                 getResult(SaltStackTokenResult.class, json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
@@ -95,7 +124,7 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public SaltStackStringResult logout() throws SaltStackException {
-        SaltStackStringResult result = new SaltStackConnection("/logout", config).
+        SaltStackStringResult result = connectionFactory.create("/logout", config).
                 getResult(SaltStackStringResult.class, null);
         config.remove(SaltStackClientConfig.TOKEN);
         return result;
@@ -137,7 +166,7 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         // Connect to the minions endpoint and send the above lowstate data
-        SaltStackJobResult result = new SaltStackConnection("/minions", config).
+        SaltStackJobResult result = connectionFactory.create("/minions", config).
                 getResult(SaltStackJobResult.class, jsonArray.toString());
 
         // They return a list of tokens here, we take the first
