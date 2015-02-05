@@ -10,7 +10,7 @@ import com.suse.saltstack.netapi.config.SaltStackClientConfig;
 public class SaltStackJDKConnectionFactory implements SaltStackConnectionFactory {
     @Override
     public SaltStackJDKConnection create(String endpoint,
-                                         SaltStackClientConfig config) {
+            SaltStackClientConfig config) {
         return new SaltStackJDKConnection(endpoint, config);
     }
 }

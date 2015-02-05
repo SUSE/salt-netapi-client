@@ -36,7 +36,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
      * @param configIn the config
      */
     public SaltStackHttpClientConnection(String endpointIn,
-                                         SaltStackClientConfig configIn) {
+            SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
     }
