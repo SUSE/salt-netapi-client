@@ -10,6 +10,8 @@
   <property name="dir-src-test-resources" value="src/test/resources" />
   <property name="dir-lib" value="lib" />
   <property name="dir-bin" value="bin" />
+  <property name="dir-bin-main" value="bin/main" />
+  <property name="dir-bin-test" value="bin/test" />
   <property name="dir-dist" value="dist" />
   <property name="dir-test-reports" value="test-reports" />
 
@@ -40,8 +42,8 @@
 
   <!-- Init -->
   <target name="init-jar">
-    <mkdir dir="${dir-bin}" />
-    <copy includeemptydirs="false" todir="${dir-bin}">
+    <mkdir dir="${dir-bin-main}" />
+    <copy includeemptydirs="false" todir="${dir-bin-main}">
       <fileset dir="${dir-src-main}">
         <exclude name="**/*.java" />
       </fileset>
@@ -51,18 +53,16 @@
 
   <!-- Build the code -->
   <target name="build-jar" depends="init-jar">
-    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-main}" destdir="${dir-bin}" includeantruntime="false">
-      <exclude name="**/test/**" />
+    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-main}"
+           destdir="${dir-bin-main}" includeantruntime="false">
       <classpath refid="classpath-build" />
     </javac>
   </target>
 
   <!-- Init tests -->
   <target name="init-tests">
-    <delete dir="${dir-bin}" />
-    <mkdir dir="${dir-bin}" />
-    <mkdir dir="${dir-test-reports}" />
-    <copy includeemptydirs="false" todir="${dir-bin}">
+    <mkdir dir="${dir-bin-test}" />
+    <copy includeemptydirs="false" todir="${dir-bin-test}">
       <fileset dir="${dir-src-test}">
         <exclude name="**/*.java" />
       </fileset>
@@ -72,7 +72,8 @@
 
   <!-- Build tests -->
   <target name="build-tests" depends="dist-jar, init-tests">
-    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-test}" destdir="${dir-bin}" includeantruntime="false">
+    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-test}"
+           destdir="${dir-bin-test}" includeantruntime="false">
       <classpath refid="classpath-tests" />
     </javac>
   </target>
@@ -80,17 +81,20 @@
   <!-- Create jar file, exclude tests  -->
   <target name="dist-jar" depends="build-jar">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" basedir="${dir-bin}" />
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" 
+         basedir="${dir-bin-main}" />
   </target>
 
   <!-- Create jar file, include the tests ONLY  -->
   <target name="dist-tests" depends="build-tests">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar" basedir="${dir-bin}" />
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar"
+         basedir="${dir-bin-test}" />
   </target>
 
   <!-- Run tests using built artifacts -->
   <target name="run-tests" depends="dist-tests">
+    <mkdir dir="${dir-test-reports}" />
     <junit printsummary="yes" haltonfailure="yes">
       <classpath refid="classpath-tests" />
       <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest" todir="${dir-test-reports}">
@@ -102,10 +106,14 @@
   <!-- Create a tar.bz2 archive containing the sources -->
   <target name="dist-sources">
     <mkdir dir="${dir-dist}" />
-    <tar destfile="${dir-dist}/${ant.project.name}-${version}-sources.tar.bz2" compression="bzip2" longfile="gnu">
+    <tar destfile="${dir-dist}/${ant.project.name}-${version}-sources.tar.bz2"
+         compression="bzip2" longfile="gnu">
       <tarfileset dir="${basedir}" prefix="${ant.project.name}-${version}">
-        <include name="src/**" />
-        <include name="lib/**" />
+        <include name="${dir-src-main}/**" />
+        <include name="${dir-src-main-resources}/**" />
+        <include name="${dir-src-test}/**" />
+        <include name="${dir-src-test-resources}/**" />
+        <include name="${dir-lib}/**" />
         <include name="buildconf/**" />
         <include name="build.xml" />
         <include name="LICENSE" />
