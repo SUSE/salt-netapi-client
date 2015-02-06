@@ -97,7 +97,8 @@
     <mkdir dir="${dir-test-reports}" />
     <junit printsummary="yes" haltonfailure="yes">
       <classpath refid="classpath-tests" />
-      <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest" todir="${dir-test-reports}">
+      <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest"
+            todir="${dir-test-reports}">
         <formatter type="plain" />
       </test>
     </junit>
