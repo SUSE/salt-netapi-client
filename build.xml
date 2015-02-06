@@ -53,7 +53,7 @@
 
   <!-- Build the code -->
   <target name="build-jar" depends="init-jar">
-    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-main}" 
+    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-main}"
            destdir="${dir-bin-main}" includeantruntime="false">
       <classpath refid="classpath-build" />
     </javac>
@@ -72,7 +72,7 @@
 
   <!-- Build tests -->
   <target name="build-tests" depends="dist-jar, init-tests">
-    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-test}" 
+    <javac debug="true" debuglevel="${debuglevel}" srcdir="${dir-src-test}"
            destdir="${dir-bin-test}" includeantruntime="false">
       <classpath refid="classpath-tests" />
     </javac>
@@ -88,7 +88,7 @@
   <!-- Create jar file, include the tests ONLY  -->
   <target name="dist-tests" depends="build-tests">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar" 
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar"
          basedir="${dir-bin-test}" />
   </target>
 
@@ -106,7 +106,7 @@
   <!-- Create a tar.bz2 archive containing the sources -->
   <target name="dist-sources">
     <mkdir dir="${dir-dist}" />
-    <tar destfile="${dir-dist}/${ant.project.name}-${version}-sources.tar.bz2" 
+    <tar destfile="${dir-dist}/${ant.project.name}-${version}-sources.tar.bz2"
          compression="bzip2" longfile="gnu">
       <tarfileset dir="${basedir}" prefix="${ant.project.name}-${version}">
         <include name="${dir-src-main}/**" />
