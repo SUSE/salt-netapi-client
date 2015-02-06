@@ -42,12 +42,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
     }
 
     /**
-     * Send a POST request and parse the result into object of given {@link java.lang.reflect.Type}.
-     *
-     * @param resultType the type of the result
-     * @param data the data to send (in JSON format)
-     * @return object of type given by resultType
-     * @throws com.suse.saltstack.netapi.exception.SaltStackException if the request was not successful
+     * {@inheritDoc}
      */
     public <T> T getResult(Type resultType, String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
