@@ -78,14 +78,14 @@
     </javac>
   </target>
 
-  <!-- Create jar file, exclude tests  -->
+  <!-- Create the main jar file -->
   <target name="dist-jar" depends="build-jar">
     <mkdir dir="${dir-dist}" />
     <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" 
          basedir="${dir-bin-main}" />
   </target>
 
-  <!-- Create jar file, include the tests ONLY  -->
+  <!-- Create jar file including the tests only -->
   <target name="dist-tests" depends="build-tests">
     <mkdir dir="${dir-dist}" />
     <jar destfile="${dir-dist}/${ant.project.name}-${version}-tests.jar"
