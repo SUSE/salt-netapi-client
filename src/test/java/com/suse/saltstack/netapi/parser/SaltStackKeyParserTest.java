@@ -1,12 +1,10 @@
-package com.suse.saltstack.netapi.test;
+package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.parser.SaltStackKeyParser;
 import com.suse.saltstack.netapi.client.SaltStackKeyResult;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.charset.Charset;
 
 import static org.junit.Assert.*;
 

@@ -1,15 +1,12 @@
-package com.suse.saltstack.netapi.test;
+package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.client.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -17,7 +14,7 @@ import static org.junit.Assert.*;
 public class SaltStackClientTest {
 
     private static Properties config = new Properties();
-    public static String TESTCONFIG_FILENAME = "testconfig.properties";
+    public static String TESTCONFIG_FILENAME = "/credentials.properties";
 
     public SaltStackClientTest() {
         InputStream inputStream = getClass().getResourceAsStream(TESTCONFIG_FILENAME);
@@ -25,15 +22,12 @@ public class SaltStackClientTest {
             try {
                 config.load(inputStream);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.format("unable to read %s", TESTCONFIG_FILENAME);
             }
+        } else {
+            System.out.format("cannot find %s", TESTCONFIG_FILENAME);
         }
     }
-
-    @BeforeClass
-    public static void setUp() {
-    }
-
 
     public String getMastrUrl() {
         return String.format("https://%s", config.getProperty("salt-api-url"));
@@ -77,6 +71,5 @@ public class SaltStackClientTest {
         assertTrue("no local keys found", keyResult.getLocal().size() > 0);
         assertNotNull(keyResult.getMinions());
         assertTrue("no minion keys found", keyResult.getMinions().size() > 0);
-
     }
 }
