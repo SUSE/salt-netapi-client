@@ -17,7 +17,7 @@ public class SaltStackException extends Exception {
     /**
      * Constructor expecting a custom message.
      *
-     * @param cause the cause
+     * @param message the message
      */
     public SaltStackException(String message) {
         super(message);
