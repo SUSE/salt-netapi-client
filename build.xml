@@ -38,6 +38,9 @@
     <delete dir="${dir-bin}" />
     <delete dir="${dir-dist}" />
     <delete dir="${dir-test-reports}" />
+    <delete>
+      <fileset dir="." includes="*.log" />
+    </delete>
   </target>
 
   <!-- Init -->
