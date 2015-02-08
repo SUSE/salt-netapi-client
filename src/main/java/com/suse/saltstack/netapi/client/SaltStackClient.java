@@ -146,6 +146,15 @@ public class SaltStackClient {
         return result.getJobs().get(0);
     }
 
+    /**
+     * Interface for fetching key fingerprints from selected minions.
+     *
+     * GET /keys/pattern
+     *
+     * @param pattern a glob pattern to a select one or more minions
+     * @return object representing all keys from selected minions
+     * @throws SaltStackException is case of errors
+     */
     public SaltStackKeyResult keys(String pattern) throws SaltStackException {
         String endpoint = String.format("/keys/%s", pattern);
         SaltStackKeyResult result = new SaltStackConnection(endpoint, new SaltStackKeyParser(), config).

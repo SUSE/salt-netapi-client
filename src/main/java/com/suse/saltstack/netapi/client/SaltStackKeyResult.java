@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by rolf on 2/5/15.
+ * A resultset of keys returned from the /keys endpoint.
  */
 public class SaltStackKeyResult {
 

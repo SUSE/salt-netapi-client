@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.exception;
 
 /**
- * Created by rolf on 2/6/15.
+ * Exception from parsing a salt-api result.
  */
 public class SaltStackParsingException extends SaltStackException {
     /**
