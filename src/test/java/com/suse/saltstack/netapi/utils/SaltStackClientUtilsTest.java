@@ -16,28 +16,6 @@ public class SaltStackClientUtilsTest {
 
     @Test
     public void testCloseQuietly() throws IOException {
-        // Mocked InputStream that throws IOException when closed more than once.
-        class MockedInputStream extends InputStream {
-            private boolean closed = false;
-
-            boolean isClosed() {
-                return closed;
-            }
-
-            @Override
-            public int read() throws IOException {
-                return 0;
-            }
-
-            @Override
-            public void close() throws IOException {
-                if (closed) {
-                    throw new IOException("Stream already closed");
-                }
-                closed = true;
-            }
-        };
-
         // Close valid stream
         MockedInputStream is = new MockedInputStream();
         SaltStackClientUtils.closeQuietly(is);

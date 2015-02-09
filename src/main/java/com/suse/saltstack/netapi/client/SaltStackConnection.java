@@ -2,16 +2,12 @@ package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.parser.ISaltStackResultParser;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 
-import com.google.gson.Gson;
-
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
@@ -23,8 +19,14 @@ public class SaltStackConnection {
     /** The endpoint. */
     private String endpoint;
 
+    /** The request method (POST, GET, etc.) */
+    private String requestMethod;
+
     /** The config object. */
     private final SaltStackClientConfig config;
+
+    /** The parser to parse the returned result */
+    private ISaltStackResultParser resultParser;
 
     /**
      * Init a connection to a given SaltStack API endpoint.
@@ -32,9 +34,14 @@ public class SaltStackConnection {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackConnection(String endpointIn, SaltStackClientConfig configIn) {
+    public SaltStackConnection(String endpointIn, ISaltStackResultParser resultParserIn, SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
+        resultParser = resultParserIn;
+        requestMethod = "POST";
+        if (endpointIn.matches("/keys/.*")) {
+            requestMethod = "GET";
+        }
     }
 
     /**
@@ -46,7 +53,7 @@ public class SaltStackConnection {
      * @throws SaltStackException if the request was not successful
      */
     public <T> T getResult(Type resultType, String data) throws SaltStackException {
-        return request(resultType, "POST", data);
+        return request(resultType, requestMethod, data);
     }
 
     /**
@@ -87,14 +94,7 @@ public class SaltStackConnection {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK ||
                     responseCode == HttpURLConnection.HTTP_ACCEPTED) {
-                inputStream = connection.getInputStream();
-                Reader inputStreamReader = new InputStreamReader(inputStream);
-                Reader streamReader = new BufferedReader(inputStreamReader);
-
-                // Parse result type from the returned JSON
-                Gson gson = new Gson();
-                T result = gson.fromJson(streamReader, resultType);
-                return result;
+                return resultParser.parse(resultType, connection.getInputStream());
             } else {
                 // Request was not successful
                 throw new SaltStackException("Response code: " + responseCode);
