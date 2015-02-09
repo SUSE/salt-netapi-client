@@ -84,7 +84,7 @@
   <!-- Create the main jar file -->
   <target name="dist-jar" depends="build-jar">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" 
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar"
          basedir="${dir-bin-main}" />
   </target>
 
