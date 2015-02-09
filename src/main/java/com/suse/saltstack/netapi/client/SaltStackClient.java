@@ -30,7 +30,7 @@ public class SaltStackClient {
      * @throws SaltStackException
      */
     public SaltStackClient(String url) throws SaltStackException {
-        this(url, new SaltStackJDKConnectionFactory());
+        this(url, new SaltStackHttpClientConnectionFactory());
     }
 
     /**
