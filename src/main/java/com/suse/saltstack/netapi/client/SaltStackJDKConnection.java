@@ -16,8 +16,8 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 /**
- * Class representation of a connection to SaltStack for issuing API requests
- * using JDK's HttpURLConnection.
+ * Class representation of a connection to SaltStack for issuing API requests using JDK's
+ * HttpURLConnection.
  */
 public class SaltStackJDKConnection implements SaltStackConnection {
 

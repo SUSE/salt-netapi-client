@@ -12,8 +12,7 @@ public class SaltStackJDKConnectionFactory implements SaltStackConnectionFactory
      * {@inheritDoc}
      */
     @Override
-    public SaltStackJDKConnection create(String endpoint,
-            SaltStackClientConfig config) {
+    public SaltStackJDKConnection create(String endpoint, SaltStackClientConfig config) {
         return new SaltStackJDKConnection(endpoint, config);
     }
 }
