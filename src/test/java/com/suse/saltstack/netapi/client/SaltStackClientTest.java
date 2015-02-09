@@ -7,10 +7,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+@Ignore("disable tests that require a running netapi instance")
 public class SaltStackClientTest {
 
     private static Properties config = new Properties();

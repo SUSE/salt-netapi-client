@@ -24,8 +24,11 @@ public class SaltStackKeyParser implements ISaltStackResultParser {
 
     @Override
     public <T> T parse(Type resultType, InputStream inputStream) throws SaltStackParsingException {
-        if ( !keyResult.getClass().getTypeName()
-                .equals(resultType.getTypeName())) {
+        // uncomment this on Java 8
+        //if ( !keyResult.getClass().getTypeName()
+        //        .equals(resultType.getTypeName())) {
+        if ( !"class com.suse.saltstack.netapi.client.SaltStackKeyResult"
+                .equals(resultType.toString())) {
             throw new SaltStackParsingException("Only SaltStackKeyResult can be parsed with this class");
         }
         Reader inputStreamReader = new InputStreamReader(inputStream);
