@@ -16,5 +16,5 @@ public interface SaltStackConnection {
      * @return object of type given by resultType
      * @throws SaltStackException if the request was not successful
      */
-    <T> T getResult(Type resultType, String data) throws SaltStackException;
+    <T> T getResult(Class<T> resultType, String data) throws SaltStackException;
 }
