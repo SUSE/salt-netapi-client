@@ -44,6 +44,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T> T getResult(Type resultType, String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
