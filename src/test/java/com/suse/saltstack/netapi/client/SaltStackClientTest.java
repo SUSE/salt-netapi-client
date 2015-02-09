@@ -76,10 +76,8 @@ public class SaltStackClientTest {
             .respond(
                 response()
                     .withStatusCode(200)
-                        .withHeaders(
-                            new Header("Content-Type", "application/json")
-                        )
-                        .withBody(JSON_LOGIN_RESPONSE)
+                    .withHeaders(new Header("Content-Type", "application/json"))
+                    .withBody(JSON_LOGIN_RESPONSE)
             );
 
         try {
