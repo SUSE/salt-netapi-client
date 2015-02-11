@@ -101,6 +101,18 @@
             todir="${dir-test-reports}">
         <formatter type="plain" />
       </test>
+      <test name="com.suse.saltstack.netapi.parser.SaltStackJobParserTest"
+            todir="${dir-test-reports}">
+        <formatter type="plain" />
+      </test>
+      <test name="com.suse.saltstack.netapi.parser.SaltStackStringParserTest"
+          todir="${dir-test-reports}">
+        <formatter type="plain" />
+      </test>
+      <test name="com.suse.saltstack.netapi.parser.SaltStackTokenParserTest"
+            todir="${dir-test-reports}">
+        <formatter type="plain" />
+      </test>
     </junit>
   </target>
 
