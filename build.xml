@@ -101,7 +101,8 @@
             todir="${dir-test-reports}">
         <formatter type="plain" />
       </test>
-      <test name="com.suse.saltstack.netapi.client.SaltStackClientTest" todir="${dir-test-reports}">
+      <test name="com.suse.saltstack.netapi.client.SaltStackClientTest"
+            todir="${dir-test-reports}">
         <formatter type="plain" />
       </test>
     </junit>
