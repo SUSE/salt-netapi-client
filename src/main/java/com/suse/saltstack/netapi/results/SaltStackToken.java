@@ -1,4 +1,4 @@
-package com.suse.saltstack.netapi.client;
+package com.suse.saltstack.netapi.results;
 
 public class SaltStackToken {
 

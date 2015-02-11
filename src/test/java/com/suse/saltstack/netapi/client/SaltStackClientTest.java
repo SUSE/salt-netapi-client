@@ -1,7 +1,10 @@
 package com.suse.saltstack.netapi.client;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.results.SaltStackToken;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
