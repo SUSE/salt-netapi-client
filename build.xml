@@ -38,6 +38,9 @@
     <delete dir="${dir-bin}" />
     <delete dir="${dir-dist}" />
     <delete dir="${dir-test-reports}" />
+    <delete>
+      <fileset dir="." includes="*.log" />
+    </delete>
   </target>
 
   <!-- Init -->
@@ -81,7 +84,7 @@
   <!-- Create the main jar file -->
   <target name="dist-jar" depends="build-jar">
     <mkdir dir="${dir-dist}" />
-    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar" 
+    <jar destfile="${dir-dist}/${ant.project.name}-${version}.jar"
          basedir="${dir-bin-main}" />
   </target>
 
@@ -98,6 +101,10 @@
     <junit printsummary="yes" haltonfailure="yes">
       <classpath refid="classpath-tests" />
       <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest"
+            todir="${dir-test-reports}">
+        <formatter type="plain" />
+      </test>
+      <test name="com.suse.saltstack.netapi.client.SaltStackClientTest"
             todir="${dir-test-reports}">
         <formatter type="plain" />
       </test>
