@@ -42,8 +42,8 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(Class<T> resultType, String data) throws SaltStackException {
-        return request(resultType, "POST", data);
+    public <T> T getResult(String data) throws SaltStackException {
+        return request("POST", data);
     }
 
     /**
@@ -54,7 +54,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * @return object of type given by resultType
      * @throws SaltStackException in case of a problem
      */
-    private <T> T request(Type resultType, String method, String data)
+    private <T> T request(String method, String data)
             throws SaltStackException {
         HttpURLConnection connection = null;
         InputStream inputStream = null;

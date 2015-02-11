@@ -50,7 +50,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(Class<T> resultType, String data) throws SaltStackException {
+    public <T> T getResult(String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration
