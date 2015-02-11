@@ -3,6 +3,11 @@ package com.suse.saltstack.netapi.client;
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
 import com.suse.saltstack.netapi.config.SaltStackProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.results.SaltStackJob;
+import com.suse.saltstack.netapi.results.SaltStackJobResult;
+import com.suse.saltstack.netapi.results.SaltStackStringResult;
+import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.SaltStackTokenResult;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

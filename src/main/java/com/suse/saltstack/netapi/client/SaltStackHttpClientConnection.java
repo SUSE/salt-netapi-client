@@ -17,7 +17,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 /**
  * Class representation of a connection to SaltStack for issuing API requests
@@ -51,7 +50,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(Type resultType, String data) throws SaltStackException {
+    public <T> T getResult(Class<T> resultType, String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration

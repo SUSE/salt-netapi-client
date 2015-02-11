@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.client.SaltStackStringResult;
+import com.suse.saltstack.netapi.results.SaltStackStringResult;
 import com.suse.saltstack.netapi.exception.SaltStackParsingException;
 
 import java.io.InputStream;

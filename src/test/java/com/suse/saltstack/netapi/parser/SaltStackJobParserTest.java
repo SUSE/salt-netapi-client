@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.client.SaltStackJobResult;
+import com.suse.saltstack.netapi.results.SaltStackJobResult;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 import org.junit.Test;
 

@@ -42,7 +42,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(Type resultType, String data) throws SaltStackException {
+    public <T> T getResult(Class<T> resultType, String data) throws SaltStackException {
         return request(resultType, "POST", data);
     }
 
