@@ -15,7 +15,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.*;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 /**
  * Class representation of a connection to SaltStack for issuing API requests
