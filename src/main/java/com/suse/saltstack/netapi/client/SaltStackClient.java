@@ -147,7 +147,7 @@ public class SaltStackClient {
      * @return object representing the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackJob minions(String target, String function, List<String> args,
+    public SaltStackJob startJob(String target, String function, List<String> args,
             Map<String, String> kwargs) throws SaltStackException {
         // Setup lowstate data to send as JSON
         JsonObject json = new JsonObject();
