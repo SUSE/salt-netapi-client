@@ -223,7 +223,7 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackRunResults result = new SaltStackConnection("/run", config).
+        SaltStackRunResults result = connectionFactory.create("/run", config).
                 getResult(SaltStackRunResults.class, jsonArray.toString());
 
         return result;
