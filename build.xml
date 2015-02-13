@@ -97,14 +97,12 @@
     <mkdir dir="${dir-test-reports}" />
     <junit printsummary="yes" haltonfailure="yes">
       <classpath refid="classpath-tests" />
-      <test name="com.suse.saltstack.netapi.utils.SaltStackClientUtilsTest"
-            todir="${dir-test-reports}">
-        <formatter type="plain" />
-      </test>
-      <test name="com.suse.saltstack.netapi.client.SaltStackClientTest"
-            todir="${dir-test-reports}">
-        <formatter type="plain" />
-      </test>
+      <batchtest todir="${dir-test-reports}">
+          <fileset dir="${dir-src-test}">
+              <include name="**/*Test.java" />
+          </fileset>
+      </batchtest>
+      <formatter type="plain"/>
     </junit>
   </target>
 
