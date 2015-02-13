@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -44,21 +45,20 @@ public class SaltStackRequestFactory {
     public HttpURLConnection initConnection(String method, String endpoint,
             SaltStackClientConfig config) throws IOException {
         // Init the connection
-        String uri = config.getUrl() + endpoint;
-        URL url = new URL(uri);
+        URL url = config.get(URL).resolve(endpoint).toURL();
         HttpURLConnection connection;
 
         // Optionally connect via a given proxy
-        String proxyHost = config.getProxyHostname();
+        String proxyHost = config.get(PROXY_HOSTNAME);
         if (proxyHost != null) {
-            int proxyPort = Integer.parseInt(config.getProxyPort());
+            int proxyPort = config.get(PROXY_PORT);
             Proxy proxy = new Proxy(Proxy.Type.HTTP,
                     new InetSocketAddress(proxyHost, proxyPort));
             connection = (HttpURLConnection) url.openConnection(proxy);
 
             // Proxy authentication
-            String proxyUsername = config.getProxyUsername();
-            String proxyPassword = config.getProxyPassword();
+            String proxyUsername = config.get(PROXY_USERNAME);
+            String proxyPassword = config.get(PROXY_PASSWORD);
             if (proxyUsername != null && proxyPassword != null) {
                 final String encoded = DatatypeConverter.printBase64Binary(
                         (proxyUsername + ':' + proxyPassword).getBytes());
@@ -73,7 +73,7 @@ public class SaltStackRequestFactory {
         connection.setRequestProperty("Accept", "application/json");
 
         // Token authentication
-        String token = config.getToken();
+        String token = config.get(TOKEN);
         if (token != null) {
             connection.setRequestProperty("X-Auth-Token", token);
         }
