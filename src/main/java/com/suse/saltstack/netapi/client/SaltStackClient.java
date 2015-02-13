@@ -7,6 +7,7 @@ import com.suse.saltstack.netapi.parser.SaltStackParser;
 import com.suse.saltstack.netapi.results.SaltStackJob;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.SaltStackRunResults;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
