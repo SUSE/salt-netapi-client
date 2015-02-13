@@ -2,8 +2,12 @@ package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.SaltStackRunResults;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -13,6 +17,8 @@ import java.net.HttpURLConnection;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * SaltStack API unit tests.
@@ -64,5 +70,51 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass");
+    }
+
+    @Test
+    public void testRunRequest() throws SaltStackException {
+        final String JSON_RUN_REQUEST = "[{\"username\":\"user\",\"password\":\"pass\"" +
+                ",\"eauth\":\"pam\",\"client\":\"local\",\"tgt\":\"*\",\"fun\":" +
+                "\"test.ping\"}]";
+        final String JSON_RUN_RESPONSE = "{\"return\": [{\"minion-1\": true}]}";
+
+        stubFor(post(urlEqualTo("/run"))
+                .willReturn(aResponse()
+                    .withStatus(HttpURLConnection.HTTP_OK)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JSON_RUN_RESPONSE)));
+
+        SaltStackRunResults results = client.run("user", "pass", "pam", "local", "*",
+                    "test.ping", null, null);
+
+        verify(1, postRequestedFor(urlEqualTo("/run"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalTo(JSON_RUN_REQUEST)));
+
+    }
+
+    @Test
+    public void testRunResult() throws SaltStackException {
+        final String JSON_RUN_RESPONSE = "{\"return\": [{\"minion-1\": true}]}";
+
+        stubFor(post(urlEqualTo("/run"))
+                .willReturn(aResponse()
+                    .withStatus(HttpURLConnection.HTTP_OK)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JSON_RUN_RESPONSE)));
+
+        SaltStackRunResults results = client.run("user", "pass", "pam", "local", "*",
+                "test.ping", null, null);
+
+        assertNotNull(results);
+
+        List<Map<String,String>> resultList = results.getResults();
+        assertEquals(resultList.size(), 1);
+
+        Map resultDetails = resultList.get(0);
+        assertTrue(resultDetails.containsKey("minion-1"));
+        assertEquals(resultDetails.get("minion-1"), "true");
     }
 }
