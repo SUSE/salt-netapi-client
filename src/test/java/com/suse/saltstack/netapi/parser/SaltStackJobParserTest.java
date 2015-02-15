@@ -1,10 +1,12 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.results.SaltStackJobResult;
+import com.suse.saltstack.netapi.results.SaltStackJob;
+import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,8 +18,8 @@ public class SaltStackJobParserTest {
     @Test
     public void testSaltStackJobParser() throws Exception {
         InputStream is = SaltStackClientUtils.stringToStream(MINIONS_RESPONSE);
-        SaltStackJobResult result = SaltStackParser.JOB.parse(is);
+        SaltStackResult<List<SaltStackJob>> result = SaltStackParser.JOB.parse(is);
         assertNotNull("failed to parse", result);
-        assertEquals("unable to parse jid", "20150211105524392307", result.getJobs().get(0).getJid());
+        assertEquals("unable to parse jid", "20150211105524392307", result.getResult().get(0).getJid());
     }
 }

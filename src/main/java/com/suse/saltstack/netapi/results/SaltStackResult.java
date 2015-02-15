@@ -2,12 +2,12 @@ package com.suse.saltstack.netapi.results;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SaltStackStringResult {
+public class SaltStackResult<T> {
 
     @SerializedName("return")
-    private String result;
+    private T result;
 
-    public String getResult() {
+    public T getResult() {
         return result;
     }
 }

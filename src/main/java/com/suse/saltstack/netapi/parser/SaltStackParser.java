@@ -1,27 +1,26 @@
 package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.exception.SaltStackParsingException;
-import com.suse.saltstack.netapi.results.SaltStackJobResult;
-import com.suse.saltstack.netapi.results.SaltStackStringResult;
-import com.suse.saltstack.netapi.results.SaltStackTokenResult;
+import com.suse.saltstack.netapi.results.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Type;
+import java.util.List;
 
 
 public class SaltStackParser<T> {
 
-    public static final SaltStackParser<SaltStackStringResult> STRING = new SaltStackParser<>(SaltStackStringResult.class);
-    public static final SaltStackParser<SaltStackTokenResult> TOKEN = new SaltStackParser<>(SaltStackTokenResult.class);
-    public static final SaltStackParser<SaltStackJobResult> JOB = new SaltStackParser<>(SaltStackJobResult.class);
+    public static final SaltStackParser<SaltStackResult<String>> STRING = new SaltStackParser<>(new TypeToken<SaltStackResult<String>>(){});
+    public static final SaltStackParser<SaltStackResult<List<SaltStackToken>>> TOKEN = new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
+    public static final SaltStackParser<SaltStackResult<List<SaltStackJob>>> JOB = new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
 
-    private final Class<T> type;
+    private final TypeToken<T> type;
 
-    public SaltStackParser(Class<T> type){
+    public SaltStackParser(TypeToken<T> type){
         this.type = type;
     }
 
@@ -35,6 +34,6 @@ public class SaltStackParser<T> {
         Reader streamReader = new BufferedReader(inputStreamReader);
 
         // Parse result type from the returned JSON
-        return new Gson().fromJson(streamReader, type);
+        return new Gson().fromJson(streamReader, type.getType());
     }
 }
