@@ -16,8 +16,7 @@ public class SaltStackTokenParserTest {
     @Test
     public void testSaltStackTokenParser() throws Exception {
         InputStream is = SaltStackClientUtils.stringToStream(LOGIN_JSON);
-        SaltStackTokenParser parser = new SaltStackTokenParser();
-        SaltStackTokenResult result = parser.parse(is);
+        SaltStackTokenResult result = SaltStackParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("", "salt", result.getResult().get(0).getUser());
         assertEquals("", "pam", result.getResult().get(0).getEauth());

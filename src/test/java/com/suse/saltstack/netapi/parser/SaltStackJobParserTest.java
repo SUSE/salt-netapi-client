@@ -16,8 +16,7 @@ public class SaltStackJobParserTest {
     @Test
     public void testSaltStackJobParser() throws Exception {
         InputStream is = SaltStackClientUtils.stringToStream(MINIONS_RESPONSE);
-        SaltStackJobParser parser = new SaltStackJobParser();
-        SaltStackJobResult result = parser.parse(is);
+        SaltStackJobResult result = SaltStackParser.JOB.parse(is);
         assertNotNull("failed to parse", result);
         assertEquals("unable to parse jid", "20150211105524392307", result.getJobs().get(0).getJid());
     }

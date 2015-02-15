@@ -15,8 +15,7 @@ public class SaltStackStringParserTest {
     @Test
     public void testSaltStackStringParser() throws Exception {
         InputStream is = SaltStackClientUtils.stringToStream(LOGOUT_RESPONSE);
-        SaltStackStringParser parser = new SaltStackStringParser();
-        SaltStackStringResult result = parser.parse(is);
+        SaltStackStringResult result = SaltStackParser.STRING.parse(is);
         assertNotNull(result);
     }
 
