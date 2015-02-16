@@ -12,22 +12,35 @@ import java.io.Reader;
 import java.util.List;
 
 
+/**
+ * Parser for Saltstack responses.
+ *
+ * @param <T> The result type this parser produces.
+ */
 public class SaltStackParser<T> {
 
-    public static final SaltStackParser<SaltStackResult<String>> STRING = new SaltStackParser<>(new TypeToken<SaltStackResult<String>>(){});
-    public static final SaltStackParser<SaltStackResult<List<SaltStackToken>>> TOKEN = new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
-    public static final SaltStackParser<SaltStackResult<List<SaltStackJob>>> JOB = new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
+    public static final SaltStackParser<SaltStackResult<String>> STRING =
+        new SaltStackParser<>(new TypeToken<SaltStackResult<String>>(){});
+    public static final SaltStackParser<SaltStackResult<List<SaltStackToken>>> TOKEN =
+        new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
+    public static final SaltStackParser<SaltStackResult<List<SaltStackJob>>> JOB =
+        new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
 
     private final TypeToken<T> type;
 
+    /**
+     * Created a new SaltStackParser for the given type.
+     *
+     * @param type A TypeToken describing the type this parser produces.
+     */
     public SaltStackParser(TypeToken<T> type){
         this.type = type;
     }
 
     /**
-     * Parses a Json response that has a direct representation as Java classes.
+     * Parses a Json response that has a direct representation as a Java class.
      * @param inputStream result stream to parse.
-     * @return
+     * @return The parsed value.
      */
     public T parse(InputStream inputStream) throws SaltStackParsingException {
         Reader inputStreamReader = new InputStreamReader(inputStream);

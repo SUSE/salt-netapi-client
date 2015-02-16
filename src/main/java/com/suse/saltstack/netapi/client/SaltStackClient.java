@@ -111,8 +111,8 @@ public class SaltStackClient {
         json.addProperty("username", username);
         json.addProperty("password", password);
         json.addProperty("eauth", eauth);
-        SaltStackResult<List<SaltStackToken>> result = connectionFactory.create("/login", SaltStackParser.TOKEN, config).
-                getResult(json.toString());
+        SaltStackResult<List<SaltStackToken>> result = connectionFactory
+                .create("/login", SaltStackParser.TOKEN, config).getResult(json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
         SaltStackToken token = result.getResult().get(0);
@@ -128,8 +128,8 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public SaltStackResult<String> logout() throws SaltStackException {
-        SaltStackResult<String> result = connectionFactory.create("/logout", SaltStackParser.STRING, config).
-                getResult(null);
+        SaltStackResult<String> result = connectionFactory
+                .create("/logout", SaltStackParser.STRING, config).getResult(null);
         config.remove(SaltStackClientConfig.TOKEN);
         return result;
     }
@@ -170,8 +170,8 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         // Connect to the minions endpoint and send the above lowstate data
-        SaltStackResult<List<SaltStackJob>> result = connectionFactory.create("/minions", SaltStackParser.JOB,  config).
-                getResult(jsonArray.toString());
+        SaltStackResult<List<SaltStackJob>> result = connectionFactory
+                .create("/minions", SaltStackParser.JOB,  config).getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
