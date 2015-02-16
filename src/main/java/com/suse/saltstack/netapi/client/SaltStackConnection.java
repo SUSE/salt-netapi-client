@@ -11,10 +11,9 @@ public interface SaltStackConnection {
     /**
      * Send a POST request and parse the result into object of given {@link Type}.
      *
-     * @param resultType the type of the result
      * @param data the data to send (in JSON format)
      * @return object of type given by resultType
      * @throws SaltStackException if the request was not successful
      */
-    <T> T getResult(Class<T> resultType, String data) throws SaltStackException;
+    <T> T getResult(String data) throws SaltStackException;
 }

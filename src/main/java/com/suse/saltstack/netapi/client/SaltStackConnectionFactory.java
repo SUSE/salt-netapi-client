@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import com.suse.saltstack.netapi.parser.SaltStackParser;
 
 /**
  * Describes an interface for creating instances of an HTTP connection implementation.
@@ -13,5 +14,5 @@ public interface SaltStackConnectionFactory {
      * @param config the configuration
      * @return object representing a connection to the API
      */
-    SaltStackConnection create(String endpoint, SaltStackClientConfig config);
+    SaltStackConnection create(String endpoint, SaltStackParser parser,  SaltStackClientConfig config);
 }

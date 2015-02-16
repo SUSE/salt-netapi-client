@@ -12,6 +12,9 @@ import com.suse.saltstack.netapi.results.SaltStackTokenResult;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.suse.saltstack.netapi.parser.SaltStackJobParser;
+import com.suse.saltstack.netapi.parser.SaltStackStringParser;
+import com.suse.saltstack.netapi.parser.SaltStackTokenParser;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -112,8 +115,8 @@ public class SaltStackClient {
         json.addProperty("username", username);
         json.addProperty("password", password);
         json.addProperty("eauth", eauth);
-        SaltStackTokenResult result = connectionFactory.create("/login", config).
-                getResult(SaltStackTokenResult.class, json.toString());
+        SaltStackTokenResult result = connectionFactory.create("/login", new SaltStackTokenParser(), config).
+                getResult(json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
         SaltStackToken token = result.getResult().get(0);
@@ -129,8 +132,8 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public SaltStackStringResult logout() throws SaltStackException {
-        SaltStackStringResult result = connectionFactory.create("/logout", config).
-                getResult(SaltStackStringResult.class, null);
+        SaltStackStringResult result = connectionFactory.create("/logout", new SaltStackStringParser(), config).
+                getResult(null);
         config.remove(SaltStackClientConfig.TOKEN);
         return result;
     }
@@ -171,8 +174,8 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         // Connect to the minions endpoint and send the above lowstate data
-        SaltStackJobResult result = connectionFactory.create("/minions", config).
-                getResult(SaltStackJobResult.class, jsonArray.toString());
+        SaltStackJobResult result = connectionFactory.create("/minions", new SaltStackJobParser(),  config).
+                getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first
         return result.getJobs().get(0);
