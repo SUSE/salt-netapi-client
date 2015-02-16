@@ -2,16 +2,12 @@ package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.parser.SaltStackParser;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 
-import com.google.gson.Gson;
-
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
@@ -27,23 +23,27 @@ public class SaltStackJDKConnection implements SaltStackConnection {
     /** The config object. */
     private final SaltStackClientConfig config;
 
+    /** The parser to parse the returned Result */
+    private SaltStackParser parser;
+
     /**
      * Init a connection to a given SaltStack API endpoint.
      *
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackJDKConnection(String endpointIn, SaltStackClientConfig configIn) {
+    public SaltStackJDKConnection(String endpointIn, SaltStackParser parserIn, SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
+        parser = parserIn;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(Class<T> resultType, String data) throws SaltStackException {
-        return request(resultType, "POST", data);
+    public <T> T getResult(String data) throws SaltStackException {
+        return request("POST", data);
     }
 
     /**
@@ -54,7 +54,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * @return object of type given by resultType
      * @throws SaltStackException in case of a problem
      */
-    private <T> T request(Type resultType, String method, String data)
+    private <T> T request(String method, String data)
             throws SaltStackException {
         HttpURLConnection connection = null;
         InputStream inputStream = null;
@@ -84,12 +84,9 @@ public class SaltStackJDKConnection implements SaltStackConnection {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK ||
                     responseCode == HttpURLConnection.HTTP_ACCEPTED) {
-                inputStream = connection.getInputStream();
-                Reader inputStreamReader = new InputStreamReader(inputStream);
-                Reader streamReader = new BufferedReader(inputStreamReader);
-
-                // Parse result type from the returned JSON
-                return new Gson().fromJson(streamReader, resultType);
+                @SuppressWarnings("unchecked")
+                T result = (T)parser.parse(connection.getInputStream());
+                return result;
             } else {
                 // Request was not successful
                 throw new SaltStackException("Response code: " + responseCode);

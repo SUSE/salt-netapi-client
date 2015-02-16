@@ -1,9 +1,8 @@
 package com.suse.saltstack.netapi.client;
 
-import com.google.gson.Gson;
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
+import com.suse.saltstack.netapi.parser.SaltStackParser;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
@@ -12,7 +11,10 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.*;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 
@@ -28,23 +30,27 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
     /** The config object. */
     private final SaltStackClientConfig config;
 
+    /** The parser to parse the returned Result */
+    private SaltStackParser parser;
+
     /**
      * Init a connection to a given SaltStack API endpoint.
      *
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackHttpClientConnection(String endpointIn,
+    public SaltStackHttpClientConnection(String endpointIn, SaltStackParser parserIn,
             SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
+        parser = parserIn;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(Class<T> resultType, String data) throws SaltStackException {
+    public <T> T getResult(String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration
@@ -93,9 +99,9 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
                 }
 
                 // Parse result type from the returned JSON
-                String result = SaltStackClientUtils.streamToString(
-                        response.getEntity().getContent());
-                return new Gson().fromJson(result, resultType);
+                @SuppressWarnings("unchecked")
+                T result = (T)parser.parse(response.getEntity().getContent());
+                return result;
             }
         } catch (IOException e) {
             throw new SaltStackException(e);
