@@ -11,7 +11,9 @@ import static org.junit.Assert.assertNotNull;
 
 public class SaltStackTokenParserTest {
 
-    public static String LOGIN_JSON = "{\"return\": [{\"perms\": [\".*\", \"@wheel\", \"@runner\", \"@jobs\"], \"start\": 1423573511.380074, \"token\": \"f248284b655724ca8a86bcab4b8df608ebf5b08b\", \"expire\": 1423616711.38008, \"user\": \"salt\", \"eauth\": \"pam\"}]}";
+    public static String LOGIN_JSON = "{\"return\": [{\"perms\": [\".*\", \"@wheel\", \"@runner\", \"@jobs\"], " +
+        "\"start\": 1423573511.380074, \"token\": \"f248284b655724ca8a86bcab4b8df608ebf5b08b\", \"expire\": 1423616711.38008, " +
+        "\"user\": \"salt\", \"eauth\": \"pam\"}]}";
 
     @Test
     public void testSaltStackTokenParser() throws Exception {

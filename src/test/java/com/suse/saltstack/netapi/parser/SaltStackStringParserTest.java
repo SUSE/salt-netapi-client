@@ -10,7 +10,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class SaltStackStringParserTest {
 
-    public static String LOGOUT_RESPONSE="{\"clients\": [\"local\", \"local_async\", \"local_batch\", \"runner\", \"runner_async\", \"wheel\", \"wheel_async\"], \"return\": \"Welcome\"}";
+    public static String LOGOUT_RESPONSE="{\"clients\": [\"local\", \"local_async\", \"local_batch\", \"runner\"," +
+        " \"runner_async\", \"wheel\", \"wheel_async\"], \"return\": \"Welcome\"}";
 
     @Test
     public void testSaltStackStringParser() throws Exception {

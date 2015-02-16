@@ -11,7 +11,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class SaltStackJobParserTest {
 
-    public static String MINIONS_RESPONSE="{\"_links\": {\"jobs\": [{\"href\": \"/jobs/20150211105524392307\"}]}, \"return\": [{\"jid\": \"20150211105524392307\", \"minions\": [\"myminion\"]}]}";
+    public static String MINIONS_RESPONSE = "{\"_links\": {\"jobs\": [{\"href\": \"/jobs/20150211105524392307\"}]}, " +
+        "\"return\": [{\"jid\": \"20150211105524392307\", \"minions\": [\"myminion\"]}]}";
 
     @Test
     public void testSaltStackJobParser() throws Exception {
