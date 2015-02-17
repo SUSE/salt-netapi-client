@@ -177,6 +177,7 @@ public class SaltStackClient {
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
     }
+
     /**
      * Generic interface to start any execution command bypassing normal session handling.
      *
@@ -194,15 +195,15 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public Map<String, String> run(String username, String password, String eauth,
-        String client, String target, String function, List<String> args, Map<String,
-        String> kwargs) throws SaltStackException {
+            String client, String target, String function, List<String> args, Map<String,
+            String> kwargs) throws SaltStackException {
 
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
-        json.addProperty("eauth",    eauth);
-        json.addProperty("client",   client);
-        json.addProperty("tgt",      target);
+        json.addProperty("eauth", eauth);
+        json.addProperty("client", client);
+        json.addProperty("tgt", target);
         json.addProperty("fun",      function);
 
         // Non-keyword arguments
