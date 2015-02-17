@@ -190,10 +190,10 @@ public class SaltStackClient {
      * @param function the function to execute
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
-     * @return object representing the scheduled job
+     * @return map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackRunResults run(String username, String password, String eauth,
+    public Map<String, String> run(String username, String password, String eauth,
         String client, String target, String function, List<String> args, Map<String,
         String> kwargs) throws SaltStackException {
 
@@ -224,9 +224,10 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackRunResults result = connectionFactory.create("/run", config).
+        SaltStackRunResults results = connectionFactory.create("/run", config).
                 getResult(SaltStackRunResults.class, jsonArray.toString());
 
-        return result;
+        // A list with one element is returned, we take the first
+        return results.getResults().get(0);
     }
 }

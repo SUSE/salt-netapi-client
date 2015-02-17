@@ -85,7 +85,7 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        SaltStackRunResults results = client.run("user", "pass", "pam", "local", "*",
+        Map results = client.run("user", "pass", "pam", "local", "*",
                     "test.ping", null, null);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
@@ -105,16 +105,11 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        SaltStackRunResults results = client.run("user", "pass", "pam", "local", "*",
+        Map results = client.run("user", "pass", "pam", "local", "*",
                 "test.ping", null, null);
 
         assertNotNull(results);
-
-        List<Map<String,String>> resultList = results.getResults();
-        assertEquals(resultList.size(), 1);
-
-        Map resultDetails = resultList.get(0);
-        assertTrue(resultDetails.containsKey("minion-1"));
-        assertEquals(resultDetails.get("minion-1"), "true");
+        assertTrue(results.containsKey("minion-1"));
+        assertEquals(results.get("minion-1"), "true");
     }
 }
