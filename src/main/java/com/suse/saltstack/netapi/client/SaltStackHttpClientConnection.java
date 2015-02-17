@@ -22,7 +22,7 @@ import java.io.IOException;
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
  */
-public class SaltStackHttpClientConnection implements SaltStackConnection {
+public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> {
 
     /** The endpoint. */
     private String endpoint;
@@ -31,7 +31,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
     private final SaltStackClientConfig config;
 
     /** The parser to parse the returned Result */
-    private SaltStackParser parser;
+    private SaltStackParser<T> parser;
 
     /**
      * Init a connection to a given SaltStack API endpoint.
@@ -39,7 +39,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackHttpClientConnection(String endpointIn, SaltStackParser parserIn,
+    public SaltStackHttpClientConnection(String endpointIn, SaltStackParser<T> parserIn,
             SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
@@ -50,7 +50,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(String data) throws SaltStackException {
+    public T getResult(String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration
@@ -99,8 +99,7 @@ public class SaltStackHttpClientConnection implements SaltStackConnection {
                 }
 
                 // Parse result type from the returned JSON
-                @SuppressWarnings("unchecked")
-                T result = (T)parser.parse(response.getEntity().getContent());
+                T result = parser.parse(response.getEntity().getContent());
                 return result;
             }
         } catch (IOException e) {

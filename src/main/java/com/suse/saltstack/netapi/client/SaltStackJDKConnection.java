@@ -15,7 +15,7 @@ import java.net.HttpURLConnection;
  * Class representation of a connection to SaltStack for issuing API requests using JDK's
  * HttpURLConnection.
  */
-public class SaltStackJDKConnection implements SaltStackConnection {
+public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
 
     /** The endpoint. */
     private String endpoint;
@@ -24,7 +24,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
     private final SaltStackClientConfig config;
 
     /** The parser to parse the returned Result */
-    private SaltStackParser parser;
+    private SaltStackParser<T> parser;
 
     /**
      * Init a connection to a given SaltStack API endpoint.
@@ -32,7 +32,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackJDKConnection(String endpointIn, SaltStackParser parserIn, SaltStackClientConfig configIn) {
+    public SaltStackJDKConnection(String endpointIn, SaltStackParser<T> parserIn, SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
         parser = parserIn;
@@ -42,7 +42,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getResult(String data) throws SaltStackException {
+    public T getResult(String data) throws SaltStackException {
         return request("POST", data);
     }
 
@@ -54,7 +54,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
      * @return object of type given by resultType
      * @throws SaltStackException in case of a problem
      */
-    private <T> T request(String method, String data)
+    private T request(String method, String data)
             throws SaltStackException {
         HttpURLConnection connection = null;
         InputStream inputStream = null;
@@ -84,8 +84,7 @@ public class SaltStackJDKConnection implements SaltStackConnection {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK ||
                     responseCode == HttpURLConnection.HTTP_ACCEPTED) {
-                @SuppressWarnings("unchecked")
-                T result = (T)parser.parse(connection.getInputStream());
+                T result = parser.parse(connection.getInputStream());
                 return result;
             } else {
                 // Request was not successful

@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 /**
  * Describes an interface for different HTTP connection implementations.
  */
-public interface SaltStackConnection {
+public interface SaltStackConnection<T> {
     /**
      * Send a POST request and parse the result into object of given {@link Type}.
      *
@@ -15,5 +15,5 @@ public interface SaltStackConnection {
      * @return object of type given by resultType
      * @throws SaltStackException if the request was not successful
      */
-    <T> T getResult(String data) throws SaltStackException;
+    T getResult(String data) throws SaltStackException;
 }

@@ -13,8 +13,8 @@ public class SaltStackHttpClientConnectionFactory implements SaltStackConnection
      * {@inheritDoc}
      */
     @Override
-    public SaltStackHttpClientConnection create(String endpoint,
-            SaltStackParser parser, SaltStackClientConfig config) {
-        return new SaltStackHttpClientConnection(endpoint, parser, config);
+    public <T> SaltStackHttpClientConnection<T> create(String endpoint,
+            SaltStackParser<T> parser, SaltStackClientConfig config) {
+        return new SaltStackHttpClientConnection<>(endpoint, parser, config);
     }
 }

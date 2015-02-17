@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.results.SaltStackStringResult;
+import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 import org.junit.Test;
 
@@ -16,8 +16,7 @@ public class SaltStackStringParserTest {
     @Test
     public void testSaltStackStringParser() throws Exception {
         InputStream is = SaltStackClientUtils.stringToStream(LOGOUT_RESPONSE);
-        SaltStackStringParser parser = new SaltStackStringParser();
-        SaltStackStringResult result = parser.parse(is);
+        SaltStackResult<String> result = SaltStackParser.STRING.parse(is);
         assertNotNull(result);
     }
 

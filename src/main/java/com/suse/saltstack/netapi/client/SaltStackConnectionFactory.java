@@ -14,5 +14,5 @@ public interface SaltStackConnectionFactory {
      * @param config the configuration
      * @return object representing a connection to the API
      */
-    SaltStackConnection create(String endpoint, SaltStackParser parser,  SaltStackClientConfig config);
+    <T> SaltStackConnection<T> create(String endpoint, SaltStackParser<T> parser,  SaltStackClientConfig config);
 }

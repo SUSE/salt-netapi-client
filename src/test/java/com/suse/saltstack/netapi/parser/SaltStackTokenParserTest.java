@@ -1,10 +1,12 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.results.SaltStackTokenResult;
+import com.suse.saltstack.netapi.results.SaltStackResult;
+import com.suse.saltstack.netapi.results.SaltStackToken;
 import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,8 +20,7 @@ public class SaltStackTokenParserTest {
     @Test
     public void testSaltStackTokenParser() throws Exception {
         InputStream is = SaltStackClientUtils.stringToStream(LOGIN_JSON);
-        SaltStackTokenParser parser = new SaltStackTokenParser();
-        SaltStackTokenResult result = parser.parse(is);
+        SaltStackResult<List<SaltStackToken>> result = SaltStackParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("", "salt", result.getResult().get(0).getUser());
         assertEquals("", "pam", result.getResult().get(0).getEauth());
