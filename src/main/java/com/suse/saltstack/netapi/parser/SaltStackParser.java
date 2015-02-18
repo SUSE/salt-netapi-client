@@ -25,6 +25,9 @@ public class SaltStackParser<T> {
         new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
     public static final SaltStackParser<SaltStackResult<List<SaltStackJob>>> JOB =
         new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
+    public static final SaltStackParser<SaltStackResult<List<SaltStackReturnValues>>>
+            RETVALS = new SaltStackParser<>
+            (new TypeToken<SaltStackResult<List<SaltStackReturnValues>>>(){});
 
     private final TypeToken<T> type;
 

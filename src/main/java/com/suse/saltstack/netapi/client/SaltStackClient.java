@@ -7,7 +7,7 @@ import com.suse.saltstack.netapi.parser.SaltStackParser;
 import com.suse.saltstack.netapi.results.SaltStackJob;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
-import com.suse.saltstack.netapi.results.SaltStackRunResults;
+import com.suse.saltstack.netapi.results.SaltStackReturnValues;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -191,10 +191,10 @@ public class SaltStackClient {
      * @param function the function to execute
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
-     * @return map key: minion id, value: command result from that minion
+     * @return SaltStackReturnValues key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, String> run(String username, String password, String eauth,
+    public SaltStackReturnValues run(String username, String password, String eauth,
             String client, String target, String function, List<String> args, Map<String,
             String> kwargs) throws SaltStackException {
 
@@ -225,10 +225,11 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackRunResults results = connectionFactory.create("/run", config).
-                getResult(SaltStackRunResults.class, jsonArray.toString());
+        SaltStackResult<List<SaltStackReturnValues>> result = connectionFactory
+                .create("/run", SaltStackParser.RETVALS, config)
+                .getResult(jsonArray.toString());
 
         // A list with one element is returned, we take the first
-        return results.getResults().get(0);
+        return result.getResult().get(0);
     }
 }
