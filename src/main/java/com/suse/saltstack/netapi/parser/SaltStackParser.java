@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
+import java.util.HashMap;
 
 
 /**
@@ -25,9 +26,8 @@ public class SaltStackParser<T> {
         new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
     public static final SaltStackParser<SaltStackResult<List<SaltStackJob>>> JOB =
         new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
-    public static final SaltStackParser<SaltStackResult<List<SaltStackReturnValues>>>
-            RETVALS = new SaltStackParser<>
-            (new TypeToken<SaltStackResult<List<SaltStackReturnValues>>>(){});
+    public static final SaltStackParser<SaltStackResult<List<HashMap>>> RETVALS =
+        new SaltStackParser<>(new TypeToken<SaltStackResult<List<HashMap>>>(){});
 
     private final TypeToken<T> type;
 

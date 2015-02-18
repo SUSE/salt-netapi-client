@@ -2,7 +2,6 @@ package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.results.SaltStackToken;
-import com.suse.saltstack.netapi.results.SaltStackReturnValues;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -85,7 +84,7 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        SaltStackReturnValues retvals = client.run("user", "pass", "pam", "local", "*",
+        Map retvals = client.run("user", "pass", "pam", "local", "*",
                     "test.ping", null, null);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
@@ -105,7 +104,7 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        SaltStackReturnValues retvals = client.run("user", "pass", "pam", "local", "*",
+        Map retvals = client.run("user", "pass", "pam", "local", "*",
                 "test.ping", null, null);
 
         assertNotNull(retvals);

@@ -7,7 +7,6 @@ import com.suse.saltstack.netapi.parser.SaltStackParser;
 import com.suse.saltstack.netapi.results.SaltStackJob;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
-import com.suse.saltstack.netapi.results.SaltStackReturnValues;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,6 +15,7 @@ import com.google.gson.JsonPrimitive;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * SaltStack API client.
@@ -191,10 +191,10 @@ public class SaltStackClient {
      * @param function the function to execute
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
-     * @return SaltStackReturnValues key: minion id, value: command result from that minion
+     * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackReturnValues run(String username, String password, String eauth,
+    public Map run(String username, String password, String eauth,
             String client, String target, String function, List<String> args, Map<String,
             String> kwargs) throws SaltStackException {
 
@@ -225,7 +225,7 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackResult<List<SaltStackReturnValues>> result = connectionFactory
+        SaltStackResult<List<HashMap>> result = connectionFactory
                 .create("/run", SaltStackParser.RETVALS, config)
                 .getResult(jsonArray.toString());
 
