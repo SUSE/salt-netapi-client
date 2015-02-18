@@ -8,7 +8,6 @@ import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 /**
