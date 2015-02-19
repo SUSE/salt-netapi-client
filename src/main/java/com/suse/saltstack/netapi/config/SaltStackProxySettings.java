@@ -9,7 +9,7 @@ public class SaltStackProxySettings {
 
     private String hostname;
     private String username;
-    private String password;
+    private Password password;
     private int port;
 
     /**
@@ -32,7 +32,7 @@ public class SaltStackProxySettings {
      * @param password proxy password
      */
     public SaltStackProxySettings(String hostname, int port,
-            String username, String password) {
+            String username, Password password) {
         this(hostname, port);
         this.username = username;
         this.password = password;
@@ -83,14 +83,14 @@ public class SaltStackProxySettings {
     /**
      * @return the password
      */
-    public String getPassword() {
+    public Password getPassword() {
         return password;
     }
 
     /**
      * @param password the password to set
      */
-    public void setPassword(String password) {
+    public void setPassword(Password password) {
         this.password = password;
     }
 }
