@@ -176,4 +176,59 @@ public class SaltStackClient {
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
     }
+
+    /**
+     * Generic interface to start any execution command bypassing normal session handling.
+     *
+     * POST /run
+     *
+     * @param username the username
+     * @param password the password
+     * @param eauth the eauth type
+     * @param client the client
+     * @param target the target
+     * @param function the function to execute
+     * @param args list of non-keyword arguments
+     * @param kwargs map containing keyword arguments
+     * @return Map key: minion id, value: command result from that minion
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Map<String,Object> run(String username, String password, String eauth,
+            String client, String target, String function, List<String> args, Map<String,
+            String> kwargs) throws SaltStackException {
+
+        JsonObject json = new JsonObject();
+        json.addProperty("username", username);
+        json.addProperty("password", password);
+        json.addProperty("eauth", eauth);
+        json.addProperty("client", client);
+        json.addProperty("tgt", target);
+        json.addProperty("fun", function);
+
+        // Non-keyword arguments
+        if (args != null) {
+            JsonArray argsArray = new JsonArray();
+            for (String arg : args) {
+                argsArray.add(new JsonPrimitive(arg));
+            }
+            json.add("arg", argsArray);
+        }
+
+        // Keyword arguments
+        if (kwargs != null) {
+            for (String key : kwargs.keySet()) {
+                json.addProperty(key, kwargs.get(key));
+            }
+        }
+
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(json);
+
+        SaltStackResult<List<Map<String,Object>>> result = connectionFactory
+                .create("/run", SaltStackParser.RETVALS, config)
+                .getResult(jsonArray.toString());
+
+        // A list with one element is returned, we take the first
+        return result.getResult().get(0);
+    }
 }
