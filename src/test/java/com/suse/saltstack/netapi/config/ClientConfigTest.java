@@ -5,7 +5,7 @@ import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-public class SaltStackClientConfigTest {
+public class ClientConfigTest {
 
     @Test
     public void testPutGetRemove() {
