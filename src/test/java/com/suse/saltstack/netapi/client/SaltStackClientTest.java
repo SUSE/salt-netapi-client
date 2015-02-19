@@ -5,7 +5,6 @@ import com.suse.saltstack.netapi.results.SaltStackToken;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
