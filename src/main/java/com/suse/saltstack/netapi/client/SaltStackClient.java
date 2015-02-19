@@ -7,7 +7,7 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Job;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.Token;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -81,10 +81,10 @@ public class SaltStackClient {
      *
      * POST /login
      *
-     * @return authentication token as {@link SaltStackToken}
+     * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackToken login(String username, String password)
+    public Token login(String username, String password)
             throws SaltStackException {
         return login(username, password, APIConstants.LOGIN_EAUTH_AUTO);
     }
@@ -94,20 +94,20 @@ public class SaltStackClient {
      *
      * POST /login
      *
-     * @return authentication token as {@link SaltStackToken}
+     * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackToken login(String username, String password, String eauth)
+    public Token login(String username, String password, String eauth)
             throws SaltStackException {
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
         json.addProperty("eauth", eauth);
-        Result<List<SaltStackToken>> result = connectionFactory
+        Result<List<Token>> result = connectionFactory
                 .create("/login", JsonParser.TOKEN, config).getResult(json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
-        SaltStackToken token = result.getResult().get(0);
+        Token token = result.getResult().get(0);
         config.put(TOKEN, token.getToken());
         return token;
     }

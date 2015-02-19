@@ -21,8 +21,8 @@ public class JsonParser<T> {
 
     public static final JsonParser<Result<String>> STRING =
         new JsonParser<>(new TypeToken<Result<String>>(){});
-    public static final JsonParser<Result<List<SaltStackToken>>> TOKEN =
-        new JsonParser<>(new TypeToken<Result<List<SaltStackToken>>>(){});
+    public static final JsonParser<Result<List<Token>>> TOKEN =
+        new JsonParser<>(new TypeToken<Result<List<Token>>>(){});
     public static final JsonParser<Result<List<Job>>> JOB =
         new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
     public static final JsonParser<Result<List<Map<String,Object>>>> RETVALS =

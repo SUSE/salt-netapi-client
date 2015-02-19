@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.parser;
 
 import com.suse.saltstack.netapi.results.Job;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.Token;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -31,7 +31,7 @@ public class SaltStackParserTest {
     @Test
     public void testSaltStackTokenParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/login_response.json");
-        Result<List<SaltStackToken>> result = JsonParser.TOKEN.parse(is);
+        Result<List<Token>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("", "salt", result.getResult().get(0).getUser());
         assertEquals("", "pam", result.getResult().get(0).getEauth());
