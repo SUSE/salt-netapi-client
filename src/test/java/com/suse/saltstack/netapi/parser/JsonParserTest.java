@@ -1,8 +1,10 @@
 package com.suse.saltstack.netapi.parser;
 
+import com.google.gson.JsonParseException;
 import com.suse.saltstack.netapi.results.Job;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.results.Token;
+import java.util.Date;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -36,5 +38,13 @@ public class JsonParserTest {
         assertEquals("", "salt", result.getResult().get(0).getUser());
         assertEquals("", "pam", result.getResult().get(0).getEauth());
         assertEquals("", "f248284b655724ca8a86bcab4b8df608ebf5b08b", result.getResult().get(0).getToken());
+        assertEquals("", new Date(1423573511380L), result.getResult().get(0).getStart());
+        assertEquals("", new Date(1423616711380L), result.getResult().get(0).getExpire());
+    }
+
+    @Test(expected =  JsonParseException.class)
+    public void testSaltStackTokenParserWrongDate() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("/login_response_wrong_date.json");
+        JsonParser.TOKEN.parse(is);
     }
 }

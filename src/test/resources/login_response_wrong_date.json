@@ -1,0 +1,16 @@
+{
+  "return": [
+    {
+      "perms": [
+        ".*",
+        "@wheel",
+        "@runner",
+        "@jobs"
+      ],
+      "start": "yesterday",
+      "token": "f248284b655724ca8a86bcab4b8df608ebf5b08b",
+      "user": "salt",
+      "eauth": "pam"
+    }
+  ]
+}
