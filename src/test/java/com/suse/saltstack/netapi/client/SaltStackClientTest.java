@@ -84,8 +84,7 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        Map retvals = client.run("user", "pass", "pam", "local", "*",
-                    "test.ping", null, null);
+        client.run("user", "pass", "pam", "local", "*", "test.ping", null, null);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -104,7 +103,7 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        Map retvals = client.run("user", "pass", "pam", "local", "*",
+        Map<String, Object> retvals = client.run("user", "pass", "pam", "local", "*",
                 "test.ping", null, null);
 
         assertNotNull(retvals);
