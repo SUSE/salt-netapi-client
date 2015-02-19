@@ -15,7 +15,6 @@ import com.google.gson.JsonPrimitive;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * SaltStack API client.
@@ -194,7 +193,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map run(String username, String password, String eauth,
+    public Map<String,Object> run(String username, String password, String eauth,
             String client, String target, String function, List<String> args, Map<String,
             String> kwargs) throws SaltStackException {
 
@@ -225,7 +224,7 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackResult<List<HashMap>> result = connectionFactory
+        SaltStackResult<List<Map<String,Object>>> result = connectionFactory
                 .create("/run", SaltStackParser.RETVALS, config)
                 .getResult(jsonArray.toString());
 
