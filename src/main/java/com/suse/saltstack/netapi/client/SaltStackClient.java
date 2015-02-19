@@ -86,7 +86,7 @@ public class SaltStackClient {
      */
     public SaltStackToken login(String username, String password)
             throws SaltStackException {
-        return login(username, password, SaltStackAPIConstants.LOGIN_EAUTH_AUTO);
+        return login(username, password, APIConstants.LOGIN_EAUTH_AUTO);
     }
 
     /**
