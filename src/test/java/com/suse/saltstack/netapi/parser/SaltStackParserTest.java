@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.results.SaltStackJob;
+import com.suse.saltstack.netapi.results.Job;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class SaltStackParserTest {
     @Test
     public void testSaltStackJobParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/minions_response.json");
-        SaltStackResult<List<SaltStackJob>> result = JsonParser.JOB.parse(is);
+        SaltStackResult<List<Job>> result = JsonParser.JOB.parse(is);
         assertNotNull("failed to parse", result);
         assertEquals("unable to parse jid", "20150211105524392307", result.getResult().get(0).getJid());
     }

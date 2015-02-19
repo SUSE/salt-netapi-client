@@ -5,7 +5,7 @@ import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
-import com.suse.saltstack.netapi.results.SaltStackJob;
+import com.suse.saltstack.netapi.results.Job;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
 
@@ -138,7 +138,7 @@ public class SaltStackClient {
      * @return object representing the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackJob startCommand(String target, String function, List<String> args,
+    public Job startCommand(String target, String function, List<String> args,
             Map<String, String> kwargs) throws SaltStackException {
         // Setup lowstate data to send as JSON
         JsonObject json = new JsonObject();
@@ -162,7 +162,7 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         // Connect to the minions endpoint and send the above lowstate data
-        SaltStackResult<List<SaltStackJob>> result = connectionFactory
+        SaltStackResult<List<Job>> result = connectionFactory
                 .create("/minions", JsonParser.JOB,  config).getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first

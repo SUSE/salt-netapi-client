@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.results;
 
 import java.util.List;
 
-public class SaltStackJob {
+public class Job {
 
     private String jid;
     private List<String> minions;
