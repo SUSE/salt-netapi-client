@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 
@@ -18,7 +18,7 @@ public class JDKConnection<T> implements Connection<T> {
     private String endpoint;
 
     /** The config object. */
-    private final SaltStackClientConfig config;
+    private final ClientConfig config;
 
     /** The parser to parse the returned Result */
     private SaltStackParser<T> parser;
@@ -29,7 +29,7 @@ public class JDKConnection<T> implements Connection<T> {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public JDKConnection(String endpointIn, SaltStackParser<T> parserIn, SaltStackClientConfig configIn) {
+    public JDKConnection(String endpointIn, SaltStackParser<T> parserIn, ClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
         parser = parserIn;

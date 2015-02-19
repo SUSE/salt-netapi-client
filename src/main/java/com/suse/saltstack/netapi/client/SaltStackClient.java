@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
-import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
+import com.suse.saltstack.netapi.config.ClientConfig;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.SaltStackProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class SaltStackClient {
 
     /** The configuration object */
-    private final SaltStackClientConfig config = new SaltStackClientConfig();
+    private final ClientConfig config = new ClientConfig();
 
     /** The connection factory object */
     private ConnectionFactory connectionFactory;
@@ -54,7 +54,7 @@ public class SaltStackClient {
      *
      * @return the configuration object
      */
-    public SaltStackClientConfig getConfig() {
+    public ClientConfig getConfig() {
         return config;
     }
 

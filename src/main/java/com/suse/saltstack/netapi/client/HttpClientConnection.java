@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
-import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
+import com.suse.saltstack.netapi.config.ClientConfig;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 import org.apache.http.HttpHost;
@@ -31,7 +31,7 @@ public class HttpClientConnection<T> implements Connection<T> {
     private String endpoint;
 
     /** The config object. */
-    private final SaltStackClientConfig config;
+    private final ClientConfig config;
 
     /** The parser to parse the returned Result */
     private SaltStackParser<T> parser;
@@ -43,7 +43,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      * @param configIn the config
      */
     public HttpClientConnection(String endpointIn, SaltStackParser<T> parserIn,
-            SaltStackClientConfig configIn) {
+            ClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
         parser = parserIn;

@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.config;
 
-import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -9,7 +9,7 @@ public class SaltStackClientConfigTest {
 
     @Test
     public void testPutGetRemove() {
-        SaltStackClientConfig config = new SaltStackClientConfig();
+        ClientConfig config = new ClientConfig();
         Key<Integer> key = PROXY_PORT;
 
         assertEquals("New empty config should return defaultValue", config.get(key), key.defaultValue);

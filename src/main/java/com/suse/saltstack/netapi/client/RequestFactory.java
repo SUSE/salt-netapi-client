@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
-import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
+import com.suse.saltstack.netapi.config.ClientConfig;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -43,7 +43,7 @@ public class RequestFactory {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public HttpURLConnection initConnection(String method, String endpoint,
-            SaltStackClientConfig config) throws IOException {
+            ClientConfig config) throws IOException {
         // Init the connection
         URL url = config.get(URL).resolve(endpoint).toURL();
         HttpURLConnection connection;

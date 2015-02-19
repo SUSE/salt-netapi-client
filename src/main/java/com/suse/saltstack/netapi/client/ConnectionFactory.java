@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 
 /**
@@ -14,5 +14,5 @@ public interface ConnectionFactory {
      * @param config the configuration
      * @return object representing a connection to the API
      */
-    <T> Connection<T> create(String endpoint, SaltStackParser<T> parser,  SaltStackClientConfig config);
+    <T> Connection<T> create(String endpoint, SaltStackParser<T> parser,  ClientConfig config);
 }

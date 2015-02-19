@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 
 /**
@@ -13,7 +13,7 @@ public class JDKConnectionFactory implements ConnectionFactory {
      * {@inheritDoc}
      */
     @Override
-    public <T> JDKConnection<T> create(String endpoint, SaltStackParser<T> parser, SaltStackClientConfig config) {
+    public <T> JDKConnection<T> create(String endpoint, SaltStackParser<T> parser, ClientConfig config) {
         return new JDKConnection<>(endpoint, parser, config);
     }
 }
