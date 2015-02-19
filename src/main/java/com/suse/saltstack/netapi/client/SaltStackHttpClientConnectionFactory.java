@@ -8,7 +8,7 @@ import com.suse.saltstack.netapi.parser.SaltStackParser;
  *
  * @see com.suse.saltstack.netapi.client.SaltStackHttpClientConnection
  */
-public class SaltStackHttpClientConnectionFactory implements SaltStackConnectionFactory {
+public class SaltStackHttpClientConnectionFactory implements ConnectionFactory {
     /**
      * {@inheritDoc}
      */

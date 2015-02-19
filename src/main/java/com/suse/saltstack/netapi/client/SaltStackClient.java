@@ -26,7 +26,7 @@ public class SaltStackClient {
     private final SaltStackClientConfig config = new SaltStackClientConfig();
 
     /** The connection factory object */
-    private SaltStackConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
     /**
      * Constructor for connecting to a given URL.
@@ -43,7 +43,7 @@ public class SaltStackClient {
      * @param url the SaltStack URL
      * @param connectionFactory Connection Factory implementation
      */
-    public SaltStackClient(URI url, SaltStackConnectionFactory connectionFactory) {
+    public SaltStackClient(URI url, ConnectionFactory connectionFactory) {
         // Put the URL in the config
         config.put(URL, url);
         this.connectionFactory = connectionFactory;
