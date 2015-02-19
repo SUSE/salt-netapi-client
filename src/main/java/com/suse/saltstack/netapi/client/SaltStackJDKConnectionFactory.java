@@ -6,14 +6,14 @@ import com.suse.saltstack.netapi.parser.SaltStackParser;
 /**
  * Implementation of a factory for connections using JDK's HttpURLConnection.
  *
- * @see SaltStackJDKConnection
+ * @see JDKConnection
  */
 public class SaltStackJDKConnectionFactory implements ConnectionFactory {
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> SaltStackJDKConnection<T> create(String endpoint, SaltStackParser<T> parser, SaltStackClientConfig config) {
-        return new SaltStackJDKConnection<>(endpoint, parser, config);
+    public <T> JDKConnection<T> create(String endpoint, SaltStackParser<T> parser, SaltStackClientConfig config) {
+        return new JDKConnection<>(endpoint, parser, config);
     }
 }

@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
  * Class representation of a connection to SaltStack for issuing API requests using JDK's
  * HttpURLConnection.
  */
-public class SaltStackJDKConnection<T> implements Connection<T> {
+public class JDKConnection<T> implements Connection<T> {
 
     /** The endpoint. */
     private String endpoint;
@@ -29,7 +29,7 @@ public class SaltStackJDKConnection<T> implements Connection<T> {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackJDKConnection(String endpointIn, SaltStackParser<T> parserIn, SaltStackClientConfig configIn) {
+    public JDKConnection(String endpointIn, SaltStackParser<T> parserIn, SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
         parser = parserIn;
