@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class SaltStackParserTest {
+public class JsonParserTest {
 
     @Test
     public void testSaltStackJobParser() throws Exception {
