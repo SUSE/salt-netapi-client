@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * Utilities for {@link SaltStackClient}.
  */
-public class SaltStackClientUtils {
+public class ClientUtils {
 
     /**
      * Quietly close a given stream, suppressing exceptions.
