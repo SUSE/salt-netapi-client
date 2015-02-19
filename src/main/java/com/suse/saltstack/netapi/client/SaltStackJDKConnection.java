@@ -3,11 +3,9 @@ package com.suse.saltstack.netapi.client;
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
-import com.suse.saltstack.netapi.utils.SaltStackClientUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 /**
@@ -55,7 +53,6 @@ public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
     private T request(String method, String data)
             throws SaltStackException {
         HttpURLConnection connection = null;
-        InputStream inputStream = null;
         try {
             // Setup and configure the connection
             connection = SaltStackRequestFactory.getInstance().initConnection(
@@ -94,7 +91,6 @@ public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
             if (connection != null) {
                 connection.disconnect();
             }
-            SaltStackClientUtils.closeQuietly(inputStream);
         }
     }
 }
