@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
 import com.suse.saltstack.netapi.config.SaltStackProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
@@ -12,7 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class SaltStackClient {
      * @param url the SaltStack URL
      * @throws SaltStackException
      */
-    public SaltStackClient(String url) throws SaltStackException {
+    public SaltStackClient(URI url) {
         this(url, new SaltStackHttpClientConnectionFactory());
     }
 
@@ -44,16 +45,9 @@ public class SaltStackClient {
      * @param connectionFactory Connection Factory implementation
      * @throws SaltStackException
      */
-    public SaltStackClient(String url, SaltStackConnectionFactory connectionFactory)
-            throws SaltStackException {
+    public SaltStackClient(URI url, SaltStackConnectionFactory connectionFactory) {
         // Put the URL in the config
-        if (url != null) {
-            try {
-                config.setUrl(url);
-            } catch (URISyntaxException e) {
-                throw new SaltStackException(e);
-            }
-        }
+        config.put(URL, url);
         this.connectionFactory = connectionFactory;
     }
 
@@ -73,13 +67,13 @@ public class SaltStackClient {
      */
     public void setProxy(SaltStackProxySettings settings) {
         if (settings.getHostname() != null) {
-            config.put(SaltStackClientConfig.PROXY_HOSTNAME, settings.getHostname());
-            config.put(SaltStackClientConfig.PROXY_PORT, String.valueOf(settings.getPort()));
+            config.put(PROXY_HOSTNAME, settings.getHostname());
+            config.put(PROXY_PORT, settings.getPort());
         }
         if (settings.getUsername() != null) {
-            config.put(SaltStackClientConfig.PROXY_USERNAME, settings.getUsername());
+            config.put(PROXY_USERNAME, settings.getUsername());
             if (settings.getPassword() != null) {
-                config.put(SaltStackClientConfig.PROXY_PASSWORD, settings.getPassword());
+                config.put(PROXY_PASSWORD, settings.getPassword());
             }
         }
     }
@@ -116,7 +110,7 @@ public class SaltStackClient {
 
         // For whatever reason they return a list of tokens here, take the first
         SaltStackToken token = result.getResult().get(0);
-        config.put(SaltStackClientConfig.TOKEN, token.getToken());
+        config.put(TOKEN, token.getToken());
         return token;
     }
 
@@ -130,7 +124,7 @@ public class SaltStackClient {
     public SaltStackResult<String> logout() throws SaltStackException {
         SaltStackResult<String> result = connectionFactory
                 .create("/logout", SaltStackParser.STRING, config).getResult(null);
-        config.remove(SaltStackClientConfig.TOKEN);
+        config.remove(TOKEN);
         return result;
     }
 

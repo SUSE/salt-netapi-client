@@ -1,132 +1,90 @@
 package com.suse.saltstack.netapi.config;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * SaltStack client configuration wrapper class.
+ * A statically typed key/value store for the Saltstack client configuration.
  */
 public class SaltStackClientConfig {
 
-    // Valid keys
-    public static final String TOKEN = "token";
-    public static final String URL = "url";
+    public static final Key<URI> URL = new Key<>(URI.create("http://localhost:8000"));
+    public static final Key<String> TOKEN = new Key<>();
 
     // Proxy settings
-    public static final String PROXY_HOSTNAME = "proxy-hostname";
-    public static final String PROXY_PORT = "proxy-port";
-    public static final String PROXY_USERNAME = "proxy-username";
-    public static final String PROXY_PASSWORD = "proxy-password";
-
-    // Default values
-    protected static final String DEFAULT_URL = "http://localhost:8000";
-    private static final String DEFAULT_PROXY_PORT = "3128";
-
-    // The properties object
-    private final Properties properties;
+    public static final Key<String> PROXY_HOSTNAME = new Key<>();
+    public static final Key<Integer> PROXY_PORT = new Key<>(3128);
+    public static final Key<String> PROXY_USERNAME = new Key<>();
+    public static final Key<String> PROXY_PASSWORD = new Key<>();
 
     /**
-     * Default constructor.
+     * A key to use with {@link SaltStackClientConfig}.
+     * @param <T> The type of the value associated with this key.
      */
-    public SaltStackClientConfig() {
-        this.properties = new Properties();
+    static class Key<T> {
+
+        /** The default value of this key */
+        public final T defaultValue;
+
+        /**
+         * Creates a new Key with the default value null.
+         */
+        public Key(){
+          this(null);
+        }
+
+        /**
+         * Creates a new key with the specified default value.
+         *
+         * @param defaultValue Default value for this key.
+         */
+        public Key(T defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+
     }
 
-    /**
-     * Sets a preference given by key and value. Use one of the public key strings above.
-     * NOTE: To set the URL, use method setURL instead.
-     *
-     * @param key
-     * @param value
-     */
-    public void put(String key, String value) {
-        // The URL key should be treated differently.
-        if (key.equals(SaltStackClientConfig.URL)) {
-            try {
-                this.setUrl(key);
-            } catch (URISyntaxException ex) {
-                // Complain to the log for invalid URL.
-                throw new RuntimeException(ex);
-            }
-        }
-        else {
-            properties.setProperty(key, value);
-        }
-    }
+    private Map<Key, Object> store = new HashMap<>();
 
     /**
-     * Removes a preference given by key.
+     *  Sets the config for a key to the specified value.
      *
-     * @param key
+     * @param key The configuration key to set.
+     * @param value The value to associate with the key.
+     * @param <T> The type of the value associated with the key.
      */
-    public void remove(String key) {
-        if (properties.containsKey(key)) {
-            properties.remove(key);
+    public <T> void put(Key<T> key, T value) {
+        if(value == null || value.equals(key.defaultValue)){
+            remove(key);
+        } else {
+            store.put(key, value);
         }
     }
 
     /**
-     * Set the URL parameter.
+     *  Removes the value for the specified key. This is equivalent to setting
+     *  the value to the default value of the key.
      *
-     * @param url
-     * @throws URISyntaxException
+     * @param key The configuration key to remove.
+     * @param <T> The type of the value associated with the key.
      */
-    public void setUrl(String url) throws URISyntaxException {
-        properties.setProperty(URL, new URI(url).toASCIIString());
+    public <T> void remove(Key<T> key) {
+        store.remove(key);
     }
 
     /**
-     * Returns the currently used URL.
+     * Returns the configured value for the given key. If the key is not explicitly set. the
+     * default value is for that key is returned.
      *
-     * @return url
+     * @param key The configuration key.
+     * @param <T> The type of the value associated with the key.
+     * @return The current configured value for the key or the default value if not configured.
      */
-    public String getUrl() {
-        return properties.getProperty(URL, DEFAULT_URL);
+    @SuppressWarnings("unchecked")
+    public <T> T get(Key<T> key) {
+       Object value = store.get(key);
+       return value != null ? (T)value : key.defaultValue;
     }
 
-    /**
-     * Returns the proxy hostname or null.
-     *
-     * @return proxy hostname
-     */
-    public String getProxyHostname() {
-        return properties.getProperty(PROXY_HOSTNAME, null);
-    }
-
-     /**
-     * Returns the configured proxy port (or 3128 as the default).
-     *
-     * @return proxy port
-     */
-    public String getProxyPort() {
-        return properties.getProperty(PROXY_PORT, DEFAULT_PROXY_PORT);
-    }
-
-    /**
-     * Returns the proxy username or null.
-     *
-     * @return proxy username
-     */
-    public String getProxyUsername() {
-        return properties.getProperty(PROXY_USERNAME, null);
-    }
-
-    /**
-     * Returns the proxy password or null.
-     *
-     * @return proxy password
-     */
-    public String getProxyPassword() {
-       return properties.getProperty(PROXY_PASSWORD, null);
-    }
-
-    /**
-     * Returns the session token or null.
-     *
-     * @return session token
-     */
-    public String getToken() {
-       return properties.getProperty(TOKEN, null);
-    }
 }

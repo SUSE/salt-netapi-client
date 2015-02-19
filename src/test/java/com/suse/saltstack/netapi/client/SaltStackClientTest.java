@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
@@ -31,9 +32,9 @@ public class SaltStackClientTest {
     private SaltStackClient client;
 
     @Before
-    public void init() throws SaltStackException {
-        client = new SaltStackClient(
-                "http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+    public void init() {
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        client = new SaltStackClient(uri);
     }
 
     @Test

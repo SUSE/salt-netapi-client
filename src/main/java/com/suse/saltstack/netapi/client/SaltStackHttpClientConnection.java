@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 import org.apache.http.HttpHost;
@@ -17,6 +18,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
+import java.net.URI;
+
 
 /**
  * Class representation of a connection to SaltStack for issuing API requests
@@ -54,15 +57,15 @@ public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> 
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration
-        String proxyHost = config.getProxyHostname();
+        String proxyHost = config.get(PROXY_HOSTNAME);
         if (proxyHost != null) {
-            int proxyPort = Integer.parseInt(config.getProxyPort());
+            int proxyPort = config.get(PROXY_PORT);
             HttpHost proxy = new HttpHost(proxyHost, proxyPort);
             httpClientBuilder.setProxy(proxy);
 
             // Proxy authentication
-            String proxyUsername = config.getProxyUsername();
-            String proxyPassword = config.getProxyPassword();
+            String proxyUsername = config.get(PROXY_USERNAME);
+            String proxyPassword = config.get(PROXY_PASSWORD);
             if (proxyUsername != null && proxyPassword != null) {
                 CredentialsProvider credentials = new BasicCredentialsProvider();
                 credentials.setCredentials(
@@ -74,7 +77,7 @@ public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> 
 
         try (CloseableHttpClient httpClient = httpClientBuilder.build()) {
             // Prepare POST request
-            String uri = config.getUrl() + endpoint;
+            URI uri = config.get(URL).resolve(endpoint);
             HttpPost httpPost = new HttpPost(uri);
             httpPost.addHeader("Accept", "application/json");
 
@@ -85,7 +88,7 @@ public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> 
             }
 
             // Token authentication
-            String token = config.getToken();
+            String token = config.get(TOKEN);
             if (token != null) {
                 httpPost.addHeader("X-Auth-Token", token);
             }
