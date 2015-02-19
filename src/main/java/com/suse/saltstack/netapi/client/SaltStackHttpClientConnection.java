@@ -102,8 +102,7 @@ public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> 
                 }
 
                 // Parse result type from the returned JSON
-                T result = parser.parse(response.getEntity().getContent());
-                return result;
+                return parser.parse(response.getEntity().getContent());
             }
         } catch (IOException e) {
             throw new SaltStackException(e);

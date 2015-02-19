@@ -83,8 +83,7 @@ public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK ||
                     responseCode == HttpURLConnection.HTTP_ACCEPTED) {
-                T result = parser.parse(connection.getInputStream());
-                return result;
+                return parser.parse(connection.getInputStream());
             } else {
                 // Request was not successful
                 throw new SaltStackException("Response code: " + responseCode);
