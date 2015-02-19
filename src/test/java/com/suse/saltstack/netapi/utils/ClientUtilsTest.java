@@ -12,7 +12,7 @@ import java.util.Scanner;
 /**
  * ClientUtils class unit-tests.
  */
-public class SaltStackClientUtilsTest {
+public class ClientUtilsTest {
 
     @Test
     public void testCloseQuietly() throws IOException {
