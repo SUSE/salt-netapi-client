@@ -34,7 +34,7 @@ public class SaltStackClient {
      * @param url the SaltStack URL
      */
     public SaltStackClient(URI url) {
-        this(url, new SaltStackHttpClientConnectionFactory());
+        this(url, new HttpClientConnectionFactory());
     }
 
     /**
