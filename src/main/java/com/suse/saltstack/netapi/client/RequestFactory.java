@@ -14,22 +14,22 @@ import javax.xml.bind.DatatypeConverter;
 /**
  * Helper class for setting up {@link HttpURLConnection} objects.
  */
-public class SaltStackRequestFactory {
+public class RequestFactory {
 
     /** Singleton instance. */
-    private static SaltStackRequestFactory instance = new SaltStackRequestFactory();
+    private static RequestFactory instance = new RequestFactory();
 
     /**
      * Instantiates a new SaltStack request factory.
      */
-    private SaltStackRequestFactory() {
+    private RequestFactory() {
     }
 
     /**
-     * Gets the single instance of {@link SaltStackRequestFactory}.
-     * @return single instance of {@link SaltStackRequestFactory}
+     * Gets the single instance of {@link RequestFactory}.
+     * @return single instance of {@link RequestFactory}
      */
-    public static SaltStackRequestFactory getInstance() {
+    public static RequestFactory getInstance() {
         return instance;
     }
 

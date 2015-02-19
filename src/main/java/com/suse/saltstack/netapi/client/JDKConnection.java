@@ -55,7 +55,7 @@ public class JDKConnection<T> implements Connection<T> {
         HttpURLConnection connection = null;
         try {
             // Setup and configure the connection
-            connection = SaltStackRequestFactory.getInstance().initConnection(
+            connection = RequestFactory.getInstance().initConnection(
                     method, endpoint, config);
             connection.setUseCaches(false);
             connection.setDoInput(true);
