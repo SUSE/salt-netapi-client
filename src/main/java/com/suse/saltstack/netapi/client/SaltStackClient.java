@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
-import com.suse.saltstack.netapi.config.SaltStackProxySettings;
+import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 import com.suse.saltstack.netapi.results.SaltStackJob;
@@ -63,7 +63,7 @@ public class SaltStackClient {
      *
      * @param settings proxy settings
      */
-    public void setProxy(SaltStackProxySettings settings) {
+    public void setProxy(ProxySettings settings) {
         if (settings.getHostname() != null) {
             config.put(PROXY_HOSTNAME, settings.getHostname());
             config.put(PROXY_PORT, settings.getPort());
