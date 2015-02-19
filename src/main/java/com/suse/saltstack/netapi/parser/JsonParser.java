@@ -19,14 +19,14 @@ import java.util.Map;
  */
 public class JsonParser<T> {
 
-    public static final JsonParser<SaltStackResult<String>> STRING =
-        new JsonParser<>(new TypeToken<SaltStackResult<String>>(){});
-    public static final JsonParser<SaltStackResult<List<SaltStackToken>>> TOKEN =
-        new JsonParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
-    public static final JsonParser<SaltStackResult<List<Job>>> JOB =
-        new JsonParser<>(new TypeToken<SaltStackResult<List<Job>>>(){});
-    public static final JsonParser<SaltStackResult<List<Map<String,Object>>>> RETVALS =
-        new JsonParser<>(new TypeToken<SaltStackResult<List<Map<String,Object>>>>(){});
+    public static final JsonParser<Result<String>> STRING =
+        new JsonParser<>(new TypeToken<Result<String>>(){});
+    public static final JsonParser<Result<List<SaltStackToken>>> TOKEN =
+        new JsonParser<>(new TypeToken<Result<List<SaltStackToken>>>(){});
+    public static final JsonParser<Result<List<Job>>> JOB =
+        new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
+    public static final JsonParser<Result<List<Map<String,Object>>>> RETVALS =
+        new JsonParser<>(new TypeToken<Result<List<Map<String,Object>>>>(){});
 
     private final TypeToken<T> type;
 

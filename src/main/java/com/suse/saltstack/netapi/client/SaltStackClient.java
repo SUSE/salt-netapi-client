@@ -6,7 +6,7 @@ import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Job;
-import com.suse.saltstack.netapi.results.SaltStackResult;
+import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.results.SaltStackToken;
 
 import com.google.gson.JsonArray;
@@ -103,7 +103,7 @@ public class SaltStackClient {
         json.addProperty("username", username);
         json.addProperty("password", password);
         json.addProperty("eauth", eauth);
-        SaltStackResult<List<SaltStackToken>> result = connectionFactory
+        Result<List<SaltStackToken>> result = connectionFactory
                 .create("/login", JsonParser.TOKEN, config).getResult(json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
@@ -119,8 +119,8 @@ public class SaltStackClient {
      *
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackResult<String> logout() throws SaltStackException {
-        SaltStackResult<String> result = connectionFactory
+    public Result<String> logout() throws SaltStackException {
+        Result<String> result = connectionFactory
                 .create("/logout", JsonParser.STRING, config).getResult(null);
         config.remove(TOKEN);
         return result;
@@ -162,7 +162,7 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         // Connect to the minions endpoint and send the above lowstate data
-        SaltStackResult<List<Job>> result = connectionFactory
+        Result<List<Job>> result = connectionFactory
                 .create("/minions", JsonParser.JOB,  config).getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first
@@ -216,7 +216,7 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackResult<List<Map<String,Object>>> result = connectionFactory
+        Result<List<Map<String,Object>>> result = connectionFactory
                 .create("/run", JsonParser.RETVALS, config)
                 .getResult(jsonArray.toString());
 
