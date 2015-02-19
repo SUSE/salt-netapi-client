@@ -36,7 +36,7 @@ public class SaltStackClientUtilsTest {
                 }
                 closed = true;
             }
-        };
+        }
 
         // Close valid stream
         MockedInputStream is = new MockedInputStream();
