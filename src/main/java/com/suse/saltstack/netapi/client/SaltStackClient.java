@@ -4,7 +4,7 @@ import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.parser.SaltStackParser;
+import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.SaltStackJob;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
@@ -104,7 +104,7 @@ public class SaltStackClient {
         json.addProperty("password", password);
         json.addProperty("eauth", eauth);
         SaltStackResult<List<SaltStackToken>> result = connectionFactory
-                .create("/login", SaltStackParser.TOKEN, config).getResult(json.toString());
+                .create("/login", JsonParser.TOKEN, config).getResult(json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
         SaltStackToken token = result.getResult().get(0);
@@ -121,7 +121,7 @@ public class SaltStackClient {
      */
     public SaltStackResult<String> logout() throws SaltStackException {
         SaltStackResult<String> result = connectionFactory
-                .create("/logout", SaltStackParser.STRING, config).getResult(null);
+                .create("/logout", JsonParser.STRING, config).getResult(null);
         config.remove(TOKEN);
         return result;
     }
@@ -163,7 +163,7 @@ public class SaltStackClient {
 
         // Connect to the minions endpoint and send the above lowstate data
         SaltStackResult<List<SaltStackJob>> result = connectionFactory
-                .create("/minions", SaltStackParser.JOB,  config).getResult(jsonArray.toString());
+                .create("/minions", JsonParser.JOB,  config).getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
@@ -217,7 +217,7 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         SaltStackResult<List<Map<String,Object>>> result = connectionFactory
-                .create("/run", SaltStackParser.RETVALS, config)
+                .create("/run", JsonParser.RETVALS, config)
                 .getResult(jsonArray.toString());
 
         // A list with one element is returned, we take the first

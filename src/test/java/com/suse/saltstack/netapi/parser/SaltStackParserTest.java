@@ -16,7 +16,7 @@ public class SaltStackParserTest {
     @Test
     public void testSaltStackJobParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/minions_response.json");
-        SaltStackResult<List<SaltStackJob>> result = SaltStackParser.JOB.parse(is);
+        SaltStackResult<List<SaltStackJob>> result = JsonParser.JOB.parse(is);
         assertNotNull("failed to parse", result);
         assertEquals("unable to parse jid", "20150211105524392307", result.getResult().get(0).getJid());
     }
@@ -24,14 +24,14 @@ public class SaltStackParserTest {
     @Test
     public void testSaltStackStringParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/logout_response.json");
-        SaltStackResult<String> result = SaltStackParser.STRING.parse(is);
+        SaltStackResult<String> result = JsonParser.STRING.parse(is);
         assertNotNull(result);
     }
 
     @Test
     public void testSaltStackTokenParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/login_response.json");
-        SaltStackResult<List<SaltStackToken>> result = SaltStackParser.TOKEN.parse(is);
+        SaltStackResult<List<SaltStackToken>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("", "salt", result.getResult().get(0).getUser());
         assertEquals("", "pam", result.getResult().get(0).getEauth());

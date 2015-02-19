@@ -17,25 +17,25 @@ import java.util.Map;
  *
  * @param <T> The result type this parser produces.
  */
-public class SaltStackParser<T> {
+public class JsonParser<T> {
 
-    public static final SaltStackParser<SaltStackResult<String>> STRING =
-        new SaltStackParser<>(new TypeToken<SaltStackResult<String>>(){});
-    public static final SaltStackParser<SaltStackResult<List<SaltStackToken>>> TOKEN =
-        new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
-    public static final SaltStackParser<SaltStackResult<List<SaltStackJob>>> JOB =
-        new SaltStackParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
-    public static final SaltStackParser<SaltStackResult<List<Map<String,Object>>>> RETVALS =
-        new SaltStackParser<>(new TypeToken<SaltStackResult<List<Map<String,Object>>>>(){});
+    public static final JsonParser<SaltStackResult<String>> STRING =
+        new JsonParser<>(new TypeToken<SaltStackResult<String>>(){});
+    public static final JsonParser<SaltStackResult<List<SaltStackToken>>> TOKEN =
+        new JsonParser<>(new TypeToken<SaltStackResult<List<SaltStackToken>>>(){});
+    public static final JsonParser<SaltStackResult<List<SaltStackJob>>> JOB =
+        new JsonParser<>(new TypeToken<SaltStackResult<List<SaltStackJob>>>(){});
+    public static final JsonParser<SaltStackResult<List<Map<String,Object>>>> RETVALS =
+        new JsonParser<>(new TypeToken<SaltStackResult<List<Map<String,Object>>>>(){});
 
     private final TypeToken<T> type;
 
     /**
-     * Created a new SaltStackParser for the given type.
+     * Created a new JsonParser for the given type.
      *
      * @param type A TypeToken describing the type this parser produces.
      */
-    public SaltStackParser(TypeToken<T> type){
+    public JsonParser(TypeToken<T> type){
         this.type = type;
     }
 

@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
-import com.suse.saltstack.netapi.parser.SaltStackParser;
+import com.suse.saltstack.netapi.parser.JsonParser;
 
 /**
  * Implementation of a factory for connections using Apache's HttpClient.
@@ -14,7 +14,7 @@ public class HttpClientConnectionFactory implements ConnectionFactory {
      */
     @Override
     public <T> HttpClientConnection<T> create(String endpoint,
-            SaltStackParser<T> parser, ClientConfig config) {
+            JsonParser<T> parser, ClientConfig config) {
         return new HttpClientConnection<>(endpoint, parser, config);
     }
 }
