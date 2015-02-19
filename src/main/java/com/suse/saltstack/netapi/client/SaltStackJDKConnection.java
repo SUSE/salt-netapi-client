@@ -48,7 +48,6 @@ public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
     /**
      * Perform HTTP request and parse the result into a given result type.
      *
-     * @param resultType the type of the result
      * @param method the HTTP method to use
      * @return object of type given by resultType
      * @throws SaltStackException in case of a problem

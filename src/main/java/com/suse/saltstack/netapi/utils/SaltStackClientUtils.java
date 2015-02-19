@@ -15,7 +15,7 @@ public class SaltStackClientUtils {
     /**
      * Quietly close a given stream, suppressing exceptions.
      *
-     * @param stream
+     * @param stream Stream to close
      */
     public static void closeQuietly(InputStream stream) {
         if (stream == null) {

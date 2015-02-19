@@ -32,7 +32,6 @@ public class SaltStackClient {
      * Constructor for connecting to a given URL.
      *
      * @param url the SaltStack URL
-     * @throws SaltStackException
      */
     public SaltStackClient(URI url) {
         this(url, new SaltStackHttpClientConnectionFactory());
@@ -43,7 +42,6 @@ public class SaltStackClient {
      *
      * @param url the SaltStack URL
      * @param connectionFactory Connection Factory implementation
-     * @throws SaltStackException
      */
     public SaltStackClient(URI url, SaltStackConnectionFactory connectionFactory) {
         // Put the URL in the config
