@@ -90,7 +90,6 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalTo(JSON_RUN_REQUEST)));
-
     }
 
     @Test
