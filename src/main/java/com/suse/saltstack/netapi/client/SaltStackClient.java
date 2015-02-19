@@ -204,7 +204,7 @@ public class SaltStackClient {
         json.addProperty("eauth", eauth);
         json.addProperty("client", client);
         json.addProperty("tgt", target);
-        json.addProperty("fun",      function);
+        json.addProperty("fun", function);
 
         // Non-keyword arguments
         if (args != null) {
