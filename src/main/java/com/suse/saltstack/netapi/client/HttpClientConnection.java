@@ -25,7 +25,7 @@ import java.net.URI;
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
  */
-public class SaltStackHttpClientConnection<T> implements Connection<T> {
+public class HttpClientConnection<T> implements Connection<T> {
 
     /** The endpoint. */
     private String endpoint;
@@ -42,7 +42,7 @@ public class SaltStackHttpClientConnection<T> implements Connection<T> {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackHttpClientConnection(String endpointIn, SaltStackParser<T> parserIn,
+    public HttpClientConnection(String endpointIn, SaltStackParser<T> parserIn,
             SaltStackClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
