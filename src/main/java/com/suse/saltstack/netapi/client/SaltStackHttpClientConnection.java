@@ -25,7 +25,7 @@ import java.net.URI;
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
  */
-public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> {
+public class SaltStackHttpClientConnection<T> implements Connection<T> {
 
     /** The endpoint. */
     private String endpoint;
