@@ -1,21 +1,25 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+
 import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
+
 import com.suse.saltstack.netapi.config.SaltStackProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.SaltStackParser;
 import com.suse.saltstack.netapi.results.SaltStackJob;
 import com.suse.saltstack.netapi.results.SaltStackResult;
 import com.suse.saltstack.netapi.results.SaltStackToken;
-
+import com.suse.saltstack.netapi.utils.LogUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * SaltStack API client.
@@ -49,6 +53,7 @@ public class SaltStackClient {
         // Put the URL in the config
         config.put(URL, url);
         this.connectionFactory = connectionFactory;
+        LogUtils.debugConstructed();
     }
 
     /**
@@ -66,6 +71,7 @@ public class SaltStackClient {
      * @param settings proxy settings
      */
     public void setProxy(SaltStackProxySettings settings) {
+    	LogUtils.debug("start settings: " + settings.toString());
         if (settings.getHostname() != null) {
             config.put(PROXY_HOSTNAME, settings.getHostname());
             config.put(PROXY_PORT, settings.getPort());
@@ -76,6 +82,7 @@ public class SaltStackClient {
                 config.put(PROXY_PASSWORD, settings.getPassword());
             }
         }
+        LogUtils.debugEnd();
     }
 
     /**
@@ -101,6 +108,8 @@ public class SaltStackClient {
      */
     public SaltStackToken login(String username, String password, String eauth)
             throws SaltStackException {
+    	LogUtils.debug("start username:" + username);
+    	LogUtils.trace("Adding json properties");
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
@@ -111,6 +120,7 @@ public class SaltStackClient {
         // For whatever reason they return a list of tokens here, take the first
         SaltStackToken token = result.getResult().get(0);
         config.put(TOKEN, token.getToken());
+        LogUtils.debugEnd();
         return token;
     }
 
@@ -122,9 +132,11 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public SaltStackResult<String> logout() throws SaltStackException {
+    	LogUtils.debugStart();
         SaltStackResult<String> result = connectionFactory
                 .create("/logout", SaltStackParser.STRING, config).getResult(null);
         config.remove(TOKEN);
+        LogUtils.debugEnd();
         return result;
     }
 
@@ -142,12 +154,15 @@ public class SaltStackClient {
      */
     public SaltStackJob startCommand(String target, String function, List<String> args,
             Map<String, String> kwargs) throws SaltStackException {
+    	LogUtils.debug("start. Target: " + target + " ,function: " + function);
         // Setup lowstate data to send as JSON
+    	LogUtils.trace("Adding json properties");
         JsonObject json = new JsonObject();
         json.addProperty("tgt", target);
         json.addProperty("fun", function);
         // Non-keyword arguments
         if (args != null) {
+        	LogUtils.trace("Adding arguments into json: " + Arrays.toString(args.toArray()));
             JsonArray argsArray = new JsonArray();
             for (String arg : args) {
                 argsArray.add(new JsonPrimitive(arg));
@@ -156,6 +171,7 @@ public class SaltStackClient {
         }
         // Keyword arguments
         if (kwargs != null) {
+        	LogUtils.trace("Adding kwargs into json");
             for (String key : kwargs.keySet()) {
                 json.addProperty(key, kwargs.get(key));
             }
@@ -167,6 +183,7 @@ public class SaltStackClient {
         SaltStackResult<List<SaltStackJob>> result = connectionFactory
                 .create("/minions", SaltStackParser.JOB,  config).getResult(jsonArray.toString());
 
+        LogUtils.debugEnd();
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
     }
@@ -190,7 +207,9 @@ public class SaltStackClient {
     public Map<String,Object> run(String username, String password, String eauth,
             String client, String target, String function, List<String> args, Map<String,
             String> kwargs) throws SaltStackException {
-
+    	LogUtils.debug("start. Username: " + username);
+    	LogUtils.trace("Adding credentials into json. Target: " + target + ",client:"
+		        + client + ",function: " + function);
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
@@ -201,6 +220,7 @@ public class SaltStackClient {
 
         // Non-keyword arguments
         if (args != null) {
+        	LogUtils.trace("Adding arguments into json: " + Arrays.toString(args.toArray()));
             JsonArray argsArray = new JsonArray();
             for (String arg : args) {
                 argsArray.add(new JsonPrimitive(arg));
@@ -210,6 +230,7 @@ public class SaltStackClient {
 
         // Keyword arguments
         if (kwargs != null) {
+        	LogUtils.trace("Adding kwargs into json");
             for (String key : kwargs.keySet()) {
                 json.addProperty(key, kwargs.get(key));
             }
@@ -221,7 +242,7 @@ public class SaltStackClient {
         SaltStackResult<List<Map<String,Object>>> result = connectionFactory
                 .create("/run", SaltStackParser.RETVALS, config)
                 .getResult(jsonArray.toString());
-
+        LogUtils.debugEnd();
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
     }
