@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * A statically typed key/value store for the Saltstack client configuration.
  */
-public class SaltStackClientConfig {
+public class ClientConfig {
 
     public static final Key<URI> URL = new Key<>(URI.create("http://localhost:8000"));
     public static final Key<String> TOKEN = new Key<>();
@@ -19,7 +19,7 @@ public class SaltStackClientConfig {
     public static final Key<String> PROXY_PASSWORD = new Key<>();
 
     /**
-     * A key to use with {@link SaltStackClientConfig}.
+     * A key to use with {@link ClientConfig}.
      * @param <T> The type of the value associated with this key.
      */
     static class Key<T> {

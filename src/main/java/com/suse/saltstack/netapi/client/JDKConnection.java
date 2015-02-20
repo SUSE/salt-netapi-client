@@ -1,8 +1,8 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
+import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.parser.SaltStackParser;
+import com.suse.saltstack.netapi.parser.JsonParser;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,16 +12,16 @@ import java.net.HttpURLConnection;
  * Class representation of a connection to SaltStack for issuing API requests using JDK's
  * HttpURLConnection.
  */
-public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
+public class JDKConnection<T> implements Connection<T> {
 
     /** The endpoint. */
     private String endpoint;
 
     /** The config object. */
-    private final SaltStackClientConfig config;
+    private final ClientConfig config;
 
     /** The parser to parse the returned Result */
-    private SaltStackParser<T> parser;
+    private JsonParser<T> parser;
 
     /**
      * Init a connection to a given SaltStack API endpoint.
@@ -29,7 +29,7 @@ public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackJDKConnection(String endpointIn, SaltStackParser<T> parserIn, SaltStackClientConfig configIn) {
+    public JDKConnection(String endpointIn, JsonParser<T> parserIn, ClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
         parser = parserIn;
@@ -55,7 +55,7 @@ public class SaltStackJDKConnection<T> implements SaltStackConnection<T> {
         HttpURLConnection connection = null;
         try {
             // Setup and configure the connection
-            connection = SaltStackRequestFactory.getInstance().initConnection(
+            connection = RequestFactory.getInstance().initConnection(
                     method, endpoint, config);
             connection.setUseCaches(false);
             connection.setDoInput(true);

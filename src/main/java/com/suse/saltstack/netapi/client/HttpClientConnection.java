@@ -1,9 +1,9 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
-import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
+import com.suse.saltstack.netapi.config.ClientConfig;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.parser.SaltStackParser;
+import com.suse.saltstack.netapi.parser.JsonParser;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
@@ -25,16 +25,16 @@ import java.net.URI;
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
  */
-public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> {
+public class HttpClientConnection<T> implements Connection<T> {
 
     /** The endpoint. */
     private String endpoint;
 
     /** The config object. */
-    private final SaltStackClientConfig config;
+    private final ClientConfig config;
 
     /** The parser to parse the returned Result */
-    private SaltStackParser<T> parser;
+    private JsonParser<T> parser;
 
     /**
      * Init a connection to a given SaltStack API endpoint.
@@ -42,8 +42,8 @@ public class SaltStackHttpClientConnection<T> implements SaltStackConnection<T> 
      * @param endpointIn the endpoint
      * @param configIn the config
      */
-    public SaltStackHttpClientConnection(String endpointIn, SaltStackParser<T> parserIn,
-            SaltStackClientConfig configIn) {
+    public HttpClientConnection(String endpointIn, JsonParser<T> parserIn,
+            ClientConfig configIn) {
         endpoint = endpointIn;
         config = configIn;
         parser = parserIn;

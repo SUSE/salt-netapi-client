@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.results;
 
-public class SaltStackToken {
+public class Token {
 
     // String attributes
     private String eauth;

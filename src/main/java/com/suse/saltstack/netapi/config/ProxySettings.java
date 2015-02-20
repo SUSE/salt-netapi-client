@@ -5,7 +5,7 @@ import com.suse.saltstack.netapi.client.SaltStackClient;
 /**
  * Class representing proxy settings to be used with {@link SaltStackClient}.
  */
-public class SaltStackProxySettings {
+public class ProxySettings {
 
     private String hostname;
     private String username;
@@ -18,7 +18,7 @@ public class SaltStackProxySettings {
      * @param hostname proxy hostname
      * @param port proxy port
      */
-    public SaltStackProxySettings(String hostname, int port) {
+    public ProxySettings(String hostname, int port) {
         this.hostname = hostname;
         this.port = port;
     }
@@ -31,8 +31,8 @@ public class SaltStackProxySettings {
      * @param username proxy username
      * @param password proxy password
      */
-    public SaltStackProxySettings(String hostname, int port,
-            String username, String password) {
+    public ProxySettings(String hostname, int port,
+                         String username, String password) {
         this(hostname, port);
         this.username = username;
         this.password = password;

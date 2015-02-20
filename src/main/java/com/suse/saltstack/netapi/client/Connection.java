@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 /**
  * Describes an interface for different HTTP connection implementations.
  */
-public interface SaltStackConnection<T> {
+public interface Connection<T> {
     /**
      * Send a POST request and parse the result into object of given {@link Type}.
      *

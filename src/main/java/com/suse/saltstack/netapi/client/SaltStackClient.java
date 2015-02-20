@@ -1,13 +1,13 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.config.SaltStackClientConfig;
-import static com.suse.saltstack.netapi.config.SaltStackClientConfig.*;
-import com.suse.saltstack.netapi.config.SaltStackProxySettings;
+import com.suse.saltstack.netapi.config.ClientConfig;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
+import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.parser.SaltStackParser;
-import com.suse.saltstack.netapi.results.SaltStackJob;
-import com.suse.saltstack.netapi.results.SaltStackResult;
-import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.parser.JsonParser;
+import com.suse.saltstack.netapi.results.Job;
+import com.suse.saltstack.netapi.results.Result;
+import com.suse.saltstack.netapi.results.Token;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -23,10 +23,10 @@ import java.util.Map;
 public class SaltStackClient {
 
     /** The configuration object */
-    private final SaltStackClientConfig config = new SaltStackClientConfig();
+    private final ClientConfig config = new ClientConfig();
 
     /** The connection factory object */
-    private SaltStackConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
     /**
      * Constructor for connecting to a given URL.
@@ -34,7 +34,7 @@ public class SaltStackClient {
      * @param url the SaltStack URL
      */
     public SaltStackClient(URI url) {
-        this(url, new SaltStackHttpClientConnectionFactory());
+        this(url, new HttpClientConnectionFactory());
     }
 
     /**
@@ -43,7 +43,7 @@ public class SaltStackClient {
      * @param url the SaltStack URL
      * @param connectionFactory Connection Factory implementation
      */
-    public SaltStackClient(URI url, SaltStackConnectionFactory connectionFactory) {
+    public SaltStackClient(URI url, ConnectionFactory connectionFactory) {
         // Put the URL in the config
         config.put(URL, url);
         this.connectionFactory = connectionFactory;
@@ -54,7 +54,7 @@ public class SaltStackClient {
      *
      * @return the configuration object
      */
-    public SaltStackClientConfig getConfig() {
+    public ClientConfig getConfig() {
         return config;
     }
 
@@ -63,7 +63,7 @@ public class SaltStackClient {
      *
      * @param settings proxy settings
      */
-    public void setProxy(SaltStackProxySettings settings) {
+    public void setProxy(ProxySettings settings) {
         if (settings.getHostname() != null) {
             config.put(PROXY_HOSTNAME, settings.getHostname());
             config.put(PROXY_PORT, settings.getPort());
@@ -81,12 +81,12 @@ public class SaltStackClient {
      *
      * POST /login
      *
-     * @return authentication token as {@link SaltStackToken}
+     * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackToken login(String username, String password)
+    public Token login(String username, String password)
             throws SaltStackException {
-        return login(username, password, SaltStackAPIConstants.LOGIN_EAUTH_AUTO);
+        return login(username, password, APIConstants.LOGIN_EAUTH_AUTO);
     }
 
     /**
@@ -94,20 +94,20 @@ public class SaltStackClient {
      *
      * POST /login
      *
-     * @return authentication token as {@link SaltStackToken}
+     * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackToken login(String username, String password, String eauth)
+    public Token login(String username, String password, String eauth)
             throws SaltStackException {
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
         json.addProperty("eauth", eauth);
-        SaltStackResult<List<SaltStackToken>> result = connectionFactory
-                .create("/login", SaltStackParser.TOKEN, config).getResult(json.toString());
+        Result<List<Token>> result = connectionFactory
+                .create("/login", JsonParser.TOKEN, config).getResult(json.toString());
 
         // For whatever reason they return a list of tokens here, take the first
-        SaltStackToken token = result.getResult().get(0);
+        Token token = result.getResult().get(0);
         config.put(TOKEN, token.getToken());
         return token;
     }
@@ -119,9 +119,9 @@ public class SaltStackClient {
      *
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackResult<String> logout() throws SaltStackException {
-        SaltStackResult<String> result = connectionFactory
-                .create("/logout", SaltStackParser.STRING, config).getResult(null);
+    public Result<String> logout() throws SaltStackException {
+        Result<String> result = connectionFactory
+                .create("/logout", JsonParser.STRING, config).getResult(null);
         config.remove(TOKEN);
         return result;
     }
@@ -138,7 +138,7 @@ public class SaltStackClient {
      * @return object representing the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public SaltStackJob startCommand(String target, String function, List<String> args,
+    public Job startCommand(String target, String function, List<String> args,
             Map<String, String> kwargs) throws SaltStackException {
         // Setup lowstate data to send as JSON
         JsonObject json = new JsonObject();
@@ -162,8 +162,8 @@ public class SaltStackClient {
         jsonArray.add(json);
 
         // Connect to the minions endpoint and send the above lowstate data
-        SaltStackResult<List<SaltStackJob>> result = connectionFactory
-                .create("/minions", SaltStackParser.JOB,  config).getResult(jsonArray.toString());
+        Result<List<Job>> result = connectionFactory
+                .create("/minions", JsonParser.JOB,  config).getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
@@ -216,8 +216,8 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(json);
 
-        SaltStackResult<List<Map<String,Object>>> result = connectionFactory
-                .create("/run", SaltStackParser.RETVALS, config)
+        Result<List<Map<String,Object>>> result = connectionFactory
+                .create("/run", JsonParser.RETVALS, config)
                 .getResult(jsonArray.toString());
 
         // A list with one element is returned, we take the first

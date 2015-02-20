@@ -1,8 +1,8 @@
 package com.suse.saltstack.netapi.parser;
 
-import com.suse.saltstack.netapi.results.SaltStackJob;
-import com.suse.saltstack.netapi.results.SaltStackResult;
-import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.Job;
+import com.suse.saltstack.netapi.results.Result;
+import com.suse.saltstack.netapi.results.Token;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -11,12 +11,12 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class SaltStackParserTest {
+public class JsonParserTest {
 
     @Test
     public void testSaltStackJobParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/minions_response.json");
-        SaltStackResult<List<SaltStackJob>> result = SaltStackParser.JOB.parse(is);
+        Result<List<Job>> result = JsonParser.JOB.parse(is);
         assertNotNull("failed to parse", result);
         assertEquals("unable to parse jid", "20150211105524392307", result.getResult().get(0).getJid());
     }
@@ -24,14 +24,14 @@ public class SaltStackParserTest {
     @Test
     public void testSaltStackStringParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/logout_response.json");
-        SaltStackResult<String> result = SaltStackParser.STRING.parse(is);
+        Result<String> result = JsonParser.STRING.parse(is);
         assertNotNull(result);
     }
 
     @Test
     public void testSaltStackTokenParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/login_response.json");
-        SaltStackResult<List<SaltStackToken>> result = SaltStackParser.TOKEN.parse(is);
+        Result<List<Token>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("", "salt", result.getResult().get(0).getUser());
         assertEquals("", "pam", result.getResult().get(0).getEauth());

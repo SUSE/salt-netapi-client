@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @param <T> The type of the value this result holds.
  */
-public class SaltStackResult<T> {
+public class Result<T> {
 
     @SerializedName("return")
     private T result;

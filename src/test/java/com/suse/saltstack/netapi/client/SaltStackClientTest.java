@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.results.SaltStackToken;
+import com.suse.saltstack.netapi.results.Token;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -55,7 +55,7 @@ public class SaltStackClientTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody(JSON_LOGIN_RESPONSE)));
 
-        SaltStackToken token = client.login("user", "pass");
+        Token token = client.login("user", "pass");
         assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");

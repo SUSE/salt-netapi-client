@@ -10,9 +10,9 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 /**
- * SaltStackClientUtils class unit-tests.
+ * ClientUtils class unit-tests.
  */
-public class SaltStackClientUtilsTest {
+public class ClientUtilsTest {
 
     @Test
     public void testCloseQuietly() throws IOException {
@@ -40,14 +40,14 @@ public class SaltStackClientUtilsTest {
 
         // Close valid stream
         MockedInputStream is = new MockedInputStream();
-        SaltStackClientUtils.closeQuietly(is);
+        ClientUtils.closeQuietly(is);
         assertTrue(is.isClosed());
     }
 
     @Test
     public void testStringToStream() {
         final String TEST_STRING = "SUSE";
-        InputStream is = SaltStackClientUtils.stringToStream(TEST_STRING);
+        InputStream is = ClientUtils.stringToStream(TEST_STRING);
         try (Scanner scanner = new Scanner(is)) {
             String result = scanner.nextLine();
             assertEquals("Result doesn't match test string", result, TEST_STRING);
@@ -57,7 +57,7 @@ public class SaltStackClientUtilsTest {
     @Test
     public void testStreamToString() {
         final String TEST_STRING = "SUSE";
-        String result = SaltStackClientUtils.streamToString(
+        String result = ClientUtils.streamToString(
                 new ByteArrayInputStream(TEST_STRING.getBytes()));
         assertEquals("Result doesn't match test string", result, TEST_STRING);
     }
