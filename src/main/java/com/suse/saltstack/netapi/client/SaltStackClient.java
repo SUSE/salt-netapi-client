@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.Constants;
+import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;

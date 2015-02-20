@@ -1,12 +1,13 @@
-package com.suse.saltstack.netapi.client;
+package com.suse.saltstack.netapi.client.impl;
 
+import com.suse.saltstack.netapi.client.ConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
 /**
  * Implementation of a factory for connections using Apache's HttpClient.
  *
- * @see com.suse.saltstack.netapi.client.HttpClientConnection
+ * @see HttpClientConnection
  */
 public class HttpClientConnectionFactory implements ConnectionFactory {
     /**
