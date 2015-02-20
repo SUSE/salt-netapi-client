@@ -14,7 +14,7 @@ public class SaltStackClientConfigTest {
 
         assertEquals("New empty config should return defaultValue", config.get(key), key.defaultValue);
 
-        Integer newValue = new Integer(123);
+        Integer newValue = 123;
         config.put(key, newValue);
         assertEquals("Should return the new configured value", config.get(key), newValue);
 

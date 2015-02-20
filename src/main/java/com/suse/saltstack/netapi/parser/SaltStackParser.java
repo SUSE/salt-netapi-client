@@ -2,7 +2,6 @@ package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.suse.saltstack.netapi.exception.SaltStackParsingException;
 import com.suse.saltstack.netapi.results.*;
 
 import java.io.BufferedReader;
@@ -45,7 +44,7 @@ public class SaltStackParser<T> {
      * @param inputStream result stream to parse.
      * @return The parsed value.
      */
-    public T parse(InputStream inputStream) throws SaltStackParsingException {
+    public T parse(InputStream inputStream) {
         Reader inputStreamReader = new InputStreamReader(inputStream);
         Reader streamReader = new BufferedReader(inputStreamReader);
 
