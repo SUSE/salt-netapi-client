@@ -5,7 +5,7 @@
 
 # IntelliJ IDEA
 /.idea/
-/*.iml
+*.iml
 
 # Build and test artifacts
 /bin/
