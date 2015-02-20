@@ -27,6 +27,7 @@
 
   <!-- Classpath for building and running tests -->
   <path id="classpath-tests">
+    <pathelement location="src/test/resources"/>
     <path refid="classpath-build" />
     <fileset dir="${dir-dist}">
       <include name="**/*.jar" />
@@ -104,7 +105,7 @@
               <include name="**/*Test.java" />
           </fileset>
       </batchtest>
-      <formatter type="plain"/>
+      <formatter type="plain" usefile="false"/>
     </junit>
   </target>
 
