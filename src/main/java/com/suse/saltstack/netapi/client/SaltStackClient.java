@@ -16,6 +16,10 @@ import com.google.gson.JsonPrimitive;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * SaltStack API client.
@@ -27,6 +31,9 @@ public class SaltStackClient {
 
     /** The connection factory object */
     private ConnectionFactory connectionFactory;
+
+    /** The executor for async operations */
+    private ExecutorService executor;
 
     /**
      * Constructor for connecting to a given URL.
@@ -44,9 +51,32 @@ public class SaltStackClient {
      * @param connectionFactory Connection Factory implementation
      */
     public SaltStackClient(URI url, ConnectionFactory connectionFactory) {
+        this(url, connectionFactory, Executors.newCachedThreadPool());
+    }
+
+    /**
+     * Constructor for connecting to a given URL.
+     *
+     * @param url the SaltStack URL
+     * @param executor Executor for async operations
+     */
+    public SaltStackClient(URI url, ExecutorService executor) {
+        this(url, new HttpClientConnectionFactory(), executor);
+    }
+
+    /**
+     * Constructor for connecting to a given URL using a specific connection factory.
+     *
+     * @param url the SaltStack URL
+     * @param connectionFactory Connection Factory implementation
+     * @param executor Executor for async operations
+     */
+    public SaltStackClient(URI url, ConnectionFactory connectionFactory,
+            ExecutorService executor) {
         // Put the URL in the config
         config.put(URL, url);
         this.connectionFactory = connectionFactory;
+        this.executor = executor;
     }
 
     /**
@@ -113,6 +143,52 @@ public class SaltStackClient {
     }
 
     /**
+     * Asynchronously perform login and return a Future with the token.
+     *
+     * POST /login
+     *
+     * @return Future containing an authentication token as {@link Token}
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Token> loginAsync(String username, String password)
+            throws SaltStackException {
+        final String constUsername = username;
+        final String constPassword = password;
+
+        Callable<Token> callable = new Callable<Token>() {
+            @Override
+            public Token call() throws SaltStackException {
+                return login(constUsername, constPassword);
+            }
+        };
+        return executor.submit(callable);
+    }
+
+    /**
+     * Asynchronously perform login and return a Future with the token.
+     * Allows specifying the eauth parameter.
+     *
+     * POST /login
+     *
+     * @return Future containing an authentication token as {@link Token}
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Token> loginAsync(String username, String password,
+            String eauth) throws SaltStackException {
+        final String constUsername = username;
+        final String constPassword = password;
+        final String constEauth = eauth;
+
+        Callable<Token> callable = new Callable<Token>() {
+            @Override
+            public Token call() throws SaltStackException {
+                return login(constUsername, constPassword, constEauth);
+            }
+        };
+        return executor.submit(callable);
+    }
+
+    /**
      * Perform logout and clear the session token from the config.
      *
      * POST /logout
@@ -124,6 +200,24 @@ public class SaltStackClient {
                 .create("/logout", JsonParser.STRING, config).getResult(null);
         config.remove(TOKEN);
         return result;
+    }
+
+    /**
+     * Asynchronously perform logout and clear the session token from the config.
+     *
+     * POST /logout
+     *
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Result<String>> logoutAsync()
+            throws SaltStackException {
+        Callable<Result<String>> callable = new Callable<Result<String>>() {
+            @Override
+            public Result<String> call() throws SaltStackException {
+                return logout();
+            }
+        };
+        return executor.submit(callable);
     }
 
     /**
@@ -170,6 +264,34 @@ public class SaltStackClient {
     }
 
     /**
+     * Asynchronously start any execution command and immediately return the job id
+     *
+     * POST /minions
+     *
+     * @param target the target
+     * @param function the function to execute
+     * @param args list of non-keyword arguments
+     * @param kwargs map containing keyword arguments
+     * @return Future containing the scheduled job {@link Job}
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Job> startCommandAsync(String target, String function,
+            List<String> args, Map<String, String> kwargs) throws SaltStackException {
+        final String constTarget = target;
+        final String constFunction = function;
+        final List<String> constArgs = args;
+        final Map<String, String> constKwargs = kwargs;
+
+        Callable<Job> callable = new Callable<Job>() {
+            @Override
+            public Job call() throws SaltStackException {
+                return startCommand(constTarget, constFunction, constArgs, constKwargs);
+            }
+        };
+        return executor.submit(callable);
+    }
+
+    /**
      * Generic interface to start any execution command bypassing normal session handling.
      *
      * POST /run
@@ -185,7 +307,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String,Object> run(String username, String password, String eauth,
+    public Map<String, Object> run(String username, String password, String eauth,
             String client, String target, String function, List<String> args, Map<String,
             String> kwargs) throws SaltStackException {
 
@@ -222,5 +344,43 @@ public class SaltStackClient {
 
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
+    }
+
+    /**
+     * Asynchronously start any execution command bypassing normal session handling.
+     *
+     * POST /run
+     *
+     * @param username the username
+     * @param password the password
+     * @param eauth the eauth type
+     * @param client the client
+     * @param target the target
+     * @param function the function to execute
+     * @param args list of non-keyword arguments
+     * @param kwargs map containing keyword arguments
+     * @return Future containing Map key: minion id, value: command result from that minion
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Map<String, Object>> runAsync(String username, String password,
+            String eauth, String client, String target, String function, List<String> args,
+            Map<String, String> kwargs) throws SaltStackException {
+        final String constUsername = username;
+        final String constPassword = password;
+        final String constEauth = eauth;
+        final String constClient = client;
+        final String constTarget = target;
+        final String constFunction = function;
+        final List<String> constArgs = args;
+        final Map<String, String> constKwargs = kwargs;
+
+        Callable<Map<String, Object>> callable = new Callable<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> call() throws SaltStackException {
+                return run(constUsername, constPassword, constEauth, constClient,
+                        constTarget, constFunction, constArgs, constKwargs);
+            }
+        };
+        return executor.submit(callable);
     }
 }
