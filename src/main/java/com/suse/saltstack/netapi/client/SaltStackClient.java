@@ -1,5 +1,6 @@
 package com.suse.saltstack.netapi.client;
 
+import com.suse.saltstack.netapi.Constants;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
@@ -86,7 +87,7 @@ public class SaltStackClient {
      */
     public Token login(String username, String password)
             throws SaltStackException {
-        return login(username, password, APIConstants.LOGIN_EAUTH_AUTO);
+        return login(username, password, Constants.LOGIN_EAUTH_AUTO);
     }
 
     /**
