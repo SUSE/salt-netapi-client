@@ -27,7 +27,7 @@
 
   <!-- Classpath for building and running tests -->
   <path id="classpath-tests">
-  	<pathelement location="src/test/resources"/>
+    <pathelement location="src/test/resources"/>
     <path refid="classpath-build" />
     <fileset dir="${dir-dist}">
       <include name="**/*.jar" />
