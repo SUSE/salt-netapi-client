@@ -12,10 +12,10 @@ import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
+import com.suse.saltstack.netapi.utils.ClientUtils;
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -129,14 +129,18 @@ public class SaltStackClient {
      * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public Token login(String username, String password, String eauth)
+    public Token login(final String username, final String password, final String eauth)
             throws SaltStackException {
-        JsonObject json = new JsonObject();
-        json.addProperty("username", username);
-        json.addProperty("password", password);
-        json.addProperty("eauth", eauth);
+        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
+            {
+                put("username", username);
+                put("password", password);
+                put("eauth", eauth);
+            }
+        };
         Result<List<Token>> result = connectionFactory
-                .create("/login", JsonParser.TOKEN, config).getResult(json.toString());
+                .create("/login", JsonParser.TOKEN, config)
+                .getResult(ClientUtils.makeJsonData(kwargs, null).toString());
 
         // For whatever reason they return a list of tokens here, take the first
         Token token = result.getResult().get(0);
@@ -234,32 +238,25 @@ public class SaltStackClient {
      * @return object representing the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public Job startCommand(String target, String function, List<String> args,
+    public Job startCommand(final String target, final String function, List<String> args,
             Map<String, String> kwargs) throws SaltStackException {
-        // Setup lowstate data to send as JSON
-        JsonObject json = new JsonObject();
-        json.addProperty("tgt", target);
-        json.addProperty("fun", function);
-        // Non-keyword arguments
-        if (args != null) {
-            JsonArray argsArray = new JsonArray();
-            for (String arg : args) {
-                argsArray.add(new JsonPrimitive(arg));
+        Map<String, String> allKwargs = new LinkedHashMap<String, String>() {
+            {
+                put("tgt", target);
+                put("fun", function);
             }
-            json.add("arg", argsArray);
-        }
-        // Keyword arguments
+        };
         if (kwargs != null) {
-            for (String key : kwargs.keySet()) {
-                json.addProperty(key, kwargs.get(key));
-            }
+            allKwargs.putAll(kwargs);
         }
+
         JsonArray jsonArray = new JsonArray();
-        jsonArray.add(json);
+        jsonArray.add(ClientUtils.makeJsonData(allKwargs, args));
 
         // Connect to the minions endpoint and send the above lowstate data
         Result<List<Job>> result = connectionFactory
-                .create("/minions", JsonParser.JOB,  config).getResult(jsonArray.toString());
+                .create("/minions", JsonParser.JOB,  config)
+                .getResult(jsonArray.toString());
 
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
@@ -309,36 +306,25 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, Object> run(String username, String password, String eauth,
-            String client, String target, String function, List<String> args, Map<String,
-            String> kwargs) throws SaltStackException {
-
-        JsonObject json = new JsonObject();
-        json.addProperty("username", username);
-        json.addProperty("password", password);
-        json.addProperty("eauth", eauth);
-        json.addProperty("client", client);
-        json.addProperty("tgt", target);
-        json.addProperty("fun", function);
-
-        // Non-keyword arguments
-        if (args != null) {
-            JsonArray argsArray = new JsonArray();
-            for (String arg : args) {
-                argsArray.add(new JsonPrimitive(arg));
+    public Map<String,Object> run(final String username, final String password,
+            final String eauth, final String client, final String target,
+            final String function, List<String> args, Map<String, String> kwargs)
+            throws SaltStackException {
+        Map<String, String> allKwargs = new LinkedHashMap<String, String>() {
+            {
+                put("username", username);
+                put("password", password);
+                put("eauth", eauth);
+                put("client", client);
+                put("tgt", target);
+                put("fun", function);
             }
-            json.add("arg", argsArray);
-        }
-
-        // Keyword arguments
+        };
         if (kwargs != null) {
-            for (String key : kwargs.keySet()) {
-                json.addProperty(key, kwargs.get(key));
-            }
+            allKwargs.putAll(kwargs);
         }
-
         JsonArray jsonArray = new JsonArray();
-        jsonArray.add(json);
+        jsonArray.add(ClientUtils.makeJsonData(allKwargs, args));
 
         Result<List<Map<String,Object>>> result = connectionFactory
                 .create("/run", JsonParser.RETVALS, config)

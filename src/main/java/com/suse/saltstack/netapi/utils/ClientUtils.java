@@ -1,10 +1,15 @@
 package com.suse.saltstack.netapi.utils;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.suse.saltstack.netapi.client.SaltStackClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -48,5 +53,30 @@ public class ClientUtils {
         String ret = scanner.useDelimiter("\\A").next();
         scanner.close();
         return ret;
+    }
+
+    /**
+     * Helper for constructing json object from kwargs and args.
+     *
+     * @return JsonObject filled with kwargs and args.
+     */
+    public static JsonObject makeJsonData(Map<String, String> kwargs, List<String> args) {
+        final JsonObject json = new JsonObject();
+
+        if (kwargs != null) {
+            for (Map.Entry<String, String> kwEntry : kwargs.entrySet()) {
+                json.addProperty(kwEntry.getKey(), kwEntry.getValue());
+            }
+        }
+
+        if (args != null) {
+            JsonArray argsArray = new JsonArray();
+            for (String arg : args) {
+                argsArray.add(new JsonPrimitive(arg));
+            }
+            json.add("arg", argsArray);
+        }
+
+        return json;
     }
 }
