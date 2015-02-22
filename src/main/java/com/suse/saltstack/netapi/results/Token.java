@@ -1,5 +1,7 @@
 package com.suse.saltstack.netapi.results;
 
+import java.util.Date;
+
 public class Token {
 
     // String attributes
@@ -7,9 +9,8 @@ public class Token {
     private String token;
     private String user;
 
-    // TODO: Validity dates
-    // private Date start;
-    // private Date expire;
+    private Date start;
+    private Date expire;
 
     public String getEauth() {
         return eauth;
@@ -23,10 +24,11 @@ public class Token {
         return user;
     }
 
-//    public Date getStart() {
-//        return start;
-//    }
-//    public Date getExpire() {
-//        return expire;
-//    }
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getExpire() {
+        return expire;
+    }
 }
