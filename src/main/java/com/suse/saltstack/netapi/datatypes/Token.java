@@ -1,4 +1,4 @@
-package com.suse.saltstack.netapi.results;
+package com.suse.saltstack.netapi.datatypes;
 
 import java.util.Date;
 

@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.results.Token;
+import com.suse.saltstack.netapi.datatypes.Token;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
