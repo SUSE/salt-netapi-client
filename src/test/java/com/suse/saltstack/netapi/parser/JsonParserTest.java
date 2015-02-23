@@ -1,9 +1,9 @@
 package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.JsonParseException;
-import com.suse.saltstack.netapi.results.Job;
+import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.results.Token;
+import com.suse.saltstack.netapi.datatypes.Token;
 import java.util.Date;
 import org.junit.Test;
 

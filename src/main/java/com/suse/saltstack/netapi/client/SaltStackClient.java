@@ -1,13 +1,15 @@
 package com.suse.saltstack.netapi.client;
 
+import com.suse.saltstack.netapi.Constants;
+import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
-import com.suse.saltstack.netapi.results.Job;
+import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.results.Token;
+import com.suse.saltstack.netapi.datatypes.Token;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -116,7 +118,7 @@ public class SaltStackClient {
      */
     public Token login(String username, String password)
             throws SaltStackException {
-        return login(username, password, APIConstants.LOGIN_EAUTH_AUTO);
+        return login(username, password, Constants.LOGIN_EAUTH_AUTO);
     }
 
     /**

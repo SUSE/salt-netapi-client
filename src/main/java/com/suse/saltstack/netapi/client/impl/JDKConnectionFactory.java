@@ -1,5 +1,6 @@
-package com.suse.saltstack.netapi.client;
+package com.suse.saltstack.netapi.client.impl;
 
+import com.suse.saltstack.netapi.client.ConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
