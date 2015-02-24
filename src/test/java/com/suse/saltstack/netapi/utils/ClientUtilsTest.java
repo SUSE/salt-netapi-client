@@ -85,7 +85,7 @@ public class ClientUtilsTest {
         jsonArray.add(new JsonPrimitive("bar"));
         expected.add("arg", jsonArray);
 
-        Map<String, String> kwargs = new LinkedHashMap() {
+        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
             {
                 put("first", "1");
                 put("snd", "42");
