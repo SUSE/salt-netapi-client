@@ -3,6 +3,13 @@ package com.suse.saltstack.netapi.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -60,5 +67,37 @@ public class ClientUtilsTest {
         String result = ClientUtils.streamToString(
                 new ByteArrayInputStream(TEST_STRING.getBytes()));
         assertEquals("Result doesn't match test string", result, TEST_STRING);
+    }
+
+    @Test
+    public void makeJsonDataEmpty() {
+        JsonObject jsonObject = ClientUtils.makeJsonData(null, null);
+        assertEquals(new JsonObject(), jsonObject);
+    }
+
+    @Test
+    public void makeJsonDataKwargsArgs() {
+        JsonObject expected = new JsonObject();
+        expected.addProperty("first", "1");
+        expected.addProperty("snd", "42");
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(new JsonPrimitive("foo"));
+        jsonArray.add(new JsonPrimitive("bar"));
+        expected.add("arg", jsonArray);
+
+        Map<String, String> kwargs = new LinkedHashMap() {
+            {
+                put("first", "1");
+                put("snd", "42");
+            }
+        };
+
+        List<String> args = new ArrayList<>();
+        args.add("foo");
+        args.add("bar");
+
+        JsonObject jsonObject = ClientUtils.makeJsonData(kwargs, args);
+
+        assertEquals(expected, jsonObject);
     }
 }
