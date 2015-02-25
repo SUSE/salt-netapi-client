@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.datatypes;
 
 import java.util.Date;
+import java.util.List;
 
 public class Token {
 
@@ -11,6 +12,8 @@ public class Token {
 
     private Date start;
     private Date expire;
+
+    private List<String> perms;
 
     public String getEauth() {
         return eauth;
@@ -30,5 +33,9 @@ public class Token {
 
     public Date getExpire() {
         return expire;
+    }
+
+    public List<String> getPerms() {
+        return perms;
     }
 }
