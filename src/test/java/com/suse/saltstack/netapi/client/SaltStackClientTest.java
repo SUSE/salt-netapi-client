@@ -65,7 +65,7 @@ public class SaltStackClientTest {
         assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*"));
+        assertEquals("Perms mismatch", token.getPermissions(), Arrays.asList(".*"));
     }
 
     @Test(expected = SaltStackException.class)
@@ -100,7 +100,7 @@ public class SaltStackClientTest {
         assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*"));
+        assertEquals("Perms mismatch", token.getPermissions(), Arrays.asList(".*"));
     }
 
     @Test(expected = SaltStackException.class)
