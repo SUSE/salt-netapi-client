@@ -113,6 +113,8 @@ public class SaltStackClient {
      *
      * POST /login
      *
+     * @param username the username
+     * @param password the password
      * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
@@ -126,6 +128,9 @@ public class SaltStackClient {
      *
      * POST /login
      *
+     * @param username the username
+     * @param password the password
+     * @param eauth the eauth type
      * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
@@ -153,6 +158,8 @@ public class SaltStackClient {
      *
      * POST /login
      *
+     * @param username the username
+     * @param password the password
      * @return Future containing an authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
@@ -173,6 +180,9 @@ public class SaltStackClient {
      *
      * POST /login
      *
+     * @param username the username
+     * @param password the password
+     * @param eauth the eauth type
      * @return Future containing an authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
