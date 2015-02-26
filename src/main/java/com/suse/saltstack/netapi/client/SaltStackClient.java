@@ -156,15 +156,12 @@ public class SaltStackClient {
      * @return Future containing an authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public Future<Token> loginAsync(String username, String password)
+    public Future<Token> loginAsync(final String username, final String password)
             throws SaltStackException {
-        final String constUsername = username;
-        final String constPassword = password;
-
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
-                return login(constUsername, constPassword);
+                return login(username, password);
             }
         };
         return executor.submit(callable);
@@ -179,16 +176,12 @@ public class SaltStackClient {
      * @return Future containing an authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public Future<Token> loginAsync(String username, String password,
-            String eauth) throws SaltStackException {
-        final String constUsername = username;
-        final String constPassword = password;
-        final String constEauth = eauth;
-
+    public Future<Token> loginAsync(final String username, final String password,
+            final String eauth) throws SaltStackException {
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
-                return login(constUsername, constPassword, constEauth);
+                return login(username, password, eauth);
             }
         };
         return executor.submit(callable);
@@ -274,17 +267,13 @@ public class SaltStackClient {
      * @return Future containing the scheduled job {@link Job}
      * @throws SaltStackException if anything goes wrong
      */
-    public Future<Job> startCommandAsync(String target, String function,
-            List<String> args, Map<String, String> kwargs) throws SaltStackException {
-        final String constTarget = target;
-        final String constFunction = function;
-        final List<String> constArgs = args;
-        final Map<String, String> constKwargs = kwargs;
-
+    public Future<Job> startCommandAsync(final String target, final String function,
+            final List<String> args, final Map<String, String> kwargs)
+            throws SaltStackException {
         Callable<Job> callable = new Callable<Job>() {
             @Override
             public Job call() throws SaltStackException {
-                return startCommand(constTarget, constFunction, constArgs, constKwargs);
+                return startCommand(target, function, args, kwargs);
             }
         };
         return executor.submit(callable);
@@ -350,23 +339,15 @@ public class SaltStackClient {
      * @return Future containing Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Future<Map<String, Object>> runAsync(String username, String password,
-            String eauth, String client, String target, String function, List<String> args,
-            Map<String, String> kwargs) throws SaltStackException {
-        final String constUsername = username;
-        final String constPassword = password;
-        final String constEauth = eauth;
-        final String constClient = client;
-        final String constTarget = target;
-        final String constFunction = function;
-        final List<String> constArgs = args;
-        final Map<String, String> constKwargs = kwargs;
-
+    public Future<Map<String, Object>> runAsync(final String username,
+            final String password, final String eauth, final String client,
+            final String target, final String function, final List<String> args,
+            final Map<String, String> kwargs) throws SaltStackException {
         Callable<Map<String, Object>> callable = new Callable<Map<String, Object>>() {
             @Override
             public Map<String, Object> call() throws SaltStackException {
-                return run(constUsername, constPassword, constEauth, constClient,
-                        constTarget, constFunction, constArgs, constKwargs);
+                return run(username, password, eauth, client,
+                        target, function, args, kwargs);
             }
         };
         return executor.submit(callable);
