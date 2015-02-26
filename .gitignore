@@ -8,6 +8,4 @@
 *.iml
 
 # Build and test artifacts
-/bin/
-/dist/
-/test-reports/
+/target
