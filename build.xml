@@ -97,7 +97,7 @@
   <!-- Run tests using built artifacts -->
   <target name="run-tests" depends="dist-tests">
     <mkdir dir="${dir-test-reports}" />
-    <junit printsummary="yes" haltonfailure="yes">
+    <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath refid="classpath-tests" />
       <batchtest todir="${dir-test-reports}">
           <fileset dir="${dir-src-test}">
