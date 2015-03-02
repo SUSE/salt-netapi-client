@@ -213,4 +213,24 @@ public class SaltStackClientTest {
         assertEquals(job.getJid(), "20150211105524392307");
         assertEquals(job.getMinions(), Arrays.asList("myminion"));
     }
+    
+    @Test
+    public void testStartCommandAsync() throws SaltStackException {
+    	 stubFor(post(urlEqualTo("/minions")).willReturn(
+                 aResponse().withStatus(HttpURLConnection.HTTP_OK)
+                         .withHeader("Content-Type", "application/json")
+                         .withBody(JSON_START_COMMAND_RESPONSE)));
+
+        Future<Job> future = client.startCommandAsync("*", "test.ping", null, null);
+        Job job;
+        try {
+        	job = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new SaltStackException(e);
+        }
+
+        assertNotNull(job);
+        assertEquals(job.getJid(), "20150211105524392307");
+        assertEquals(job.getMinions(), Arrays.asList("myminion"));
+    }
 }
