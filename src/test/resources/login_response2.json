@@ -1,0 +1,12 @@
+{
+  "return": [
+    {
+      "perms": [".*"],
+      "start": 1422803163.765152,
+      "token": "2fea67bb673e012f11ca7cad0d1079ccf1decaa2",
+      "expire": 1422846363.765152,
+      "user": "user",
+      "eauth": "auto"
+    }
+  ]
+}
