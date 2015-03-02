@@ -213,4 +213,19 @@ public class SaltStackClientTest {
         assertEquals(job.getJid(), "20150211105524392307");
         assertEquals(job.getMinions(), Arrays.asList("myminion"));
     }
+
+    @Test
+    public void testQueryJobResult() throws SaltStackException {
+        stubFor(get(urlEqualTo("/jobs/some-job-id"))
+                .willReturn(aResponse()
+                    .withStatus(HttpURLConnection.HTTP_OK)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JSON_RUN_RESPONSE)));
+
+        Map<String, Object> retvals = client.getJobResult("some-job-id");
+
+        assertNotNull(retvals);
+        assertTrue(retvals.containsKey("minion-1"));
+        assertEquals(retvals.get("minion-1"), true);
+    }
 }

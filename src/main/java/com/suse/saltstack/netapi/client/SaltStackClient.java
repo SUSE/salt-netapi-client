@@ -290,6 +290,37 @@ public class SaltStackClient {
     }
 
     /**
+     * Query for result of supplied job.
+     *
+     * GET /job/<job-id>
+     *
+     * @param job {@link Job} object representing scheduled job
+     * @return Map key: minion id, value: command result from that minion
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Map<String,Object> getJobResult(final Job job) throws SaltStackException {
+        return getJobResult(job.getJid());
+    }
+
+    /**
+     * Query for result of supplied job.
+     *
+     * GET /job/<job-id>
+     *
+     * @param job String representing scheduled job
+     * @return Map key: minion id, value: command result from that minion
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Map<String,Object> getJobResult(final String job) throws SaltStackException {
+        Result<List<Map<String,Object>>> result = connectionFactory
+                .create("/jobs/"+job, JsonParser.RETVALS, config)
+                .getResult();
+
+        // A list with one element is returned, we take the first
+        return result.getResult().get(0);
+    }
+
+    /**
      * Generic interface to start any execution command bypassing normal session handling.
      *
      * POST /run

@@ -11,7 +11,9 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -55,6 +57,25 @@ public class HttpClientConnection<T> implements Connection<T> {
      */
     @Override
     public T getResult(String data) throws SaltStackException {
+        return request(data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T getResult() throws SaltStackException {
+        return request(null);
+    }
+
+    /**
+     * Perform HTTP request and parse the result into a given result type.
+     *
+     * @param method the HTTP method to use
+     * @return object of type given by resultType
+     * @throws SaltStackException in case of a problem
+     */
+    private T request(String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration
@@ -77,25 +98,31 @@ public class HttpClientConnection<T> implements Connection<T> {
         }
 
         try (CloseableHttpClient httpClient = httpClientBuilder.build()) {
-            // Prepare POST request
+            // Prepare request
             URI uri = config.get(URL).resolve(endpoint);
-            HttpPost httpPost = new HttpPost(uri);
-            httpPost.addHeader("Accept", "application/json");
 
-            // POST data
+            HttpUriRequest httpRequest = null;
             if (data != null) {
+                // POST data
+                HttpPost httpPost = new HttpPost(uri);
                 httpPost.addHeader("Content-Type", "application/json");
                 httpPost.setEntity(new StringEntity(data));
+                httpRequest = httpPost;
+            } else {
+                // GET request
+                httpRequest = new HttpGet(uri);
             }
+
+            httpRequest.addHeader("Accept", "application/json");
 
             // Token authentication
             String token = config.get(TOKEN);
             if (token != null) {
-                httpPost.addHeader("X-Auth-Token", token);
+                httpRequest.addHeader("X-Auth-Token", token);
             }
 
             // Execute request
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != HttpStatus.SC_OK &&
                         statusCode != HttpStatus.SC_ACCEPTED) {

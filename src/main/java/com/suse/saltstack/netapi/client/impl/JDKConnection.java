@@ -45,6 +45,14 @@ public class JDKConnection<T> implements Connection<T> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T getResult() throws SaltStackException {
+        return request("GET", null);
+    }
+
+    /**
      * Perform HTTP request and parse the result into a given result type.
      *
      * @param method the HTTP method to use
