@@ -32,10 +32,10 @@ public class SaltStackClient {
     private final ClientConfig config = new ClientConfig();
 
     /** The connection factory object */
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
 
     /** The executor for async operations */
-    private ExecutorService executor;
+    private final ExecutorService executor;
 
     /**
      * Constructor for connecting to a given URL.

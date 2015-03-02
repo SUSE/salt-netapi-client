@@ -38,7 +38,7 @@ public class JsonParser<T> {
         new JsonParser<>(new TypeToken<Result<List<Map<String,Object>>>>(){});
 
     private final TypeToken<T> type;
-    private Gson gson;
+    private final Gson gson;
 
     /**
      * Created a new JsonParser for the given type.
