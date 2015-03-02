@@ -58,7 +58,7 @@ public class SaltStackClientTest {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_LOGIN_REQUEST))
+                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
@@ -86,7 +86,7 @@ public class SaltStackClientTest {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_LOGIN_REQUEST))
+                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
@@ -137,7 +137,7 @@ public class SaltStackClientTest {
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_RUN_REQUEST)));
+                .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class SaltStackClientTest {
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_RUN_REQUEST)));
+                .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
     }
 
     @Test
