@@ -163,8 +163,7 @@ public class SaltStackClient {
      * @return Future containing an authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public Future<Token> loginAsync(final String username, final String password)
-            throws SaltStackException {
+    public Future<Token> loginAsync(final String username, final String password) {
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
@@ -187,7 +186,7 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public Future<Token> loginAsync(final String username, final String password,
-            final String eauth) throws SaltStackException {
+            final String eauth) {
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
@@ -218,8 +217,7 @@ public class SaltStackClient {
      *
      * @throws SaltStackException if anything goes wrong
      */
-    public Future<Result<String>> logoutAsync()
-            throws SaltStackException {
+    public Future<Result<String>> logoutAsync() {
         Callable<Result<String>> callable = new Callable<Result<String>>() {
             @Override
             public Result<String> call() throws SaltStackException {
@@ -278,8 +276,7 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public Future<Job> startCommandAsync(final String target, final String function,
-            final List<String> args, final Map<String, String> kwargs)
-            throws SaltStackException {
+            final List<String> args, final Map<String, String> kwargs) {
         Callable<Job> callable = new Callable<Job>() {
             @Override
             public Job call() throws SaltStackException {
@@ -352,7 +349,7 @@ public class SaltStackClient {
     public Future<Map<String, Object>> runAsync(final String username,
             final String password, final String eauth, final String client,
             final String target, final String function, final List<String> args,
-            final Map<String, String> kwargs) throws SaltStackException {
+            final Map<String, String> kwargs) {
         Callable<Map<String, Object>> callable = new Callable<Map<String, Object>>() {
             @Override
             public Map<String, Object> call() throws SaltStackException {
