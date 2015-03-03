@@ -52,7 +52,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testLoginOk() throws SaltStackException {
+    public void testLoginOk() throws Exception {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
@@ -70,7 +70,7 @@ public class SaltStackClientTest {
     }
 
     @Test(expected = SaltStackException.class)
-    public void testLoginFailure() throws SaltStackException {
+    public void testLoginFailure() throws Exception {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
@@ -80,7 +80,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testLoginAsyncOk() throws SaltStackException {
+    public void testLoginAsyncOk() throws Exception {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
@@ -91,12 +91,7 @@ public class SaltStackClientTest {
                         .withBody(JSON_LOGIN_RESPONSE)));
 
         Future<Token> futureToken = client.loginAsync("user", "pass");
-        Token token;
-        try {
-            token = futureToken.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new SaltStackException(e);
-        }
+        Token token = futureToken.get();
 
         assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
@@ -104,8 +99,8 @@ public class SaltStackClientTest {
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
-    @Test(expected = SaltStackException.class)
-    public void testLoginAsyncFailure() throws SaltStackException {
+    @Test(expected = ExecutionException.class)
+    public void testLoginAsyncFailure() throws Exception {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
@@ -113,17 +108,12 @@ public class SaltStackClientTest {
                         .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
 
         Future<Token> futureToken = client.loginAsync("user", "pass");
-        Token token;
-        try {
-            token = futureToken.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new SaltStackException(e);
-        }
+        Token token = futureToken.get();
         assertNull(token);
     }
 
     @Test
-    public void testRunRequest() throws SaltStackException {
+    public void testRunRequest() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
                     .withStatus(HttpURLConnection.HTTP_OK)
@@ -139,7 +129,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testRunRequestAsync() throws SaltStackException {
+    public void testRunRequestAsync() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
@@ -148,11 +138,7 @@ public class SaltStackClientTest {
 
         Future<?> future = client.runAsync("user", "pass", "pam", "local", "*",
                 "test.ping", null, null);
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new SaltStackException(e);
-        }
+        future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -161,7 +147,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testRunResult() throws SaltStackException {
+    public void testRunResult() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
                     .withStatus(HttpURLConnection.HTTP_OK)
@@ -177,7 +163,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testRunResultAsync() throws SaltStackException {
+    public void testRunResultAsync() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
@@ -186,12 +172,7 @@ public class SaltStackClientTest {
 
         Future<Map<String, Object>> future = client.runAsync("user", "pass",
                 "pam", "local", "*", "test.ping", null, null);
-        Map<String, Object> retvals;
-        try {
-            retvals = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new SaltStackException(e);
-        }
+        Map<String, Object> retvals = future.get();
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
@@ -199,7 +180,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testStartCommand() throws SaltStackException {
+    public void testStartCommand() throws Exception {
         stubFor(post(urlEqualTo("/minions")).willReturn(
                 aResponse().withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
@@ -213,7 +194,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testQueryJobResult() throws SaltStackException {
+    public void testQueryJobResult() throws Exception {
         stubFor(get(urlEqualTo("/jobs/some-job-id"))
                 .willReturn(aResponse()
                     .withStatus(HttpURLConnection.HTTP_OK)
@@ -228,19 +209,14 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testStartCommandAsync() throws SaltStackException {
+    public void testStartCommandAsync() throws Exception {
         stubFor(post(urlEqualTo("/minions")).willReturn(
                  aResponse().withStatus(HttpURLConnection.HTTP_OK)
                          .withHeader("Content-Type", "application/json")
                          .withBody(JSON_START_COMMAND_RESPONSE)));
 
         Future<Job> future = client.startCommandAsync("*", "test.ping", null, null);
-        Job job;
-        try {
-            job = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new SaltStackException(e);
-        }
+        Job job = future.get();
 
         assertNotNull(job);
         assertEquals(job.getJid(), "20150211105524392307");
