@@ -16,13 +16,13 @@ import java.net.HttpURLConnection;
 public class JDKConnection<T> implements Connection<T> {
 
     /** The endpoint. */
-    private String endpoint;
+    private final String endpoint;
 
     /** The config object. */
     private final ClientConfig config;
 
     /** The parser to parse the returned Result */
-    private JsonParser<T> parser;
+    private final JsonParser<T> parser;
 
     /**
      * Init a connection to a given SaltStack API endpoint.

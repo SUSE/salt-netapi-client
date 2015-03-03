@@ -17,7 +17,7 @@ import javax.xml.bind.DatatypeConverter;
 public class RequestFactory {
 
     /** Singleton instance. */
-    private static RequestFactory instance = new RequestFactory();
+    private static final RequestFactory instance = new RequestFactory();
 
     /**
      * Instantiates a new SaltStack request factory.

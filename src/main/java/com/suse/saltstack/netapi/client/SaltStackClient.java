@@ -32,10 +32,10 @@ public class SaltStackClient {
     private final ClientConfig config = new ClientConfig();
 
     /** The connection factory object */
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
 
     /** The executor for async operations */
-    private ExecutorService executor;
+    private final ExecutorService executor;
 
     /**
      * Constructor for connecting to a given URL.
@@ -161,10 +161,8 @@ public class SaltStackClient {
      * @param username the username
      * @param password the password
      * @return Future containing an authentication token as {@link Token}
-     * @throws SaltStackException if anything goes wrong
      */
-    public Future<Token> loginAsync(final String username, final String password)
-            throws SaltStackException {
+    public Future<Token> loginAsync(final String username, final String password) {
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
@@ -184,10 +182,9 @@ public class SaltStackClient {
      * @param password the password
      * @param eauth the eauth type
      * @return Future containing an authentication token as {@link Token}
-     * @throws SaltStackException if anything goes wrong
      */
     public Future<Token> loginAsync(final String username, final String password,
-            final String eauth) throws SaltStackException {
+            final String eauth) {
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
@@ -216,10 +213,8 @@ public class SaltStackClient {
      *
      * POST /logout
      *
-     * @throws SaltStackException if anything goes wrong
      */
-    public Future<Result<String>> logoutAsync()
-            throws SaltStackException {
+    public Future<Result<String>> logoutAsync() {
         Callable<Result<String>> callable = new Callable<Result<String>>() {
             @Override
             public Result<String> call() throws SaltStackException {
@@ -275,11 +270,9 @@ public class SaltStackClient {
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
      * @return Future containing the scheduled job {@link Job}
-     * @throws SaltStackException if anything goes wrong
      */
     public Future<Job> startCommandAsync(final String target, final String function,
-            final List<String> args, final Map<String, String> kwargs)
-            throws SaltStackException {
+            final List<String> args, final Map<String, String> kwargs) {
         Callable<Job> callable = new Callable<Job>() {
             @Override
             public Job call() throws SaltStackException {
@@ -378,12 +371,11 @@ public class SaltStackClient {
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
      * @return Future containing Map key: minion id, value: command result from that minion
-     * @throws SaltStackException if anything goes wrong
      */
     public Future<Map<String, Object>> runAsync(final String username,
             final String password, final String eauth, final String client,
             final String target, final String function, final List<String> args,
-            final Map<String, String> kwargs) throws SaltStackException {
+            final Map<String, String> kwargs) {
         Callable<Map<String, Object>> callable = new Callable<Map<String, Object>>() {
             @Override
             public Map<String, Object> call() throws SaltStackException {
