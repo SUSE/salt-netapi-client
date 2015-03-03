@@ -34,7 +34,7 @@ public class SaltStackClientTest {
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/login_request.json"));
     static final String JSON_LOGIN_RESPONSE =  ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/login_response2.json"));
+            SaltStackClientTest.class.getResourceAsStream("/login_response.json"));
     static final String JSON_RUN_REQUEST = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/run_request.json"));
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
@@ -63,10 +63,10 @@ public class SaltStackClientTest {
                         .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass");
-        assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
+        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*"));
+        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
     @Test(expected = SaltStackException.class)
@@ -98,10 +98,10 @@ public class SaltStackClientTest {
             throw new SaltStackException(e);
         }
 
-        assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
+        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*"));
+        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
     @Test(expected = SaltStackException.class)
