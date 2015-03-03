@@ -231,7 +231,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testStartCommandAsync() throws SaltStackException {
-    	 stubFor(post(urlEqualTo("/minions")).willReturn(
+        stubFor(post(urlEqualTo("/minions")).willReturn(
                  aResponse().withStatus(HttpURLConnection.HTTP_OK)
                          .withHeader("Content-Type", "application/json")
                          .withBody(JSON_START_COMMAND_RESPONSE)));
@@ -239,7 +239,7 @@ public class SaltStackClientTest {
         Future<Job> future = client.startCommandAsync("*", "test.ping", null, null);
         Job job;
         try {
-        	job = future.get();
+            job = future.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new SaltStackException(e);
         }
