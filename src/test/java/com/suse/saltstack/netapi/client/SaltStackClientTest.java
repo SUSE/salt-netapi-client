@@ -3,6 +3,7 @@ package com.suse.saltstack.netapi.client;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
+import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -27,20 +28,17 @@ import static org.junit.Assert.*;
 public class SaltStackClientTest {
     private static final int MOCK_HTTP_PORT = 8888;
 
-    final String JSON_LOGIN_REQUEST = "{\"username\":\"user\"," +
-            "\"password\":\"pass\",\"eauth\":\"auto\"}";
-    final String JSON_LOGIN_RESPONSE = "{\"return\": [{\"perms\": [\".*\"], " +
-            "\"start\": 1422803163.765152, " +
-            "\"token\": \"2fea67bb673e012f11ca7cad0d1079ccf1decaa2\", " +
-            "\"expire\": 1422846363.765152, " +
-            "\"user\": \"user\", \"eauth\": \"auto\"}]}";
-    final String JSON_RUN_REQUEST = "[{\"username\":\"user\",\"password\":\"pass\"" +
-            ",\"eauth\":\"pam\",\"client\":\"local\",\"tgt\":\"*\",\"fun\":" +
-            "\"test.ping\"}]";
-    final String JSON_RUN_RESPONSE = "{\"return\": [{\"minion-1\": true}]}";
-    final String JSON_START_COMMAND_RESPONSE = "{\"_links\":{\"jobs\":[{\"href\":"+
-            "\"/jobs/20150211105524392307\"}]},\"return\":[{\"jid\":\"20150211105524392307" +
-            "\",\"minions\":[\"myminion\"]}]}";
+
+    static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/minions_response.json"));
+    static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/login_request.json"));
+    static final String JSON_LOGIN_RESPONSE =  ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/login_response.json"));
+    static final String JSON_RUN_REQUEST = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/run_request.json"));
+    static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/run_response.json"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -58,17 +56,17 @@ public class SaltStackClientTest {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_LOGIN_REQUEST))
+                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
                         .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass");
-        assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
+        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*"));
+        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
     @Test(expected = SaltStackException.class)
@@ -86,7 +84,7 @@ public class SaltStackClientTest {
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_LOGIN_REQUEST))
+                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
@@ -100,10 +98,10 @@ public class SaltStackClientTest {
             throw new SaltStackException(e);
         }
 
-        assertEquals("Token mismatch", token.getToken(), "2fea67bb673e012f11ca7cad0d1079ccf1decaa2");
+        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*"));
+        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
     @Test(expected = SaltStackException.class)
@@ -137,7 +135,7 @@ public class SaltStackClientTest {
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_RUN_REQUEST)));
+                .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
     }
 
     @Test
@@ -159,7 +157,7 @@ public class SaltStackClientTest {
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo(JSON_RUN_REQUEST)));
+                .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
     }
 
     @Test

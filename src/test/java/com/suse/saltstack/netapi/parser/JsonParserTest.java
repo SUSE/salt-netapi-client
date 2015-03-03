@@ -35,8 +35,8 @@ public class JsonParserTest {
         InputStream is = this.getClass().getResourceAsStream("/login_response.json");
         Result<List<Token>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
-        assertEquals("salt", result.getResult().get(0).getUser());
-        assertEquals("pam", result.getResult().get(0).getEauth());
+        assertEquals("user", result.getResult().get(0).getUser());
+        assertEquals("auto", result.getResult().get(0).getEauth());
         assertEquals("f248284b655724ca8a86bcab4b8df608ebf5b08b", result.getResult().get(0).getToken());
         assertEquals(new Date(1423573511380L), result.getResult().get(0).getStart());
         assertEquals(new Date(1423616711380L), result.getResult().get(0).getExpire());

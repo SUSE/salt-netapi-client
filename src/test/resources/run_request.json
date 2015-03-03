@@ -1,0 +1,10 @@
+[
+  {
+    "username": "user",
+    "password": "pass",
+    "eauth": "pam",
+    "client": "local",
+    "tgt": "*",
+    "fun": "test.ping"
+  }
+]
