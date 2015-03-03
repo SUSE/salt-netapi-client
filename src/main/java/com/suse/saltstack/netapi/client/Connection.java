@@ -13,7 +13,7 @@ public interface Connection<T> {
      * Send a GET request and parse the result into object of given {@link Type}.
      *
      * @return object of type given by resultType
-     * @throws SaltStackException
+     * @throws SaltStackException if the request was not successful
      */
     T getResult() throws SaltStackException;
 

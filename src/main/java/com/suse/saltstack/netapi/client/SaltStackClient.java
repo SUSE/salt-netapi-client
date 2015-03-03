@@ -313,7 +313,7 @@ public class SaltStackClient {
      */
     public Map<String,Object> getJobResult(final String job) throws SaltStackException {
         Result<List<Map<String,Object>>> result = connectionFactory
-                .create("/jobs/"+job, JsonParser.RETVALS, config)
+                .create("/jobs/" + job, JsonParser.RETVALS, config)
                 .getResult();
 
         // A list with one element is returned, we take the first
