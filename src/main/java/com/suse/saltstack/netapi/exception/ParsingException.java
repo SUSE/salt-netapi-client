@@ -22,5 +22,4 @@ public class ParsingException extends SaltStackException {
     public ParsingException(String message) {
         super(message);
     }
-
 }

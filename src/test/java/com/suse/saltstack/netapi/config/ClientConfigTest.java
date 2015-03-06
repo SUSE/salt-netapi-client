@@ -31,5 +31,4 @@ public class ClientConfigTest {
         config.remove(key);
         assertEquals("Should return the default value after removing the key", config.get(key), key.defaultValue);
     }
-
 }
