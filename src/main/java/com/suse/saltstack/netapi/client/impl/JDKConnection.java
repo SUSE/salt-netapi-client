@@ -2,6 +2,7 @@ package com.suse.saltstack.netapi.client.impl;
 
 import com.suse.saltstack.netapi.client.Connection;
 import com.suse.saltstack.netapi.config.ClientConfig;
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
@@ -69,6 +70,12 @@ public class JDKConnection<T> implements Connection<T> {
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
+
+            int connectionTimeout = config.get(JDKC_CONNECTION_TIMEOUT);
+            if (connectionTimeout >= 0) connection.setConnectTimeout(connectionTimeout);
+
+            int readTimeout = config.get(JDKC_READ_TIMEOUT);
+            if (readTimeout >= 0) connection.setReadTimeout(readTimeout);
 
             // Send data in case we have some
             if (data != null) {

@@ -80,11 +80,12 @@ public class HttpClientConnection<T> implements Connection<T> {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Timeout may be specified on configuration
-        int connectionTimeout = config.get(CONNECTION_TIMEOUT);
-        if (connectionTimeout > 0) {
+        int connectionTimeout = config.get(HCC_CONNECTION_TIMEOUT);
+        if (connectionTimeout >= 0) {
             RequestConfig reqconfig = RequestConfig.custom()
                 .setSocketTimeout(connectionTimeout)
                 .setConnectTimeout(connectionTimeout)
+                .setConnectionRequestTimeout(connectionTimeout)
                 .build();
 
             httpClientBuilder.setDefaultRequestConfig(reqconfig);
