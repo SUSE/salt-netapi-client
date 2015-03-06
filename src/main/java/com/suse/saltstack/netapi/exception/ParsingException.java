@@ -4,6 +4,7 @@ package com.suse.saltstack.netapi.exception;
  * Exception to be thrown in case of problems parsing service responses.
  */
 public class ParsingException extends SaltStackException {
+
     /**
      * Constructor expecting a custom cause.
      *

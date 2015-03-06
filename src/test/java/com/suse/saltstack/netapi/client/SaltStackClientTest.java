@@ -27,8 +27,8 @@ import static org.junit.Assert.*;
  * SaltStack API unit tests.
  */
 public class SaltStackClientTest {
-    private static final int MOCK_HTTP_PORT = 8888;
 
+    private static final int MOCK_HTTP_PORT = 8888;
 
     static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/minions_response.json"));
