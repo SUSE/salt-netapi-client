@@ -71,7 +71,6 @@ public class HttpClientConnection<T> implements Connection<T> {
     /**
      * Perform HTTP request and parse the result into a given result type.
      *
-     * @param method the HTTP method to use
      * @return object of type given by resultType
      * @throws SaltStackException in case of a problem
      */
