@@ -12,31 +12,15 @@ public class ClientConfig {
     public static final Key<URI> URL = new Key<>(URI.create("http://localhost:8000"));
     public static final Key<String> TOKEN = new Key<>();
 
-    // HttpClientConnection timeout settings
+    // Request timeout settings
     /**
-     * Sets a specified timeout value, in milliseconds, to be used when dealing a communications link in HttpClientConnection.
+     * Sets a specified timeout value, in milliseconds, to be used when dealing a communications link in HttpClientConnection / JDKConnection.
      * A timeout of zero is interpreted as an infinite timeout. Default value is 10000ms (10s).
      * 
      * @see HttpClientConnection.request(String)
-     */
-    public static final Key<Integer> HCC_CONNECTION_TIMEOUT = new Key<>(10000);
-
-    // JDKConnection timeout settings
-    /**
-     * Sets a specified timeout value, in milliseconds, to be used when opening a communications link in JDKConnection.
-     * A timeout of zero is interpreted as an infinite timeout. Default value is 10000ms (10s).
-     * 
      * @see JDKConnection.request(String, String)
      */
-    public static final Key<Integer> JDKC_CONNECTION_TIMEOUT = new Key<>(10000);
-
-    /**
-     * Sets the read timeout to a specified timeout, in milliseconds.
-     * A timeout of zero is interpreted as an infinite timeout. Default value is 10000ms (10s).
-     * 
-     * @see JDKConnection.request(String, String)
-     */
-    public static final Key<Integer> JDKC_READ_TIMEOUT = new Key<>(10000);
+    public static final Key<Integer> REQUEST_CONNECTION_TIMEOUT = new Key<>(10000);
 
     // Proxy settings
     public static final Key<String> PROXY_HOSTNAME = new Key<>();
