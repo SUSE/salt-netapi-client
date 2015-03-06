@@ -86,5 +86,4 @@ public class ClientConfig {
        Object value = store.get(key);
        return value != null ? (T)value : key.defaultValue;
     }
-
 }
