@@ -12,8 +12,8 @@ public class ClientConfig {
     public static final Key<URI> URL = new Key<>(URI.create("http://localhost:8000"));
     public static final Key<String> TOKEN = new Key<>();
 
-    // Timeout settings setted at 1000ms (10s)
-    public static final Key<Integer> CONNECTION_TIMEOUT = new Key<>(1000);
+    // Timeout settings setted at 10000ms (10s)
+    public static final Key<Integer> CONNECTION_TIMEOUT = new Key<>(10000);
 
     // Proxy settings
     public static final Key<String> PROXY_HOSTNAME = new Key<>();
