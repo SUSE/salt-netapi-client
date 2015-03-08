@@ -4,7 +4,8 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
-import static com.suse.saltstack.netapi.config.ClientConfig.REQUEST_CONNECTION_TIMEOUT;
+import static com.suse.saltstack.netapi.config.ClientConfig.CONNECT_TIMEOUT;
+import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -152,7 +153,8 @@ public class SaltStackClientTest {
     	// create a local SaltStackClient with a fast timeout configuration to do not lock tests more thant 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
         SaltStackClient clientWithFastTimeout = new SaltStackClient(uri);
-        clientWithFastTimeout.getConfig().put(REQUEST_CONNECTION_TIMEOUT, 1000);
+        clientWithFastTimeout.getConfig().put(CONNECT_TIMEOUT, 1000);
+        clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
 
         stubFor(post(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))

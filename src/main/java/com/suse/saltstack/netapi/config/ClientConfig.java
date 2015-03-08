@@ -20,7 +20,16 @@ public class ClientConfig {
      * @see HttpClientConnection.request(String)
      * @see JDKConnection.request(String, String)
      */
-    public static final Key<Integer> REQUEST_CONNECTION_TIMEOUT = new Key<>(10000);
+    public static final Key<Integer> CONNECT_TIMEOUT = new Key<>(10000);
+
+    /**
+     * Sets a specified timeout value, in milliseconds, to be used when waiting for data in HttpClientConnection / JDKConnection.
+     * A timeout of zero is interpreted as an infinite timeout. Default value is 10000ms (10s).
+     * 
+     * @see HttpClientConnection.request(String)
+     * @see JDKConnection.request(String, String)
+     */
+    public static final Key<Integer> SOCKET_TIMEOUT = new Key<>(10000);
 
     // Proxy settings
     public static final Key<String> PROXY_HOSTNAME = new Key<>();

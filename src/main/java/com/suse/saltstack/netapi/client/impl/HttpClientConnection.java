@@ -79,17 +79,13 @@ public class HttpClientConnection<T> implements Connection<T> {
     private T request(String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
-        // Timeout may be specified on configuration
-        int connectionTimeout = config.get(REQUEST_CONNECTION_TIMEOUT);
-        if (connectionTimeout >= 0) {
-            RequestConfig reqconfig = RequestConfig.custom()
-                .setSocketTimeout(connectionTimeout)
-                .setConnectTimeout(connectionTimeout)
-                .setConnectionRequestTimeout(connectionTimeout)
+        // Timeouts may be specified on configuration
+        RequestConfig reqconfig = RequestConfig.custom()
+                .setConnectTimeout(config.get(CONNECT_TIMEOUT))
+                .setSocketTimeout(config.get(SOCKET_TIMEOUT))
                 .build();
 
-            httpClientBuilder.setDefaultRequestConfig(reqconfig);
-        }
+        httpClientBuilder.setDefaultRequestConfig(reqconfig);
 
         // Configure proxy if specified on configuration
         String proxyHost = config.get(PROXY_HOSTNAME);
