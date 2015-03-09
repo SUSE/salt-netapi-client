@@ -150,7 +150,7 @@ public class SaltStackClientTest {
 
     @Test(expected = SaltStackException.class)
     public void testRunRequestWithTimeout() throws Exception {
-    	// create a local SaltStackClient with a fast timeout configuration to do not lock tests more thant 2s
+        // create a local SaltStackClient with a fast timeout configuration to do not lock tests more thant 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
         SaltStackClient clientWithFastTimeout = new SaltStackClient(uri);
         clientWithFastTimeout.getConfig().put(CONNECT_TIMEOUT, 1000);
