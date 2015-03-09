@@ -5,10 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
+import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.results.*;
 
 import java.io.BufferedReader;
@@ -36,6 +40,8 @@ public class JsonParser<T> {
         new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
     public static final JsonParser<Result<List<Map<String,Object>>>> RETVALS =
         new JsonParser<>(new TypeToken<Result<List<Map<String,Object>>>>(){});
+    public static final JsonParser<Stats> STATS =
+        new JsonParser<>(new TypeToken<Stats>(){});
 
     private final TypeToken<T> type;
     private final Gson gson;
@@ -48,7 +54,9 @@ public class JsonParser<T> {
     public JsonParser(TypeToken<T> type){
         this.type = type;
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new SaltStackDateDeserializer()).create();
+                .registerTypeAdapter(Date.class, new SaltStackDateDeserializer())
+                .registerTypeAdapter(Stats.class, new StatsDeserializer())
+                .create();
     }
 
     /**
@@ -77,6 +85,36 @@ public class JsonParser<T> {
                 double dateMiliSecs = jsonElement.getAsDouble() * 1000;
                 return new Date((long) dateMiliSecs);
             } catch (NumberFormatException e) {
+                throw new JsonParseException(e);
+            }
+        }
+    }
+
+    /**
+     * Deserializer for the Stats object received from the API.
+     */
+    private class StatsDeserializer implements JsonDeserializer<Stats> {
+
+        private static final String CP_APPLICATIONS = "CherryPy Applications";
+        private static final String CP_SERVER_PREFIX = "CherryPy HTTPServer ";
+
+        @Override
+        public Stats deserialize(JsonElement jsonElement, Type type,
+                JsonDeserializationContext jsonDeserializationContext)
+                throws JsonParseException {
+            try {
+                JsonObject stats = jsonElement.getAsJsonObject();
+                Applications app = gson.fromJson(stats.get(CP_APPLICATIONS), Applications.class);
+                HttpServer server = null;
+                for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.startsWith(CP_SERVER_PREFIX)) {
+                        server = gson.fromJson(entry.getValue(), HttpServer.class);
+                        break;
+                    }
+                }
+                return new Stats(app, server);
+            } catch (Exception e) {
                 throw new JsonParseException(e);
             }
         }
