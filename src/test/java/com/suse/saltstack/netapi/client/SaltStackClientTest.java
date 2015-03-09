@@ -1,6 +1,7 @@
 package com.suse.saltstack.netapi.client;
 
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
@@ -162,6 +163,26 @@ public class SaltStackClientTest {
         // to do not lock tests more thant 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
         SaltStackClient clientWithFastTimeout = new SaltStackClient(uri);
+        clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
+
+        stubFor(post(urlEqualTo("/login"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .willReturn(aResponse()
+                .withFixedDelay(2000)));
+
+        clientWithFastTimeout.login("user", "pass");
+    }
+
+    @Test
+    public void testRunRequestWithSocketTimeoutThroughJDKConnection() throws Exception {
+        exception.expect(SaltStackException.class);
+        exception.expectMessage(containsString("Read timed out"));
+
+        // create a local SaltStackClient with a fast timeout configuration 
+        // to do not lock tests more thant 2s
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        SaltStackClient clientWithFastTimeout = new SaltStackClient(uri, new JDKConnectionFactory());
         clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
 
         stubFor(post(urlEqualTo("/login"))
