@@ -15,7 +15,8 @@ public class JDKConnectionFactory implements ConnectionFactory {
      * {@inheritDoc}
      */
     @Override
-    public <T> JDKConnection<T> create(String endpoint, JsonParser<T> parser, ClientConfig config) {
+    public <T> JDKConnection<T> create(String endpoint, JsonParser<T> parser,
+            ClientConfig config) {
         return new JDKConnection<>(endpoint, parser, config);
     }
 }

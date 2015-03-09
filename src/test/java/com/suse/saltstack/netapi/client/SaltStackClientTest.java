@@ -63,7 +63,8 @@ public class SaltStackClientTest {
                         .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass");
-        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
+        assertEquals("Token mismatch",
+                token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
@@ -93,7 +94,8 @@ public class SaltStackClientTest {
         Future<Token> futureToken = client.loginAsync("user", "pass");
         Token token = futureToken.get();
 
-        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
+        assertEquals("Token mismatch",
+                token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
