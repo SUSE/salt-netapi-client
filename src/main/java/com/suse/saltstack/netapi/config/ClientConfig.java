@@ -14,8 +14,8 @@ public class ClientConfig {
 
     // Request timeout settings
     /**
-     * Sets a specified timeout value, in milliseconds, to be used when dealing a communications link in HttpClientConnection / JDKConnection.
-     * A timeout of zero is interpreted as an infinite timeout. Default value is 10000ms (10s).
+     * Timeout in milliseconds until a connection is established. A timeout of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+     * Default value is 10000ms (10s)
      * 
      * @see HttpClientConnection.request(String)
      * @see JDKConnection.request(String, String)
@@ -23,8 +23,8 @@ public class ClientConfig {
     public static final Key<Integer> CONNECT_TIMEOUT = new Key<>(10000);
 
     /**
-     * Sets a specified timeout value, in milliseconds, to be used when waiting for data in HttpClientConnection / JDKConnection.
-     * A timeout of zero is interpreted as an infinite timeout. Default value is 10000ms (10s).
+     * Timeout in milliseconds for waiting for data. A timeout of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+     * Default value is 10000ms (10s)
      * 
      * @see HttpClientConnection.request(String)
      * @see JDKConnection.request(String, String)
