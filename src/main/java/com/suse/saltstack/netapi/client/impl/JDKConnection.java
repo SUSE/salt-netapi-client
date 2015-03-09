@@ -75,10 +75,14 @@ public class JDKConnection<T> implements Connection<T> {
 
             // Timeouts may be specified on configuration
             int connect_timeout = config.get(CONNECT_TIMEOUT);
-            if (connect_timeout >= 0) connection.setConnectTimeout(connect_timeout);
+            if (connect_timeout >= 0) {
+                connection.setConnectTimeout(connect_timeout);
+            }
 
             int socket_timeout = config.get(SOCKET_TIMEOUT);
-            if (socket_timeout >= 0) connection.setReadTimeout(socket_timeout);
+            if (socket_timeout >= 0) {
+                connection.setReadTimeout(socket_timeout);
+            }
 
             // Send data in case we have some
             if (data != null) {
