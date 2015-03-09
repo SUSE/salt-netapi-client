@@ -12,9 +12,10 @@ public class ClientConfig {
     public static final Key<URI> URL = new Key<>(URI.create("http://localhost:8000"));
     public static final Key<String> TOKEN = new Key<>();
 
-    // Request timeout settings
     /**
-     * Timeout in milliseconds until a connection is established. A timeout of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+     * Timeout in milliseconds until a connection is established.
+     * A timeout of zero is interpreted as an infinite timeout.
+     * A negative value is interpreted as undefined (system default).
      * Default value is 10000ms (10s)
      * 
      * @see HttpClientConnection.request(String)
@@ -23,7 +24,9 @@ public class ClientConfig {
     public static final Key<Integer> CONNECT_TIMEOUT = new Key<>(10000);
 
     /**
-     * Timeout in milliseconds for waiting for data. A timeout of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+     * Timeout in milliseconds for waiting for data.
+     * A timeout of zero is interpreted as an infinite timeout.
+     * A negative value is interpreted as undefined (system default).
      * Default value is 10000ms (10s)
      * 
      * @see HttpClientConnection.request(String)
