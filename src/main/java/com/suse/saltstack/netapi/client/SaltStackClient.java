@@ -5,6 +5,7 @@ import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
@@ -385,4 +386,33 @@ public class SaltStackClient {
         };
         return executor.submit(callable);
     }
+
+  /**
+  * Query statistics from the CherryPy Server.
+  *
+  * GET /stats
+  *
+  * @return The {@link Stats} object.
+  * @throws SaltStackException if anything goes wrong
+  */
+  public Stats stats() throws SaltStackException {
+      return connectionFactory.create("/stats", JsonParser.STATS, config).getResult();
+  }
+
+  /**
+  * Asynchronously query statistics from the CherryPy Server.
+  *
+  * GET /stats
+  *
+  * @return Future containing the {@link Stats} object.
+  */
+  public Future<Stats> statsAsync() {
+      Callable<Stats> callable = new Callable<Stats>() {
+          @Override
+          public Stats call() throws SaltStackException {
+              return stats();
+          }
+      };
+      return executor.submit(callable);
+  }
 }
