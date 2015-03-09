@@ -85,6 +85,6 @@ public class ClientConfig {
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
        Object value = store.get(key);
-       return value != null ? (T)value : key.defaultValue;
+       return value != null ? (T) value : key.defaultValue;
     }
 }
