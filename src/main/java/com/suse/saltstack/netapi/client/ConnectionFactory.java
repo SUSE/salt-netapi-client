@@ -7,6 +7,7 @@ import com.suse.saltstack.netapi.parser.JsonParser;
  * Describes an interface for creating instances of an HTTP connection implementation.
  */
 public interface ConnectionFactory {
+
     /**
      * Create a new {@link Connection} for a given endpoint and configuration.
      *
