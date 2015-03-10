@@ -1,0 +1,84 @@
+{
+  "CherryPy Applications": {
+    "Uptime": 47.72178888320923,
+    "Bytes Read/Second": 1.1315585135535497,
+    "Current Time": 1425821785.119284,
+    "Server Version": "3.6.0",
+    "Total Time": 0.06533312797546387,
+    "Enabled": true,
+    "Start Time": 1425821737.39749,
+    "Bytes Written/Second": 3.918541522794187,
+    "Total Bytes Read": 54,
+    "Current Requests": 1,
+    "Total Requests": 2,
+    "Requests": {
+      "140691837540096": {
+        "Bytes Read": 54,
+        "Bytes Written": 187,
+        "Response Status": "200 OK",
+        "Start Time": 1425821772.58038,
+        "End Time": 1425821772.645713,
+        "Client": "127.0.0.1:45009",
+        "Processing Time": 0.06533312797546387,
+        "Request-Line": "POST /login HTTP/1.1"
+      },
+      "140691829147392": {
+        "Bytes Read": null,
+        "Bytes Written": null,
+        "Response Status": null,
+        "Start Time": 1425821785.119022,
+        "End Time": null,
+        "Client": "127.0.0.1:45015",
+        "Processing Time": 0.0002930164337158203,
+        "Request-Line": "GET /stats HTTP/1.1"
+      }
+    },
+    "Bytes Read/Request": 27.0,
+    "Total Bytes Written": 187,
+    "Requests/Second": 0.04190954295959868,
+    "Bytes Written/Request": 93.5
+  },
+  "CherryPy HTTPServer 140575992016208": {
+    "Bytes Read": -1,
+    "Accepts/sec": 0.0,
+    "Socket Errors": 2,
+    "Accepts": 3,
+    "Threads Idle": 99,
+    "Enabled": false,
+    "Bind Address": "('0.0.0.0', 8000)",
+    "Read Throughput": 4,
+    "Queue": 5,
+    "Run time": 6,
+    "Worker Threads": {
+      "CP Server Thread-0": {
+        "Bytes Read": 0,
+        "Bytes Written": 2,
+        "Read Throughput": 3.4,
+        "Requests": 5,
+        "Work Time": 6,
+        "Write Throughput": 7.8
+      },
+      "CP Server Thread-1": {
+        "Bytes Read": 0,
+        "Bytes Written": 2,
+        "Read Throughput": 3.4,
+        "Requests": 5,
+        "Work Time": 6,
+        "Write Throughput": 7.8
+      },
+      "CP Server Thread-2": {
+        "Bytes Read": 0,
+        "Bytes Written": 2,
+        "Read Throughput": 3.4,
+        "Requests": 5,
+        "Work Time": 6,
+        "Write Throughput": 7.8
+      }
+    },
+    "Threads": 3,
+    "Bytes Written": 7,
+    "Requests": 8,
+    "Work Time": 9.0,
+    "Write Throughput": 10
+  }
+}

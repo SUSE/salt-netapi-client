@@ -1,5 +1,6 @@
 package com.suse.saltstack.netapi.client;
 
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
@@ -39,6 +40,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/run_request.json"));
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/run_response.json"));
+    static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/stats_response.json"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -221,5 +224,37 @@ public class SaltStackClientTest {
         assertNotNull(job);
         assertEquals(job.getJid(), "20150211105524392307");
         assertEquals(job.getMinions(), Arrays.asList("myminion"));
+    }
+
+    @Test
+    public void testStats() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                    .withStatus(HttpURLConnection.HTTP_OK)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JSON_STATS_RESPONSE)));
+
+        Stats stats = client.stats();
+
+        assertNotNull(stats);
+        verify(1, getRequestedFor(urlEqualTo("/stats"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testStatsAsync() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                    .withStatus(HttpURLConnection.HTTP_OK)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JSON_STATS_RESPONSE)));
+
+        Stats stats = client.statsAsync().get();
+
+        assertNotNull(stats);
+        verify(1, getRequestedFor(urlEqualTo("/stats"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
     }
 }
