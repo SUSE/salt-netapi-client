@@ -8,7 +8,8 @@ public class Stats {
     public Stats(Applications applications, HttpServer httpServer)
             throws IllegalArgumentException {
         if (applications == null || httpServer == null) {
-            throw new IllegalArgumentException("applications and httpServer must not be null");
+            throw new IllegalArgumentException(
+                    "applications and httpServer must not be null");
         }
         this.applications = applications;
         this.httpServer = httpServer;

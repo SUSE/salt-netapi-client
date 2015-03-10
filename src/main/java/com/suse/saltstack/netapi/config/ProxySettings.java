@@ -32,7 +32,7 @@ public class ProxySettings {
      * @param password proxy password
      */
     public ProxySettings(String hostname, int port,
-                         String username, String password) {
+            String username, String password) {
         this(hostname, port);
         this.username = username;
         this.password = password;

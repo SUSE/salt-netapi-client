@@ -79,12 +79,12 @@ public class ClientConfig {
      *
      * @param key The configuration key.
      * @param <T> The type of the value associated with the key.
-     * @return The current configured value for the key or the default value
-     * if not configured.
+     * @return The current configured value for the key or the default value if not
+     * configured.
      */
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
-       Object value = store.get(key);
-       return value != null ? (T) value : key.defaultValue;
+        Object value = store.get(key);
+        return value != null ? (T)value : key.defaultValue;
     }
 }
