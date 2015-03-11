@@ -136,7 +136,7 @@ public class SaltStackClient {
      */
     public Token login(final String username, final String password, final String eauth)
             throws SaltStackException {
-        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
+        Map<String, String> props = new LinkedHashMap<String, String>() {
             {
                 put("username", username);
                 put("password", password);
@@ -145,7 +145,7 @@ public class SaltStackClient {
         };
         Result<List<Token>> result = connectionFactory
                 .create("/login", JsonParser.TOKEN, config)
-                .getResult(ClientUtils.makeJsonData(kwargs, null).toString());
+                .getResult(ClientUtils.makeJsonData(props, null, null).toString());
 
         // For whatever reason they return a list of tokens here, take the first
         Token token = result.getResult().get(0);
@@ -238,18 +238,15 @@ public class SaltStackClient {
      */
     public Job startCommand(final String target, final String function, List<String> args,
             Map<String, String> kwargs) throws SaltStackException {
-        Map<String, String> allKwargs = new LinkedHashMap<String, String>() {
+        Map<String, String> props = new LinkedHashMap<String, String>() {
             {
                 put("tgt", target);
                 put("fun", function);
             }
         };
-        if (kwargs != null) {
-            allKwargs.putAll(kwargs);
-        }
 
         JsonArray jsonArray = new JsonArray();
-        jsonArray.add(ClientUtils.makeJsonData(allKwargs, args));
+        jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
 
         // Connect to the minions endpoint and send the above lowstate data
         Result<List<Job>> result = connectionFactory
@@ -333,7 +330,7 @@ public class SaltStackClient {
             final String eauth, final String client, final String target,
             final String function, List<String> args, Map<String, String> kwargs)
             throws SaltStackException {
-        Map<String, String> allKwargs = new LinkedHashMap<String, String>() {
+        Map<String, String> props = new LinkedHashMap<String, String>() {
             {
                 put("username", username);
                 put("password", password);
@@ -343,11 +340,9 @@ public class SaltStackClient {
                 put("fun", function);
             }
         };
-        if (kwargs != null) {
-            allKwargs.putAll(kwargs);
-        }
+
         JsonArray jsonArray = new JsonArray();
-        jsonArray.add(ClientUtils.makeJsonData(allKwargs, args));
+        jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
 
         Result<List<Map<String, Object>>> result = connectionFactory
                 .create("/run", JsonParser.RETVALS, config)

@@ -56,17 +56,26 @@ public class ClientUtils {
     }
 
     /**
-     * Helper for constructing json object from kwargs and args.
+     * Helper for constructing json object with kwargs and args.
      *
      * @return JsonObject filled with kwargs and args.
      */
-    public static JsonObject makeJsonData(Map<String, String> kwargs, List<String> args) {
+    public static JsonObject makeJsonData(Map<String, String> props,
+            Map<String, String> kwargs, List<String> args) {
         final JsonObject json = new JsonObject();
 
-        if (kwargs != null) {
-            for (Map.Entry<String, String> kwEntry : kwargs.entrySet()) {
-                json.addProperty(kwEntry.getKey(), kwEntry.getValue());
+        if (props != null) {
+            for (Map.Entry<String, String> prop : props.entrySet()) {
+                json.addProperty(prop.getKey(), prop.getValue());
             }
+        }
+
+        if (kwargs != null) {
+            JsonObject kwarg = new JsonObject();
+            for (Map.Entry<String, String> kwEntry : kwargs.entrySet()) {
+                kwarg.addProperty(kwEntry.getKey(), kwEntry.getValue());
+            }
+            json.add("kwarg", kwarg);
         }
 
         if (args != null) {

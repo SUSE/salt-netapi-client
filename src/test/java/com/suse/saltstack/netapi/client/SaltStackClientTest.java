@@ -11,7 +11,10 @@ import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -35,6 +38,8 @@ public class SaltStackClientTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
+    static final String JSON_START_COMMAND_REQUEST = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/minions_request.json"));
     static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/minions_response.json"));
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
@@ -133,7 +138,18 @@ public class SaltStackClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(JSON_RUN_RESPONSE)));
 
-        client.run("user", "pass", "pam", "local", "*", "test.ping", null, null);
+        List<String> args = new ArrayList<>();
+        args.add("i3");
+
+        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
+            {
+                put("refresh", "true");
+                put("sysupgrade", "false");
+            }
+        };
+
+
+        client.run("user", "pass", "pam", "local", "*", "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -149,8 +165,18 @@ public class SaltStackClientTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody(JSON_RUN_RESPONSE)));
 
+        List<String> args = new ArrayList<>();
+        args.add("i3");
+
+        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
+            {
+                put("refresh", "true");
+                put("sysupgrade", "false");
+            }
+        };
+
         Future<?> future = client.runAsync("user", "pass", "pam", "local", "*",
-                "test.ping", null, null);
+                "pkg.install", args, kwargs);
         future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
@@ -239,7 +265,22 @@ public class SaltStackClientTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody(JSON_START_COMMAND_RESPONSE)));
 
-        Job job = client.startCommand("*", "test.ping", null, null);
+        List<String> args = new ArrayList<>();
+        args.add("i3");
+
+        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
+            {
+                put("refresh", "true");
+                put("sysupgrade", "false");
+            }
+        };
+
+        Job job = client.startCommand("*", "pkg.install", args, kwargs);
+
+        verify(1, postRequestedFor(urlEqualTo("/minions"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
         assertNotNull(job);
         assertEquals(job.getJid(), "20150211105524392307");
@@ -268,8 +309,23 @@ public class SaltStackClientTest {
                          .withHeader("Content-Type", "application/json")
                          .withBody(JSON_START_COMMAND_RESPONSE)));
 
-        Future<Job> future = client.startCommandAsync("*", "test.ping", null, null);
+        List<String> args = new ArrayList<>();
+        args.add("i3");
+
+        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
+            {
+                put("refresh", "true");
+                put("sysupgrade", "false");
+            }
+        };
+
+        Future<Job> future = client.startCommandAsync("*", "pkg.install", args, kwargs);
         Job job = future.get();
+
+        verify(1, postRequestedFor(urlEqualTo("/minions"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
         assertNotNull(job);
         assertEquals(job.getJid(), "20150211105524392307");
