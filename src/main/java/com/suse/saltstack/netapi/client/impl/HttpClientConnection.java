@@ -28,6 +28,7 @@ import java.net.URI;
 /**
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
+ * @param <T> type of result retrieved using this HTTP connection
  */
 public class HttpClientConnection<T> implements Connection<T> {
 

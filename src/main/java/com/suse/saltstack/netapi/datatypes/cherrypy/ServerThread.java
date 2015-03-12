@@ -2,6 +2,9 @@ package com.suse.saltstack.netapi.datatypes.cherrypy;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * TODO fill doc
+ */
 public class ServerThread {
 
     @SerializedName("Bytes Read")

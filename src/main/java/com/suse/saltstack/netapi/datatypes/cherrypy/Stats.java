@@ -1,5 +1,8 @@
 package com.suse.saltstack.netapi.datatypes.cherrypy;
 
+/**
+ * TODO fill doc
+ */
 public class Stats {
 
     private final Applications applications;
