@@ -33,19 +33,19 @@ import java.util.Map;
 public class JsonParser<T> {
 
     public static final JsonParser<Result<String>> STRING =
-            new JsonParser<>(new TypeToken<Result<String>>(){});
+            new JsonParser<>(new TypeToken<Result<String>>() { });
 
     public static final JsonParser<Result<List<Token>>> TOKEN =
-            new JsonParser<>(new TypeToken<Result<List<Token>>>(){});
+            new JsonParser<>(new TypeToken<Result<List<Token>>>() { });
 
     public static final JsonParser<Result<List<Job>>> JOB =
-            new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
+            new JsonParser<>(new TypeToken<Result<List<Job>>>() { });
 
     public static final JsonParser<Result<List<Map<String, Object>>>> RETVALS =
-            new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>(){});
+            new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>() { });
 
     public static final JsonParser<Stats> STATS =
-            new JsonParser<>(new TypeToken<Stats>(){});
+            new JsonParser<>(new TypeToken<Stats>() { });
 
     private final TypeToken<T> type;
 
@@ -56,7 +56,7 @@ public class JsonParser<T> {
      *
      * @param type A TypeToken describing the type this parser produces.
      */
-    public JsonParser(TypeToken<T> type){
+    public JsonParser(TypeToken<T> type) {
         this.type = type;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new SaltStackDateDeserializer())
