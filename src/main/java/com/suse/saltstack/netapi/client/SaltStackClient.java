@@ -4,6 +4,7 @@ import com.suse.saltstack.netapi.Constants;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
+import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
@@ -405,6 +406,36 @@ public class SaltStackClient {
             @Override
             public Stats call() throws SaltStackException {
                 return stats();
+            }
+        };
+        return executor.submit(callable);
+    }
+
+    /**
+     * Query general key information.
+     *
+     * GET /keys
+     *
+     * @return The {@link Keys} object.
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Keys keys() throws SaltStackException {
+        return connectionFactory.create("/keys", JsonParser.KEYS, config).getResult()
+                .getResult();
+    }
+
+    /**
+     * Asynchronously query general key information.
+     *
+     * GET /keys
+     *
+     * @return Future containing the {@link Keys} object.
+     */
+    public Future<Keys> keysAsync() {
+        Callable<Keys> callable = new Callable<Keys>() {
+            @Override
+            public Keys call() throws SaltStackException {
+                return keys();
             }
         };
         return executor.submit(callable);

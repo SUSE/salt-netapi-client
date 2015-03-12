@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
@@ -41,6 +42,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>(){});
     public static final JsonParser<Stats> STATS =
             new JsonParser<>(new TypeToken<Stats>(){});
+    public static final JsonParser<Result<Keys>> KEYS =
+            new JsonParser<>(new TypeToken<Result<Keys>>(){});
 
     private final TypeToken<T> type;
     private final Gson gson;

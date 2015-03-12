@@ -2,6 +2,7 @@ package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.JsonParseException;
 import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Request;
@@ -10,6 +11,7 @@ import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
 import java.util.Date;
+import java.util.Arrays;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -129,5 +131,17 @@ public class JsonParserTest {
             assertEquals(6, thread.getWorkTime(), 0);
             assertEquals(7.8, thread.getWriteThroughput(), 0);
         }
+    }
+
+    @Test
+    public void testKeysParser() throws Exception {
+        InputStream is = getClass().getResourceAsStream("/keys_response.json");
+        Result<Keys> result = JsonParser.KEYS.parse(is);
+        Keys keys = result.getResult();
+        assertNotNull("failed to parse", result);
+        assertEquals(Arrays.asList("master.pem", "master.pub"), keys.getLocal());
+        assertEquals(Arrays.asList("m1"), keys.getMinions());
+        assertEquals(Arrays.asList("m2"), keys.getUnacceptedMinions());
+        assertEquals(Arrays.asList("m3"), keys.getRejectedMinions());
     }
 }
