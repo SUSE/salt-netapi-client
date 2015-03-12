@@ -38,8 +38,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Result<List<Token>>>(){});
     public static final JsonParser<Result<List<Job>>> JOB =
             new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
-    public static final JsonParser<Result<List<Map<String,Object>>>> RETVALS =
-            new JsonParser<>(new TypeToken<Result<List<Map<String,Object>>>>(){});
+    public static final JsonParser<Result<List<Map<String, Object>>>> RETVALS =
+            new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>(){});
     public static final JsonParser<Stats> STATS =
             new JsonParser<>(new TypeToken<Stats>(){});
 
