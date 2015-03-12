@@ -5,6 +5,7 @@ import java.util.List;
 public class Job {
 
     private String jid;
+
     private List<String> minions;
 
     public String getJid() {

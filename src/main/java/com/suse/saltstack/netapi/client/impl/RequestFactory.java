@@ -1,7 +1,8 @@
 package com.suse.saltstack.netapi.client.impl;
 
-import com.suse.saltstack.netapi.config.ClientConfig;
 import static com.suse.saltstack.netapi.config.ClientConfig.*;
+
+import com.suse.saltstack.netapi.config.ClientConfig;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

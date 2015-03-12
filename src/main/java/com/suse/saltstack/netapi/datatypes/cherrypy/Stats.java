@@ -3,6 +3,7 @@ package com.suse.saltstack.netapi.datatypes.cherrypy;
 public class Stats {
 
     private final Applications applications;
+
     private final HttpServer httpServer;
 
     public Stats(Applications applications, HttpServer httpServer)

@@ -10,12 +10,16 @@ import java.util.Map;
 public class ClientConfig {
 
     public static final Key<URI> URL = new Key<>(URI.create("http://localhost:8000"));
+
     public static final Key<String> TOKEN = new Key<>();
 
     // Proxy settings
     public static final Key<String> PROXY_HOSTNAME = new Key<>();
+
     public static final Key<Integer> PROXY_PORT = new Key<>(3128);
+
     public static final Key<String> PROXY_USERNAME = new Key<>();
+
     public static final Key<String> PROXY_PASSWORD = new Key<>();
 
     /**

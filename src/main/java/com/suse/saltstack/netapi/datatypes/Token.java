@@ -5,12 +5,14 @@ import java.util.List;
 
 public class Token {
 
-    // String attributes
     private String eauth;
+
     private String token;
+
     private String user;
 
     private Date start;
+
     private Date expire;
 
     private List<String> perms;
