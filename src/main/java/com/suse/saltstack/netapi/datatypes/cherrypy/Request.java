@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+/**
+ * TODO fill doc
+ */
 public class Request {
 
     @SerializedName("Bytes Read")

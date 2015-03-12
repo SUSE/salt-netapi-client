@@ -33,17 +33,22 @@ import java.util.Map;
 public class JsonParser<T> {
 
     public static final JsonParser<Result<String>> STRING =
-        new JsonParser<>(new TypeToken<Result<String>>(){});
+            new JsonParser<>(new TypeToken<Result<String>>() { });
+
     public static final JsonParser<Result<List<Token>>> TOKEN =
-        new JsonParser<>(new TypeToken<Result<List<Token>>>(){});
+            new JsonParser<>(new TypeToken<Result<List<Token>>>() { });
+
     public static final JsonParser<Result<List<Job>>> JOB =
-        new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
-    public static final JsonParser<Result<List<Map<String,Object>>>> RETVALS =
-        new JsonParser<>(new TypeToken<Result<List<Map<String,Object>>>>(){});
+            new JsonParser<>(new TypeToken<Result<List<Job>>>() { });
+
+    public static final JsonParser<Result<List<Map<String, Object>>>> RETVALS =
+            new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>() { });
+
     public static final JsonParser<Stats> STATS =
-        new JsonParser<>(new TypeToken<Stats>(){});
+            new JsonParser<>(new TypeToken<Stats>() { });
 
     private final TypeToken<T> type;
+
     private final Gson gson;
 
     /**
@@ -51,7 +56,7 @@ public class JsonParser<T> {
      *
      * @param type A TypeToken describing the type this parser produces.
      */
-    public JsonParser(TypeToken<T> type){
+    public JsonParser(TypeToken<T> type) {
         this.type = type;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new SaltStackDateDeserializer())
@@ -96,6 +101,7 @@ public class JsonParser<T> {
     private class StatsDeserializer implements JsonDeserializer<Stats> {
 
         private static final String CP_APPLICATIONS = "CherryPy Applications";
+
         private static final String CP_SERVER_PREFIX = "CherryPy HTTPServer ";
 
         @Override
@@ -104,7 +110,8 @@ public class JsonParser<T> {
                 throws JsonParseException {
             try {
                 JsonObject stats = jsonElement.getAsJsonObject();
-                Applications app = gson.fromJson(stats.get(CP_APPLICATIONS), Applications.class);
+                Applications app = gson.fromJson(stats.get(CP_APPLICATIONS),
+                        Applications.class);
                 HttpServer server = null;
                 for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
                     String key = entry.getKey();

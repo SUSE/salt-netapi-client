@@ -1,9 +1,10 @@
 package com.suse.saltstack.netapi.client;
 
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
+
 import com.suse.saltstack.netapi.Constants;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
-import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
@@ -11,10 +12,10 @@ import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
+import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import com.google.gson.JsonArray;
 
-import com.suse.saltstack.netapi.utils.ClientUtils;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -292,7 +293,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String,Object> getJobResult(final Job job) throws SaltStackException {
+    public Map<String, Object> getJobResult(final Job job) throws SaltStackException {
         return getJobResult(job.getJid());
     }
 
@@ -305,8 +306,8 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String,Object> getJobResult(final String job) throws SaltStackException {
-        Result<List<Map<String,Object>>> result = connectionFactory
+    public Map<String, Object> getJobResult(final String job) throws SaltStackException {
+        Result<List<Map<String, Object>>> result = connectionFactory
                 .create("/jobs/" + job, JsonParser.RETVALS, config)
                 .getResult();
 
@@ -330,7 +331,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String,Object> run(final String username, final String password,
+    public Map<String, Object> run(final String username, final String password,
             final String eauth, final String client, final String target,
             final String function, List<String> args, Map<String, String> kwargs)
             throws SaltStackException {
@@ -350,7 +351,7 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(ClientUtils.makeJsonData(allKwargs, args));
 
-        Result<List<Map<String,Object>>> result = connectionFactory
+        Result<List<Map<String, Object>>> result = connectionFactory
                 .create("/run", JsonParser.RETVALS, config)
                 .getResult(jsonArray.toString());
 
@@ -387,32 +388,32 @@ public class SaltStackClient {
         return executor.submit(callable);
     }
 
-  /**
-  * Query statistics from the CherryPy Server.
-  *
-  * GET /stats
-  *
-  * @return The {@link Stats} object.
-  * @throws SaltStackException if anything goes wrong
-  */
-  public Stats stats() throws SaltStackException {
-      return connectionFactory.create("/stats", JsonParser.STATS, config).getResult();
-  }
+    /**
+     * Query statistics from the CherryPy Server.
+     *
+     * GET /stats
+     *
+     * @return The {@link Stats} object.
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Stats stats() throws SaltStackException {
+        return connectionFactory.create("/stats", JsonParser.STATS, config).getResult();
+    }
 
-  /**
-  * Asynchronously query statistics from the CherryPy Server.
-  *
-  * GET /stats
-  *
-  * @return Future containing the {@link Stats} object.
-  */
-  public Future<Stats> statsAsync() {
-      Callable<Stats> callable = new Callable<Stats>() {
-          @Override
-          public Stats call() throws SaltStackException {
-              return stats();
-          }
-      };
-      return executor.submit(callable);
-  }
+    /**
+     * Asynchronously query statistics from the CherryPy Server.
+     *
+     * GET /stats
+     *
+     * @return Future containing the {@link Stats} object.
+     */
+    public Future<Stats> statsAsync() {
+        Callable<Stats> callable = new Callable<Stats>() {
+            @Override
+            public Stats call() throws SaltStackException {
+                return stats();
+            }
+        };
+        return executor.submit(callable);
+    }
 }

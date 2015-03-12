@@ -8,8 +8,11 @@ import com.suse.saltstack.netapi.client.SaltStackClient;
 public class ProxySettings {
 
     private String hostname;
+
     private String username;
+
     private String password;
+
     private int port;
 
     /**
@@ -32,7 +35,7 @@ public class ProxySettings {
      * @param password proxy password
      */
     public ProxySettings(String hostname, int port,
-                         String username, String password) {
+            String username, String password) {
         this(hostname, port);
         this.username = username;
         this.password = password;

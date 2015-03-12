@@ -27,8 +27,8 @@ import static org.junit.Assert.*;
  * SaltStack API unit tests.
  */
 public class SaltStackClientTest {
-    private static final int MOCK_HTTP_PORT = 8888;
 
+    private static final int MOCK_HTTP_PORT = 8888;
 
     static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/minions_response.json"));
@@ -66,7 +66,8 @@ public class SaltStackClientTest {
                         .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass");
-        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
+        assertEquals("Token mismatch",
+                token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
@@ -96,7 +97,8 @@ public class SaltStackClientTest {
         Future<Token> futureToken = client.loginAsync("user", "pass");
         Token token = futureToken.get();
 
-        assertEquals("Token mismatch", token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
+        assertEquals("Token mismatch",
+                token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
         assertEquals("User mismatch", token.getUser(), "user");
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));

@@ -1,8 +1,9 @@
 package com.suse.saltstack.netapi.client.impl;
 
+import static com.suse.saltstack.netapi.config.ClientConfig.*;
+
 import com.suse.saltstack.netapi.client.Connection;
 import com.suse.saltstack.netapi.config.ClientConfig;
-import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import org.apache.http.HttpHost;
@@ -27,6 +28,7 @@ import java.net.URI;
 /**
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
+ * @param <T> type of result retrieved using this HTTP connection
  */
 public class HttpClientConnection<T> implements Connection<T> {
 
@@ -71,7 +73,6 @@ public class HttpClientConnection<T> implements Connection<T> {
     /**
      * Perform HTTP request and parse the result into a given result type.
      *
-     * @param method the HTTP method to use
      * @return object of type given by resultType
      * @throws SaltStackException in case of a problem
      */
