@@ -34,8 +34,8 @@ public class ClientConfig {
         /**
          * Creates a new Key with the default value null.
          */
-        public Key(){
-          this(null);
+        public Key() {
+            this(null);
         }
 
         /**
@@ -59,7 +59,7 @@ public class ClientConfig {
      * @param <T> The type of the value associated with the key.
      */
     public <T> void put(Key<T> key, T value) {
-        if(value == null || value.equals(key.defaultValue)){
+        if (value == null || value.equals(key.defaultValue)){
             remove(key);
         } else {
             store.put(key, value);
@@ -89,6 +89,6 @@ public class ClientConfig {
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
         Object value = store.get(key);
-        return value != null ? (T)value : key.defaultValue;
+        return value != null ? (T) value : key.defaultValue;
     }
 }
