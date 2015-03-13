@@ -81,8 +81,8 @@ public class HttpClientConnection<T> implements Connection<T> {
 
         // Timeouts may be specified on configuration
         RequestConfig reqconfig = RequestConfig.custom()
-                .setConnectTimeout(config.get(CONNECT_TIMEOUT))
-                .setSocketTimeout(config.get(SOCKET_TIMEOUT))
+                .setConnectTimeout(config.get(ClientConfig.CONNECT_TIMEOUT))
+                .setSocketTimeout(config.get(ClientConfig.SOCKET_TIMEOUT))
                 .build();
 
         httpClientBuilder.setDefaultRequestConfig(reqconfig);
