@@ -3,7 +3,6 @@ package com.suse.saltstack.netapi.client;
 import com.suse.saltstack.netapi.Constants;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
-import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
@@ -77,7 +76,7 @@ public class SaltStackClient {
     public SaltStackClient(URI url, ConnectionFactory connectionFactory,
             ExecutorService executor) {
         // Put the URL in the config
-        config.put(URL, url);
+        config.put(ClientConfig.URL, url);
         this.connectionFactory = connectionFactory;
         this.executor = executor;
     }
@@ -98,13 +97,13 @@ public class SaltStackClient {
      */
     public void setProxy(ProxySettings settings) {
         if (settings.getHostname() != null) {
-            config.put(PROXY_HOSTNAME, settings.getHostname());
-            config.put(PROXY_PORT, settings.getPort());
+            config.put(ClientConfig.PROXY_HOSTNAME, settings.getHostname());
+            config.put(ClientConfig.PROXY_PORT, settings.getPort());
         }
         if (settings.getUsername() != null) {
-            config.put(PROXY_USERNAME, settings.getUsername());
+            config.put(ClientConfig.PROXY_USERNAME, settings.getUsername());
             if (settings.getPassword() != null) {
-                config.put(PROXY_PASSWORD, settings.getPassword());
+                config.put(ClientConfig.PROXY_PASSWORD, settings.getPassword());
             }
         }
     }
@@ -150,7 +149,7 @@ public class SaltStackClient {
 
         // For whatever reason they return a list of tokens here, take the first
         Token token = result.getResult().get(0);
-        config.put(TOKEN, token.getToken());
+        config.put(ClientConfig.TOKEN, token.getToken());
         return token;
     }
 
@@ -205,7 +204,7 @@ public class SaltStackClient {
     public Result<String> logout() throws SaltStackException {
         Result<String> result = connectionFactory
                 .create("/logout", JsonParser.STRING, config).getResult(null);
-        config.remove(TOKEN);
+        config.remove(ClientConfig.TOKEN);
         return result;
     }
 

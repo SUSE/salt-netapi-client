@@ -18,6 +18,7 @@
         <module name="UnusedImports">
             <property name="processJavadoc" value="true"/>
         </module>
+        <module name="AvoidStarImport"/>
         <module name="ConstantName"/>
         <module name="EmptyBlock"/>
         <module name="EmptyLineSeparator"/>

@@ -2,7 +2,6 @@ package com.suse.saltstack.netapi.client.impl;
 
 import com.suse.saltstack.netapi.client.Connection;
 import com.suse.saltstack.netapi.config.ClientConfig;
-import static com.suse.saltstack.netapi.config.ClientConfig.*;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import org.apache.http.HttpHost;
@@ -79,15 +78,15 @@ public class HttpClientConnection<T> implements Connection<T> {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Configure proxy if specified on configuration
-        String proxyHost = config.get(PROXY_HOSTNAME);
+        String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
         if (proxyHost != null) {
-            int proxyPort = config.get(PROXY_PORT);
+            int proxyPort = config.get(ClientConfig.PROXY_PORT);
             HttpHost proxy = new HttpHost(proxyHost, proxyPort);
             httpClientBuilder.setProxy(proxy);
 
             // Proxy authentication
-            String proxyUsername = config.get(PROXY_USERNAME);
-            String proxyPassword = config.get(PROXY_PASSWORD);
+            String proxyUsername = config.get(ClientConfig.PROXY_USERNAME);
+            String proxyPassword = config.get(ClientConfig.PROXY_PASSWORD);
             if (proxyUsername != null && proxyPassword != null) {
                 CredentialsProvider credentials = new BasicCredentialsProvider();
                 credentials.setCredentials(
@@ -99,7 +98,7 @@ public class HttpClientConnection<T> implements Connection<T> {
 
         try (CloseableHttpClient httpClient = httpClientBuilder.build()) {
             // Prepare request
-            URI uri = config.get(URL).resolve(endpoint);
+            URI uri = config.get(ClientConfig.URL).resolve(endpoint);
 
             HttpUriRequest httpRequest = null;
             if (data != null) {
@@ -116,7 +115,7 @@ public class HttpClientConnection<T> implements Connection<T> {
             httpRequest.addHeader("Accept", "application/json");
 
             // Token authentication
-            String token = config.get(TOKEN);
+            String token = config.get(ClientConfig.TOKEN);
             if (token != null) {
                 httpRequest.addHeader("X-Auth-Token", token);
             }

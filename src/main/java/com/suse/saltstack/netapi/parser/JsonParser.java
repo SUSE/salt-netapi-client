@@ -10,10 +10,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
-import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
-import com.suse.saltstack.netapi.results.*;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.results.Result;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

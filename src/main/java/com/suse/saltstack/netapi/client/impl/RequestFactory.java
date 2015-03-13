@@ -1,7 +1,6 @@
 package com.suse.saltstack.netapi.client.impl;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
-import static com.suse.saltstack.netapi.config.ClientConfig.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -45,20 +44,20 @@ public class RequestFactory {
     public HttpURLConnection initConnection(String method, String endpoint,
             ClientConfig config) throws IOException {
         // Init the connection
-        URL url = config.get(URL).resolve(endpoint).toURL();
+        URL url = config.get(ClientConfig.URL).resolve(endpoint).toURL();
         HttpURLConnection connection;
 
         // Optionally connect via a given proxy
-        String proxyHost = config.get(PROXY_HOSTNAME);
+        String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
         if (proxyHost != null) {
-            int proxyPort = config.get(PROXY_PORT);
+            int proxyPort = config.get(ClientConfig.PROXY_PORT);
             Proxy proxy = new Proxy(Proxy.Type.HTTP,
                     new InetSocketAddress(proxyHost, proxyPort));
             connection = (HttpURLConnection) url.openConnection(proxy);
 
             // Proxy authentication
-            String proxyUsername = config.get(PROXY_USERNAME);
-            String proxyPassword = config.get(PROXY_PASSWORD);
+            String proxyUsername = config.get(ClientConfig.PROXY_USERNAME);
+            String proxyPassword = config.get(ClientConfig.PROXY_PASSWORD);
             if (proxyUsername != null && proxyPassword != null) {
                 final String encoded = DatatypeConverter.printBase64Binary(
                         (proxyUsername + ':' + proxyPassword).getBytes());
@@ -73,7 +72,7 @@ public class RequestFactory {
         connection.setRequestProperty("Accept", "application/json");
 
         // Token authentication
-        String token = config.get(TOKEN);
+        String token = config.get(ClientConfig.TOKEN);
         if (token != null) {
             connection.setRequestProperty("X-Auth-Token", token);
         }
