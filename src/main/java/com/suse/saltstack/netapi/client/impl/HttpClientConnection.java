@@ -42,6 +42,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      * Init a connection to a given SaltStack API endpoint.
      *
      * @param endpointIn the endpoint
+     * @param parserIn the parser
      * @param configIn the config
      */
     public HttpClientConnection(String endpointIn, JsonParser<T> parserIn,
@@ -70,7 +71,8 @@ public class HttpClientConnection<T> implements Connection<T> {
     /**
      * Perform HTTP request and parse the result into a given result type.
      *
-     * @return object of type given by resultType
+     * @param data the data to send with the request
+     * @return object of type T
      * @throws SaltStackException in case of a problem
      */
     private T request(String data) throws SaltStackException {
