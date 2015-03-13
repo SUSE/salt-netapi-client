@@ -22,7 +22,6 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.IOException;
 import java.net.URI;
 
-
 /**
  * Class representation of a connection to SaltStack for issuing API requests
  * using Apache's HttpClient.
