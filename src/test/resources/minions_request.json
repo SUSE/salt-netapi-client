@@ -1,9 +1,5 @@
 [
   {
-    "username": "user",
-    "password": "pass",
-    "eauth": "pam",
-    "client": "local",
     "tgt": "*",
     "fun": "pkg.install",
     "arg": ["i3"],
@@ -13,3 +9,4 @@
     }
   }
 ]
+

@@ -71,19 +71,30 @@ public class ClientUtilsTest {
 
     @Test
     public void makeJsonDataEmpty() {
-        JsonObject jsonObject = ClientUtils.makeJsonData(null, null);
+        JsonObject jsonObject = ClientUtils.makeJsonData(null, null, null);
         assertEquals(new JsonObject(), jsonObject);
     }
 
     @Test
     public void makeJsonDataKwargsArgs() {
         JsonObject expected = new JsonObject();
-        expected.addProperty("first", "1");
-        expected.addProperty("snd", "42");
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(new JsonPrimitive("foo"));
-        jsonArray.add(new JsonPrimitive("bar"));
-        expected.add("arg", jsonArray);
+        expected.addProperty("tgt", "*");
+        expected.addProperty("fun", "test.ping");
+        JsonObject kwarg = new JsonObject();
+        kwarg.addProperty("first", "1");
+        kwarg.addProperty("snd", "42");
+        expected.add("kwarg", kwarg);
+        JsonArray arg = new JsonArray();
+        arg.add(new JsonPrimitive("foo"));
+        arg.add(new JsonPrimitive("bar"));
+        expected.add("arg", arg);
+
+        Map<String, String> props = new LinkedHashMap<String, String>() {
+            {
+                put("tgt", "*");
+                put("fun", "test.ping");
+            }
+        };
 
         Map<String, String> kwargs = new LinkedHashMap<String, String>() {
             {
@@ -96,7 +107,7 @@ public class ClientUtilsTest {
         args.add("foo");
         args.add("bar");
 
-        JsonObject jsonObject = ClientUtils.makeJsonData(kwargs, args);
+        JsonObject jsonObject = ClientUtils.makeJsonData(props, kwargs, args);
 
         assertEquals(expected, jsonObject);
     }
