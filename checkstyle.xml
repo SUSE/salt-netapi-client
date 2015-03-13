@@ -21,7 +21,9 @@
         <module name="AvoidStarImport"/>
         <module name="ConstantName"/>
         <module name="EmptyBlock"/>
-        <module name="EmptyLineSeparator"/>
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
         <module name="JavadocType"/>
         <module name="NoWhitespaceAfter"/>
         <module name="WhitespaceAfter"/>
