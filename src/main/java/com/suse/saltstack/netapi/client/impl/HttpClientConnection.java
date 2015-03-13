@@ -9,6 +9,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -77,6 +78,14 @@ public class HttpClientConnection<T> implements Connection<T> {
      */
     private T request(String data) throws SaltStackException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
+
+        // Timeouts may be specified on configuration
+        RequestConfig reqconfig = RequestConfig.custom()
+                .setConnectTimeout(config.get(CONNECT_TIMEOUT))
+                .setSocketTimeout(config.get(SOCKET_TIMEOUT))
+                .build();
+
+        httpClientBuilder.setDefaultRequestConfig(reqconfig);
 
         // Configure proxy if specified on configuration
         String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
