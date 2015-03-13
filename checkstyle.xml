@@ -7,6 +7,7 @@
     <module name="TreeWalker">
         <module name="LineLength">
             <property name="max" value="92"/>
+            <property name="ignorePattern" value="import"/>
         </module>
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
