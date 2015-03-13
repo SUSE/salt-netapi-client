@@ -10,6 +10,7 @@ import com.suse.saltstack.netapi.parser.JsonParser;
  * @see HttpClientConnection
  */
 public class HttpClientConnectionFactory implements ConnectionFactory {
+
     /**
      * {@inheritDoc}
      */

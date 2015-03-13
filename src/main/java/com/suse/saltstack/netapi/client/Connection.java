@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 
 /**
  * Describes an interface for different HTTP connection implementations.
+ * @param <T> type of result retrieved using this HTTP connection
  */
 public interface Connection<T> {
 

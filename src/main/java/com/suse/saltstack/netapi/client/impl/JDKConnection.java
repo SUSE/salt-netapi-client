@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 /**
  * Class representation of a connection to SaltStack for issuing API requests using JDK's
  * HttpURLConnection.
+ * @param <T> type of result retrieved using this HTTP connection
  */
 public class JDKConnection<T> implements Connection<T> {
 

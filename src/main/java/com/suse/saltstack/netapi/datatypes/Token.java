@@ -3,6 +3,9 @@ package com.suse.saltstack.netapi.datatypes;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Token containing authentication data.
+ */
 public class Token {
 
     // String attributes

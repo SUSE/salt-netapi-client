@@ -30,8 +30,8 @@ public class ClientConfig {
         /**
          * Creates a new Key with the default value null.
          */
-        public Key(){
-          this(null);
+        public Key() {
+            this(null);
         }
 
         /**
@@ -55,7 +55,7 @@ public class ClientConfig {
      * @param <T> The type of the value associated with the key.
      */
     public <T> void put(Key<T> key, T value) {
-        if(value == null || value.equals(key.defaultValue)){
+        if (value == null || value.equals(key.defaultValue)) {
             remove(key);
         } else {
             store.put(key, value);
@@ -74,17 +74,17 @@ public class ClientConfig {
     }
 
     /**
-     * Returns the configured value for the given key. If the key is not explicitly set. the
-     * default value is for that key is returned.
+     * Returns the configured value for the given key. If the key is not explicitly set.
+     * The default value is for that key is returned.
      *
      * @param key The configuration key.
      * @param <T> The type of the value associated with the key.
-     * @return The current configured value for the key or the default value if not configured.
+     * @return The current configured value for the key or the default value if not
+     * configured.
      */
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
-       Object value = store.get(key);
-       return value != null ? (T)value : key.defaultValue;
+        Object value = store.get(key);
+        return value != null ? (T) value : key.defaultValue;
     }
-
 }
