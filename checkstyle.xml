@@ -23,6 +23,8 @@
         <module name="JavadocType"/>
         <module name="NoWhitespaceAfter"/>
         <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyTypes" value="true"/>
+        </module>
     </module>
 </module>
