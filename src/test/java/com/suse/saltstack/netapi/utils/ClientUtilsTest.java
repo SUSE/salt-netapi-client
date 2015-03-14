@@ -23,7 +23,9 @@ public class ClientUtilsTest {
 
     @Test
     public void testCloseQuietly() throws IOException {
-        // Mocked InputStream that throws IOException when closed more than once.
+        /**
+         * Mocked InputStream that throws IOException when closed more than once.
+         */
         class MockedInputStream extends InputStream {
             private boolean closed = false;
 

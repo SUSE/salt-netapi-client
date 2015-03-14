@@ -27,9 +27,23 @@ import java.net.URI;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * SaltStack API unit tests.
@@ -74,9 +88,9 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_LOGIN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass");
         assertEquals("Token mismatch",
@@ -92,7 +106,7 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
+                .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass");
     }
 
@@ -103,9 +117,9 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_LOGIN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOGIN_RESPONSE)));
 
         Future<Token> futureToken = client.loginAsync("user", "pass");
         Token token = futureToken.get();
@@ -123,7 +137,7 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
+                .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
 
         Future<Token> futureToken = client.loginAsync("user", "pass");
         Token token = futureToken.get();
@@ -134,9 +148,9 @@ public class SaltStackClientTest {
     public void testRunRequest() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
-                    .withStatus(HttpURLConnection.HTTP_OK)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JSON_RUN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_RESPONSE)));
 
         List<String> args = new ArrayList<>();
         args.add("i3");
@@ -161,9 +175,9 @@ public class SaltStackClientTest {
     public void testRunRequestAsync() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_RUN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_RESPONSE)));
 
         List<String> args = new ArrayList<>();
         args.add("i3");
@@ -210,10 +224,11 @@ public class SaltStackClientTest {
         exception.expect(SaltStackException.class);
         exception.expectMessage(containsString("Read timed out"));
 
-        // create a local SaltStackClient with a fast timeout configuration 
+        // create a local SaltStackClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        SaltStackClient clientWithFastTimeout = new SaltStackClient(uri, new JDKConnectionFactory());
+        SaltStackClient clientWithFastTimeout = new SaltStackClient(uri,
+                new JDKConnectionFactory());
         clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
 
         stubFor(post(urlEqualTo("/login"))
@@ -229,9 +244,9 @@ public class SaltStackClientTest {
     public void testRunResult() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
-                    .withStatus(HttpURLConnection.HTTP_OK)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JSON_RUN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_RESPONSE)));
 
         Map<String, Object> retvals = client.run("user", "pass", "pam", "local", "*",
                 "test.ping", null, null);
@@ -245,9 +260,9 @@ public class SaltStackClientTest {
     public void testRunResultAsync() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_RUN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_RESPONSE)));
 
         Future<Map<String, Object>> future = client.runAsync("user", "pass",
                 "pam", "local", "*", "test.ping", null, null);
@@ -262,8 +277,8 @@ public class SaltStackClientTest {
     public void testStartCommand() throws Exception {
         stubFor(post(urlEqualTo("/minions")).willReturn(
                 aResponse().withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_START_COMMAND_RESPONSE)));
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_START_COMMAND_RESPONSE)));
 
         List<String> args = new ArrayList<>();
         args.add("i3");
@@ -291,9 +306,9 @@ public class SaltStackClientTest {
     public void testQueryJobResult() throws Exception {
         stubFor(get(urlEqualTo("/jobs/some-job-id"))
                 .willReturn(aResponse()
-                    .withStatus(HttpURLConnection.HTTP_OK)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JSON_RUN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_RESPONSE)));
 
         Map<String, Object> retvals = client.getJobResult("some-job-id");
 
@@ -305,9 +320,9 @@ public class SaltStackClientTest {
     @Test
     public void testStartCommandAsync() throws Exception {
         stubFor(post(urlEqualTo("/minions")).willReturn(
-                 aResponse().withStatus(HttpURLConnection.HTTP_OK)
-                         .withHeader("Content-Type", "application/json")
-                         .withBody(JSON_START_COMMAND_RESPONSE)));
+                aResponse().withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_START_COMMAND_RESPONSE)));
 
         List<String> args = new ArrayList<>();
         args.add("i3");
@@ -336,9 +351,9 @@ public class SaltStackClientTest {
     public void testStats() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
-                    .withStatus(HttpURLConnection.HTTP_OK)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JSON_STATS_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_STATS_RESPONSE)));
 
         Stats stats = client.stats();
 
@@ -352,9 +367,9 @@ public class SaltStackClientTest {
     public void testStatsAsync() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
-                    .withStatus(HttpURLConnection.HTTP_OK)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JSON_STATS_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_STATS_RESPONSE)));
 
         Stats stats = client.statsAsync().get();
 
