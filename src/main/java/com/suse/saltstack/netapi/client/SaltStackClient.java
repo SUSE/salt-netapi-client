@@ -8,6 +8,7 @@ import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
+import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.JobMinions;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
@@ -278,6 +279,32 @@ public class SaltStackClient {
 
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
+    }
+
+    /**
+     * Get previously run jobs.
+     * @return map containing run jobs keyed by job id.
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Map<String, Job> getJobs() throws SaltStackException {
+        Result<List<Map<String, Job>>> result = connectionFactory
+                .create("/jobs", JsonParser.JOBS, config)
+                .getResult();
+        return result.getResult().get(0);
+    }
+
+    /**
+     * Get previously run jobs.
+     * @return future with a map containing run jobs keyed by job id.
+     */
+    public Future<Map<String, Job>> getJobsAsync() {
+        Callable<Map<String, Job>> callable = new Callable<Map<String, Job>>() {
+            @Override
+            public Map<String, Job> call() throws SaltStackException {
+                return getJobs();
+            }
+        };
+        return executor.submit(callable);
     }
 
     /**

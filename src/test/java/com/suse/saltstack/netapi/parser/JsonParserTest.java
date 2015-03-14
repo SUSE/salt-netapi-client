@@ -1,6 +1,8 @@
 package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.JsonParseException;
+import com.suse.saltstack.netapi.datatypes.Arguments;
+import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.JobMinions;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
@@ -12,6 +14,8 @@ import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
 import java.util.Date;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -143,5 +147,112 @@ public class JsonParserTest {
         assertEquals(Arrays.asList("m1"), keys.getMinions());
         assertEquals(Arrays.asList("m2"), keys.getUnacceptedMinions());
         assertEquals(Arrays.asList("m3"), keys.getRejectedMinions());
+    }
+
+    @Test
+    public void testSaltStackJobsWithArgsParser() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("/jobs_response.json");
+        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        assertNotNull("failed to parse", result);
+
+        Map<String, Job> jobs = result.getResult().get(0);
+        Job job = jobs.get("20150304200110485012");
+        assertNotNull(job);
+        Arguments expectedArgs = new Arguments();
+        expectedArgs.getArgs().add("enable-autodestruction");
+        assertEquals(expectedArgs.getArgs(), job.getArguments().getArgs());
+        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
+        assertEquals("test.echo", job.getFunction());
+        assertEquals("*", job.getTarget());
+        assertEquals("glob", job.getTargetType());
+        assertEquals("chuck", job.getUser());
+    }
+
+    @Test
+    public void testSaltStackJobsWithKwargsParser() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("/jobs_response_kwargs.json");
+        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        assertNotNull("failed to parse", result);
+
+        Map<String, Job> jobs = result.getResult().get(0);
+        Job job = jobs.get("20150306023815935637");
+        assertNotNull(job);
+
+        Arguments expectedArgs = new Arguments();
+        expectedArgs.getArgs().add("i3");
+        expectedArgs.getArgs().add(true);
+        expectedArgs.getKwargs().put("sysupgrade", true);
+        expectedArgs.getKwargs().put("otherkwarg", 42.5);
+
+        assertEquals(expectedArgs.getArgs(), job.getArguments().getArgs());
+        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
+        assertEquals("pkg.install", job.getFunction());
+        assertEquals("*", job.getTarget());
+        assertEquals("glob", job.getTargetType());
+        assertEquals("lucid", job.getUser());
+    }
+
+    @Test
+    public void testSaltStackJobsWithArgsAsKwargsParser() throws Exception {
+        InputStream is = this.getClass()
+                .getResourceAsStream("/jobs_response_args_as_kwargs.json");
+        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+
+        Map<String, Job> jobs = result.getResult().get(0);
+        Job job = jobs.get("20150315163041425361");
+
+        Arguments expectedArgs = new Arguments();
+        Map<String, Object> arg = new LinkedHashMap<String, Object>() {
+            {
+                put("refresh", true);
+            }
+        };
+        expectedArgs.getArgs().add(arg);
+
+        arg = new LinkedHashMap<String, Object>() {
+            {
+                put("somepar", 123.3);
+                put("__kwarg__", false);
+            }
+        };
+        expectedArgs.getArgs().add(arg);
+
+        arg = new LinkedHashMap<String, Object>() {
+            {
+                put("nullparam", null);
+                put("__kwarg__", null);
+            }
+        };
+        expectedArgs.getArgs().add(arg);
+
+        arg = new LinkedHashMap<String, Object>() {
+            {
+                put("otherparam", true);
+                put("__kwarg__", 123.0);
+            }
+        };
+        expectedArgs.getArgs().add(arg);
+        expectedArgs.getArgs().add("i3");
+        expectedArgs.getKwargs().put("sysupgrade", true);
+
+        assertEquals(expectedArgs.getArgs(), job.getArguments().getArgs());
+        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
+    }
+
+    @Test
+    public void testSaltStackJobsMultipleKwargs() throws Exception {
+        InputStream is = this.getClass()
+                .getResourceAsStream("/jobs_response_multiple_kwarg.json");
+        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+
+        Map<String, Job> jobs = result.getResult().get(0);
+        Job job = jobs.get("20150306023815935637");
+
+        Arguments expectedArgs = new Arguments();
+        expectedArgs.getKwargs().put("multi", false);
+
+        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
+        assertEquals(0, job.getArguments().getArgs().size());
+        assertEquals(1, job.getArguments().getKwargs().size());
     }
 }
