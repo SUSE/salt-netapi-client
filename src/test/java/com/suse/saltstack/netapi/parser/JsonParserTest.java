@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.JsonParseException;
-import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.JobMinions;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
@@ -28,7 +28,7 @@ public class JsonParserTest {
     @Test
     public void testSaltStackJobParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/minions_response.json");
-        Result<List<Job>> result = JsonParser.JOB.parse(is);
+        Result<List<JobMinions>> result = JsonParser.JOB_MINIONS.parse(is);
         assertNotNull("failed to parse", result);
         String jid = result.getResult().get(0).getJid();
         assertEquals("unable to parse jid", "20150211105524392307", jid);

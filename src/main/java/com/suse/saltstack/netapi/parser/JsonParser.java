@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.JobMinions;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
@@ -36,8 +36,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Result<String>>(){});
     public static final JsonParser<Result<List<Token>>> TOKEN =
             new JsonParser<>(new TypeToken<Result<List<Token>>>(){});
-    public static final JsonParser<Result<List<Job>>> JOB =
-            new JsonParser<>(new TypeToken<Result<List<Job>>>(){});
+    public static final JsonParser<Result<List<JobMinions>>> JOB_MINIONS =
+            new JsonParser<>(new TypeToken<Result<List<JobMinions>>>(){});
     public static final JsonParser<Result<List<Map<String, Object>>>> RETVALS =
             new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>(){});
     public static final JsonParser<Stats> STATS =
