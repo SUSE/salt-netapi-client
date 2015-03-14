@@ -7,6 +7,11 @@
         <property name="lineSeparator" value="lf"/>
     </module>
     <module name="TreeWalker">
+        <module name="Regexp">
+            <property name="format" value="[ \t]+$"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="message" value="Trailing whitespace"/>
+        </module>
         <module name="LineLength">
             <property name="max" value="92"/>
             <property name="ignorePattern" value="import"/>
