@@ -2,7 +2,11 @@ package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.JsonParseException;
 import com.suse.saltstack.netapi.datatypes.Job;
-import com.suse.saltstack.netapi.datatypes.cherrypy.*;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
+import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Request;
+import com.suse.saltstack.netapi.datatypes.cherrypy.ServerThread;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
 import java.util.Date;
@@ -14,6 +18,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Json parser unit tests.
+ */
 public class JsonParserTest {
 
     @Test
@@ -114,7 +121,7 @@ public class JsonParserTest {
         assertEquals(10, server.getWriteThroughput(), 0);
 
         for (int i = 0; i < server.getThreads(); i++) {
-            ServerThread thread = server.getWorkerThreads().get("CP Server Thread-"+i);
+            ServerThread thread = server.getWorkerThreads().get("CP Server Thread-" + i);
             assertEquals(0, thread.getBytesRead());
             assertEquals(2, thread.getBytesWritten());
             assertEquals(3.4, thread.getReadThroughput(), 0);

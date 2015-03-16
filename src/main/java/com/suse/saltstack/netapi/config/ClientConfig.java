@@ -17,7 +17,7 @@ public class ClientConfig {
      * A timeout of zero is interpreted as an infinite timeout.
      * A negative value is interpreted as undefined (system default).
      * Default value is 10000ms (10s)
-     * 
+     *
      * @see HttpClientConnection.request(String)
      * @see JDKConnection.request(String, String)
      */
@@ -28,7 +28,7 @@ public class ClientConfig {
      * A timeout of zero is interpreted as an infinite timeout.
      * A negative value is interpreted as undefined (system default).
      * Default value is 10000ms (10s)
-     * 
+     *
      * @see HttpClientConnection.request(String)
      * @see JDKConnection.request(String, String)
      */

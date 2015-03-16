@@ -1,10 +1,14 @@
 package com.suse.saltstack.netapi.config;
 
-import static com.suse.saltstack.netapi.config.ClientConfig.*;
-
-import static org.junit.Assert.assertEquals;
+import com.suse.saltstack.netapi.config.ClientConfig.Key;
 import org.junit.Test;
 
+import static com.suse.saltstack.netapi.config.ClientConfig.PROXY_PORT;
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Configuration unit tests.
+ */
 public class ClientConfigTest {
 
     @Test
