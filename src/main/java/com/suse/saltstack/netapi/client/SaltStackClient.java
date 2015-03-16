@@ -1,5 +1,6 @@
 package com.suse.saltstack.netapi.client;
 
+import com.suse.saltstack.netapi.AuthModule;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
@@ -118,13 +119,13 @@ public class SaltStackClient {
      * @return authentication token as {@link Token}
      * @throws SaltStackException if anything goes wrong
      */
-    public Token login(final String username, final String password, final String eauth)
+    public Token login(final String username, final String password, final AuthModule eauth)
             throws SaltStackException {
         Map<String, String> props = new LinkedHashMap<String, String>() {
             {
                 put("username", username);
                 put("password", password);
-                put("eauth", eauth);
+                put("eauth", eauth.getValue());
             }
         };
         Result<List<Token>> result = connectionFactory
@@ -149,7 +150,7 @@ public class SaltStackClient {
      * @return Future containing an authentication token as {@link Token}
      */
     public Future<Token> loginAsync(final String username, final String password,
-            final String eauth) {
+            final AuthModule eauth) {
         Callable<Token> callable = new Callable<Token>() {
             @Override
             public Token call() throws SaltStackException {
@@ -292,14 +293,14 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public Map<String, Object> run(final String username, final String password,
-            final String eauth, final String client, final String target,
+            final AuthModule eauth, final String client, final String target,
             final String function, List<String> args, Map<String, String> kwargs)
             throws SaltStackException {
         Map<String, String> props = new LinkedHashMap<String, String>() {
             {
                 put("username", username);
                 put("password", password);
-                put("eauth", eauth);
+                put("eauth", eauth.getValue());
                 put("client", client);
                 put("tgt", target);
                 put("fun", function);
@@ -333,7 +334,7 @@ public class SaltStackClient {
      * @return Future containing Map key: minion id, value: command result from that minion
      */
     public Future<Map<String, Object>> runAsync(final String username,
-            final String password, final String eauth, final String client,
+            final String password, final AuthModule eauth, final String client,
             final String target, final String function, final List<String> args,
             final Map<String, String> kwargs) {
         Callable<Map<String, Object>> callable = new Callable<Map<String, Object>>() {
