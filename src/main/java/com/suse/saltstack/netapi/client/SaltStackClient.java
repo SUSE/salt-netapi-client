@@ -414,6 +414,8 @@ public class SaltStackClient {
     /**
      * Query general key information.
      *
+     * Required persmissions: @wheel
+     *
      * GET /keys
      *
      * @return The {@link Keys} object.
@@ -426,6 +428,8 @@ public class SaltStackClient {
 
     /**
      * Asynchronously query general key information.
+     *
+     * Required persmissions: @wheel
      *
      * GET /keys
      *
