@@ -1,6 +1,5 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.Constants;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
@@ -109,21 +108,6 @@ public class SaltStackClient {
     }
 
     /**
-     * Perform login and return the token.
-     *
-     * POST /login
-     *
-     * @param username the username
-     * @param password the password
-     * @return authentication token as {@link Token}
-     * @throws SaltStackException if anything goes wrong
-     */
-    public Token login(String username, String password)
-            throws SaltStackException {
-        return login(username, password, Constants.LOGIN_EAUTH_AUTO);
-    }
-
-    /**
      * Perform login and return the token. Allows specifying the eauth parameter.
      *
      * POST /login
@@ -151,25 +135,6 @@ public class SaltStackClient {
         Token token = result.getResult().get(0);
         config.put(ClientConfig.TOKEN, token.getToken());
         return token;
-    }
-
-    /**
-     * Asynchronously perform login and return a Future with the token.
-     *
-     * POST /login
-     *
-     * @param username the username
-     * @param password the password
-     * @return Future containing an authentication token as {@link Token}
-     */
-    public Future<Token> loginAsync(final String username, final String password) {
-        Callable<Token> callable = new Callable<Token>() {
-            @Override
-            public Token call() throws SaltStackException {
-                return login(username, password);
-            }
-        };
-        return executor.submit(callable);
     }
 
     /**

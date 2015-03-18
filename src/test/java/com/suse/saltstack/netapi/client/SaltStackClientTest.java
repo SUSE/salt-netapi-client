@@ -8,6 +8,7 @@ import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
+import static com.suse.saltstack.netapi.Constants.LOGIN_EAUTH_AUTO;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -92,7 +93,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGIN_RESPONSE)));
 
-        Token token = client.login("user", "pass");
+        Token token = client.login("user", "pass", LOGIN_EAUTH_AUTO);
         assertEquals("Token mismatch",
                 token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
@@ -107,7 +108,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
-        client.login("user", "pass");
+        client.login("user", "pass", LOGIN_EAUTH_AUTO);
     }
 
     @Test
@@ -121,7 +122,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGIN_RESPONSE)));
 
-        Future<Token> futureToken = client.loginAsync("user", "pass");
+        Future<Token> futureToken = client.loginAsync("user", "pass", LOGIN_EAUTH_AUTO);
         Token token = futureToken.get();
 
         assertEquals("Token mismatch",
@@ -139,7 +140,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
 
-        Future<Token> futureToken = client.loginAsync("user", "pass");
+        Future<Token> futureToken = client.loginAsync("user", "pass", LOGIN_EAUTH_AUTO);
         Token token = futureToken.get();
         assertNull(token);
     }
@@ -216,7 +217,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withFixedDelay(2000)));
 
-        clientWithFastTimeout.login("user", "pass");
+        clientWithFastTimeout.login("user", "pass", LOGIN_EAUTH_AUTO);
     }
 
     @Test
@@ -237,7 +238,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withFixedDelay(2000)));
 
-        clientWithFastTimeout.login("user", "pass");
+        clientWithFastTimeout.login("user", "pass", LOGIN_EAUTH_AUTO);
     }
 
     @Test
