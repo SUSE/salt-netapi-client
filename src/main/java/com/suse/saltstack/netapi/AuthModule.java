@@ -8,7 +8,14 @@ package com.suse.saltstack.netapi;
 public enum AuthModule {
 
     AUTO("auto"),
-    PAM("pam");
+    DJANGO("django"),
+    KEYSTONE("keystone"),
+    LDAP("ldap"),
+    MYSQL("mysql"),
+    PAM("pam"),
+    PKI("pki"),
+    STORMPATH_MOD("stormpath_mod"),
+    YUBICO("yubico");
 
     private final String value;
 
