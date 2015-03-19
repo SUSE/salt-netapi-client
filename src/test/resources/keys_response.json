@@ -1,0 +1,11 @@
+{
+  "return": {
+    "minions_pre": ["m2"],
+    "minions_rejected": ["m3"],
+    "local": [
+      "master.pem",
+      "master.pub"
+    ],
+    "minions": ["m1"]
+  }
+}

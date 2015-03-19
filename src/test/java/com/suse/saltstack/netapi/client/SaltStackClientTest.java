@@ -5,6 +5,7 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Token;
+import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
@@ -68,6 +69,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/run_response.json"));
     static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/stats_response.json"));
+    static final String JSON_KEYS_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/keys_response.json"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -377,6 +380,38 @@ public class SaltStackClientTest {
 
         assertNotNull(stats);
         verify(1, getRequestedFor(urlEqualTo("/stats"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testKeys() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_KEYS_RESPONSE)));
+
+        Keys keys = client.keys();
+
+        assertNotNull(keys);
+        verify(1, getRequestedFor(urlEqualTo("/keys"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testKeysAsync() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_KEYS_RESPONSE)));
+
+        Keys keys = client.keysAsync().get();
+
+        assertNotNull(keys);
+        verify(1, getRequestedFor(urlEqualTo("/keys"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
     }
