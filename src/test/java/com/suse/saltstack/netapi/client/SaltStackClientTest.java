@@ -8,6 +8,8 @@ import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
+import static com.suse.saltstack.netapi.AuthModule.PAM;
+import static com.suse.saltstack.netapi.AuthModule.AUTO;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -92,7 +94,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGIN_RESPONSE)));
 
-        Token token = client.login("user", "pass");
+        Token token = client.login("user", "pass", AUTO);
         assertEquals("Token mismatch",
                 token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
@@ -107,7 +109,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
-        client.login("user", "pass");
+        client.login("user", "pass", AUTO);
     }
 
     @Test
@@ -121,7 +123,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGIN_RESPONSE)));
 
-        Future<Token> futureToken = client.loginAsync("user", "pass");
+        Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
         Token token = futureToken.get();
 
         assertEquals("Token mismatch",
@@ -139,7 +141,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
 
-        Future<Token> futureToken = client.loginAsync("user", "pass");
+        Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
         Token token = futureToken.get();
         assertNull(token);
     }
@@ -163,7 +165,7 @@ public class SaltStackClientTest {
         };
 
 
-        client.run("user", "pass", "pam", "local", "*", "pkg.install", args, kwargs);
+        client.run("user", "pass", PAM, "local", "*", "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -189,7 +191,7 @@ public class SaltStackClientTest {
             }
         };
 
-        Future<?> future = client.runAsync("user", "pass", "pam", "local", "*",
+        Future<?> future = client.runAsync("user", "pass", PAM, "local", "*",
                 "pkg.install", args, kwargs);
         future.get();
 
@@ -216,7 +218,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withFixedDelay(2000)));
 
-        clientWithFastTimeout.login("user", "pass");
+        clientWithFastTimeout.login("user", "pass", AUTO);
     }
 
     @Test
@@ -237,7 +239,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withFixedDelay(2000)));
 
-        clientWithFastTimeout.login("user", "pass");
+        clientWithFastTimeout.login("user", "pass", AUTO);
     }
 
     @Test
@@ -248,7 +250,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_RUN_RESPONSE)));
 
-        Map<String, Object> retvals = client.run("user", "pass", "pam", "local", "*",
+        Map<String, Object> retvals = client.run("user", "pass", PAM, "local", "*",
                 "test.ping", null, null);
 
         assertNotNull(retvals);
@@ -265,7 +267,7 @@ public class SaltStackClientTest {
                 .withBody(JSON_RUN_RESPONSE)));
 
         Future<Map<String, Object>> future = client.runAsync("user", "pass",
-                "pam", "local", "*", "test.ping", null, null);
+                PAM, "local", "*", "test.ping", null, null);
         Map<String, Object> retvals = future.get();
 
         assertNotNull(retvals);
