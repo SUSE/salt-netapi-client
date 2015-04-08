@@ -238,8 +238,9 @@ public class SaltStackClient {
      * @param kwargs map containing keyword arguments
      * @return Future containing the scheduled job {@link ScheduledJob}
      */
-    public Future<ScheduledJob> startCommandAsync(final String target, final String function,
-            final List<String> args, final Map<String, String> kwargs) {
+    public Future<ScheduledJob> startCommandAsync(final String target,
+            final String function, final List<String> args,
+            final Map<String, String> kwargs) {
         Callable<ScheduledJob> callable = new Callable<ScheduledJob>() {
             @Override
             public ScheduledJob call() throws SaltStackException {
