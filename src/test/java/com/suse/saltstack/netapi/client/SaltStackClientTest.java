@@ -1,9 +1,10 @@
 package com.suse.saltstack.netapi.client;
 
+import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
-import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.JobMinions;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.utils.ClientUtils;
@@ -71,6 +72,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/stats_response.json"));
     static final String JSON_KEYS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/keys_response.json"));
+    static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/jobs_response.json"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -295,16 +298,16 @@ public class SaltStackClientTest {
             }
         };
 
-        Job job = client.startCommand("*", "pkg.install", args, kwargs);
+        JobMinions jobMinions = client.startCommand("*", "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
-        assertNotNull(job);
-        assertEquals(job.getJid(), "20150211105524392307");
-        assertEquals(job.getMinions(), Arrays.asList("myminion"));
+        assertNotNull(jobMinions);
+        assertEquals(jobMinions.getJid(), "20150211105524392307");
+        assertEquals(jobMinions.getMinions(), Arrays.asList("myminion"));
     }
 
     @Test
@@ -339,17 +342,18 @@ public class SaltStackClientTest {
             }
         };
 
-        Future<Job> future = client.startCommandAsync("*", "pkg.install", args, kwargs);
-        Job job = future.get();
+        Future<JobMinions> future = client.startCommandAsync("*", "pkg.install", args,
+                kwargs);
+        JobMinions jobMinions = future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
-        assertNotNull(job);
-        assertEquals(job.getJid(), "20150211105524392307");
-        assertEquals(job.getMinions(), Arrays.asList("myminion"));
+        assertNotNull(jobMinions);
+        assertEquals(jobMinions.getJid(), "20150211105524392307");
+        assertEquals(jobMinions.getMinions(), Arrays.asList("myminion"));
     }
 
     @Test
@@ -415,4 +419,41 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
     }
+
+    @Test
+    public void testJobs() throws Exception {
+        stubFor(get(urlMatching("/jobs"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_RESPONSE)));
+
+        Map<String, Job> jobs = client.getJobs();
+
+        assertNotNull(jobs);
+        assertEquals(Arrays.asList("enable-autodestruction"),
+                jobs.get("20150304200110485012").getArguments().getArgs());
+        verify(1, getRequestedFor(urlEqualTo("/jobs"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testJobsAsync() throws Exception {
+        stubFor(get(urlMatching("/jobs"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_RESPONSE)));
+
+        Map<String, Job> jobs = client.getJobsAsync().get();
+
+        assertNotNull(jobs);
+        assertEquals(Arrays.asList("enable-autodestruction"),
+                jobs.get("20150304200110485012").getArguments().getArgs());
+        verify(1, getRequestedFor(urlEqualTo("/jobs"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
 }

@@ -1,0 +1,35 @@
+{
+  "return": [
+    {
+      "20150315163041425361": {
+        "Function": "pkg.install",
+        "Target": "*",
+        "Target-type": "glob",
+        "Arguments": [
+          {
+            "refresh": true
+          },
+          {
+            "somepar": 123.3,
+            "__kwarg__": false
+          },
+          {
+            "nullparam": null,
+            "__kwarg__": null
+          },
+          {
+            "otherparam": true,
+            "__kwarg__": 123
+          },
+          {
+            "sysupgrade": true,
+            "__kwarg__": true
+          },
+          "i3"
+        ],
+        "StartTime": "2015, Mar 15 16:30:41.425361",
+        "User": "lucid"
+      }
+    }
+  ]
+}

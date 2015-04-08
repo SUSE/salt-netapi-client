@@ -1,0 +1,23 @@
+{
+  "return": [
+    {
+      "20150306023815935637": {
+        "Function": "pkg.install",
+        "Target": "*",
+        "Target-type": "glob",
+        "Arguments": [
+          {
+            "multi": true,
+            "__kwarg__": true
+          },
+          {
+            "multi": false,
+            "__kwarg__": true
+          }
+        ],
+        "StartTime": "2015, Mar 06 02:38:15.935637",
+        "User": "lucid"
+      }
+    }
+  ]
+}

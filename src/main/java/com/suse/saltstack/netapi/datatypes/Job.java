@@ -1,20 +1,47 @@
 package com.suse.saltstack.netapi.datatypes;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
+
+// TODO - handle dates too (they are represented in really
+// exotic format: (2015, Mar 04 19:28:29.724698))
 
 /**
- * Representation of a list of minions associated with given job.
+ * Representation of a previously run job.
  */
 public class Job {
 
-    private String jid;
-    private List<String> minions;
+    @SerializedName("Function")
+    private String function;
 
-    public String getJid() {
-        return jid;
+    @SerializedName("Target")
+    private String target;
+
+    @SerializedName("Target-type")
+    private String targetType;
+
+    @SerializedName("User")
+    private String user;
+
+    @SerializedName("Arguments")
+    private Arguments arguments;
+
+    public String getFunction() {
+        return function;
     }
 
-    public List<String> getMinions() {
-        return minions;
+    public String getTarget() {
+        return target;
+    }
+
+    public String getTargetType() {
+        return targetType;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public Arguments getArguments() {
+        return arguments;
     }
 }
