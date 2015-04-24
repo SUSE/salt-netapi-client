@@ -4,4 +4,13 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 install: /bin/true
-script: mvn checkstyle:check test
+script: mvn checkstyle:check test package
+deploy:
+  provider: releases
+  api_key:
+    secure: Gzz8W8cnLBgui3dh9yCl+z72qLd22T2N35QBqEIZIB38WGDMfKliQ2xrxYz4YkH3SeH+rcu8xzL9gEKd7YIA7pp6R7Q5wy+i2F2whC8kbC8qaOQLvpNfdzadwLS11ExtqSOMebxphJxzMYXjW/LWQ2AH4Df7wUwTy+cVX9oRWfs=
+  file: target/saltstack-netapi-client-*.jar
+  skip_cleanup: true
+  on:
+    repo: SUSE/saltstack-netapi-client-java
+    tags: true
