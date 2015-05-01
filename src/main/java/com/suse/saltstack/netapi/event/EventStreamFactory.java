@@ -20,9 +20,9 @@ public class EventStreamFactory {
      * @return
      */
     public static SaltStackEventStream create(ClientConfig config, Integer streamType) {
-        switch(streamType) {
+        switch (streamType) {
             default: {
-                return (SaltStackEventStream)new JerseyServerSentEvents(config);
+                return (SaltStackEventStream) new JerseyServerSentEvents(config);
             }
         }
     }

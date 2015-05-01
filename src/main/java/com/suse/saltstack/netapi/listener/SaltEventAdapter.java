@@ -7,8 +7,8 @@ package com.suse.saltstack.netapi.listener;
 public class SaltEventAdapter implements SaltEventListener {
 
     @Override
-    public void notify(String event) {}
+    public void notify(String event) { }
 
     @Override
-    public void eventStreamClosed() {}
+    public void eventStreamClosed() { }
 }

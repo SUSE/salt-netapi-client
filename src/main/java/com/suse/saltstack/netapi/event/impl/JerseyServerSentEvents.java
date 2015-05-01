@@ -77,9 +77,12 @@ public class JerseyServerSentEvents implements SaltStackEventStream {
             @Override
             public void run() {
                 //TODO: Need to account for possible HTTP Proxy here
-                Client client = ClientBuilder.newBuilder().register(new SseFeature()).build();
-                WebTarget target = client.target(config.get(ClientConfig.URL) + "/events");
-                Invocation.Builder builder = target.request(new MediaType("text", "event-stream"));
+                Client client = ClientBuilder.newBuilder().register(
+                        new SseFeature()).build();
+                WebTarget target = client.target(config.get(ClientConfig.URL) +
+                        "/events");
+                Invocation.Builder builder = target.request(new MediaType("text",
+                        "event-stream"));
                 builder.header("X-Auth-Token", config.get(ClientConfig.TOKEN));
 
                 eventInput = builder.get(EventInput.class);
@@ -87,12 +90,12 @@ public class JerseyServerSentEvents implements SaltStackEventStream {
                     final InboundEvent inboundEvent = eventInput.read();
                     if (inboundEvent == null) {
                         // connection has been closed
-                        for(SaltEventListener listener : listeners) {
+                        for (SaltEventListener listener : listeners) {
                             listener.eventStreamClosed();
                         }
                         break;
                     }
-                    for(SaltEventListener listener : listeners) {
+                    for (SaltEventListener listener : listeners) {
                         listener.notify(inboundEvent.readData(String.class));
                     }
                 }
