@@ -6,6 +6,8 @@ import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.event.EventStreamFactory;
+import com.suse.saltstack.netapi.event.SaltStackEventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
@@ -441,4 +443,18 @@ public class SaltStackClient {
         };
         return executor.submit(callable);
     }
+
+    /**
+     * Returns an server sent events stream object.  The stream object supports the
+     * {@link SaltStackEventStream} interface which allows the end user to register
+     * for stream event notifications.
+     *
+     * GET /events
+     *
+     * @return SaltStackEventStream object
+     */
+    public SaltStackEventStream eventStream() {
+        return EventStreamFactory.create(config, EventStreamFactory.JERSEY_SSE_TYPE_STREAM);
+    }
+
 }
