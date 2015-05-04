@@ -3,7 +3,9 @@ package com.suse.saltstack.netapi.client.impl;
 import com.suse.saltstack.netapi.client.Connection;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.saltstack.netapi.parser.JsonParser;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
@@ -21,6 +23,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 /**
@@ -77,8 +80,30 @@ public class HttpClientConnection<T> implements Connection<T> {
      * @throws SaltStackException in case of a problem
      */
     private T request(String data) throws SaltStackException {
-        HttpClientBuilder httpClientBuilder = HttpClients.custom();
+        try (CloseableHttpClient httpClient = initializeHttpClient().build()) {
+            return executeRequest(httpClient, prepareRequest(data));
+        } catch (IOException e) {
+            throw new SaltStackException(e);
+        }
+    }
 
+    /**
+     * Initialize a HttpClientBuilder based on the current ClientConfig object.
+     */
+    private HttpClientBuilder initializeHttpClient() {
+        HttpClientBuilder httpClientBuilder = HttpClients.custom();
+        configureTimeouts(httpClientBuilder);
+        configureProxyIfSpecified(httpClientBuilder);
+        return httpClientBuilder;
+    }
+
+    /**
+     * Configure the supplied HttpClientBuilder with timeout settings from
+     * the current ClientConfig object.
+     *
+     * @param httpClientBuilder
+     */
+    private void configureTimeouts(HttpClientBuilder httpClientBuilder) {
         // Timeouts may be specified on configuration
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(config.get(ClientConfig.CONNECT_TIMEOUT))
@@ -86,17 +111,26 @@ public class HttpClientConnection<T> implements Connection<T> {
                 .build();
 
         httpClientBuilder.setDefaultRequestConfig(requestConfig);
+    }
 
-        // Configure proxy if specified on configuration
+    /**
+     * Configure the HttpClientBuilder with the proxy settings if specified
+     * in the ClientConfig object.
+     *
+     * @param httpClientBuilder
+     */
+    private void configureProxyIfSpecified(HttpClientBuilder httpClientBuilder) {
         String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
         if (proxyHost != null) {
             int proxyPort = config.get(ClientConfig.PROXY_PORT);
+
             HttpHost proxy = new HttpHost(proxyHost, proxyPort);
             httpClientBuilder.setProxy(proxy);
 
-            // Proxy authentication
             String proxyUsername = config.get(ClientConfig.PROXY_USERNAME);
             String proxyPassword = config.get(ClientConfig.PROXY_PASSWORD);
+
+            // Proxy authentication
             if (proxyUsername != null && proxyPassword != null) {
                 CredentialsProvider credentials = new BasicCredentialsProvider();
                 credentials.setCredentials(
@@ -105,44 +139,72 @@ public class HttpClientConnection<T> implements Connection<T> {
                 httpClientBuilder.setDefaultCredentialsProvider(credentials);
             }
         }
+    }
 
-        try (CloseableHttpClient httpClient = httpClientBuilder.build()) {
-            // Prepare request
-            URI uri = config.get(ClientConfig.URL).resolve(endpoint);
+    /**
+     * Prepares the http request object, creating a POST or GET request
+     * depending on if data is supplied or not.
+     *
+     * @param jsonData json POST data, will use GET if null
+     * @return HttpUriRequest object
+     * @throws UnsupportedEncodingException
+     */
+    private HttpUriRequest prepareRequest(String jsonData)
+            throws UnsupportedEncodingException {
+        URI uri = config.get(ClientConfig.URL).resolve(endpoint);
+        HttpUriRequest httpRequest;
+        if (jsonData != null) {
+            // POST data
+            HttpPost httpPost = new HttpPost(uri);
+            httpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+            httpPost.setEntity(new StringEntity(jsonData));
+            httpRequest = httpPost;
+        } else {
+            // GET request
+            httpRequest = new HttpGet(uri);
+        }
+        httpRequest.addHeader(HttpHeaders.ACCEPT, "application/json");
 
-            HttpUriRequest httpRequest = null;
-            if (data != null) {
-                // POST data
-                HttpPost httpPost = new HttpPost(uri);
-                httpPost.addHeader("Content-Type", "application/json");
-                httpPost.setEntity(new StringEntity(data));
-                httpRequest = httpPost;
-            } else {
-                // GET request
-                httpRequest = new HttpGet(uri);
-            }
+        // Token authentication
+        String token = config.get(ClientConfig.TOKEN);
+        if (token != null) {
+            httpRequest.addHeader("X-Auth-Token", token);
+        }
 
-            httpRequest.addHeader("Accept", "application/json");
+        return httpRequest;
+    }
 
-            // Token authentication
-            String token = config.get(ClientConfig.TOKEN);
-            if (token != null) {
-                httpRequest.addHeader("X-Auth-Token", token);
-            }
-
-            // Execute request
-            try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode != HttpStatus.SC_OK &&
-                        statusCode != HttpStatus.SC_ACCEPTED) {
-                    throw new SaltStackException("Response code: " + statusCode);
-                }
-
+    /**
+     * Executes the HTTP request
+     *
+     * @throws SaltStackException
+     * @throws IOException
+     */
+    private T executeRequest(CloseableHttpClient httpClient, HttpUriRequest httpRequest)
+            throws SaltStackException, IOException {
+        try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == HttpStatus.SC_OK ||
+                    statusCode == HttpStatus.SC_ACCEPTED) {
                 // Parse result type from the returned JSON
                 return parser.parse(response.getEntity().getContent());
+            } else {
+                throw createSaltStackException(statusCode);
             }
-        } catch (IOException e) {
-            throw new SaltStackException(e);
         }
+    }
+
+    /**
+     * Create the appropriate exception for the given HTTP status code.
+     *
+     * @param statusCode
+     * @return
+     */
+    private SaltStackException createSaltStackException(int statusCode) {
+        if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+            return new SaltUserUnauthorizedException(
+                    "Salt user does not have sufficient permissions");
+        }
+        return new SaltStackException("Response code: " + statusCode);
     }
 }
