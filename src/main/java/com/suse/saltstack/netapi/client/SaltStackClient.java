@@ -8,6 +8,7 @@ import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.event.EventStreamFactory;
 import com.suse.saltstack.netapi.event.EventStream;
+import com.suse.saltstack.netapi.event.EventStreamType;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
@@ -455,10 +456,13 @@ public class SaltStackClient {
      *
      * GET /events
      *
+     * @param eventStreamType The type of {@link EventStreamType} to create.  If null is
+     *   passed as an argument, the default stream type will be use which is
+     *   {@link com.suse.saltstack.netapi.event.impl.JerseyServerSentEvents}.
      * @return {@link EventStream} object
      */
-    public EventStream eventStream() {
-        return EventStreamFactory.create(config, EventStreamFactory.JERSEY_SSE_TYPE_STREAM);
+    public EventStream eventStream(EventStreamType eventStreamType) {
+        return EventStreamFactory.create(config, eventStreamType);
     }
 
 }

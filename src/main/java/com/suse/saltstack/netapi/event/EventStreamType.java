@@ -1,7 +1,10 @@
 package com.suse.saltstack.netapi.event;
 
 /**
- * Created by gaisford on 5/4/15.
+ * An enumeration that defines event stream implementation (types)
+ * that my be constructed by the {@link EventStreamFactory}.
+ *
  */
 public enum EventStreamType {
+    JERSEY_SSE_TYPE_STREAM
 }
