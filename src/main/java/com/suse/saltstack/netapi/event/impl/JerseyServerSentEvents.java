@@ -103,7 +103,7 @@ public class JerseyServerSentEvents implements EventStream {
     private void initializeStream() {
         Callable callable = new Callable() {
             @Override
-            public Object call() throws Exception, MalformedURLException {
+            public Object call() throws SaltStackException {
                 org.glassfish.jersey.client.ClientConfig jerseyConfig =
                         new org.glassfish.jersey.client.ClientConfig();
                 // set the connection timeout as per
@@ -124,7 +124,7 @@ public class JerseyServerSentEvents implements EventStream {
                                 config.get(ClientConfig.PROXY_USERNAME));
                         jerseyConfig.property(ClientProperties.PROXY_PASSWORD,
                                 config.get(ClientConfig.PROXY_PASSWORD));
-                    } catch (URISyntaxException e) {
+                    } catch (URISyntaxException | MalformedURLException e) {
                         throw new SaltStackException(e);
                     }
                 }
