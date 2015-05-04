@@ -1,8 +1,10 @@
 package com.suse.saltstack.netapi.event.impl;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
-import com.suse.saltstack.netapi.event.SaltStackEventStream;
-import com.suse.saltstack.netapi.listener.SaltEventListener;
+import com.suse.saltstack.netapi.event.EventStream;
+import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.listener.EventListener;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.sse.EventInput;
 import org.glassfish.jersey.media.sse.InboundEvent;
 import org.glassfish.jersey.media.sse.SseFeature;
@@ -12,27 +14,32 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * Glassfish Jersey SSE events implementation.
  */
-public class JerseyServerSentEvents implements SaltStackEventStream {
+public class JerseyServerSentEvents implements EventStream {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Listeners that are notified of a new events.
      */
-    private final List<SaltEventListener> listeners = new ArrayList<>();
+    private final List<EventListener> listeners = new ArrayList<>();
 
     /**
      * The ClientConfig used to create the GET request for /events
      */
     private ClientConfig config;
+
     /**
      * Private reference to the Jersey SSE specific event stream
      */
@@ -50,37 +57,81 @@ public class JerseyServerSentEvents implements SaltStackEventStream {
     }
 
     /**
-     * Implementation of {@link SaltStackEventStream#addEventListener(SaltEventListener)}
-     * @param listener Reference to the class that implements {@link SaltEventListener}.
+     * Implementation of {@link EventStream#addEventListener(EventListener)}
+     * @param listener Reference to the class that implements {@link EventListener}.
      */
-    public void addEventListener(SaltEventListener listener) {
+    public void addEventListener(EventListener listener) {
         synchronized (listeners) {
             listeners.add(listener);
         }
     }
 
     /**
-     * Implementation of {@link SaltStackEventStream#close()}
+     * Implementation of {@link EventStream#removeEventListener(EventListener)}
+     * @param listener
      */
-    public void close() {
-        //TODO: May need logic in here to only shutdown the executor if this was
-        // the last listener.
-        eventInput.close();
-        executor.shutdownNow();
+    public void removeEventListener(EventListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
     }
 
     /**
-     * Perform the REST GET call to /events and setup the event stream.
+     * Closes the backing event stream and notifies all subscribed listeners that
+     * the event stream has been closed via {@link EventListener#eventStreamClosed()}.
+     * Upon exit from this method, all subscribed listeners will be removed.
+     */
+    public void close() {
+        synchronized (listeners) {
+            // notify all the listeners and cleanup
+            for (EventListener listener : listeners) {
+                listener.eventStreamClosed();
+            }
+            // clear out the listeners
+            listeners.clear();
+            // close the backing event stream
+            eventInput.close();
+            // shut down the executor
+            executor.shutdownNow();
+        }
+    }
+
+    /**
+     * Perform the REST GET call to /events and sets up the event stream.  If
+     * a proxy is configured be sure to account for it.
      */
     private void initializeStream() {
-        Runnable runnable = new Runnable() {
+        Callable callable = new Callable() {
             @Override
-            public void run() {
-                //TODO: Need to account for possible HTTP Proxy here
-                Client client = ClientBuilder.newBuilder().register(
-                        new SseFeature()).build();
-                WebTarget target = client.target(config.get(ClientConfig.URL) +
-                        "/events");
+            public Object call() throws Exception, MalformedURLException {
+                org.glassfish.jersey.client.ClientConfig jerseyConfig =
+                        new org.glassfish.jersey.client.ClientConfig();
+                // set the connection timeout as per
+                jerseyConfig.property(ClientProperties.CONNECT_TIMEOUT,
+                        config.get(ClientConfig.CONNECT_TIMEOUT));
+
+                // Configure jersey client for proxy if specified in configuration
+                URI uri = config.get(ClientConfig.URL);
+                String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
+                if (proxyHost != null) {
+                    Integer proxyPort = config.get(ClientConfig.PROXY_PORT);
+                    try {
+                        URI proxyUri = new URI(uri.getScheme(), null, proxyHost,
+                                proxyPort, null, null, null);
+                        jerseyConfig.property(ClientProperties.PROXY_URI,
+                                proxyUri.toURL());
+                        jerseyConfig.property(ClientProperties.PROXY_USERNAME,
+                                config.get(ClientConfig.PROXY_USERNAME));
+                        jerseyConfig.property(ClientProperties.PROXY_PASSWORD,
+                                config.get(ClientConfig.PROXY_PASSWORD));
+                    } catch (URISyntaxException e) {
+                        throw new SaltStackException(e);
+                    }
+                }
+
+                Client client = ClientBuilder.newClient(jerseyConfig).register(
+                        new SseFeature());
+                WebTarget target = client.target(uri + "/events");
                 Invocation.Builder builder = target.request(new MediaType("text",
                         "event-stream"));
                 builder.header("X-Auth-Token", config.get(ClientConfig.TOKEN));
@@ -90,17 +141,16 @@ public class JerseyServerSentEvents implements SaltStackEventStream {
                     final InboundEvent inboundEvent = eventInput.read();
                     if (inboundEvent == null) {
                         // connection has been closed
-                        for (SaltEventListener listener : listeners) {
-                            listener.eventStreamClosed();
-                        }
+                        close();
                         break;
                     }
-                    for (SaltEventListener listener : listeners) {
+                    for (EventListener listener : listeners) {
                         listener.notify(inboundEvent.readData(String.class));
                     }
                 }
+                return null;
             }
         };
-        executor.submit(runnable);
+        executor.submit(callable);
     }
 }
