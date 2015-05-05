@@ -442,7 +442,6 @@ public class SaltStackClient {
         };
         return executor.submit(callable);
     }
-    
     /**
      * Query general key information.
      *
