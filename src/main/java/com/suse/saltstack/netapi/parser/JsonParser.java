@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.datatypes.Arguments;
+import com.suse.saltstack.netapi.datatypes.Events;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Keys;
@@ -48,6 +49,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Stats>(){});
     public static final JsonParser<Result<Keys>> KEYS =
             new JsonParser<>(new TypeToken<Result<Keys>>(){});
+    public static final JsonParser<Result<Events>> EVENTS =
+            new JsonParser<>(new TypeToken<Result<Events>>(){});
 
     private final TypeToken<T> type;
     private final Gson gson;
