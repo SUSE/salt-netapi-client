@@ -77,7 +77,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      *
      * @param data the data to send with the request
      * @return object of type T
-     * @throws SaltStackException in case of a problem
+     * @throws SaltStackException in case of a problem when executing the request
      */
     private T request(String data) throws SaltStackException {
         try (CloseableHttpClient httpClient = initializeHttpClient().build()) {
@@ -98,10 +98,10 @@ public class HttpClientConnection<T> implements Connection<T> {
     }
 
     /**
-     * Configure the supplied HttpClientBuilder with timeout settings from
-     * the current ClientConfig object.
+     * Configure the supplied HttpClientBuilder with timeout settings from the current
+     * ClientConfig object.
      *
-     * @param httpClientBuilder
+     * @param httpClientBuilder the {@link HttpClientBuilder} to be configured
      */
     private void configureTimeouts(HttpClientBuilder httpClientBuilder) {
         // Timeouts may be specified on configuration
@@ -114,10 +114,10 @@ public class HttpClientConnection<T> implements Connection<T> {
     }
 
     /**
-     * Configure the HttpClientBuilder with the proxy settings if specified
-     * in the ClientConfig object.
+     * Configure the HttpClientBuilder with the proxy settings if specified in the
+     * ClientConfig object.
      *
-     * @param httpClientBuilder
+     * @param httpClientBuilder the {@link HttpClientBuilder} to be configured
      */
     private void configureProxyIfSpecified(HttpClientBuilder httpClientBuilder) {
         String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
@@ -142,12 +142,12 @@ public class HttpClientConnection<T> implements Connection<T> {
     }
 
     /**
-     * Prepares the http request object, creating a POST or GET request
-     * depending on if data is supplied or not.
+     * Prepares the HTTP request object creating a POST or GET request depending on if data
+     * is supplied or not.
      *
      * @param jsonData json POST data, will use GET if null
-     * @return HttpUriRequest object
-     * @throws UnsupportedEncodingException
+     * @return HttpUriRequest object the prepared request
+     * @throws UnsupportedEncodingException when charset is not available
      */
     private HttpUriRequest prepareRequest(String jsonData)
             throws UnsupportedEncodingException {
@@ -175,10 +175,12 @@ public class HttpClientConnection<T> implements Connection<T> {
     }
 
     /**
-     * Executes the HTTP request
+     * Executes a prepared HTTP request using the given client.
      *
-     * @throws SaltStackException
-     * @throws IOException
+     * @param httpClient the client to use for the request
+     * @param httpRequest the prepared request to perform
+     * @throws SaltStackException if HTTP status code is not as expected (200 or 202)
+     * @throws IOException in case of problems executing the request
      */
     private T executeRequest(CloseableHttpClient httpClient, HttpUriRequest httpRequest)
             throws SaltStackException, IOException {
@@ -197,8 +199,8 @@ public class HttpClientConnection<T> implements Connection<T> {
     /**
      * Create the appropriate exception for the given HTTP status code.
      *
-     * @param statusCode
-     * @return
+     * @param statusCode HTTP status code
+     * @return {@link SaltStackException} instance
      */
     private SaltStackException createSaltStackException(int statusCode) {
         if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
