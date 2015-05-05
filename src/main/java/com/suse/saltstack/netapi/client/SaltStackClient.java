@@ -14,6 +14,7 @@ import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.datatypes.Token;
 
 import com.google.gson.JsonArray;
+import com.suse.saltstack.netapi.datatypes.Events;
 
 import com.suse.saltstack.netapi.utils.ClientUtils;
 import java.net.URI;
@@ -437,6 +438,39 @@ public class SaltStackClient {
             @Override
             public Keys call() throws SaltStackException {
                 return keys();
+            }
+        };
+        return executor.submit(callable);
+    }
+    /**
+     * Query general key information.
+     *
+     * Required persmissions: @wheel
+     *
+     * GET /keys
+     *
+     * @return The {@link Events} object.
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Events events() throws SaltStackException {
+        return connectionFactory.create("/events", JsonParser.EVENTS, config).getResult()
+                .getResult();
+    }
+
+    /**
+     * Asynchronously query general key information.
+     *
+     * Required persmissions: @wheel
+     *
+     * GET /events
+     *
+     * @return Future containing the {@link Keys} object.
+     */
+    public Future<Events> EventsAsync() {
+        Callable<Events> callable = new Callable<Events>() {
+            @Override
+            public Events call() throws SaltStackException {
+                return events();
             }
         };
         return executor.submit(callable);
