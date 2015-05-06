@@ -1,12 +1,10 @@
 package com.suse.saltstack.netapi.event;
 
-import com.suse.saltstack.netapi.listener.EventListener;
-
 /**
  * Concrete implementations of this interface must provide implementations for the
  * methods defined below.
  */
-public interface EventStream {
+public interface EventStream extends AutoCloseable {
     /**
      * Add a {@link EventListener} object to the list of objects to
      * be notified of new event stream events.

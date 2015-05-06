@@ -3,7 +3,7 @@ package com.suse.saltstack.netapi.event.impl;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.listener.EventListener;
+import com.suse.saltstack.netapi.event.EventListener;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.sse.EventInput;
 import org.glassfish.jersey.media.sse.InboundEvent;
@@ -65,9 +65,9 @@ public class JerseyServerSentEvents implements EventStream {
 
     /**
      * An alternate constructor used to create this object.  Does not
-     * automatically start event processing.  This constructor is used as a
-     * convenience for unit testing and allows for the injection of an
-     * existing and possibly pre-configured {@link Client} object.
+     * automatically start event processing.  This constructor is used for
+     * unit testing only and allows for the injection of an existing and
+     * possibly pre-configured {@link Client} object.
      * @param config Contains the necessary details such as endpoint URL and
      *               authentication token required to create the request to obtain
      *               the {@link EventInput} event stream.
@@ -84,9 +84,8 @@ public class JerseyServerSentEvents implements EventStream {
     }
 
     /**
-     * This method initiates the event processing loop.  In some cases it is useful to
-     * first initialize this class and then later start processing events (e.g. during
-     * unit testing).
+     * This method initiates the event processing loop. This method is intended for
+     * use during unit testing only!  End users should not call this methods directly.
      */
     public void processEvents() {
         if (!eventProcessingStarted) {

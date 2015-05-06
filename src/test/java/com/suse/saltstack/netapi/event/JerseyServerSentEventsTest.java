@@ -3,7 +3,6 @@ package com.suse.saltstack.netapi.event;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.saltstack.netapi.client.SaltStackClient;
 import com.suse.saltstack.netapi.event.impl.JerseyServerSentEvents;
-import com.suse.saltstack.netapi.listener.EventListener;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 /**
  * SaltStack events API Jersey SSE implementation test cases.
  */
-public class JerseyServerSentEventsTestCase {
+public class JerseyServerSentEventsTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
@@ -36,7 +35,7 @@ public class JerseyServerSentEventsTestCase {
      * add additional events etc, please take note.
      */
     static final String TEXT_EVENT_STREAM_RESPONSE = ClientUtils.streamToString(
-            JerseyServerSentEventsTestCase.class.getResourceAsStream("/events_stream.txt"));
+            JerseyServerSentEventsTest.class.getResourceAsStream("/events_stream.txt"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -120,6 +119,8 @@ public class JerseyServerSentEventsTestCase {
         jerseyServerSentEvents.addEventListener(client4);
 
         Assert.assertTrue(jerseyServerSentEvents.getListenerCount() == 2);
+
+        jerseyServerSentEvents.close();
     }
 
     /**

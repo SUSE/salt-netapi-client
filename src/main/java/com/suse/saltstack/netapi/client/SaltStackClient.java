@@ -8,7 +8,6 @@ import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.event.EventStreamFactory;
 import com.suse.saltstack.netapi.event.EventStream;
-import com.suse.saltstack.netapi.event.EventStreamType;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
@@ -451,18 +450,14 @@ public class SaltStackClient {
      * for stream event notifications as well as close the event stream.
      * Note: {@link SaltStackClient#login(String, String, AuthModule)} or
      * {@link SaltStackClient#loginAsync(String, String, AuthModule)} must be called prior
-     * to calling this method.  It is the responsibility of the caller to close the event
-     * stream by calling {@link EventStream#close()} when finished.
+     * to calling this method.
      *
      * GET /events
      *
-     * @param eventStreamType The type of {@link EventStreamType} to create.  If null is
-     *   passed as an argument, the default stream type
-     *   {@link EventStreamType#JERSEY_SSE_TYPE_STREAM will be used.
      * @return {@link EventStream} object
      */
-    public EventStream eventStream(EventStreamType eventStreamType) {
-        return EventStreamFactory.create(config, eventStreamType);
+    public EventStream events() {
+        return EventStreamFactory.create(config);
     }
 
 }

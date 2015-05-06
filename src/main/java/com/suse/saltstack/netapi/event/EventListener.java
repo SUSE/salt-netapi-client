@@ -1,4 +1,4 @@
-package com.suse.saltstack.netapi.listener;
+package com.suse.saltstack.netapi.event;
 
 /**
  * Defines a client notification interface for different implementations of
