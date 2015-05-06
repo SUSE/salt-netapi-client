@@ -1,8 +1,7 @@
 package com.suse.saltstack.netapi.event;
 
 /**
- * Defines a client notification interface for different implementations of
- * SSE stream events.
+ * Defines a client notification interface for SSE stream events.
  */
 public interface EventListener {
 

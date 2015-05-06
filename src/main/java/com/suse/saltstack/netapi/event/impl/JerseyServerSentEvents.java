@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Glassfish Jersey Server-Sent Events (SSE) implementation.
+ * GlassFish Jersey Server-Sent Events (SSE) implementation.
  */
 public class JerseyServerSentEvents implements EventStream {
 
@@ -176,7 +176,7 @@ public class JerseyServerSentEvents implements EventStream {
     }
 
     /**
-     * Perform the REST GET call to /events and sets up the event stream.  If
+     * Perform the REST GET call to /events and set up the event stream.  If
      * a proxy is configured be sure to account for it.
      */
     private void initializeStream() {

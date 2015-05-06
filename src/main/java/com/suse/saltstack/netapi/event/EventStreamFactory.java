@@ -4,7 +4,7 @@ import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.event.impl.JerseyServerSentEvents;
 
 /**
- * Factory class that allows for the creation of a specific implementation
+ * Factory class that allows for the creation of an implementation
  * of {@link EventStream}.
  */
 public class EventStreamFactory {

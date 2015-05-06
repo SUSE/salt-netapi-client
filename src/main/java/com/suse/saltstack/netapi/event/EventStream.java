@@ -1,8 +1,7 @@
 package com.suse.saltstack.netapi.event;
 
 /**
- * Concrete implementations of this interface must provide implementations for the
- * methods defined below.
+ * Concrete implementations must implement the methods defined below.
  */
 public interface EventStream extends AutoCloseable {
     /**
