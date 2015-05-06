@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Glassfish Jersey SSE events implementation.
+ * Glassfish Jersey Server-Sent Events (SSE) implementation.
  */
 public class JerseyServerSentEvents implements EventStream {
 
@@ -41,12 +41,19 @@ public class JerseyServerSentEvents implements EventStream {
     private ClientConfig config;
 
     /**
+     * Internal state flag designating whether event processing loop
+     * has started;
+     */
+    private boolean eventProcessingStarted = false;
+
+    /**
      * Private reference to the Jersey SSE specific event stream
      */
     private EventInput eventInput;
 
     /**
-     * Constructor used to create this object
+     * Constructor used to create this object.  Automatically starts
+     * event processing.
      * @param config Contains the necessary details such as endpoint URL and
      *               authentication token required to create the request to obtain
      *               the {@link EventInput} event stream.
@@ -54,6 +61,50 @@ public class JerseyServerSentEvents implements EventStream {
     public JerseyServerSentEvents(ClientConfig config) {
         this.config = config;
         initializeStream();
+    }
+
+    /**
+     * An alternate constructor used to create this object.  Does not
+     * automatically start event processing.  This constructor is used as a
+     * convenience for unit testing and allows for the injection of an
+     * existing and possibly pre-configured {@link Client} object.
+     * @param config Contains the necessary details such as endpoint URL and
+     *               authentication token required to create the request to obtain
+     *               the {@link EventInput} event stream.
+     * @param client Passed client to use when configuring the event stream
+     */
+    public JerseyServerSentEvents(ClientConfig config, Client client) {
+        client.register(new SseFeature());
+        WebTarget target = client.target(config.get(ClientConfig.URL) + "/events");
+        Invocation.Builder builder = target.request(new MediaType("text",
+                "event-stream"));
+        builder.header("X-Auth-Token", config.get(ClientConfig.TOKEN));
+
+        eventInput = builder.get(EventInput.class);
+    }
+
+    /**
+     * This method initiates the event processing loop.  It was added
+     */
+    public void processEvents() {
+        if (!eventProcessingStarted) {
+            if (eventInput != null && !eventInput.isClosed()) {
+                eventProcessingStarted = true;
+                while (!eventInput.isClosed()) {
+                    final InboundEvent inboundEvent = eventInput.read();
+                    if (inboundEvent == null) {
+                        // connection has been closed
+                        close();
+                        break;
+                    }
+                    synchronized (listeners) {
+                        for (EventListener listener : listeners) {
+                            listener.notify(inboundEvent.readData(String.class));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -77,6 +128,15 @@ public class JerseyServerSentEvents implements EventStream {
     }
 
     /**
+     * Helper method that returns the current number of subscribed
+     * listeners.
+     * @return The current number listeners.
+     */
+    public int getListenerCount() {
+        return listeners.size();
+    }
+
+    /**
      * Closes the backing event stream and notifies all subscribed listeners that
      * the event stream has been closed via {@link EventListener#eventStreamClosed()}.
      * Upon exit from this method, all subscribed listeners will be removed.
@@ -93,7 +153,25 @@ public class JerseyServerSentEvents implements EventStream {
             eventInput.close();
             // shut down the executor
             executor.shutdownNow();
+            // reset processing flag
+            eventProcessingStarted = false;
         }
+    }
+
+    /**
+     * Helper method to determine whether the backing event stream is closed.
+     * @return Whether the {@link EventInput} stream is closed.
+     */
+    public boolean isEventStreamClosed() {
+        return eventInput.isClosed();
+    }
+
+    /**
+     * Helper method to determine whether event processing has started.
+     * @return Whether event processing has started.
+     */
+    public boolean isEventProcessingStarted() {
+        return eventProcessingStarted;
     }
 
     /**
@@ -137,17 +215,7 @@ public class JerseyServerSentEvents implements EventStream {
                 builder.header("X-Auth-Token", config.get(ClientConfig.TOKEN));
 
                 eventInput = builder.get(EventInput.class);
-                while (!eventInput.isClosed()) {
-                    final InboundEvent inboundEvent = eventInput.read();
-                    if (inboundEvent == null) {
-                        // connection has been closed
-                        close();
-                        break;
-                    }
-                    for (EventListener listener : listeners) {
-                        listener.notify(inboundEvent.readData(String.class));
-                    }
-                }
+                processEvents();
                 return null;
             }
         };

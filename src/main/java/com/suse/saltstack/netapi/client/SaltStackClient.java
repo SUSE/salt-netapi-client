@@ -446,7 +446,7 @@ public class SaltStackClient {
     }
 
     /**
-     * Returns a server sent events (SSE) stream object.  The stream object supports the
+     * Returns a server-sent events (SSE) stream object.  The stream object supports the
      * {@link EventStream} interface which allows the caller to register/unregister
      * for stream event notifications as well as close the event stream.
      * Note: {@link SaltStackClient#login(String, String, AuthModule)} or
@@ -457,8 +457,8 @@ public class SaltStackClient {
      * GET /events
      *
      * @param eventStreamType The type of {@link EventStreamType} to create.  If null is
-     *   passed as an argument, the default stream type will be use which is
-     *   {@link com.suse.saltstack.netapi.event.impl.JerseyServerSentEvents}.
+     *   passed as an argument, the default stream type
+     *   {@link EventStreamType#JERSEY_SSE_TYPE_STREAM will be used.
      * @return {@link EventStream} object
      */
     public EventStream eventStream(EventStreamType eventStreamType) {
