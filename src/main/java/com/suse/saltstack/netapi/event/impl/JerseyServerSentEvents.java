@@ -84,7 +84,9 @@ public class JerseyServerSentEvents implements EventStream {
     }
 
     /**
-     * This method initiates the event processing loop.  It was added
+     * This method initiates the event processing loop.  In some cases it is useful to
+     * first initialize this class and then later start processing events (e.g. during
+     * unit testing).
      */
     public void processEvents() {
         if (!eventProcessingStarted) {

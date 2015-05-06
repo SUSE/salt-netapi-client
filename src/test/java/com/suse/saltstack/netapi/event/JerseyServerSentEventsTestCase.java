@@ -55,7 +55,6 @@ public class JerseyServerSentEventsTestCase {
      */
     @Test
     public void shouldFireNotifyMultipleTimes() {
-
         stubFor(get(urlEqualTo("/events"))
                 .willReturn(aResponse()
                 .withHeader("Content-Type", "text/event-stream")
@@ -70,7 +69,6 @@ public class JerseyServerSentEventsTestCase {
         jerseyServerSentEvents.addEventListener(eventCountClient);
 
         jerseyServerSentEvents.processEvents();
-
     }
 
     /**
@@ -78,7 +76,6 @@ public class JerseyServerSentEventsTestCase {
      */
     @Test
     public void testEventMessageContent() {
-
         stubFor(get(urlEqualTo("/events"))
                 .willReturn(aResponse()
                 .withHeader("Content-Type", "text/event-stream")
@@ -93,7 +90,6 @@ public class JerseyServerSentEventsTestCase {
         jerseyServerSentEvents.addEventListener(eventContentClient);
 
         jerseyServerSentEvents.processEvents();
-
     }
 
     /**
@@ -101,7 +97,6 @@ public class JerseyServerSentEventsTestCase {
      */
     @Test
     public void testListenerManagement() {
-
         SimpleEventListenerClient client1 = new SimpleEventListenerClient();
         SimpleEventListenerClient client2 = new SimpleEventListenerClient();
         SimpleEventListenerClient client3 = new SimpleEventListenerClient();
@@ -132,7 +127,6 @@ public class JerseyServerSentEventsTestCase {
      */
     @Test
     public void testEventProcessingStateStopped() {
-
         stubFor(get(urlEqualTo("/events"))
                 .willReturn(aResponse()
                 .withHeader("Content-Type", "text/event-stream")
@@ -149,7 +143,6 @@ public class JerseyServerSentEventsTestCase {
         jerseyServerSentEvents.processEvents();
 
         Assert.assertFalse(jerseyServerSentEvents.isEventProcessingStarted());
-
     }
 
     /**
@@ -157,7 +150,6 @@ public class JerseyServerSentEventsTestCase {
      */
     @Test
     public void testEventStreamClosed() {
-
         stubFor(get(urlEqualTo("/events"))
                 .willReturn(aResponse()
                 .withHeader("Content-Type", "text/event-stream")
@@ -173,14 +165,12 @@ public class JerseyServerSentEventsTestCase {
         jerseyServerSentEvents.addEventListener(eventStreamClosedClient);
 
         jerseyServerSentEvents.processEvents();
-
     }
 
     /**
      * Event listener client used for testing.
      */
     private class EventCountClient implements EventListener {
-
         private int targetCount;
         private int counter = 0;
 
@@ -205,7 +195,6 @@ public class JerseyServerSentEventsTestCase {
      * Event listener client used for testing.
      */
     private class EventContentClient implements EventListener {
-
         List<String> events = new ArrayList<>();
 
         @Override
@@ -223,23 +212,17 @@ public class JerseyServerSentEventsTestCase {
      * Simple Event ListenerClient
      */
     private class SimpleEventListenerClient implements EventListener {
+        @Override
+        public void notify(String event) { }
 
         @Override
-        public void notify(String event) {
-
-        }
-
-        @Override
-        public void eventStreamClosed() {
-
-        }
+        public void eventStreamClosed() { }
     }
 
     /**
      * Event listener client used for testing.
      */
     private class EventStreamClosedClient implements EventListener {
-
         JerseyServerSentEvents eventSource;
 
         public EventStreamClosedClient(JerseyServerSentEvents eventSource) {
