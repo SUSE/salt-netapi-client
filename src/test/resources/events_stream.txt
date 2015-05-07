@@ -1,0 +1,18 @@
+tag: 20150505113307407682
+data: {"tag": "20150505113307407682", "data": {"_stamp": "2015-05-05T18:33:07.408179", "minions": ["172.16.1.121"]}}
+
+tag: new_job
+data: {"tag": "new_job", "data": {"tgt_type": "glob", "jid": "20150505113307407682", "tgt": "*", "_stamp": "2015-05-05T18:33:07.408318", "user": "gaisford", "arg": ["i3", {"sysupgrade": "false", "refresh": "true", "__kwarg__": true}], "fun": "pkg.install", "minions": ["172.16.1.121"]}}
+
+tag: salt/job/20150505113307407682/new
+data: {"tag": "salt/job/20150505113307407682/new", "data": {"tgt_type": "glob", "jid": "20150505113307407682", "tgt": "*", "_stamp": "2015-05-05T18:33:07.408428", "user": "gaisford", "arg": ["i3", {"sysupgrade": "false", "refresh": "true", "__kwarg__": true}], "fun": "pkg.install", "minions": ["172.16.1.121"]}}
+
+tag: salt/auth
+data: {"tag": "salt/auth", "data": {"_stamp": "2015-05-05T18:33:37.704344", "act": "accept", "id": "172.16.1.121", "pub": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyjipjKj/QG0JMBvHIv24\nLmieNMsI7qiAt8Ffvp1wpovKNRgx8p/VwJzHKqH1cSbsUlDxY7O74wfZSdNI5H0K\n5fCkX2HSfa5Lb01ZeM0ma3xRDjAtRAgfjS/s8/bkMSE29lab9MSWZ9hWhgtwIYxI\nz4TQMlZfx2Lv6PN+Bw2oA0MwrUNdYAs2DmArJQpJGQAcKF1sUA4es9u3aiDmp5Si\npO9PnWTcv+cJrGYhjtCCXII/040V+Go2gsmzzjIqudM0y+i8eKQ4C/6HlyaHitWe\n8xyHnZ3tTtiODSdzrOLXuAUYrwjrqVDCp+pQhN4NUDQ0quenjFtH+6wH1NvPfYfX\nAw5oJIa4FqFAgOE0bCL4dL5JoU93cMaG1gY8JgAGEu5Q2fSl0A+dydIN7kghXCcI\nTfHrSh7YtpEuw0HnoH4nVEaORVARtunymKT+axmqzZKYRFdAMmjq9yfdpsMDFmBi\n3x4qMt5tuiUgGg+wlWpGxGAzF6GEF+BmPFU7cvBHg9lr2fu0OCpbGguq5OxhgqH1\nXrUEmdvfENI5QxTJmrkxW3hKA/U61GD/jty6oZZH1BJzreYqyrD6wIoBNvFW7tjX\nl8eJm1uR1ZKJRFxITE2Qt8s8UYeVhqaWUGNiEhT2v6ts885osviqkMIXQcXfvems\nrbFvhNrfq0wPvC53ZA+JwycCAwEAAQ==\n-----END PUBLIC KEY-----\n", "result": true}}
+
+tag: 20150505113307407682
+data: {"tag": "20150505113307407682", "data": {"fun_args": ["i3", {"sysupgrade": "false", "refresh": "true"}], "jid": "20150505113307407682", "return": {}, "retcode": 0, "success": true, "cmd": "_return", "_stamp": "2015-05-05T18:33:37.778893", "fun": "pkg.install", "id": "172.16.1.121"}}
+
+tag: salt/job/20150505113307407682/ret/172.16.1.121
+data: {"tag": "salt/job/20150505113307407682/ret/172.16.1.121", "data": {"fun_args": ["i3", {"sysupgrade": "false", "refresh": "true"}], "jid": "20150505113307407682", "return": {}, "retcode": 0, "success": true, "cmd": "_return", "_stamp": "2015-05-05T18:33:37.779073", "fun": "pkg.install", "id": "172.16.1.121"}}
+

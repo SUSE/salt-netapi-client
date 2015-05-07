@@ -6,6 +6,8 @@ import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.event.EventStreamFactory;
+import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
@@ -411,7 +413,7 @@ public class SaltStackClient {
     /**
      * Query general key information.
      *
-     * Required persmissions: @wheel
+     * Required permissions: @wheel
      *
      * GET /keys
      *
@@ -426,7 +428,7 @@ public class SaltStackClient {
     /**
      * Asynchronously query general key information.
      *
-     * Required persmissions: @wheel
+     * Required permissions: @wheel
      *
      * GET /keys
      *
@@ -441,4 +443,21 @@ public class SaltStackClient {
         };
         return executor.submit(callable);
     }
+
+    /**
+     * Returns a server-sent events (SSE) stream object.  The stream object supports the
+     * {@link EventStream} interface which allows the caller to register/unregister
+     * for stream event notifications as well as close the event stream.
+     * Note: {@link SaltStackClient#login(String, String, AuthModule)} or
+     * {@link SaltStackClient#loginAsync(String, String, AuthModule)} must be called prior
+     * to calling this method.
+     *
+     * GET /events
+     *
+     * @return {@link EventStream} object
+     */
+    public EventStream events() {
+        return EventStreamFactory.create(config);
+    }
+
 }
