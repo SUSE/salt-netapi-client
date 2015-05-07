@@ -20,6 +20,7 @@ import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.exception.ParsingException;
 import com.suse.saltstack.netapi.results.Result;
 
 import java.io.BufferedReader;
@@ -220,7 +221,7 @@ public class JsonParser<T> {
     }
 
     /**
-     * Json adapter to handle the StartTime date format given by netapi
+     * Json adapter to handle the Job.StartTime date format given by netapi
      */
     public class JobStartTimeJsonAdapter extends TypeAdapter<Date> {
         @Override
@@ -245,8 +246,7 @@ public class JsonParser<T> {
                 dateStr = dateStr.substring(0, dateStr.length() - 3);
                 return Job.START_TIME_FORMAT.parse(dateStr);
             } catch (ParseException e) {
-                e.printStackTrace();
-                return null;
+                throw new ParsingException(e);
             }
         }
     }
