@@ -1,0 +1,23 @@
+{
+  "return": [
+    {
+      "20150304192951636258": {
+        "Arguments": [],
+        "Function": "test.ping",
+        "Target": "*",
+        "Target-type": "glob",
+        "User": "chuck"
+      },
+      "20150304200110485012": {
+        "Arguments": [
+          "enable-autodestruction"
+        ],
+        "Function": "test.echo",
+        "StartTime": null,
+        "Target": "*",
+        "Target-type": "glob",
+        "User": "chuck"
+      }
+    }
+  ]
+}

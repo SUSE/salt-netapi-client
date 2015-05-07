@@ -1,0 +1,24 @@
+{
+  "return": [
+    {
+      "20150304192951636258": {
+        "Arguments": [],
+        "Function": "test.ping",
+        "StartTime": "2015, Mar 04 19:29:51.636258",
+        "Target": "*",
+        "Target-type": "glob",
+        "User": "chuck"
+      },
+      "20150304200110485012": {
+        "Arguments": [
+          "enable-autodestruction"
+        ],
+        "Function": "test.echo",
+        "StartTime": "2015-04-25T11:12:13Z",
+        "Target": "*",
+        "Target-type": "glob",
+        "User": "chuck"
+      }
+    }
+  ]
+}
