@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.event;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.saltstack.netapi.client.SaltStackClient;
-import com.suse.saltstack.netapi.event.impl.JerseyServerSentEvents;
+import com.suse.saltstack.netapi.event.impl.EventStream;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,8 +62,8 @@ public class JerseyServerSentEventsTest {
 
         Client jerseyClient = ClientBuilder.newClient();
 
-        try (JerseyServerSentEvents jerseyServerSentEvents =
-                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+        try (EventStream jerseyServerSentEvents =
+                new EventStream(client.getConfig(), jerseyClient)) {
             EventCountClient eventCountClient = new EventCountClient(6);
             jerseyServerSentEvents.addEventListener(eventCountClient);
 
@@ -84,8 +84,8 @@ public class JerseyServerSentEventsTest {
 
         Client jerseyClient = ClientBuilder.newClient();
 
-        try (JerseyServerSentEvents jerseyServerSentEvents =
-                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+        try (EventStream jerseyServerSentEvents =
+                new EventStream(client.getConfig(), jerseyClient)) {
             EventContentClient eventContentClient = new EventContentClient();
             jerseyServerSentEvents.addEventListener(eventContentClient);
 
@@ -111,8 +111,8 @@ public class JerseyServerSentEventsTest {
 
         Client jerseyClient = ClientBuilder.newClient();
 
-        try (JerseyServerSentEvents jerseyServerSentEvents =
-                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+        try (EventStream jerseyServerSentEvents =
+                new EventStream(client.getConfig(), jerseyClient)) {
             jerseyServerSentEvents.addEventListener(client1);
             jerseyServerSentEvents.addEventListener(client2);
             jerseyServerSentEvents.addEventListener(client3);
@@ -137,8 +137,8 @@ public class JerseyServerSentEventsTest {
 
         Client jerseyClient = ClientBuilder.newClient();
 
-        try (JerseyServerSentEvents jerseyServerSentEvents =
-                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+        try (EventStream jerseyServerSentEvents =
+                new EventStream(client.getConfig(), jerseyClient)) {
             EventContentClient eventContentClient = new EventContentClient();
             jerseyServerSentEvents.addEventListener(eventContentClient);
 
@@ -160,8 +160,8 @@ public class JerseyServerSentEventsTest {
                 .withBody(TEXT_EVENT_STREAM_RESPONSE)));
 
         Client jerseyClient = ClientBuilder.newClient();
-        try (JerseyServerSentEvents jerseyServerSentEvents =
-                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+        try (EventStream jerseyServerSentEvents =
+                new EventStream(client.getConfig(), jerseyClient)) {
             EventStreamClosedClient eventStreamClosedClient =
                     new EventStreamClosedClient(jerseyServerSentEvents);
             jerseyServerSentEvents.addEventListener(eventStreamClosedClient);
@@ -226,9 +226,9 @@ public class JerseyServerSentEventsTest {
      * Event listener client used for testing.
      */
     private class EventStreamClosedClient implements EventListener {
-        JerseyServerSentEvents eventSource;
+        EventStream eventSource;
 
-        public EventStreamClosedClient(JerseyServerSentEvents eventSource) {
+        public EventStreamClosedClient(EventStream eventSource) {
             this.eventSource = eventSource;
         }
 

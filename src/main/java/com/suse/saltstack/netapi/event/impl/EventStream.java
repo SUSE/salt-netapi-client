@@ -1,7 +1,6 @@
 package com.suse.saltstack.netapi.event.impl;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
-import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.event.EventListener;
 import org.glassfish.jersey.client.ClientProperties;
@@ -24,9 +23,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * GlassFish Jersey Server-Sent Events (SSE) implementation.
+ * Event stream implementation based on GlassFish Jersey Server-Sent Events (SSE).
  */
-public class JerseyServerSentEvents implements EventStream {
+public class EventStream implements AutoCloseable {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -58,7 +57,7 @@ public class JerseyServerSentEvents implements EventStream {
      *               authentication token required to create the request to obtain
      *               the {@link EventInput} event stream.
      */
-    public JerseyServerSentEvents(ClientConfig config) {
+    public EventStream(ClientConfig config) {
         this.config = config;
         initializeStream();
     }
@@ -73,7 +72,7 @@ public class JerseyServerSentEvents implements EventStream {
      *               the {@link EventInput} event stream.
      * @param client Passed client to use when configuring the event stream
      */
-    public JerseyServerSentEvents(ClientConfig config, Client client) {
+    public EventStream(ClientConfig config, Client client) {
         client.register(new SseFeature());
         WebTarget target = client.target(config.get(ClientConfig.URL) + "/events");
         Invocation.Builder builder = target.request(new MediaType("text",
@@ -180,7 +179,7 @@ public class JerseyServerSentEvents implements EventStream {
      * a proxy is configured be sure to account for it.
      */
     private void initializeStream() {
-        Callable callable = new Callable() {
+        Callable<Object> callable = new Callable<Object>() {
             @Override
             public Object call() throws SaltStackException {
                 org.glassfish.jersey.client.ClientConfig jerseyConfig =

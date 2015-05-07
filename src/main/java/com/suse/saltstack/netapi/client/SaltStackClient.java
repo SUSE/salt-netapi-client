@@ -6,8 +6,7 @@ import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
-import com.suse.saltstack.netapi.event.EventStreamFactory;
-import com.suse.saltstack.netapi.event.EventStream;
+import com.suse.saltstack.netapi.event.impl.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.datatypes.Job;
@@ -457,7 +456,7 @@ public class SaltStackClient {
      * @return {@link EventStream} object
      */
     public EventStream events() {
-        return EventStreamFactory.create(config);
+        return new EventStream(config);
     }
 
 }
