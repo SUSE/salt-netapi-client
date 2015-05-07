@@ -457,5 +457,4 @@ public class SaltStackClient {
     public EventStream events() {
         return new EventStream(config);
     }
-
 }
