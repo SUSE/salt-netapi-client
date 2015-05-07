@@ -1,22 +1,21 @@
 package com.suse.saltstack.netapi.client;
 
+import com.google.gson.JsonArray;
 import com.suse.saltstack.netapi.AuthModule;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
+import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Keys;
+import com.suse.saltstack.netapi.datatypes.ScheduledJob;
+import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
-import com.suse.saltstack.netapi.datatypes.Job;
-import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.datatypes.Token;
-
-import com.google.gson.JsonArray;
-
 import com.suse.saltstack.netapi.utils.ClientUtils;
+
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
