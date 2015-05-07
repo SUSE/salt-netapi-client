@@ -61,13 +61,14 @@ public class JerseyServerSentEventsTest {
                 .withBody(TEXT_EVENT_STREAM_RESPONSE)));
 
         Client jerseyClient = ClientBuilder.newClient();
-        JerseyServerSentEvents jerseyServerSentEvents = new JerseyServerSentEvents(
-                client.getConfig(), jerseyClient);
 
-        EventCountClient eventCountClient = new EventCountClient(6);
-        jerseyServerSentEvents.addEventListener(eventCountClient);
+        try (JerseyServerSentEvents jerseyServerSentEvents =
+                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+            EventCountClient eventCountClient = new EventCountClient(6);
+            jerseyServerSentEvents.addEventListener(eventCountClient);
 
-        jerseyServerSentEvents.processEvents();
+            jerseyServerSentEvents.processEvents();
+        }
     }
 
     /**
@@ -82,13 +83,14 @@ public class JerseyServerSentEventsTest {
                 .withBody(TEXT_EVENT_STREAM_RESPONSE)));
 
         Client jerseyClient = ClientBuilder.newClient();
-        JerseyServerSentEvents jerseyServerSentEvents = new JerseyServerSentEvents(
-                client.getConfig(), jerseyClient);
 
-        EventContentClient eventContentClient = new EventContentClient();
-        jerseyServerSentEvents.addEventListener(eventContentClient);
+        try (JerseyServerSentEvents jerseyServerSentEvents =
+                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+            EventContentClient eventContentClient = new EventContentClient();
+            jerseyServerSentEvents.addEventListener(eventContentClient);
 
-        jerseyServerSentEvents.processEvents();
+            jerseyServerSentEvents.processEvents();
+        }
     }
 
     /**
@@ -108,19 +110,18 @@ public class JerseyServerSentEventsTest {
                 .withBody(TEXT_EVENT_STREAM_RESPONSE)));
 
         Client jerseyClient = ClientBuilder.newClient();
-        JerseyServerSentEvents jerseyServerSentEvents = new JerseyServerSentEvents(
-                client.getConfig(), jerseyClient);
 
-        jerseyServerSentEvents.addEventListener(client1);
-        jerseyServerSentEvents.addEventListener(client2);
-        jerseyServerSentEvents.addEventListener(client3);
-        jerseyServerSentEvents.removeEventListener(client2);
-        jerseyServerSentEvents.removeEventListener(client3);
-        jerseyServerSentEvents.addEventListener(client4);
+        try (JerseyServerSentEvents jerseyServerSentEvents =
+                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+            jerseyServerSentEvents.addEventListener(client1);
+            jerseyServerSentEvents.addEventListener(client2);
+            jerseyServerSentEvents.addEventListener(client3);
+            jerseyServerSentEvents.removeEventListener(client2);
+            jerseyServerSentEvents.removeEventListener(client3);
+            jerseyServerSentEvents.addEventListener(client4);
 
-        Assert.assertTrue(jerseyServerSentEvents.getListenerCount() == 2);
-
-        jerseyServerSentEvents.close();
+            Assert.assertTrue(jerseyServerSentEvents.getListenerCount() == 2);
+        }
     }
 
     /**
@@ -135,15 +136,16 @@ public class JerseyServerSentEventsTest {
                 .withBody(TEXT_EVENT_STREAM_RESPONSE)));
 
         Client jerseyClient = ClientBuilder.newClient();
-        JerseyServerSentEvents jerseyServerSentEvents = new JerseyServerSentEvents(
-                client.getConfig(), jerseyClient);
 
-        EventContentClient eventContentClient = new EventContentClient();
-        jerseyServerSentEvents.addEventListener(eventContentClient);
+        try (JerseyServerSentEvents jerseyServerSentEvents =
+                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+            EventContentClient eventContentClient = new EventContentClient();
+            jerseyServerSentEvents.addEventListener(eventContentClient);
 
-        jerseyServerSentEvents.processEvents();
+            jerseyServerSentEvents.processEvents();
 
-        Assert.assertFalse(jerseyServerSentEvents.isEventProcessingStarted());
+            Assert.assertFalse(jerseyServerSentEvents.isEventProcessingStarted());
+        }
     }
 
     /**
@@ -158,14 +160,14 @@ public class JerseyServerSentEventsTest {
                 .withBody(TEXT_EVENT_STREAM_RESPONSE)));
 
         Client jerseyClient = ClientBuilder.newClient();
-        JerseyServerSentEvents jerseyServerSentEvents = new JerseyServerSentEvents(
-                client.getConfig(), jerseyClient);
+        try (JerseyServerSentEvents jerseyServerSentEvents =
+                new JerseyServerSentEvents(client.getConfig(), jerseyClient)) {
+            EventStreamClosedClient eventStreamClosedClient =
+                    new EventStreamClosedClient(jerseyServerSentEvents);
+            jerseyServerSentEvents.addEventListener(eventStreamClosedClient);
 
-        EventStreamClosedClient eventStreamClosedClient =
-                new EventStreamClosedClient(jerseyServerSentEvents);
-        jerseyServerSentEvents.addEventListener(eventStreamClosedClient);
-
-        jerseyServerSentEvents.processEvents();
+            jerseyServerSentEvents.processEvents();
+        }
     }
 
     /**
