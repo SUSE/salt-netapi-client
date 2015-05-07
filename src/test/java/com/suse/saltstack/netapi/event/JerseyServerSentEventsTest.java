@@ -2,8 +2,8 @@ package com.suse.saltstack.netapi.event;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.saltstack.netapi.client.SaltStackClient;
-import com.suse.saltstack.netapi.event.impl.EventStream;
 import com.suse.saltstack.netapi.utils.ClientUtils;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

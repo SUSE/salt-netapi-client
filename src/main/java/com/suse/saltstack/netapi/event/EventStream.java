@@ -1,8 +1,8 @@
-package com.suse.saltstack.netapi.event.impl;
+package com.suse.saltstack.netapi.event;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.event.EventListener;
+
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.sse.EventInput;
 import org.glassfish.jersey.media.sse.InboundEvent;
@@ -13,6 +13,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
