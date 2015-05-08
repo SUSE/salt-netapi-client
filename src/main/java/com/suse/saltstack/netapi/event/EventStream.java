@@ -151,7 +151,9 @@ public class EventStream implements AutoCloseable {
             // clear out the listeners
             listeners.clear();
             // close the backing event stream
-            eventInput.close();
+            if (eventInput != null) {
+                eventInput.close();
+            }
             // shut down the executor
             executor.shutdownNow();
             // reset processing flag
