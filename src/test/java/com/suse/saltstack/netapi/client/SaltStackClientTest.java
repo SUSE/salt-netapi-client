@@ -17,6 +17,7 @@ import org.junit.rules.ExpectedException;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -77,6 +78,9 @@ public class SaltStackClientTest {
     static final String JSON_JOBS_NULL_START_TIME_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream(
             "/jobs_response_null_start_time.json"));
+
+    private static final SimpleDateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -439,8 +443,8 @@ public class SaltStackClientTest {
         assertEquals(Arrays.asList("enable-autodestruction"),
                 job2.getArguments().getArgs());
         assertEquals(0, job1.getArguments().getArgs().size());
-        assertEquals(1425493791636L, job1.getStartTime().getTime());
-        assertEquals(1425495670485L, job2.getStartTime().getTime());
+        assertEquals("2015-03-04 19:29:51", DATE_FORMAT.format(job1.getStartTime()));
+        assertEquals("2015-03-04 20:01:10", DATE_FORMAT.format(job2.getStartTime()));
         verify(1, getRequestedFor(urlEqualTo("/jobs"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
