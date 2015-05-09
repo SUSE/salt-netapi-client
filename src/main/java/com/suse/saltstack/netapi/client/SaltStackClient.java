@@ -1,6 +1,8 @@
 package com.suse.saltstack.netapi.client;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.AuthModule;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
@@ -457,4 +459,30 @@ public class SaltStackClient {
     public EventStream events() {
         return new EventStream(config);
     }
+
+    /**
+     *
+     * @param eventTag
+     * @param eventData
+     * @return
+     * @throws SaltStackException
+     */
+    public boolean hook(String eventTag, String eventData) throws SaltStackException {
+        String tag = eventTag != null ? eventTag : "";
+        Map<String, Object> result = connectionFactory
+                .create("/hook/" + tag, JsonParser.MAP, config)
+                .getResult(eventData);
+        return Boolean.TRUE.equals(result.get("success"));
+    }
+
+    public Future<Boolean> hookAsync(final String eventTag, final String eventData) {
+        Callable<Boolean> callable = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return hook(eventTag, eventData);
+            }
+        };
+        return executor.submit(callable);
+    }
+
 }

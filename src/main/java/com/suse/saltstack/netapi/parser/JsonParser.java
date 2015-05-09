@@ -55,6 +55,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Stats>(){});
     public static final JsonParser<Result<Keys>> KEYS =
             new JsonParser<>(new TypeToken<Result<Keys>>(){});
+    public static final JsonParser<Map<String, Object>> MAP =
+            new JsonParser<>(new TypeToken<Map<String, Object>>(){});
 
     private final TypeToken<T> type;
     private final Gson gson;
