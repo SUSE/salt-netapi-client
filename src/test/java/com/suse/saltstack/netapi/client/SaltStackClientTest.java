@@ -1,5 +1,12 @@
 package com.suse.saltstack.netapi.client;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
@@ -10,6 +17,19 @@ import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
+
+import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
+import static com.suse.saltstack.netapi.AuthModule.PAM;
+import static com.suse.saltstack.netapi.AuthModule.AUTO;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,9 +58,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
-import static com.suse.saltstack.netapi.AuthModule.AUTO;
-import static com.suse.saltstack.netapi.AuthModule.PAM;
-import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -78,6 +95,8 @@ public class SaltStackClientTest {
     static final String JSON_JOBS_NULL_START_TIME_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream(
             "/jobs_response_null_start_time.json"));
+    static final String JSON_HOOK_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/hook_response.json"));
 
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -506,6 +525,60 @@ public class SaltStackClientTest {
         verify(1, getRequestedFor(urlEqualTo("/jobs"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testHook() throws Exception {
+        stubFor(post(urlMatching("/hook/my/tag"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_HOOK_RESPONSE)));
+
+        JsonObject json = new JsonObject();
+        json.addProperty("foo", "bar");
+        JsonArray array = new JsonArray();
+        array.add(new JsonPrimitive("one"));
+        array.add(new JsonPrimitive("two"));
+        array.add(new JsonPrimitive("three"));
+        json.add("list", array);
+
+        String data = json.toString();
+
+        boolean success = client.hook("my/tag", data);
+
+        assertTrue(success);
+        verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalTo(data)));
+    }
+
+    @Test
+    public void testHookAsync() throws Exception {
+        stubFor(post(urlMatching("/hook/my/tag"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_HOOK_RESPONSE)));
+
+        JsonObject json = new JsonObject();
+        json.addProperty("foo", "bar");
+        JsonArray array = new JsonArray();
+        array.add(new JsonPrimitive("one"));
+        array.add(new JsonPrimitive("two"));
+        array.add(new JsonPrimitive("three"));
+        json.add("list", array);
+
+        String data = json.toString();
+
+        boolean success = client.hookAsync("my/tag", data).get();
+
+        assertTrue(success);
+        verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalTo(data)));
     }
 
 }
