@@ -1,6 +1,5 @@
 package com.suse.saltstack.netapi.client;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -531,9 +530,9 @@ public class SaltStackClientTest {
     public void testHook() throws Exception {
         stubFor(post(urlMatching("/hook/my/tag"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_HOOK_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_HOOK_RESPONSE)));
 
         JsonObject json = new JsonObject();
         json.addProperty("foo", "bar");
@@ -558,9 +557,9 @@ public class SaltStackClientTest {
     public void testHookAsync() throws Exception {
         stubFor(post(urlMatching("/hook/my/tag"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_HOOK_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_HOOK_RESPONSE)));
 
         JsonObject json = new JsonObject();
         json.addProperty("foo", "bar");
