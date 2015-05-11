@@ -7,22 +7,29 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import com.suse.saltstack.netapi.datatypes.Arguments;
 import com.suse.saltstack.netapi.datatypes.Job;
-import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Keys;
+import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.exception.ParsingException;
 import com.suse.saltstack.netapi.results.Result;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -209,6 +216,37 @@ public class JsonParser<T> {
             if (jsonElement.isJsonObject()
                     && jsonElement.getAsJsonObject().has(KWARG_KEY)) {
                 jsonElement.getAsJsonObject().remove(KWARG_KEY);
+            }
+        }
+    }
+
+    /**
+     * Json adapter to handle the Job.StartTime date format given by netapi
+     */
+    public class JobStartTimeJsonAdapter extends TypeAdapter<Date> {
+        @Override
+        public synchronized void write(JsonWriter out, Date value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+                return;
+            }
+            String dateFormatAsString = Job.START_TIME_FORMAT.format(value);
+            out.value(dateFormatAsString);
+        }
+
+        @Override
+        public synchronized Date read(JsonReader in) throws IOException {
+            if (in.peek() == JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            try {
+                String dateStr = in.nextString();
+                // Remove microseconds because java Date does not support it
+                dateStr = dateStr.substring(0, dateStr.length() - 3);
+                return Job.START_TIME_FORMAT.parse(dateStr);
+            } catch (ParseException e) {
+                throw new ParsingException(e);
             }
         }
     }

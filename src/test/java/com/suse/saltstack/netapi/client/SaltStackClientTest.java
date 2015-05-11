@@ -1,26 +1,15 @@
 package com.suse.saltstack.netapi.client;
 
-import com.suse.saltstack.netapi.datatypes.Job;
-import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
+import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
-import com.suse.saltstack.netapi.datatypes.Keys;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
-
-import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
-import static com.suse.saltstack.netapi.AuthModule.PAM;
-import static com.suse.saltstack.netapi.AuthModule.AUTO;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +17,12 @@ import org.junit.rules.ExpectedException;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -43,6 +38,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.suse.saltstack.netapi.AuthModule.AUTO;
+import static com.suse.saltstack.netapi.AuthModule.PAM;
+import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -62,7 +60,7 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/minions_response.json"));
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/login_request.json"));
-    static final String JSON_LOGIN_RESPONSE =  ClientUtils.streamToString(
+    static final String JSON_LOGIN_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/login_response.json"));
     static final String JSON_RUN_REQUEST = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/run_request.json"));
@@ -74,6 +72,15 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/keys_response.json"));
     static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/jobs_response.json"));
+    static final String JSON_JOBS_INVALID_START_TIME_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream(
+            "/jobs_response_invalid_start_time.json"));
+    static final String JSON_JOBS_NULL_START_TIME_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream(
+            "/jobs_response_null_start_time.json"));
+
+    private static final SimpleDateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -431,8 +438,53 @@ public class SaltStackClientTest {
         Map<String, Job> jobs = client.getJobs();
 
         assertNotNull(jobs);
+        Job job1 = jobs.get("20150304192951636258");
+        Job job2 = jobs.get("20150304200110485012");
         assertEquals(Arrays.asList("enable-autodestruction"),
-                jobs.get("20150304200110485012").getArguments().getArgs());
+                job2.getArguments().getArgs());
+        assertEquals(0, job1.getArguments().getArgs().size());
+        assertEquals("2015-03-04 19:29:51", DATE_FORMAT.format(job1.getStartTime()));
+        assertEquals("2015-03-04 20:01:10", DATE_FORMAT.format(job2.getStartTime()));
+        verify(1, getRequestedFor(urlEqualTo("/jobs"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testJobsWithInvalidStartTime() throws Exception {
+        stubFor(get(urlMatching("/jobs"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_INVALID_START_TIME_RESPONSE)));
+
+        boolean exceptionThrown = false;
+        try {
+            client.getJobs();
+        } catch (JsonSyntaxException e) {
+            exceptionThrown = true;
+        }
+        assertTrue("Expected JsonSyntaxException to be thrown", exceptionThrown);
+        verify(1, getRequestedFor(urlEqualTo("/jobs"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testJobsWithNullStartTime() throws Exception {
+        stubFor(get(urlMatching("/jobs"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_NULL_START_TIME_RESPONSE)));
+
+        Map<String, Job> jobs = client.getJobs();
+
+        assertNotNull(jobs);
+        Job job1 = jobs.get("20150304192951636258");
+        Job job2 = jobs.get("20150304200110485012");
+        assertNull(job1.getStartTime());
+        assertNull(job2.getStartTime());
         verify(1, getRequestedFor(urlEqualTo("/jobs"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
