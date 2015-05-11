@@ -459,11 +459,15 @@ public class SaltStackClient {
     }
 
     /**
+     * Trigger an event in Salt with the specified tag and data.
      *
-     * @param eventTag
-     * @param eventData
-     * @return
-     * @throws SaltStackException
+     * POST /hook
+     *
+     * @param eventTag the event tag
+     * @param eventData the event data. Must be valid JSON.
+     * @return the boolean value returned by Salt. If true the event was triggered successfully. A value of false
+     * is returned only if Salt itself returns false; it does not mean a communication failure.
+     * @throws SaltStackException if anything goes wrong
      */
     public boolean hook(String eventTag, String eventData) throws SaltStackException {
         String tag = eventTag != null ? eventTag : "";
@@ -473,6 +477,13 @@ public class SaltStackClient {
         return Boolean.TRUE.equals(result.get("success"));
     }
 
+    /**
+     * Asynchronously trigger an event in Salt with the specified tag and data.
+     *
+     * POST /hook
+     *
+     * @return Future containing a boolean value indicating the success of failure of the event triggering .
+     */
     public Future<Boolean> hookAsync(final String eventTag, final String eventData) {
         Callable<Boolean> callable = new Callable<Boolean>() {
             @Override
@@ -482,5 +493,4 @@ public class SaltStackClient {
         };
         return executor.submit(callable);
     }
-
 }
