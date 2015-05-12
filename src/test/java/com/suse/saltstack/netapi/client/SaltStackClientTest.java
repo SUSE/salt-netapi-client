@@ -9,19 +9,14 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
-import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
-import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
-import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static com.suse.saltstack.netapi.AuthModule.PAM;
 import static com.suse.saltstack.netapi.AuthModule.AUTO;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -37,11 +32,6 @@ import org.junit.rules.ExpectedException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
