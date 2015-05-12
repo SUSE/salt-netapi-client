@@ -527,7 +527,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testHook() throws Exception {
+    public void testSendEvent() throws Exception {
         stubFor(post(urlMatching("/hook/my/tag"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -544,7 +544,7 @@ public class SaltStackClientTest {
 
         String data = json.toString();
 
-        boolean success = client.hook("my/tag", data);
+        boolean success = client.sendEvent("my/tag", data);
 
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
@@ -554,7 +554,7 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testHookAsync() throws Exception {
+    public void testSendEventAsync() throws Exception {
         stubFor(post(urlMatching("/hook/my/tag"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -571,7 +571,7 @@ public class SaltStackClientTest {
 
         String data = json.toString();
 
-        boolean success = client.hookAsync("my/tag", data).get();
+        boolean success = client.sendEventAsync("my/tag", data).get();
 
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
