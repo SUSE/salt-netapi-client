@@ -465,8 +465,10 @@ public class SaltStackClient {
      *
      * @param eventTag the event tag
      * @param eventData the event data. Must be valid JSON.
-     * @return the boolean value returned by Salt. If true the event was triggered successfully. A value of false
-     * is returned only if Salt itself returns false; it does not mean a communication failure.
+     * @return the boolean value returned by Salt. If true the event was triggered
+     * successfully.
+     * A value of false is returned only if Salt itself returns false; it does not mean a
+     * communication failure.
      * @throws SaltStackException if anything goes wrong
      */
     public boolean sendEvent(String eventTag, String eventData) throws SaltStackException {
@@ -484,7 +486,8 @@ public class SaltStackClient {
      *
      * @param eventTag the event tag
      * @param eventData the event data. Must be valid JSON.
-     * @return Future containing a boolean value indicating the success of failure of the event triggering .
+     * @return Future containing a boolean value indicating the success of failure of the
+     * event triggering .
      */
     public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
         Callable<Boolean> callable = new Callable<Boolean>() {
