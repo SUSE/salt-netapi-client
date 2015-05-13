@@ -457,4 +457,45 @@ public class SaltStackClient {
     public EventStream events() {
         return new EventStream(config);
     }
+
+    /**
+     * Trigger an event in Salt with the specified tag and data.
+     *
+     * POST /hook
+     *
+     * @param eventTag the event tag
+     * @param eventData the event data. Must be valid JSON.
+     * @return the boolean value returned by Salt. If true the event was triggered
+     * successfully.
+     * A value of false is returned only if Salt itself returns false; it does not mean a
+     * communication failure.
+     * @throws SaltStackException if anything goes wrong
+     */
+    public boolean sendEvent(String eventTag, String eventData) throws SaltStackException {
+        String tag = eventTag != null ? eventTag : "";
+        Map<String, Object> result = connectionFactory
+                .create("/hook/" + tag, JsonParser.MAP, config)
+                .getResult(eventData);
+        return Boolean.TRUE.equals(result.get("success"));
+    }
+
+    /**
+     * Asynchronously trigger an event in Salt with the specified tag and data.
+     *
+     * POST /hook
+     *
+     * @param eventTag the event tag
+     * @param eventData the event data. Must be valid JSON.
+     * @return Future containing a boolean value indicating the success of failure of the
+     * event triggering .
+     */
+    public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
+        Callable<Boolean> callable = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return sendEvent(eventTag, eventData);
+            }
+        };
+        return executor.submit(callable);
+    }
 }
