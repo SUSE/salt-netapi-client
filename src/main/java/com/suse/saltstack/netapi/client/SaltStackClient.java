@@ -196,6 +196,20 @@ public class SaltStackClient {
      * Generic interface to start any execution command and immediately return an object
      * representing the scheduled job.
      *
+     * GET /minions
+     *
+     * @return list of objects representing minions
+     * @throws SaltStackException if anything goes wrong
+     */
+    public List<Map<String, Object>> getMinions() throws SaltStackException {
+        return connectionFactory.create("/minions", JsonParser.RETVALS, config)
+                .getResult().getResult();
+    }
+
+    /**
+     * Generic interface to start any execution command and immediately return an object
+     * representing the scheduled job.
+     *
      * POST /minions
      *
      * @param target the target
