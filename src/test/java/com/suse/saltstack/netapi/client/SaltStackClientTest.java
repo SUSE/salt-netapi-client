@@ -654,24 +654,14 @@ public class SaltStackClientTest {
                 .withRequestBody(equalTo("")));
     }
 
-    @Test
+    @Test(expected = JsonSyntaxException.class)
     public void testJobsWithInvalidStartTime() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_JOBS_INVALID_START_TIME_RESPONSE)));
-
-        boolean exceptionThrown = false;
-        try {
-            client.getJobs();
-        } catch (JsonSyntaxException e) {
-            exceptionThrown = true;
-        }
-        assertTrue("Expected JsonSyntaxException to be thrown", exceptionThrown);
-        verify(1, getRequestedFor(urlEqualTo("/jobs"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
+        client.getJobs();
     }
 
     @Test
