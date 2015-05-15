@@ -189,13 +189,41 @@ public class SaltStackClientTest {
             }
         };
 
-
-        client.run("user", "pass", PAM, "local", "*", "pkg.install", args, kwargs);
+        Map<String, Object> retvals =
+                client.run("user", "pass", PAM, "local", "*", "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
+
+        Map<String, Map<String, String>> expected =
+                new LinkedHashMap<String, Map<String, String>>(){
+            {
+                put("i3-wm", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "4.10.1-1");
+                        put("old", "");
+                    }
+                });
+                put("i3lock", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "2.6-1");
+                        put("old", "");
+                    }
+                });
+                put("i3status", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "2.9-1");
+                        put("old", "");
+                    }
+                });
+            }
+        };
+
+        assertNotNull(retvals);
+        assertTrue(retvals.containsKey("minion-1"));
+        assertEquals(retvals.get("minion-1"), expected);
     }
 
     @Test
@@ -216,14 +244,43 @@ public class SaltStackClientTest {
             }
         };
 
-        Future<?> future = client.runAsync("user", "pass", PAM, "local", "*",
-                "pkg.install", args, kwargs);
-        future.get();
+        Future<Map<String, Object>> future = client.runAsync("user", "pass",
+                PAM, "local", "*", "pkg.install", args, kwargs);
+        Map<String, Object> retvals = future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
+
+
+        Map<String, Map<String, String>> expected =
+                new LinkedHashMap<String, Map<String, String>>(){
+            {
+                put("i3-wm", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "4.10.1-1");
+                        put("old", "");
+                    }
+                });
+                put("i3lock", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "2.6-1");
+                        put("old", "");
+                    }
+                });
+                put("i3status", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "2.9-1");
+                        put("old", "");
+                    }
+                });
+            }
+        };
+
+        assertNotNull(retvals);
+        assertTrue(retvals.containsKey("minion-1"));
+        assertEquals(retvals.get("minion-1"), expected);
     }
 
     @Test
@@ -263,39 +320,6 @@ public class SaltStackClientTest {
                 .withFixedDelay(2000)));
 
         clientWithFastTimeout.login("user", "pass", AUTO);
-    }
-
-    @Test
-    public void testRunResult() throws Exception {
-        stubFor(post(urlEqualTo("/run"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
-
-        Map<String, Object> retvals = client.run("user", "pass", PAM, "local", "*",
-                "test.ping", null, null);
-
-        assertNotNull(retvals);
-        assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), true);
-    }
-
-    @Test
-    public void testRunResultAsync() throws Exception {
-        stubFor(post(urlEqualTo("/run"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
-
-        Future<Map<String, Object>> future = client.runAsync("user", "pass",
-                PAM, "local", "*", "test.ping", null, null);
-        Map<String, Object> retvals = future.get();
-
-        assertNotNull(retvals);
-        assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), true);
     }
 
     @Test
@@ -481,9 +505,34 @@ public class SaltStackClientTest {
         verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json")));
 
+
+        Map<String, Map<String, String>> expected =
+                new LinkedHashMap<String, Map<String, String>>(){
+            {
+                put("i3-wm", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "4.10.1-1");
+                        put("old", "");
+                    }
+                });
+                put("i3lock", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "2.6-1");
+                        put("old", "");
+                    }
+                });
+                put("i3status", new LinkedHashMap<String, String>(){
+                    {
+                        put("new", "2.9-1");
+                        put("old", "");
+                    }
+                });
+            }
+        };
+
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), true);
+        assertEquals(retvals.get("minion-1"), expected);
     }
 
     @Test
