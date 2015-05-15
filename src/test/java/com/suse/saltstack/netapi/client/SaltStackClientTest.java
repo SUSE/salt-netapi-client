@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
@@ -129,7 +130,7 @@ public class SaltStackClientTest {
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
-    @Test(expected = SaltStackException.class)
+    @Test(expected = SaltUserUnauthorizedException.class)
     public void testLoginFailure() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
