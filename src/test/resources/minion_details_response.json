@@ -1,0 +1,158 @@
+{
+  "return": [
+    {
+      "minion2": {
+        "biosversion": "VirtualBox",
+        "kernel": "Linux",
+        "domain": "",
+        "zmqversion": "4.0.4",
+        "kernelrelease": "3.13.0-52-generic",
+        "pythonpath": [
+          "/usr/bin",
+          "/usr/local/lib/python2.7/dist-packages/pytz-2013.9-py2.7.egg",
+          "/usr/local/lib/python2.7/dist-packages/python_dateutil-2.4.0-py2.7.egg",
+          "/usr/lib/python2.7",
+          "/usr/lib/python2.7/plat-x86_64-linux-gnu",
+          "/usr/lib/python2.7/lib-tk",
+          "/usr/lib/python2.7/lib-old",
+          "/usr/lib/python2.7/lib-dynload",
+          "/usr/local/lib/python2.7/dist-packages",
+          "/usr/lib/python2.7/dist-packages",
+          "/usr/lib/python2.7/dist-packages/PILcompat",
+          "/usr/lib/python2.7/dist-packages/gtk-2.0",
+          "/usr/lib/python2.7/dist-packages/ubuntu-sso-client"
+        ],
+        "serialnumber": "0",
+        "ip_interfaces": {
+          "lo": ["127.0.0.1"],
+          "eth1": ["192.168.56.101"],
+          "eth0": ["10.0.2.15"]
+        },
+        "fqdn_ip6": [],
+        "mem_total": 2001,
+        "saltversioninfo": [
+          2014,
+          7,
+          5,
+          0
+        ],
+        "SSDs": [],
+        "id": "minion2",
+        "osrelease": "14.04",
+        "ps": "ps -efHww",
+        "locale_info": {
+          "defaultlanguage": "en_US",
+          "defaultencoding": "UTF-8"
+        },
+        "lsb_distrib_description": "Ubuntu 14.04.2 LTS",
+        "ip6_interfaces": {
+          "lo": ["::1"],
+          "eth1": ["fe80::a00:27ff:fec4:d5b3"],
+          "eth0": ["fe80::a00:27ff:fe6b:fe02"]
+        },
+        "num_cpus": 4,
+        "hwaddr_interfaces": {
+          "lo": "00:00:00:00:00:00",
+          "eth1": "08:00:27:c4:d5:b3",
+          "eth0": "08:00:27:6b:fe:02"
+        },
+        "virtual": "VirtualBox",
+        "osfullname": "Ubuntu",
+        "master": "192.168.56.102",
+        "lsb_distrib_id": "Ubuntu",
+        "ipv6": [
+          "::1",
+          "fe80::a00:27ff:fe6b:fe02",
+          "fe80::a00:27ff:fec4:d5b3"
+        ],
+        "cpu_flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ht",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "rep_good",
+          "nopl",
+          "pni",
+          "ssse3",
+          "lahf_lm"
+        ],
+        "localhost": "minion2",
+        "ipv4": [
+          "10.0.2.15",
+          "127.0.0.1",
+          "192.168.56.101"
+        ],
+        "fqdn_ip4": ["127.0.1.1"],
+        "shell": "/bin/sh",
+        "nodename": "minion2",
+        "saltversion": "2014.7.5",
+        "lsb_distrib_release": "14.04",
+        "saltpath": "/usr/lib/python2.7/dist-packages/salt",
+        "biosreleasedate": "12/01/2006",
+        "host": "minion2",
+        "os_family": "Debian",
+        "oscodename": "trusty",
+        "osfinger": "Ubuntu-14.04",
+        "pythonversion": [
+          2,
+          7,
+          6,
+          "final",
+          0
+        ],
+        "manufacturer": "innotek GmbH",
+        "num_gpus": 1,
+        "ip4_interfaces": {
+          "lo": ["127.0.0.1"],
+          "eth1": ["192.168.56.101"],
+          "eth0": ["10.0.2.15"]
+        },
+        "server_id": 341203231,
+        "cpu_model": "Intel(R) Core(TM) i7-4930K CPU @ 3.40GHz",
+        "fqdn": "minion2",
+        "pythonexecutable": "/usr/bin/python",
+        "productname": "VirtualBox",
+        "osarch": "amd64",
+        "cpuarch": "x86_64",
+        "lsb_distrib_codename": "trusty",
+        "osrelease_info": [
+          14,
+          4
+        ],
+        "gpus": [
+          {
+            "model": "VirtualBox Graphics Adapter",
+            "vendor": "unknown"
+          }
+        ],
+        "path": "/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin",
+        "machine_id": "d780f33f9aac08e2baa98f5154de11eb",
+        "os": "Ubuntu"
+      }
+    }
+  ]
+}

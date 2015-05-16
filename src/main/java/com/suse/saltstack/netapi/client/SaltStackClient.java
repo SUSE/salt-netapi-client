@@ -229,6 +229,40 @@ public class SaltStackClient {
     }
 
     /**
+     * Query for details (grains) of the specified minion
+     *
+     * GET /minions/<minion-id>
+     *
+     * @return Map key: grain name, value: grain value
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Map<String, Object> getMinionDetails(String minionId) throws SaltStackException {
+        return connectionFactory.create("/minions/" + minionId, JsonParser.RETMAPS, config)
+                .getResult().getResult().get(0).get(minionId);
+    }
+
+    /**
+     * Query for details (grains) of the specified minion asynchronously
+     *
+     * GET /minions/<minion-id>
+     *
+     * @return Future with a map containing details of the minion
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Map<String, Object>> getMinionDetailsAsync(final String minionId)
+            throws SaltStackException {
+
+        Callable<Map<String, Object>> callable =
+                new Callable<Map<String, Object>>() {
+                    @Override
+                    public Map<String, Object> call() throws SaltStackException {
+                        return getMinionDetails(minionId);
+                    }
+                };
+        return executor.submit(callable);
+    }
+
+    /**
      * Generic interface to start any execution command and immediately return an object
      * representing the scheduled job.
      *
