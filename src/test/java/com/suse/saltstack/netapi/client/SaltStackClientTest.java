@@ -335,6 +335,43 @@ public class SaltStackClientTest {
     }
 
     @Test
+    public void testGetMinionsAsync() throws Exception {
+        stubFor(get(urlEqualTo("/minions"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Accept", "application/json")
+                .withBody(JSON_GET_MINIONS_RESPONSE)));
+
+        Future<Map<String, Map<String, Object>>> future = client.getMinionsAsync();
+        Map<String, Map<String, Object>> minions = future.get();
+
+        verify(1, getRequestedFor(urlEqualTo("/minions"))
+                .withHeader("Accept", equalTo("application/json")));
+
+        assertNotNull(minions);
+        assertEquals(2, minions.size());
+
+        assertTrue(minions.containsKey("minion1"));
+        assertTrue(minions.containsKey("minion2"));
+
+        Map<String, Object> minion1 = minions.get("minion1");
+        assertEquals(56, minion1.size());
+        assertEquals("VirtualBox", minion1.get("biosversion"));
+
+        assertTrue(minion1.get("saltversioninfo") instanceof List);
+        List saltversioninfo = (List) minion1.get("saltversioninfo");
+        assertEquals(2014.0, saltversioninfo.get(0));
+        assertEquals(7.0, saltversioninfo.get(1));
+        assertEquals(5.0, saltversioninfo.get(2));
+        assertEquals(0.0, saltversioninfo.get(3));
+
+        assertTrue(minion1.get("locale_info") instanceof Map);
+        Map locale_info = ((Map) minion1.get("locale_info"));
+        assertEquals("en_US", locale_info.get("defaultlanguage"));
+        assertEquals("UTF-8", locale_info.get("defaultencoding"));
+    }
+
+    @Test
     public void testStartCommand() throws Exception {
         stubFor(post(urlEqualTo("/minions")).willReturn(
                 aResponse().withStatus(HttpURLConnection.HTTP_OK)

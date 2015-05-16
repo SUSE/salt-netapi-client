@@ -207,6 +207,28 @@ public class SaltStackClient {
     }
 
     /**
+     * Asynchronously query for all minions and return a map of minions
+     * keyed by minion id
+     *
+     * GET /minions
+     *
+     * @return Future with a map containing maps representing minions, keyed by minion id
+     * @throws SaltStackException if anything goes wrong
+     */
+    public Future<Map<String, Map<String, Object>>> getMinionsAsync()
+            throws SaltStackException {
+
+        Callable<Map<String, Map<String, Object>>> callable =
+                new Callable<Map<String, Map<String, Object>>>() {
+            @Override
+            public Map<String, Map<String, Object>> call() throws SaltStackException {
+                return getMinions();
+            }
+        };
+        return executor.submit(callable);
+    }
+
+    /**
      * Generic interface to start any execution command and immediately return an object
      * representing the scheduled job.
      *
