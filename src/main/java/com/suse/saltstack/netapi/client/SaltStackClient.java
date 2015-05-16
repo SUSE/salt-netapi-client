@@ -193,17 +193,17 @@ public class SaltStackClient {
     }
 
     /**
-     * Generic interface to start any execution command and immediately return an object
-     * representing the scheduled job.
+     * Query for all minions and immediately return a map of minions
+     * keyed by minion id
      *
      * GET /minions
      *
-     * @return list of objects representing minions
+     * @return map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
      */
-    public List<Map<String, Object>> getMinions() throws SaltStackException {
-        return connectionFactory.create("/minions", JsonParser.RETVALS, config)
-                .getResult().getResult();
+    public Map<String, Map<String, Object>> getMinions() throws SaltStackException {
+        return connectionFactory.create("/minions", JsonParser.RETMAPS, config)
+                .getResult().getResult().get(0);
     }
 
     /**

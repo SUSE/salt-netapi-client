@@ -1,18 +1,29 @@
 package com.suse.saltstack.netapi.client;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
-import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
-import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
-import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
+
+import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
+import static com.suse.saltstack.netapi.AuthModule.PAM;
+import static com.suse.saltstack.netapi.AuthModule.AUTO;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,33 +32,25 @@ import org.junit.rules.ExpectedException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.suse.saltstack.netapi.AuthModule.AUTO;
-import static com.suse.saltstack.netapi.AuthModule.PAM;
-import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -128,7 +131,7 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
+                .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass", AUTO);
     }
 
@@ -236,7 +239,7 @@ public class SaltStackClientTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .willReturn(aResponse()
-                        .withFixedDelay(2000)));
+                .withFixedDelay(2000)));
 
         clientWithFastTimeout.login("user", "pass", AUTO);
     }
@@ -266,9 +269,9 @@ public class SaltStackClientTest {
     public void testRunResult() throws Exception {
         stubFor(post(urlEqualTo("/run"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_RUN_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_RESPONSE)));
 
         Map<String, Object> retvals = client.run("user", "pass", PAM, "local", "*",
                 "test.ping", null, null);
@@ -303,15 +306,32 @@ public class SaltStackClientTest {
                 .withHeader("Accept", "application/json")
                 .withBody(JSON_GET_MINIONS_RESPONSE)));
 
-        List<Map<String, Object>> minions = client.getMinions();
+        Map<String, Map<String, Object>> minions = client.getMinions();
 
         verify(1, getRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json")));
 
         assertNotNull(minions);
-        assertEquals(1, minions.size());
+        assertEquals(2, minions.size());
 
-        assertNotNull(minions.get(0).get("development"));
+        assertTrue(minions.containsKey("minion1"));
+        assertTrue(minions.containsKey("minion2"));
+
+        Map<String, Object> minion1 = minions.get("minion1");
+        assertEquals(56, minion1.size());
+        assertEquals("VirtualBox", minion1.get("biosversion"));
+
+        assertTrue(minion1.get("saltversioninfo") instanceof List);
+        List saltversioninfo = (List) minion1.get("saltversioninfo");
+        assertEquals(2014.0, saltversioninfo.get(0));
+        assertEquals(7.0, saltversioninfo.get(1));
+        assertEquals(5.0, saltversioninfo.get(2));
+        assertEquals(0.0, saltversioninfo.get(3));
+
+        assertTrue(minion1.get("locale_info") instanceof Map);
+        Map locale_info = ((Map) minion1.get("locale_info"));
+        assertEquals("en_US", locale_info.get("defaultlanguage"));
+        assertEquals("UTF-8", locale_info.get("defaultencoding"));
     }
 
     @Test
