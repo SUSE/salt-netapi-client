@@ -1,0 +1,10 @@
+com.suse.saltstack.netapi
+com.suse.saltstack.netapi.client
+com.suse.saltstack.netapi.client.impl
+com.suse.saltstack.netapi.config
+com.suse.saltstack.netapi.datatypes
+com.suse.saltstack.netapi.datatypes.cherrypy
+com.suse.saltstack.netapi.exception
+com.suse.saltstack.netapi.parser
+com.suse.saltstack.netapi.results
+com.suse.saltstack.netapi.utils
