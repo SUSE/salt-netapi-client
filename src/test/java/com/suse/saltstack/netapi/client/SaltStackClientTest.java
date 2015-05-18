@@ -301,6 +301,7 @@ public class SaltStackClientTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetMinions() throws Exception {
         stubFor(get(urlEqualTo("/minions"))
                 .willReturn(aResponse()
@@ -324,19 +325,20 @@ public class SaltStackClientTest {
         assertEquals("VirtualBox", minion1.get("biosversion"));
 
         assertTrue(minion1.get("saltversioninfo") instanceof List);
-        List saltversioninfo = (List) minion1.get("saltversioninfo");
+        List<String> saltversioninfo = (List<String>) minion1.get("saltversioninfo");
         assertEquals(2014.0, saltversioninfo.get(0));
         assertEquals(7.0, saltversioninfo.get(1));
         assertEquals(5.0, saltversioninfo.get(2));
         assertEquals(0.0, saltversioninfo.get(3));
 
         assertTrue(minion1.get("locale_info") instanceof Map);
-        Map locale_info = ((Map) minion1.get("locale_info"));
+        Map<String, String> locale_info = ((Map<String, String>) minion1.get("locale_info"));
         assertEquals("en_US", locale_info.get("defaultlanguage"));
         assertEquals("UTF-8", locale_info.get("defaultencoding"));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetMinionsAsync() throws Exception {
         stubFor(get(urlEqualTo("/minions"))
                 .willReturn(aResponse()
@@ -361,19 +363,20 @@ public class SaltStackClientTest {
         assertEquals("VirtualBox", minion1.get("biosversion"));
 
         assertTrue(minion1.get("saltversioninfo") instanceof List);
-        List saltversioninfo = (List) minion1.get("saltversioninfo");
+        List<String> saltversioninfo = (List<String>) minion1.get("saltversioninfo");
         assertEquals(2014.0, saltversioninfo.get(0));
         assertEquals(7.0, saltversioninfo.get(1));
         assertEquals(5.0, saltversioninfo.get(2));
         assertEquals(0.0, saltversioninfo.get(3));
 
         assertTrue(minion1.get("locale_info") instanceof Map);
-        Map locale_info = ((Map) minion1.get("locale_info"));
+        Map<String, String> locale_info = ((Map<String, String>) minion1.get("locale_info"));
         assertEquals("en_US", locale_info.get("defaultlanguage"));
         assertEquals("UTF-8", locale_info.get("defaultencoding"));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetMinionDetails() throws Exception {
         stubFor(get(urlEqualTo("/minions/minion2"))
                 .willReturn(aResponse()
@@ -392,19 +395,20 @@ public class SaltStackClientTest {
         assertEquals("VirtualBox", minion.get("biosversion"));
 
         assertTrue(minion.get("saltversioninfo") instanceof List);
-        List saltversioninfo = (List) minion.get("saltversioninfo");
+        List<String> saltversioninfo = (List<String>) minion.get("saltversioninfo");
         assertEquals(2014.0, saltversioninfo.get(0));
         assertEquals(7.0, saltversioninfo.get(1));
         assertEquals(5.0, saltversioninfo.get(2));
         assertEquals(0.0, saltversioninfo.get(3));
 
         assertTrue(minion.get("locale_info") instanceof Map);
-        Map locale_info = ((Map) minion.get("locale_info"));
+        Map<String, String> locale_info = ((Map<String, String>) minion.get("locale_info"));
         assertEquals("en_US", locale_info.get("defaultlanguage"));
         assertEquals("UTF-8", locale_info.get("defaultencoding"));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetMinionDetailsAsync() throws Exception {
         stubFor(get(urlEqualTo("/minions/minion2"))
                 .willReturn(aResponse()
@@ -424,14 +428,14 @@ public class SaltStackClientTest {
         assertEquals("VirtualBox", minion.get("biosversion"));
 
         assertTrue(minion.get("saltversioninfo") instanceof List);
-        List saltversioninfo = (List) minion.get("saltversioninfo");
+        List<String> saltversioninfo = (List<String>) minion.get("saltversioninfo");
         assertEquals(2014.0, saltversioninfo.get(0));
         assertEquals(7.0, saltversioninfo.get(1));
         assertEquals(5.0, saltversioninfo.get(2));
         assertEquals(0.0, saltversioninfo.get(3));
 
         assertTrue(minion.get("locale_info") instanceof Map);
-        Map locale_info = ((Map) minion.get("locale_info"));
+        Map<String, String> locale_info = ((Map<String, String>) minion.get("locale_info"));
         assertEquals("en_US", locale_info.get("defaultlanguage"));
         assertEquals("UTF-8", locale_info.get("defaultencoding"));
     }
