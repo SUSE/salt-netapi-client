@@ -193,6 +193,84 @@ public class SaltStackClient {
     }
 
     /**
+     * Query for all minions and immediately return a map of minions
+     * keyed by minion id
+     *
+     * GET /minions
+     *
+     * @return map containing maps representing minions, keyed by minion id
+     * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
+     */
+    public Map<String, Map<String, Object>> getMinions() throws SaltStackException {
+        return connectionFactory.create("/minions", JsonParser.RETMAPS, config)
+                .getResult().getResult().get(0);
+    }
+
+    /**
+     * Asynchronously query for all minions and return a map of minions
+     * keyed by minion id
+     *
+     * GET /minions
+     *
+     * @return Future with a map containing maps representing minions, keyed by minion id
+     * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
+     */
+    public Future<Map<String, Map<String, Object>>> getMinionsAsync()
+            throws SaltStackException {
+
+        Callable<Map<String, Map<String, Object>>> callable =
+                new Callable<Map<String, Map<String, Object>>>() {
+            @Override
+            public Map<String, Map<String, Object>> call() throws SaltStackException {
+                return getMinions();
+            }
+        };
+        return executor.submit(callable);
+    }
+
+    /**
+     * Query for details (grains) of the specified minion
+     *
+     * GET /minions/<minion-id>
+     *
+     * @return Map key: grain name, value: grain value
+     * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
+     */
+    public Map<String, Object> getMinionDetails(String minionId) throws SaltStackException {
+        return connectionFactory.create("/minions/" + minionId, JsonParser.RETMAPS, config)
+                .getResult().getResult().get(0).get(minionId);
+    }
+
+    /**
+     * Query for details (grains) of the specified minion asynchronously
+     *
+     * GET /minions/<minion-id>
+     *
+     * @return Future with a map containing details of the minion
+     * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
+     */
+    public Future<Map<String, Object>> getMinionDetailsAsync(final String minionId)
+            throws SaltStackException {
+
+        Callable<Map<String, Object>> callable =
+                new Callable<Map<String, Object>>() {
+                    @Override
+                    public Map<String, Object> call() throws SaltStackException {
+                        return getMinionDetails(minionId);
+                    }
+                };
+        return executor.submit(callable);
+    }
+
+    /**
      * Generic interface to start any execution command and immediately return an object
      * representing the scheduled job.
      *
