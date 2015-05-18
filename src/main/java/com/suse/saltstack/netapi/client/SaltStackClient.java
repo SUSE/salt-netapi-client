@@ -200,6 +200,8 @@ public class SaltStackClient {
      *
      * @return map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
      */
     public Map<String, Map<String, Object>> getMinions() throws SaltStackException {
         return connectionFactory.create("/minions", JsonParser.RETMAPS, config)
@@ -214,6 +216,8 @@ public class SaltStackClient {
      *
      * @return Future with a map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
      */
     public Future<Map<String, Map<String, Object>>> getMinionsAsync()
             throws SaltStackException {
@@ -235,6 +239,8 @@ public class SaltStackClient {
      *
      * @return Map key: grain name, value: grain value
      * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
      */
     public Map<String, Object> getMinionDetails(String minionId) throws SaltStackException {
         return connectionFactory.create("/minions/" + minionId, JsonParser.RETMAPS, config)
@@ -248,6 +254,8 @@ public class SaltStackClient {
      *
      * @return Future with a map containing details of the minion
      * @throws SaltStackException if anything goes wrong
+     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
+     *     Grains</a>
      */
     public Future<Map<String, Object>> getMinionDetailsAsync(final String minionId)
             throws SaltStackException {
