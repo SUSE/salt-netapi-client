@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 
 /**
- * TODO fill doc
+ * Representation of HTTP server statistics.
  */
 public class HttpServer {
 

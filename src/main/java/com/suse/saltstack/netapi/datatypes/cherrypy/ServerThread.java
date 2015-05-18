@@ -3,7 +3,7 @@ package com.suse.saltstack.netapi.datatypes.cherrypy;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * TODO fill doc
+ * Representation of server thread statistics.
  */
 public class ServerThread {
 
