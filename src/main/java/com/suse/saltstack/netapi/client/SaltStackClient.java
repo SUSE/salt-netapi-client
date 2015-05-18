@@ -194,10 +194,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for all minions and immediately return a map of minions
-     * keyed by minion id
-     *
-     * GET /minions
+     * Query for all minions and immediately return a map of minions keyed by minion id.
+     * <p>
+     * {@code GET /minions}
      *
      * @return map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
@@ -210,10 +209,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Asynchronously query for all minions and return a map of minions
-     * keyed by minion id
-     *
-     * GET /minions
+     * Asynchronously query for all minions and return a map of minions keyed by minion id.
+     * <p>
+     * {@code GET /minions}
      *
      * @return Future with a map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
@@ -234,9 +232,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for details (grains) of the specified minion
-     *
-     * GET /minions/<minion-id>
+     * Query for details (grains) of the specified minion.
+     * <p>
+     * {@code GET /minions/<minion-id>}
      *
      * @return Map key: grain name, value: grain value
      * @throws SaltStackException if anything goes wrong
@@ -249,9 +247,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for details (grains) of the specified minion asynchronously
-     *
-     * GET /minions/<minion-id>
+     * Query for details (grains) of the specified minion asynchronously.
+     * <p>
+     * {@code GET /minions/<minion-id>}
      *
      * @return Future with a map containing details of the minion
      * @throws SaltStackException if anything goes wrong
