@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
@@ -45,7 +46,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -110,16 +110,19 @@ public class SaltStackClientTest {
 
     @Test
     public void testLoginOk() throws Exception {
-        stubFor(post(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass", AUTO);
+
+        verify(1, postRequestedFor(urlEqualTo("/login"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST)));
+
         assertEquals("Token mismatch",
                 token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
         assertEquals("EAuth mismatch", token.getEauth(), "auto");
@@ -127,11 +130,9 @@ public class SaltStackClientTest {
         assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
     }
 
-    @Test(expected = SaltStackException.class)
+    @Test(expected = SaltUserUnauthorizedException.class)
     public void testLoginFailure() throws Exception {
-        stubFor(post(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass", AUTO);
@@ -139,10 +140,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testLoginAsyncOk() throws Exception {
-        stubFor(post(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -150,6 +148,11 @@ public class SaltStackClientTest {
 
         Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
         Token token = futureToken.get();
+
+        verify(1, postRequestedFor(urlEqualTo("/login"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST)));
 
         assertEquals("Token mismatch",
                 token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
@@ -160,9 +163,7 @@ public class SaltStackClientTest {
 
     @Test(expected = ExecutionException.class)
     public void testLoginAsyncFailure() throws Exception {
-        stubFor(post(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+        stubFor(any(urlMatching("*."))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
 
@@ -173,7 +174,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testRunRequest() throws Exception {
-        stubFor(post(urlEqualTo("/run"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -189,18 +190,46 @@ public class SaltStackClientTest {
             }
         };
 
-
-        client.run("user", "pass", PAM, "local", "*", "pkg.install", args, kwargs);
+        Map<String, Object> retvals =
+                client.run("user", "pass", PAM, "local", "*", "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
+
+        Map<String, Map<String, String>> expected =
+                new LinkedHashMap<String, Map<String, String>>() {
+            {
+                put("i3-wm", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "4.10.1-1");
+                        put("old", "");
+                    }
+                });
+                put("i3lock", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "2.6-1");
+                        put("old", "");
+                    }
+                });
+                put("i3status", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "2.9-1");
+                        put("old", "");
+                    }
+                });
+            }
+        };
+
+        assertNotNull(retvals);
+        assertTrue(retvals.containsKey("minion-1"));
+        assertEquals(retvals.get("minion-1"), expected);
     }
 
     @Test
     public void testRunRequestAsync() throws Exception {
-        stubFor(post(urlEqualTo("/run"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -216,14 +245,42 @@ public class SaltStackClientTest {
             }
         };
 
-        Future<?> future = client.runAsync("user", "pass", PAM, "local", "*",
-                "pkg.install", args, kwargs);
-        future.get();
+        Future<Map<String, Object>> future = client.runAsync("user", "pass",
+                PAM, "local", "*", "pkg.install", args, kwargs);
+        Map<String, Object> retvals = future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
+
+        Map<String, Map<String, String>> expected =
+                new LinkedHashMap<String, Map<String, String>>() {
+            {
+                put("i3-wm", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "4.10.1-1");
+                        put("old", "");
+                    }
+                });
+                put("i3lock", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "2.6-1");
+                        put("old", "");
+                    }
+                });
+                put("i3status", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "2.9-1");
+                        put("old", "");
+                    }
+                });
+            }
+        };
+
+        assertNotNull(retvals);
+        assertTrue(retvals.containsKey("minion-1"));
+        assertEquals(retvals.get("minion-1"), expected);
     }
 
     @Test
@@ -237,9 +294,7 @@ public class SaltStackClientTest {
         SaltStackClient clientWithFastTimeout = new SaltStackClient(uri);
         clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
 
-        stubFor(post(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withFixedDelay(2000)));
 
@@ -268,42 +323,9 @@ public class SaltStackClientTest {
     }
 
     @Test
-    public void testRunResult() throws Exception {
-        stubFor(post(urlEqualTo("/run"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
-
-        Map<String, Object> retvals = client.run("user", "pass", PAM, "local", "*",
-                "test.ping", null, null);
-
-        assertNotNull(retvals);
-        assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), true);
-    }
-
-    @Test
-    public void testRunResultAsync() throws Exception {
-        stubFor(post(urlEqualTo("/run"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
-
-        Future<Map<String, Object>> future = client.runAsync("user", "pass",
-                PAM, "local", "*", "test.ping", null, null);
-        Map<String, Object> retvals = future.get();
-
-        assertNotNull(retvals);
-        assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), true);
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
     public void testGetMinions() throws Exception {
-        stubFor(get(urlEqualTo("/minions"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Accept", "application/json")
@@ -340,7 +362,7 @@ public class SaltStackClientTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetMinionsAsync() throws Exception {
-        stubFor(get(urlEqualTo("/minions"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Accept", "application/json")
@@ -378,7 +400,7 @@ public class SaltStackClientTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetMinionDetails() throws Exception {
-        stubFor(get(urlEqualTo("/minions/minion2"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Accept", "application/json")
@@ -410,7 +432,7 @@ public class SaltStackClientTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetMinionDetailsAsync() throws Exception {
-        stubFor(get(urlEqualTo("/minions/minion2"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Accept", "application/json")
@@ -442,8 +464,9 @@ public class SaltStackClientTest {
 
     @Test
     public void testStartCommand() throws Exception {
-        stubFor(post(urlEqualTo("/minions")).willReturn(
-                aResponse().withStatus(HttpURLConnection.HTTP_OK)
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_START_COMMAND_RESPONSE)));
 
@@ -471,7 +494,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testQueryJobResult() throws Exception {
-        stubFor(get(urlEqualTo("/jobs/some-job-id"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -479,15 +502,43 @@ public class SaltStackClientTest {
 
         Map<String, Object> retvals = client.getJobResult("some-job-id");
 
+        verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
+                .withHeader("Accept", equalTo("application/json")));
+
+        Map<String, Map<String, String>> expected =
+                new LinkedHashMap<String, Map<String, String>>() {
+            {
+                put("i3-wm", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "4.10.1-1");
+                        put("old", "");
+                    }
+                });
+                put("i3lock", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "2.6-1");
+                        put("old", "");
+                    }
+                });
+                put("i3status", new LinkedHashMap<String, String>() {
+                    {
+                        put("new", "2.9-1");
+                        put("old", "");
+                    }
+                });
+            }
+        };
+
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), true);
+        assertEquals(retvals.get("minion-1"), expected);
     }
 
     @Test
     public void testStartCommandAsync() throws Exception {
-        stubFor(post(urlEqualTo("/minions")).willReturn(
-                aResponse().withStatus(HttpURLConnection.HTTP_OK)
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_START_COMMAND_RESPONSE)));
 
@@ -581,7 +632,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testJobs() throws Exception {
-        stubFor(get(urlMatching("/jobs"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -602,29 +653,19 @@ public class SaltStackClientTest {
                 .withRequestBody(equalTo("")));
     }
 
-    @Test
+    @Test(expected = JsonSyntaxException.class)
     public void testJobsWithInvalidStartTime() throws Exception {
-        stubFor(get(urlMatching("/jobs"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_JOBS_INVALID_START_TIME_RESPONSE)));
-
-        boolean exceptionThrown = false;
-        try {
-            client.getJobs();
-        } catch (JsonSyntaxException e) {
-            exceptionThrown = true;
-        }
-        assertTrue("Expected JsonSyntaxException to be thrown", exceptionThrown);
-        verify(1, getRequestedFor(urlEqualTo("/jobs"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
+        client.getJobs();
     }
 
     @Test
     public void testJobsWithNullStartTime() throws Exception {
-        stubFor(get(urlMatching("/jobs"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -644,7 +685,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testJobsAsync() throws Exception {
-        stubFor(get(urlMatching("/jobs"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -662,7 +703,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testSendEvent() throws Exception {
-        stubFor(post(urlMatching("/hook/my/tag"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -689,7 +730,7 @@ public class SaltStackClientTest {
 
     @Test
     public void testSendEventAsync() throws Exception {
-        stubFor(post(urlMatching("/hook/my/tag"))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
