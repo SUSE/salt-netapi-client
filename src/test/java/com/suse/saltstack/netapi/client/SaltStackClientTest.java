@@ -199,21 +199,21 @@ public class SaltStackClientTest {
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
         Map<String, Map<String, String>> expected =
-                new LinkedHashMap<String, Map<String, String>>(){
+                new LinkedHashMap<String, Map<String, String>>() {
             {
-                put("i3-wm", new LinkedHashMap<String, String>(){
+                put("i3-wm", new LinkedHashMap<String, String>() {
                     {
                         put("new", "4.10.1-1");
                         put("old", "");
                     }
                 });
-                put("i3lock", new LinkedHashMap<String, String>(){
+                put("i3lock", new LinkedHashMap<String, String>() {
                     {
                         put("new", "2.6-1");
                         put("old", "");
                     }
                 });
-                put("i3status", new LinkedHashMap<String, String>(){
+                put("i3status", new LinkedHashMap<String, String>() {
                     {
                         put("new", "2.9-1");
                         put("old", "");
@@ -254,23 +254,22 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
-
         Map<String, Map<String, String>> expected =
-                new LinkedHashMap<String, Map<String, String>>(){
+                new LinkedHashMap<String, Map<String, String>>() {
             {
-                put("i3-wm", new LinkedHashMap<String, String>(){
+                put("i3-wm", new LinkedHashMap<String, String>() {
                     {
                         put("new", "4.10.1-1");
                         put("old", "");
                     }
                 });
-                put("i3lock", new LinkedHashMap<String, String>(){
+                put("i3lock", new LinkedHashMap<String, String>() {
                     {
                         put("new", "2.6-1");
                         put("old", "");
                     }
                 });
-                put("i3status", new LinkedHashMap<String, String>(){
+                put("i3status", new LinkedHashMap<String, String>() {
                     {
                         put("new", "2.9-1");
                         put("old", "");
@@ -506,23 +505,22 @@ public class SaltStackClientTest {
         verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json")));
 
-
         Map<String, Map<String, String>> expected =
-                new LinkedHashMap<String, Map<String, String>>(){
+                new LinkedHashMap<String, Map<String, String>>() {
             {
-                put("i3-wm", new LinkedHashMap<String, String>(){
+                put("i3-wm", new LinkedHashMap<String, String>() {
                     {
                         put("new", "4.10.1-1");
                         put("old", "");
                     }
                 });
-                put("i3lock", new LinkedHashMap<String, String>(){
+                put("i3lock", new LinkedHashMap<String, String>() {
                     {
                         put("new", "2.6-1");
                         put("old", "");
                     }
                 });
-                put("i3status", new LinkedHashMap<String, String>(){
+                put("i3status", new LinkedHashMap<String, String>() {
                     {
                         put("new", "2.9-1");
                         put("old", "");
