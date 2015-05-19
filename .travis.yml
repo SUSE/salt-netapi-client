@@ -4,17 +4,22 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 install: /bin/true
-script: mvn checkstyle:check test package
+script: mvn checkstyle:check javadoc:javadoc test package
 before_deploy:
   - export RELEASE_JAR_FILE=$(ls target/saltstack-netapi-client-*.jar)
   - echo "Deploying $RELEASE_JAR_FILE to GitHub releases"
 deploy:
   provider: releases
   api_key:
-    secure: Gzz8W8cnLBgui3dh9yCl+z72qLd22T2N35QBqEIZIB38WGDMfKliQ2xrxYz4YkH3SeH+rcu8xzL9gEKd7YIA7pp6R7Q5wy+i2F2whC8kbC8qaOQLvpNfdzadwLS11ExtqSOMebxphJxzMYXjW/LWQ2AH4Df7wUwTy+cVX9oRWfs=
+    secure: braT4pMYLy0ocRgNt4MrI0kWUPnQF455RNLXBAf3+ArSiCMpaoQkwoDnauI155+Kaq2sXDuFg/vCdNQ0h4Rd33qEW5vg810wQQKj9lleDJmfv2W6/DxpTDnvySR4ChAWv9BZBMFIPhdv/dfZWgZBFHluvXw2Bi4UMF0GXsNPjYs=
   file_glob: true
   file: "${RELEASE_JAR_FILE}"
   skip_cleanup: true
   on:
     repo: SUSE/saltstack-netapi-client-java
     tags: true
+after_success:
+  - scripts/publish_javadoc.sh
+env:
+  global:
+    - secure: XvflMMZoyQSbsCdOD98rFxsEvd+c9aNUulPf0IIKpp6OFcl0lEoq6c4cEd0C/qBtlZgBNTYmnWfOpWcrNZABa2PXAbi0p9lw/5/L9UgnlEfWG0NbVbJ/arb2DidgnidvVT5GhNNn31/38zwVcJVyo3yjRmf72ZwPbZKWGygKkjc=
