@@ -52,7 +52,7 @@ public class SaltStackClient {
      * Constructor for connecting to a given URL using a specific connection factory.
      *
      * @param url the SaltStack URL
-     * @param connectionFactory Connection Factory implementation
+     * @param connectionFactory ConnectionFactory implementation
      */
     public SaltStackClient(URI url, ConnectionFactory connectionFactory) {
         this(url, connectionFactory, Executors.newCachedThreadPool());
@@ -62,7 +62,7 @@ public class SaltStackClient {
      * Constructor for connecting to a given URL.
      *
      * @param url the SaltStack URL
-     * @param executor Executor for async operations
+     * @param executor ExecutorService to be used for async operations
      */
     public SaltStackClient(URI url, ExecutorService executor) {
         this(url, new HttpClientConnectionFactory(), executor);
@@ -72,8 +72,8 @@ public class SaltStackClient {
      * Constructor for connecting to a given URL using a specific connection factory.
      *
      * @param url the SaltStack URL
-     * @param connectionFactory Connection Factory implementation
-     * @param executor Executor for async operations
+     * @param connectionFactory ConnectionFactory implementation
+     * @param executor ExecutorService to be used for async operations
      */
     public SaltStackClient(URI url, ConnectionFactory connectionFactory,
             ExecutorService executor) {
@@ -95,7 +95,7 @@ public class SaltStackClient {
     /**
      * Configure to use a proxy when connecting to the SaltStack API.
      *
-     * @param settings proxy settings
+     * @param settings the proxy settings
      */
     public void setProxy(ProxySettings settings) {
         if (settings.getHostname() != null) {
@@ -111,14 +111,14 @@ public class SaltStackClient {
     }
 
     /**
-     * Perform login and return the token. Allows specifying the eauth parameter.
-     *
-     * POST /login
+     * Perform login and return the token.
+     * <p>
+     * {@code POST /login}
      *
      * @param username the username
      * @param password the password
      * @param eauth the eauth type
-     * @return authentication token as {@link Token}
+     * @return the authentication token
      * @throws SaltStackException if anything goes wrong
      */
     public Token login(final String username, final String password, final AuthModule eauth)
@@ -142,14 +142,13 @@ public class SaltStackClient {
 
     /**
      * Asynchronously perform login and return a Future with the token.
-     * Allows specifying the eauth parameter.
-     *
-     * POST /login
+     * <p>
+     * {@code POST /login}
      *
      * @param username the username
      * @param password the password
      * @param eauth the eauth type
-     * @return Future containing an authentication token as {@link Token}
+     * @return Future containing the authentication token
      */
     public Future<Token> loginAsync(final String username, final String password,
             final AuthModule eauth) {
@@ -164,9 +163,10 @@ public class SaltStackClient {
 
     /**
      * Perform logout and clear the session token from the config.
+     * <p>
+     * {@code POST /logout}
      *
-     * POST /logout
-     *
+     * @return String result as returned from the API
      * @throws SaltStackException if anything goes wrong
      */
     public Result<String> logout() throws SaltStackException {
@@ -178,9 +178,10 @@ public class SaltStackClient {
 
     /**
      * Asynchronously perform logout and clear the session token from the config.
+     * <p>
+     * {@code POST /logout}
      *
-     * POST /logout
-     *
+     * @return Future containing String result as returned from the API
      */
     public Future<Result<String>> logoutAsync() {
         Callable<Result<String>> callable = new Callable<Result<String>>() {
@@ -193,10 +194,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for all minions and immediately return a map of minions
-     * keyed by minion id
-     *
-     * GET /minions
+     * Query for all minions and immediately return a map of minions keyed by minion id.
+     * <p>
+     * {@code GET /minions}
      *
      * @return map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
@@ -209,10 +209,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Asynchronously query for all minions and return a map of minions
-     * keyed by minion id
-     *
-     * GET /minions
+     * Asynchronously query for all minions and return a map of minions keyed by minion id.
+     * <p>
+     * {@code GET /minions}
      *
      * @return Future with a map containing maps representing minions, keyed by minion id
      * @throws SaltStackException if anything goes wrong
@@ -233,9 +232,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for details (grains) of the specified minion
-     *
-     * GET /minions/<minion-id>
+     * Query for details (grains) of the specified minion.
+     * <p>
+     * {@code GET /minions/<minion-id>}
      *
      * @return Map key: grain name, value: grain value
      * @throws SaltStackException if anything goes wrong
@@ -248,9 +247,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for details (grains) of the specified minion asynchronously
-     *
-     * GET /minions/<minion-id>
+     * Query for details (grains) of the specified minion asynchronously.
+     * <p>
+     * {@code GET /minions/<minion-id>}
      *
      * @return Future with a map containing details of the minion
      * @throws SaltStackException if anything goes wrong
@@ -273,8 +272,8 @@ public class SaltStackClient {
     /**
      * Generic interface to start any execution command and immediately return an object
      * representing the scheduled job.
-     *
-     * POST /minions
+     * <p>
+     * {@code POST /minions}
      *
      * @param target the target
      * @param function the function to execute
@@ -307,14 +306,14 @@ public class SaltStackClient {
     /**
      * Asynchronously start any execution command and immediately return an object
      * representing the scheduled job.
-     *
-     * POST /minions
+     * <p>
+     * {@code POST /minions}
      *
      * @param target the target
      * @param function the function to execute
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
-     * @return Future containing the scheduled job {@link ScheduledJob}
+     * @return Future containing the scheduled job
      */
     public Future<ScheduledJob> startCommandAsync(final String target,
             final String function, final List<String> args,
@@ -329,9 +328,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for result of supplied job.
-     *
-     * GET /job/<job-id>
+     * Query for the result of a supplied job.
+     * <p>
+     * {@code GET /job/<job-id>}
      *
      * @param job {@link ScheduledJob} object representing scheduled job
      * @return Map key: minion id, value: command result from that minion
@@ -343,9 +342,9 @@ public class SaltStackClient {
     }
 
     /**
-     * Query for result of supplied job.
-     *
-     * GET /job/<job-id>
+     * Query for the result of a supplied job.
+     * <p>
+     * {@code GET /job/<job-id>}
      *
      * @param job String representing scheduled job
      * @return Map key: minion id, value: command result from that minion
@@ -362,7 +361,10 @@ public class SaltStackClient {
 
     /**
      * Get previously run jobs.
-     * @return map containing run jobs keyed by job id.
+     * <p>
+     * {@code GET /jobs}
+     *
+     * @return map containing run jobs keyed by job id
      * @throws SaltStackException if anything goes wrong
      */
     public Map<String, Job> getJobs() throws SaltStackException {
@@ -373,8 +375,11 @@ public class SaltStackClient {
     }
 
     /**
-     * Get previously run jobs.
-     * @return future with a map containing run jobs keyed by job id.
+     * Asynchronously get previously run jobs.
+     * <p>
+     * {@code GET /jobs}
+     *
+     * @return Future with a map containing run jobs keyed by job id
      */
     public Future<Map<String, Job>> getJobsAsync() {
         Callable<Map<String, Job>> callable = new Callable<Map<String, Job>>() {
@@ -388,8 +393,8 @@ public class SaltStackClient {
 
     /**
      * Generic interface to start any execution command bypassing normal session handling.
-     *
-     * POST /run
+     * <p>
+     * {@code POST /run}
      *
      * @param username the username
      * @param password the password
@@ -430,8 +435,8 @@ public class SaltStackClient {
 
     /**
      * Asynchronously start any execution command bypassing normal session handling.
-     *
-     * POST /run
+     * <p>
+     * {@code POST /run}
      *
      * @param username the username
      * @param password the password
@@ -459,10 +464,10 @@ public class SaltStackClient {
 
     /**
      * Query statistics from the CherryPy Server.
+     * <p>
+     * {@code GET /stats}
      *
-     * GET /stats
-     *
-     * @return The {@link Stats} object.
+     * @return the stats
      * @throws SaltStackException if anything goes wrong
      */
     public Stats stats() throws SaltStackException {
@@ -471,10 +476,10 @@ public class SaltStackClient {
 
     /**
      * Asynchronously query statistics from the CherryPy Server.
+     * <p>
+     * {@code GET /stats}
      *
-     * GET /stats
-     *
-     * @return Future containing the {@link Stats} object.
+     * @return Future containing the stats
      */
     public Future<Stats> statsAsync() {
         Callable<Stats> callable = new Callable<Stats>() {
@@ -488,12 +493,12 @@ public class SaltStackClient {
 
     /**
      * Query general key information.
+     * <p>
+     * Required permissions: {@code @wheel}
+     * <p>
+     * {@code GET /keys}
      *
-     * Required permissions: @wheel
-     *
-     * GET /keys
-     *
-     * @return The {@link Keys} object.
+     * @return the keys
      * @throws SaltStackException if anything goes wrong
      */
     public Keys keys() throws SaltStackException {
@@ -503,12 +508,12 @@ public class SaltStackClient {
 
     /**
      * Asynchronously query general key information.
+     * <p>
+     * Required permissions: {@code @wheel}
+     * <p>
+     * {@code GET /keys}
      *
-     * Required permissions: @wheel
-     *
-     * GET /keys
-     *
-     * @return Future containing the {@link Keys} object.
+     * @return Future containing the keys
      */
     public Future<Keys> keysAsync() {
         Callable<Keys> callable = new Callable<Keys>() {
@@ -521,16 +526,19 @@ public class SaltStackClient {
     }
 
     /**
-     * Returns a server-sent events (SSE) stream object.  The stream object supports the
-     * {@link EventStream} interface which allows the caller to register/unregister
-     * for stream event notifications as well as close the event stream.
+     * Returns a server-sent events (SSE) stream object.
+     * <p>
+     * The stream object supports the {@link EventStream} interface which allows the caller
+     * to register/unregister for stream event notifications as well as close the event
+     * stream.
+     * <p>
      * Note: {@link SaltStackClient#login(String, String, AuthModule)} or
      * {@link SaltStackClient#loginAsync(String, String, AuthModule)} must be called prior
      * to calling this method.
+     * <p>
+     * {@code GET /events}
      *
-     * GET /events
-     *
-     * @return {@link EventStream} object
+     * @return the event stream
      */
     public EventStream events() {
         return new EventStream(config);
@@ -538,8 +546,8 @@ public class SaltStackClient {
 
     /**
      * Trigger an event in Salt with the specified tag and data.
-     *
-     * POST /hook
+     * <p>
+     * {@code POST /hook}
      *
      * @param eventTag the event tag
      * @param eventData the event data. Must be valid JSON.
@@ -559,13 +567,13 @@ public class SaltStackClient {
 
     /**
      * Asynchronously trigger an event in Salt with the specified tag and data.
-     *
-     * POST /hook
+     * <p>
+     * {@code POST /hook}
      *
      * @param eventTag the event tag
      * @param eventData the event data. Must be valid JSON.
-     * @return Future containing a boolean value indicating the success of failure of the
-     * event triggering .
+     * @return Future containing a boolean value indicating the success or failure of
+     * triggering the event.
      */
     public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
         Callable<Boolean> callable = new Callable<Boolean>() {

@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.datatypes.cherrypy;
 
 /**
- * TODO fill doc
+ * Representation of CherryPy server statistics.
  */
 public class Stats {
 

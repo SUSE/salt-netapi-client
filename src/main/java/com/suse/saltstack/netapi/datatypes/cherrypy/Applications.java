@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * TODO fill doc
+ * Representation of applications statistics.
  */
 public class Applications {
 

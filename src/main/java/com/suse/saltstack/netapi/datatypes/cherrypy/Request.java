@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 /**
- * TODO fill doc
+ * Representation of request statistics.
  */
 public class Request {
 
