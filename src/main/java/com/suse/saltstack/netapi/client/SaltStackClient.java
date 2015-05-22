@@ -171,7 +171,7 @@ public class SaltStackClient {
      */
     public Result<String> logout() throws SaltStackException {
         Result<String> result = connectionFactory
-                .create("/logout", JsonParser.STRING, config).getResult(null);
+                .create("/logout", JsonParser.STRING, config).getResult("");
         config.remove(ClientConfig.TOKEN);
         return result;
     }
