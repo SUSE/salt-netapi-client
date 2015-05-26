@@ -166,13 +166,17 @@ public class SaltStackClient {
      * <p>
      * {@code POST /logout}
      *
-     * @return String result as returned from the API
+     * @return true if the logout was successful, otherwise false
      * @throws SaltStackException if anything goes wrong
      */
-    public Result<String> logout() throws SaltStackException {
-        Result<String> result = connectionFactory
+    public boolean logout() throws SaltStackException {
+        Result<String> stringResult = connectionFactory
                 .create("/logout", JsonParser.STRING, config).getResult("");
-        config.remove(ClientConfig.TOKEN);
+        String logoutMessage = "Your token has been cleared";
+        boolean result = logoutMessage.equals((stringResult.getResult()));
+        if (result) {
+            config.remove(ClientConfig.TOKEN);
+        }
         return result;
     }
 
@@ -181,12 +185,12 @@ public class SaltStackClient {
      * <p>
      * {@code POST /logout}
      *
-     * @return Future containing String result as returned from the API
+     * @return Future containing a boolean result, true if logout was successful
      */
-    public Future<Result<String>> logoutAsync() {
-        Callable<Result<String>> callable = new Callable<Result<String>>() {
+    public Future<Boolean> logoutAsync() {
+        Callable<Boolean> callable = new Callable<Boolean>() {
             @Override
-            public Result<String> call() throws SaltStackException {
+            public Boolean call() throws SaltStackException {
                 return logout();
             }
         };
