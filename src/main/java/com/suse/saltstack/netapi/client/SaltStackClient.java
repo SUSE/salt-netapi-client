@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -152,13 +151,7 @@ public class SaltStackClient {
      */
     public Future<Token> loginAsync(final String username, final String password,
             final AuthModule eauth) {
-        Callable<Token> callable = new Callable<Token>() {
-            @Override
-            public Token call() throws SaltStackException {
-                return login(username, password, eauth);
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(() -> login(username, password, eauth));
     }
 
     /**
@@ -188,13 +181,7 @@ public class SaltStackClient {
      * @return Future containing a boolean result, true if logout was successful
      */
     public Future<Boolean> logoutAsync() {
-        Callable<Boolean> callable = new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws SaltStackException {
-                return logout();
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(this::logout);
     }
 
     /**
@@ -224,15 +211,7 @@ public class SaltStackClient {
      */
     public Future<Map<String, Map<String, Object>>> getMinionsAsync()
             throws SaltStackException {
-
-        Callable<Map<String, Map<String, Object>>> callable =
-                new Callable<Map<String, Map<String, Object>>>() {
-            @Override
-            public Map<String, Map<String, Object>> call() throws SaltStackException {
-                return getMinions();
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(this::getMinions);
     }
 
     /**
@@ -262,15 +241,7 @@ public class SaltStackClient {
      */
     public Future<Map<String, Object>> getMinionDetailsAsync(final String minionId)
             throws SaltStackException {
-
-        Callable<Map<String, Object>> callable =
-                new Callable<Map<String, Object>>() {
-                    @Override
-                    public Map<String, Object> call() throws SaltStackException {
-                        return getMinionDetails(minionId);
-                    }
-                };
-        return executor.submit(callable);
+        return executor.submit(() -> getMinionDetails(minionId));
     }
 
     /**
@@ -322,13 +293,7 @@ public class SaltStackClient {
     public Future<ScheduledJob> startCommandAsync(final String target,
             final String function, final List<String> args,
             final Map<String, String> kwargs) {
-        Callable<ScheduledJob> callable = new Callable<ScheduledJob>() {
-            @Override
-            public ScheduledJob call() throws SaltStackException {
-                return startCommand(target, function, args, kwargs);
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(() -> startCommand(target, function, args, kwargs));
     }
 
     /**
@@ -386,13 +351,7 @@ public class SaltStackClient {
      * @return Future with a map containing run jobs keyed by job id
      */
     public Future<Map<String, Job>> getJobsAsync() {
-        Callable<Map<String, Job>> callable = new Callable<Map<String, Job>>() {
-            @Override
-            public Map<String, Job> call() throws SaltStackException {
-                return getJobs();
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(this::getJobs);
     }
 
     /**
@@ -456,14 +415,8 @@ public class SaltStackClient {
             final String password, final AuthModule eauth, final String client,
             final String target, final String function, final List<String> args,
             final Map<String, String> kwargs) {
-        Callable<Map<String, Object>> callable = new Callable<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> call() throws SaltStackException {
-                return run(username, password, eauth, client,
-                        target, function, args, kwargs);
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(() ->
+                run(username, password, eauth, client, target, function, args, kwargs));
     }
 
     /**
@@ -486,13 +439,7 @@ public class SaltStackClient {
      * @return Future containing the stats
      */
     public Future<Stats> statsAsync() {
-        Callable<Stats> callable = new Callable<Stats>() {
-            @Override
-            public Stats call() throws SaltStackException {
-                return stats();
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(this::stats);
     }
 
     /**
@@ -520,13 +467,7 @@ public class SaltStackClient {
      * @return Future containing the keys
      */
     public Future<Keys> keysAsync() {
-        Callable<Keys> callable = new Callable<Keys>() {
-            @Override
-            public Keys call() throws SaltStackException {
-                return keys();
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(this::keys);
     }
 
     /**
@@ -580,12 +521,6 @@ public class SaltStackClient {
      * triggering the event.
      */
     public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
-        Callable<Boolean> callable = new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return sendEvent(eventTag, eventData);
-            }
-        };
-        return executor.submit(callable);
+        return executor.submit(() -> sendEvent(eventTag, eventData));
     }
 }
