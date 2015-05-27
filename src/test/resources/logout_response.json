@@ -1,12 +1,3 @@
 {
-  "clients": [
-    "local",
-    "local_async",
-    "local_batch",
-    "runner",
-    "runner_async",
-    "wheel",
-    "wheel_async"
-  ],
-  "return": "Welcome"
+  "return": "Your token has been cleared"
 }

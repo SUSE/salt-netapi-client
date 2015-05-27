@@ -90,6 +90,8 @@ public class SaltStackClientTest {
             "/jobs_response_null_start_time.json"));
     static final String JSON_HOOK_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/hook_response.json"));
+    static final String JSON_LOGOUT_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/logout_response.json"));
 
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -755,4 +757,37 @@ public class SaltStackClientTest {
                 .withRequestBody(equalTo(data)));
     }
 
+    @Test
+    public void testLogout() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOGOUT_RESPONSE)));
+
+        boolean success = client.logout();
+
+        assertTrue(success);
+        verify(1, postRequestedFor(urlEqualTo("/logout"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testLogoutAsync() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOGOUT_RESPONSE)));
+
+        boolean success = client.logoutAsync().get();
+
+        assertTrue(success);
+        verify(1, postRequestedFor(urlEqualTo("/logout"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
 }
