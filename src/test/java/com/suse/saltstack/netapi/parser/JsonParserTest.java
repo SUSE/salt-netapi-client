@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Json parser unit tests.
@@ -62,6 +63,15 @@ public class JsonParserTest {
     public void testSaltStackTokenParserWrongDate() throws Exception {
         InputStream is = getClass().getResourceAsStream("/login_response_wrong_date.json");
         JsonParser.TOKEN.parse(is);
+    }
+
+    @Test
+    public void testSaltStackTokenParserDateMissing() throws Exception {
+        InputStream is = getClass()
+                .getResourceAsStream("/login_response_missing_date.json");
+        Token token = JsonParser.TOKEN.parse(is).getResult().get(0);
+        assertNull(token.getStart());
+        assertNull(token.getExpire());
     }
 
     @Test
