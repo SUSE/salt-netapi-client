@@ -72,7 +72,7 @@ public class JsonParser<T> {
     public JsonParser(TypeToken<T> type) {
         this.type = type;
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new SaltStackDateDeserializer())
+                .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
                 .registerTypeAdapter(Stats.class, new StatsDeserializer())
                 .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
                 .create();
@@ -92,18 +92,22 @@ public class JsonParser<T> {
     }
 
     /**
-     * Deserializer for date representation received from the API
+     * TypeAdapter for date representation received from the API
      * (which represents it as a (floating) number of seconds since the Epoch).
      */
-    private class SaltStackDateDeserializer implements JsonDeserializer<Date> {
+    private class DateAdapter extends TypeAdapter<Date> {
+
         @Override
-        public Date deserialize(JsonElement jsonElement, Type type,
-                JsonDeserializationContext jsonDeserializationContext)
-                throws JsonParseException {
+        public void write(JsonWriter jsonWriter, Date date) throws IOException {
+            throw new UnsupportedOperationException("Writing JSON not supported.");
+        }
+
+        @Override
+        public Date read(JsonReader jsonReader) throws IOException {
             try {
-                double dateMiliSecs = jsonElement.getAsDouble() * 1000;
-                return new Date((long) dateMiliSecs);
-            } catch (NumberFormatException e) {
+                double dateMilliseconds = jsonReader.nextDouble() * 1000;
+                return new Date((long) dateMilliseconds);
+            } catch (NumberFormatException | IllegalStateException e) {
                 throw new JsonParseException(e);
             }
         }

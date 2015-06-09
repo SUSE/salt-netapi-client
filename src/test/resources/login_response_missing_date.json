@@ -1,0 +1,13 @@
+{
+  "return": [
+    {
+      "perms": [
+        ".*",
+        "@wheel"
+      ],
+      "token": "f248284b655724ca8a86bcab4b8df608ebf5b08b",
+      "user": "user",
+      "eauth": "auto"
+    }
+  ]
+}
