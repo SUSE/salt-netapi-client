@@ -1,0 +1,5 @@
+{
+  "nullString": null,
+  "valueString": "string with value",
+  "maybeInts": [1, 2, 3, null, 5]
+}
