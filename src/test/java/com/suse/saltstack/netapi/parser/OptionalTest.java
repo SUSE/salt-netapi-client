@@ -12,5 +12,4 @@ public class OptionalTest {
     public Optional<String> valueString = Optional.empty();
     public Optional<String> absentString = Optional.empty();
     public List<Optional<Integer>> maybeInts;
-
 }

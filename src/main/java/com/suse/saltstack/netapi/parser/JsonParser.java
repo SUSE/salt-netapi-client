@@ -135,6 +135,7 @@ public class JsonParser<T> {
      */
     private class OptionalTypeAdapterFactory implements TypeAdapterFactory {
 
+        @Override
         @SuppressWarnings("unchecked")
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
             Type type = typeToken.getType();
@@ -151,6 +152,7 @@ public class JsonParser<T> {
 
         private <A> TypeAdapter<Optional<A>> optionalAdapter(TypeAdapter<A> innerAdapter) {
             return new TypeAdapter<Optional<A>>() {
+                @Override
                 public Optional<A> read(JsonReader in) throws IOException {
                     if (in.peek() == JsonToken.NULL) {
                         in.nextNull();
@@ -161,12 +163,12 @@ public class JsonParser<T> {
                     }
                 }
 
+                @Override
                 public void write(JsonWriter out, Optional<A> optional) throws IOException {
                     innerAdapter.write(out, optional.orElse(null));
                 }
             };
         }
-
     }
 
     /**

@@ -206,7 +206,6 @@ public class JsonParserTest {
         assertEquals("lucid", job.getUser());
     }
 
-
     @Test
     public void testOptionalParser() {
         InputStream is = this.getClass()
@@ -225,6 +224,19 @@ public class JsonParserTest {
         expected.add(Optional.empty());
         expected.add(Optional.of(5));
         assertEquals(expected, result.maybeInts);
+    }
+
+    @Test
+    public void testOptionalSingleValue() {
+        JsonParser<Optional<Integer>> parser =
+                new JsonParser<>(new TypeToken<Optional<Integer>>(){});
+        InputStream nullValue = this.getClass()
+                .getResourceAsStream("/single_null_value.json");
+        assertFalse(parser.parse(nullValue).isPresent());
+
+        InputStream intValue = this.getClass()
+                .getResourceAsStream("/single_int_value.json");
+        assertEquals(new Integer(123), parser.parse(intValue).get());
     }
 
     @Test
