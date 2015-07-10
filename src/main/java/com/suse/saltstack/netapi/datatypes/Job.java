@@ -24,6 +24,7 @@ public class Job {
     private String target;
 
     @SerializedName("Target-type")
+    @JsonAdapter(JsonParser.TargetTypeAdapter.class)
     private String targetType;
 
     @SerializedName("User")

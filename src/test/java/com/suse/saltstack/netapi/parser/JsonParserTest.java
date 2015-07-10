@@ -179,6 +179,28 @@ public class JsonParserTest {
     }
 
     @Test
+    public void testSaltStackJobsVariousTargetType() throws Exception {
+        InputStream is = this.getClass()
+                .getResourceAsStream("/jobs_response_various_target_type.json");
+        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        assertNotNull("failed to parse", result);
+
+        Map<String, Job> jobs = result.getResult().get(0);
+
+        Job job1 = jobs.get("20150304192951636258");
+        assertNotNull(job1);
+        assertEquals("glob", job1.getTargetType());
+
+        Job job2 = jobs.get("20150304200110485012");
+        assertNotNull(job2);
+        assertNull(job2.getTargetType());
+
+        Job job3 = jobs.get("20150304200110485012");
+        assertNotNull(job3);
+        assertNull(job3.getTargetType());
+    }
+
+    @Test
     public void testSaltStackJobsWithKwargsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response_kwargs.json");
         Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);

@@ -259,4 +259,31 @@ public class JsonParser<T> {
             }
         }
     }
+
+    /**
+     * WORKAROUND for https://github.com/saltstack/salt/issues/25199
+     */
+    public class TargetTypeAdapter extends TypeAdapter<String> {
+        @Override
+        public void write(JsonWriter out, String value) throws IOException {
+            throw new UnsupportedOperationException("Writing JSON not supported.");
+        }
+
+        @Override
+        public String read(JsonReader in) throws IOException {
+            if (in.peek() == JsonToken.NULL) {
+                return null;
+            } else if (in.peek() == JsonToken.STRING) {
+                return in.nextString();
+            } else if (in.peek() == JsonToken.BEGIN_ARRAY) {
+                System.out.println("Encountered empty array as a target-type, " +
+                        "returning null.");
+                in.skipValue();
+                return null;
+            } else {
+                throw new IllegalStateException("Target-type must be either null," +
+                        " string or an array.");
+            }
+        }
+    }
 }
