@@ -3,15 +3,12 @@ jdk:
   - oraclejdk8
 install: /bin/true
 script: mvn checkstyle:check javadoc:javadoc test package
-before_deploy:
-  - export RELEASE_JAR_FILE=$(ls target/saltstack-netapi-client-*.jar)
-  - echo "Deploying $RELEASE_JAR_FILE to GitHub releases"
 deploy:
   provider: releases
   api_key:
     secure: braT4pMYLy0ocRgNt4MrI0kWUPnQF455RNLXBAf3+ArSiCMpaoQkwoDnauI155+Kaq2sXDuFg/vCdNQ0h4Rd33qEW5vg810wQQKj9lleDJmfv2W6/DxpTDnvySR4ChAWv9BZBMFIPhdv/dfZWgZBFHluvXw2Bi4UMF0GXsNPjYs=
   file_glob: true
-  file: "${RELEASE_JAR_FILE}"
+  file: "target/saltstack-netapi-client-*.jar"
   skip_cleanup: true
   on:
     repo: SUSE/saltstack-netapi-client-java
