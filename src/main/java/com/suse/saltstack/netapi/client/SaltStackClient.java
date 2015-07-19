@@ -471,7 +471,8 @@ public class SaltStackClient {
     }
 
     /**
-     * Returns a server-sent events (SSE) stream object.
+     * Returns a WebSocket @ClientEndpoint annotated object connected
+     * to the /ws ServerEndpoint.
      * <p>
      * The stream object supports the {@link EventStream} interface which allows the caller
      * to register/unregister for stream event notifications as well as close the event
