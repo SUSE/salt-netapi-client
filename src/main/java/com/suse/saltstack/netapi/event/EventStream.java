@@ -21,9 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Event stream implementation based on a {@link ClientEndpoint} WebSocket.
@@ -33,8 +30,6 @@ import java.util.concurrent.Executors;
  */
 @ClientEndpoint
 public class EventStream implements AutoCloseable {
-
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Listeners that are notified of a new events.
@@ -68,7 +63,11 @@ public class EventStream implements AutoCloseable {
      * authentication token required to create the WebSocket.
      */
     public EventStream(ClientConfig config) {
-        initializeStream(config);
+        try {
+            initializeStream(config);
+        } catch (SaltStackException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -89,26 +88,19 @@ public class EventStream implements AutoCloseable {
     /**
      * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
      */
-    private void initializeStream (ClientConfig config) {
-        Callable<Object> callable = new Callable<Object>() {
-            @Override
-            public Object call() throws SaltStackException {
-                try {
-                    URI uri = new URI(config.get(ClientConfig.URL).toString()
-                            .replace("http", "ws") + "/ws/"
-                            + config.get(ClientConfig.TOKEN));
-                    synchronized (websocketContainer) {
-                        websocketContainer.setDefaultMaxSessionIdleTimeout(
-                                (long) config.get(ClientConfig.SOCKET_TIMEOUT));
-                    }
-                    processEvents(uri);
-                } catch (URISyntaxException | DeploymentException | IOException e) {
-                    throw new SaltStackException(e);
-                }
-                return null;
+    private void initializeStream (ClientConfig config) throws SaltStackException {
+        try {
+            URI uri = new URI(config.get(ClientConfig.URL).toString()
+                    .replace("http", "ws") + "/ws/"
+                    + config.get(ClientConfig.TOKEN));
+            synchronized (websocketContainer) {
+                websocketContainer.setDefaultMaxSessionIdleTimeout(
+                        (long) config.get(ClientConfig.SOCKET_TIMEOUT));
             }
-        };
-        executor.submit(callable);
+            processEvents(uri);
+        } catch (URISyntaxException | DeploymentException | IOException e) {
+            throw new SaltStackException(e);
+        }
     }
 
     /**
@@ -169,6 +161,7 @@ public class EventStream implements AutoCloseable {
             try {
                 this.session.close();
             } catch (IOException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -179,9 +172,6 @@ public class EventStream implements AutoCloseable {
             }
             // clear out the listeners
             listeners.clear();
-
-            // shut down the executor
-            executor.shutdownNow();
         }
     }
 
