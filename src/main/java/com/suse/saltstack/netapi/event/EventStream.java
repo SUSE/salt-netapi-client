@@ -3,18 +3,20 @@ package com.suse.saltstack.netapi.event;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.media.sse.EventInput;
-import org.glassfish.jersey.media.sse.InboundEvent;
-import org.glassfish.jersey.media.sse.SseFeature;
+import javax.websocket.ClientEndpoint;
+import javax.websocket.CloseReason;
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
+import javax.websocket.server.ServerEndpoint;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -24,8 +26,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Event stream implementation based on GlassFish Jersey Server-Sent Events (SSE).
+ * Event stream implementation based on a {@link ClientEndpoint} WebSocket.
+ * It is used to connect the WebSocket to a {@link ServerEndpoint}
+ * and receive messages from it; for each message a bunch of {@link EventListener}
+ * will be recalled and notified with it.
  */
+@ClientEndpoint
 public class EventStream implements AutoCloseable {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -36,80 +42,78 @@ public class EventStream implements AutoCloseable {
     private final List<EventListener> listeners = new ArrayList<>();
 
     /**
-     * The ClientConfig used to create the GET request for /events
+     * The {@link WebSocketContainer} object for a @ClientEndpoint implementation.
      */
-    private ClientConfig config;
+    private WebSocketContainer websocketContainer =
+            ContainerProvider.getWebSocketContainer();
 
     /**
-     * Internal state flag designating whether event processing loop
-     * has started;
+     * The WebSocket {@link Session}.
      */
-    private boolean eventProcessingStarted = false;
+    public Session session;
 
     /**
-     * Private reference to the Jersey SSE specific event stream
+     * A default constructor used to create this object empty. It prepare the WebSocket
+     * implementation, but it does not start the connection to the server
+     * and then the event processing too. This constructor is used for unit testing.
      */
-    private EventInput eventInput;
+    public EventStream() {
+    }
 
     /**
-     * Constructor used to create this object.  Automatically starts
-     * event processing.
-     * @param config Contains the necessary details such as endpoint URL and
-     *               authentication token required to create the request to obtain
-     *               the {@link EventInput} event stream.
+     * Constructor used to create this object.
+     * Automatically open a WebSocket and start event processing.
+     *
+     * @param config Contains the necessary details such as EndPoint URL and
+     * authentication token required to create the WebSocket.
      */
     public EventStream(ClientConfig config) {
-        this.config = config;
-        initializeStream();
+        initializeStream(config);
     }
 
     /**
-     * An alternate constructor used to create this object.  Does not
-     * automatically start event processing.  This constructor is used for
-     * unit testing only and allows for the injection of an existing and
-     * possibly pre-configured {@link Client} object.
-     * @param config Contains the necessary details such as endpoint URL and
-     *               authentication token required to create the request to obtain
-     *               the {@link EventInput} event stream.
-     * @param client Passed client to use when configuring the event stream
+     * This method initiates the WebSocket handshake and its life.
+     * This method is intended for use during unit testing only!
+     * End users should not call this methods directly.
+     *
+     * @param uri WebSocket URI
+     * @throws DeploymentException If annotatedEndpoint instance is not valid.
+     * @throws IOException If WebSocket connection to remote server fails.
      */
-    public EventStream(ClientConfig config, Client client) {
-        client.register(new SseFeature());
-        WebTarget target = client.target(config.get(ClientConfig.URL) + "/events");
-        Invocation.Builder builder = target.request(new MediaType("text",
-                "event-stream"));
-        builder.header("X-Auth-Token", config.get(ClientConfig.TOKEN));
-
-        eventInput = builder.get(EventInput.class);
-    }
-
-    /**
-     * This method initiates the event processing loop. This method is intended for
-     * use during unit testing only!  End users should not call this methods directly.
-     */
-    public void processEvents() {
-        if (!eventProcessingStarted) {
-            if (eventInput != null && !eventInput.isClosed()) {
-                eventProcessingStarted = true;
-                while (!eventInput.isClosed()) {
-                    final InboundEvent inboundEvent = eventInput.read();
-                    if (inboundEvent == null) {
-                        // connection has been closed
-                        close();
-                        break;
-                    }
-                    synchronized (listeners) {
-                        for (EventListener listener : listeners) {
-                            listener.notify(inboundEvent.readData(String.class));
-                        }
-                    }
-                }
-            }
+    public void processEvents(URI uri) throws DeploymentException, IOException {
+        synchronized (websocketContainer) {
+            this.session = websocketContainer.connectToServer(this, uri);
         }
     }
 
     /**
+     * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
+     */
+    private void initializeStream (ClientConfig config) {
+        Callable<Object> callable = new Callable<Object>() {
+            @Override
+            public Object call() throws SaltStackException {
+                try {
+                    URI uri = new URI(config.get(ClientConfig.URL).toString()
+                            .replace("http", "ws") + "/ws/"
+                            + config.get(ClientConfig.TOKEN));
+                    synchronized (websocketContainer) {
+                        websocketContainer.setDefaultMaxSessionIdleTimeout(
+                                (long) config.get(ClientConfig.SOCKET_TIMEOUT));
+                    }
+                    processEvents(uri);
+                } catch (URISyntaxException | DeploymentException | IOException e) {
+                    throw new SaltStackException(e);
+                }
+                return null;
+            }
+        };
+        executor.submit(callable);
+    }
+
+    /**
      * Implementation of {@link EventStream#addEventListener(EventListener)}
+     *
      * @param listener Reference to the class that implements {@link EventListener}.
      */
     public void addEventListener(EventListener listener) {
@@ -119,8 +123,9 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Implementation of {@link EventStream#removeEventListener(EventListener)}
-     * @param listener
+     * Implementation of {@link EventStream#removeEventListener(EventListener)}.
+     *
+     * @param listener Reference to the class that implements {@link EventListener}.
      */
     public void removeEventListener(EventListener listener) {
         synchronized (listeners) {
@@ -129,99 +134,110 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Helper method that returns the current number of subscribed
-     * listeners.
+     * Helper method that returns the current number of subscribed listeners.
+     *
      * @return The current number listeners.
      */
     public int getListenerCount() {
-        return listeners.size();
+        int size = 0;
+        synchronized (listeners) {
+            size = listeners.size();
+        }
+        return size;
     }
 
     /**
-     * Closes the backing event stream and notifies all subscribed listeners that
-     * the event stream has been closed via {@link EventListener#eventStreamClosed()}.
+     * Helper method to check if the WebSocket Session exists and is open.
+     *
+     * @return A flag indicating the {@link EventStream}
+     * WebSocket {@link Session} state.
+     */
+    public boolean isEventStreamClosed() {
+        if (this.session == null)
+            return true;
+        return !this.session.isOpen();
+    }
+
+    /**
+     * Closes the WebSocket {@link Session} and notifies all subscribed listeners.
+     * that the event stream has been closed via {@link EventListener#eventStreamClosed()}.
      * Upon exit from this method, all subscribed listeners will be removed.
      */
     public void close() {
+        // close the WebSocket session
+        if (!isEventStreamClosed()) {
+            try {
+                this.session.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // notify all the listeners and cleanup
         synchronized (listeners) {
-            // notify all the listeners and cleanup
             for (EventListener listener : listeners) {
                 listener.eventStreamClosed();
             }
             // clear out the listeners
             listeners.clear();
-            // close the backing event stream
-            if (eventInput != null) {
-                eventInput.close();
-            }
+
             // shut down the executor
             executor.shutdownNow();
-            // reset processing flag
-            eventProcessingStarted = false;
         }
     }
 
     /**
-     * Helper method to determine whether the backing event stream is closed.
-     * @return Whether the {@link EventInput} stream is closed.
+     * On handshake completed, get the WebSocket Session and send
+     * a message to ServerEndpoint that WebSocket is ready.
+     * http://docs.saltstack.com/en/latest/ref/netapi/all/salt.netapi.rest_cherrypy.html#ws
+     *
+     * @param session The just started WebSocket {@link Session}.
+     * @param config The {@link EndpointConfig} containing the handshake informations.
+     * @throws IOException Exception thrown if something goes wrong sending message
+     * to the remote peer.
      */
-    public boolean isEventStreamClosed() {
-        return eventInput.isClosed();
+    @OnOpen
+    public void onOpen(Session session, EndpointConfig config) throws IOException {
+        this.session = session;
+        session.getBasicRemote().sendText("websocket client ready");
     }
 
     /**
-     * Helper method to determine whether event processing has started.
-     * @return Whether event processing has started.
+     * On each event received on the WebSocket,
+     * notify each listener with the event received.
+     *
+     * @param event The message received on this WebSocket.
      */
-    public boolean isEventProcessingStarted() {
-        return eventProcessingStarted;
-    }
-
-    /**
-     * Perform the REST GET call to /events and set up the event stream.  If
-     * a proxy is configured be sure to account for it.
-     */
-    private void initializeStream() {
-        Callable<Object> callable = new Callable<Object>() {
-            @Override
-            public Object call() throws SaltStackException {
-                org.glassfish.jersey.client.ClientConfig jerseyConfig =
-                        new org.glassfish.jersey.client.ClientConfig();
-                // set the connection timeout as per
-                jerseyConfig.property(ClientProperties.CONNECT_TIMEOUT,
-                        config.get(ClientConfig.CONNECT_TIMEOUT));
-
-                // Configure jersey client for proxy if specified in configuration
-                URI uri = config.get(ClientConfig.URL);
-                String proxyHost = config.get(ClientConfig.PROXY_HOSTNAME);
-                if (proxyHost != null) {
-                    Integer proxyPort = config.get(ClientConfig.PROXY_PORT);
-                    try {
-                        URI proxyUri = new URI(uri.getScheme(), null, proxyHost,
-                                proxyPort, null, null, null);
-                        jerseyConfig.property(ClientProperties.PROXY_URI,
-                                proxyUri.toURL());
-                        jerseyConfig.property(ClientProperties.PROXY_USERNAME,
-                                config.get(ClientConfig.PROXY_USERNAME));
-                        jerseyConfig.property(ClientProperties.PROXY_PASSWORD,
-                                config.get(ClientConfig.PROXY_PASSWORD));
-                    } catch (URISyntaxException | MalformedURLException e) {
-                        throw new SaltStackException(e);
-                    }
+    @OnMessage
+    public void onMessage(String event) {
+        if (event != null && !event.equals("server received message")) {
+            synchronized (listeners) {
+                for (EventListener listener : listeners) {
+                    listener.notify(event.trim());
                 }
-
-                Client client = ClientBuilder.newClient(jerseyConfig).register(
-                        new SseFeature());
-                WebTarget target = client.target(uri + "/events");
-                Invocation.Builder builder = target.request(new MediaType("text",
-                        "event-stream"));
-                builder.header("X-Auth-Token", config.get(ClientConfig.TOKEN));
-
-                eventInput = builder.get(EventInput.class);
-                processEvents();
-                return null;
             }
-        };
-        executor.submit(callable);
+        }
+    }
+
+    /**
+     * On error, close all objects of this class.
+     *
+     * @param t The Throwable object received on the current error.
+     */
+    @OnError
+    public void onError(Throwable t) {
+        this.close();
+        t.printStackTrace();
+    }
+
+    /**
+     * On closing WebSocket, refresh the Session and close all objects of this class.
+     *
+     * @param session The WebSocket {@link Session}
+     * @param closeReason A {@link CloseReason} for the closure of WebSocket.
+     */
+    @OnClose
+    public void onClose(Session session, CloseReason closeReason) {
+        this.session = session;
+        this.close();
     }
 }
