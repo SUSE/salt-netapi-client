@@ -53,8 +53,8 @@ public class TyrusWebSocketEventsTest {
                 + Integer.toString(MOCK_HTTP_PORT));
         SaltStackClient client = new SaltStackClient(uri);
 
-        serverEndpoint = new Server(MOCK_HTTP_HOST, MOCK_HTTP_PORT, WEBSOCKET_PATH, null,
-                WebSocketServerSalt.class);
+        serverEndpoint = new Server(MOCK_HTTP_HOST, MOCK_HTTP_PORT, WEBSOCKET_PATH,
+                null, WebSocketServerSalt.class);
         serverEndpoint.start();
 
         ClientConfig config = client.getConfig();
@@ -74,13 +74,15 @@ public class TyrusWebSocketEventsTest {
     public void shouldFireNotifyMultipleTimes()
             throws IOException, DeploymentException, InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
+        int target = 6;
 
         try (EventStream streamEvents = new EventStream()) {
-            EventCountClient eventCountClient = new EventCountClient(6, latch);
+            EventCountClient eventCountClient = new EventCountClient(target, latch);
             streamEvents.addEventListener(eventCountClient);
 
             streamEvents.processEvents(ws_uri);
             latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue(eventCountClient.counter == target);
             streamEvents.close();
         }
     }
@@ -103,6 +105,10 @@ public class TyrusWebSocketEventsTest {
 
             streamEvents.processEvents(ws_uri);
             latch.await(30, TimeUnit.SECONDS);
+            synchronized (eventContentClient.events) {
+                Assert.assertTrue(eventContentClient.events.get(1)
+                        .contains("\"jid\": \"20150505113307407682\""));
+            }
             streamEvents.close();
         }
     }
@@ -160,7 +166,7 @@ public class TyrusWebSocketEventsTest {
 
         try (EventStream streamEvents = new EventStream()) {
             EventStreamClosedClient eventStreamClosedClient =
-                    new EventStreamClosedClient(latch);
+                    new EventStreamClosedClient(streamEvents, latch);
             streamEvents.addEventListener(eventStreamClosedClient);
 
             streamEvents.processEvents(ws_uri);
@@ -201,7 +207,6 @@ public class TyrusWebSocketEventsTest {
 
         @Override
         public void eventStreamClosed() {
-            Assert.assertTrue(counter == targetCount);
         }
     }
 
@@ -218,15 +223,15 @@ public class TyrusWebSocketEventsTest {
 
         @Override
         public void notify(String event) {
-            events.add(event);
-            if (events.size() > 1
-                    && events.get(1).contains("\"jid\": \"20150505113307407682\""))
-                latch.countDown();
+            synchronized (events) {
+                events.add(event);
+                if (events.size() > 2)
+                    latch.countDown();
+            }
         }
 
         @Override
         public void eventStreamClosed() {
-            Assert.assertTrue(events.get(1).contains("\"jid\": \"20150505113307407682\""));
         }
     }
 
@@ -247,19 +252,17 @@ public class TyrusWebSocketEventsTest {
      * Event listener client used for testing.
      */
     private class EventStreamClosedClient implements EventListener {
+        private EventStream eventStream;
         private CountDownLatch latch;
-        private int counter = 0;
 
-        public EventStreamClosedClient(CountDownLatch latchIn) {
+        public EventStreamClosedClient(EventStream stream, CountDownLatch latchIn) {
+            this.eventStream = stream;
             this.latch = latchIn;
         }
 
         @Override
         public void notify(String event) {
-            if (counter == 1) {
-                latch.countDown();
-            }
-            counter++;
+            this.latch.countDown();
         }
 
         @Override
