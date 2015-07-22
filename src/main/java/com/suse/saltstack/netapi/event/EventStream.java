@@ -161,7 +161,6 @@ public class EventStream implements AutoCloseable {
             try {
                 this.session.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
