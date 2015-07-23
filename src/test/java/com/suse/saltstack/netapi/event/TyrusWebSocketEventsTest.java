@@ -166,7 +166,7 @@ public class TyrusWebSocketEventsTest {
 
         try (EventStream streamEvents = new EventStream()) {
             EventStreamClosedClient eventStreamClosedClient =
-                    new EventStreamClosedClient(streamEvents, latch);
+                    new EventStreamClosedClient(latch);
             streamEvents.addEventListener(eventStreamClosedClient);
 
             streamEvents.processEvents(ws_uri);
@@ -252,11 +252,9 @@ public class TyrusWebSocketEventsTest {
      * Event listener client used for testing.
      */
     private class EventStreamClosedClient implements EventListener {
-        private EventStream eventStream;
         private CountDownLatch latch;
 
-        public EventStreamClosedClient(EventStream stream, CountDownLatch latchIn) {
-            this.eventStream = stream;
+        public EventStreamClosedClient(CountDownLatch latchIn) {
             this.latch = latchIn;
         }
 
