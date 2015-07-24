@@ -143,9 +143,7 @@ public class EventStream implements AutoCloseable {
      * WebSocket {@link Session} state.
      */
     public boolean isEventStreamClosed() {
-        if (this.session == null)
-            return true;
-        return !this.session.isOpen();
+        return this.session == null || !this.session.isOpen();
     }
 
     /**
