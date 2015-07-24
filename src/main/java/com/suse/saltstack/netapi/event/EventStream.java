@@ -131,11 +131,9 @@ public class EventStream implements AutoCloseable {
      * @return The current number listeners.
      */
     public int getListenerCount() {
-        int size = 0;
         synchronized (listeners) {
-            size = listeners.size();
+            return listeners.size();
         }
-        return size;
     }
 
     /**
