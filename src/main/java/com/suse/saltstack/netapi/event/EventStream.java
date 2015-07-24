@@ -90,9 +90,10 @@ public class EventStream implements AutoCloseable {
      */
     private void initializeStream (ClientConfig config) throws SaltStackException {
         try {
-            URI uri = new URI(config.get(ClientConfig.URL).toString()
-                    .replace("http", "ws") + "/ws/"
-                    + config.get(ClientConfig.TOKEN));
+            URI uri = config.get(ClientConfig.URL);
+            uri = new URI(uri.getScheme() == "https" ? "wss" : "ws",
+                    uri.getSchemeSpecificPart(), uri.getFragment())
+                    .resolve("/ws/" + config.get(ClientConfig.TOKEN));
             websocketContainer.setDefaultMaxSessionIdleTimeout(
                     (long) config.get(ClientConfig.SOCKET_TIMEOUT));
             processEvents(uri);

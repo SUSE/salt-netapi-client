@@ -1,8 +1,5 @@
 package com.suse.saltstack.netapi.event;
 
-import com.suse.saltstack.netapi.client.SaltStackClient;
-import com.suse.saltstack.netapi.config.ClientConfig;
-
 import org.glassfish.tyrus.server.Server;
 import org.junit.After;
 import org.junit.Assert;
@@ -49,17 +46,12 @@ public class TyrusWebSocketEventsTest {
      */
     @Before
     public void init() throws DeploymentException, URISyntaxException {
-        URI uri = URI.create("http://" + MOCK_HTTP_HOST + ":"
-                + Integer.toString(MOCK_HTTP_PORT));
-        SaltStackClient client = new SaltStackClient(uri);
-
         serverEndpoint = new Server(MOCK_HTTP_HOST, MOCK_HTTP_PORT, WEBSOCKET_PATH,
                 null, WebSocketServerSalt.class);
         serverEndpoint.start();
 
-        ClientConfig config = client.getConfig();
-        ws_uri = new URI(config.get(ClientConfig.URL).toString().replace("http", "ws")
-                + WEBSOCKET_PATH + WEBSOCKET_ENDPOINT);
+        ws_uri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
+                .resolve(WEBSOCKET_PATH + WEBSOCKET_ENDPOINT);
     }
 
     /**
