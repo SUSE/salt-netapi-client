@@ -39,7 +39,7 @@ public class EventStream implements AutoCloseable {
     /**
      * The {@link WebSocketContainer} object for a @ClientEndpoint implementation.
      */
-    private WebSocketContainer websocketContainer =
+    private final WebSocketContainer websocketContainer =
             ContainerProvider.getWebSocketContainer();
 
     /**
