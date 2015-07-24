@@ -93,10 +93,8 @@ public class EventStream implements AutoCloseable {
             URI uri = new URI(config.get(ClientConfig.URL).toString()
                     .replace("http", "ws") + "/ws/"
                     + config.get(ClientConfig.TOKEN));
-            synchronized (websocketContainer) {
-                websocketContainer.setDefaultMaxSessionIdleTimeout(
-                        (long) config.get(ClientConfig.SOCKET_TIMEOUT));
-            }
+            websocketContainer.setDefaultMaxSessionIdleTimeout(
+                    (long) config.get(ClientConfig.SOCKET_TIMEOUT));
             processEvents(uri);
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltStackException(e);
