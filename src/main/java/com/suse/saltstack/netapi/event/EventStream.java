@@ -161,9 +161,7 @@ public class EventStream implements AutoCloseable {
         }
         // notify all the listeners and cleanup
         synchronized (listeners) {
-            for (EventListener listener : listeners) {
-                listener.eventStreamClosed();
-            }
+            listeners.stream().forEach(l -> l.eventStreamClosed());
             // clear out the listeners
             listeners.clear();
         }
@@ -195,9 +193,7 @@ public class EventStream implements AutoCloseable {
     public void onMessage(String event) {
         if (event != null && !event.equals("server received message")) {
             synchronized (listeners) {
-                for (EventListener listener : listeners) {
-                    listener.notify(event.trim());
-                }
+                listeners.stream().forEach(l -> l.notify(event.trim()));
             }
         }
     }
