@@ -1,5 +1,6 @@
 [
   {
+    "expr_form": "glob",
     "tgt": "*",
     "fun": "pkg.install",
     "arg": ["i3"],

@@ -1,5 +1,7 @@
 package com.suse.saltstack.netapi.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -16,6 +18,9 @@ import java.util.Scanner;
  * Utilities for {@link SaltStackClient}.
  */
 public class ClientUtils {
+
+
+    private static final Gson GSON = new GsonBuilder().create();
 
     /**
      * Quietly close a given stream, suppressing exceptions.
@@ -60,13 +65,13 @@ public class ClientUtils {
      *
      * @return JsonObject filled with kwargs and args.
      */
-    public static JsonObject makeJsonData(Map<String, String> props,
+    public static JsonObject makeJsonData(Map<String, Object> props,
             Map<String, String> kwargs, List<String> args) {
         final JsonObject json = new JsonObject();
 
         if (props != null) {
-            for (Map.Entry<String, String> prop : props.entrySet()) {
-                json.addProperty(prop.getKey(), prop.getValue());
+            for (Map.Entry<String, Object> prop : props.entrySet()) {
+                json.add(prop.getKey(), GSON.toJsonTree(prop.getValue()));
             }
         }
 

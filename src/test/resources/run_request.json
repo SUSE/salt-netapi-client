@@ -4,6 +4,7 @@
     "password": "pass",
     "eauth": "pam",
     "client": "local",
+    "expr_form": "glob",
     "tgt": "*",
     "fun": "pkg.install",
     "arg": ["i3"],

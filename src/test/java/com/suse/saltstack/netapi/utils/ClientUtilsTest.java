@@ -91,7 +91,7 @@ public class ClientUtilsTest {
         arg.add(new JsonPrimitive("bar"));
         expected.add("arg", arg);
 
-        Map<String, String> props = new LinkedHashMap<String, String>() {
+        Map<String, Object> props = new LinkedHashMap<String, Object>() {
             {
                 put("tgt", "*");
                 put("fun", "test.ping");

@@ -10,6 +10,7 @@ import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.datatypes.target.Target;
 import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
@@ -122,7 +123,7 @@ public class SaltStackClient {
      */
     public Token login(final String username, final String password, final AuthModule eauth)
             throws SaltStackException {
-        Map<String, String> props = new LinkedHashMap<String, String>() {
+        Map<String, Object> props = new LinkedHashMap<String, Object>() {
             {
                 put("username", username);
                 put("password", password);
@@ -257,11 +258,12 @@ public class SaltStackClient {
      * @return object representing the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public ScheduledJob startCommand(final String target, final String function,
+    public <T> ScheduledJob startCommand(final Target<T> target, final String function,
             List<String> args, Map<String, String> kwargs) throws SaltStackException {
-        Map<String, String> props = new LinkedHashMap<String, String>() {
+        Map<String, Object> props = new LinkedHashMap<String, Object>() {
             {
-                put("tgt", target);
+                put("expr_form", target.targetType());
+                put("tgt", target.target());
                 put("fun", function);
             }
         };
@@ -290,7 +292,7 @@ public class SaltStackClient {
      * @param kwargs map containing keyword arguments
      * @return Future containing the scheduled job
      */
-    public Future<ScheduledJob> startCommandAsync(final String target,
+    public <T> Future<ScheduledJob> startCommandAsync(final Target<T> target,
             final String function, final List<String> args,
             final Map<String, String> kwargs) {
         return executor.submit(() -> startCommand(target, function, args, kwargs));
@@ -370,17 +372,18 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, Object> run(final String username, final String password,
-            final AuthModule eauth, final String client, final String target,
+    public <T> Map<String, Object> run(final String username, final String password,
+            final AuthModule eauth, final String client, final Target<T> target,
             final String function, List<String> args, Map<String, String> kwargs)
             throws SaltStackException {
-        Map<String, String> props = new LinkedHashMap<String, String>() {
+        Map<String, Object> props = new LinkedHashMap<String, Object>() {
             {
                 put("username", username);
                 put("password", password);
                 put("eauth", eauth.getValue());
                 put("client", client);
-                put("tgt", target);
+                put("expr_form", target.targetType());
+                put("tgt", target.target());
                 put("fun", function);
             }
         };
@@ -411,9 +414,9 @@ public class SaltStackClient {
      * @param kwargs map containing keyword arguments
      * @return Future containing Map key: minion id, value: command result from that minion
      */
-    public Future<Map<String, Object>> runAsync(final String username,
+    public <T> Future<Map<String, Object>> runAsync(final String username,
             final String password, final AuthModule eauth, final String client,
-            final String target, final String function, final List<String> args,
+            final Target<T> target, final String function, final List<String> args,
             final Map<String, String> kwargs) {
         return executor.submit(() ->
                 run(username, password, eauth, client, target, function, args, kwargs));
