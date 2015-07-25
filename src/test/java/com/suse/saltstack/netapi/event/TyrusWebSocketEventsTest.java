@@ -193,8 +193,9 @@ public class TyrusWebSocketEventsTest {
         @Override
         public void notify(String event) {
             counter++;
-            if (counter == targetCount)
+            if (counter == targetCount) {
                 latch.countDown();
+            }
         }
 
         @Override
@@ -217,8 +218,9 @@ public class TyrusWebSocketEventsTest {
         public void notify(String event) {
             synchronized (events) {
                 events.add(event);
-                if (events.size() > 2)
+                if (events.size() > 2) {
                     latch.countDown();
+                }
             }
         }
 
