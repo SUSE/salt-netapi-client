@@ -79,9 +79,11 @@ public class EventStream implements AutoCloseable {
      * @throws DeploymentException If annotatedEndpoint instance is not valid.
      * @throws IOException If WebSocket connection to remote server fails.
      */
-    public void processEvents(URI uri) throws DeploymentException, IOException {
+    public void processEvents(URI uri, ClientConfig config) throws DeploymentException, IOException {
         synchronized (websocketContainer) {
             this.session = websocketContainer.connectToServer(this, uri);
+            this.session.setMaxIdleTimeout(
+                    config.get(ClientConfig.SOCKET_TIMEOUT));
         }
     }
 
@@ -96,7 +98,7 @@ public class EventStream implements AutoCloseable {
                     .resolve("/ws/" + config.get(ClientConfig.TOKEN));
             websocketContainer.setDefaultMaxSessionIdleTimeout(
                     (long) config.get(ClientConfig.SOCKET_TIMEOUT));
-            processEvents(uri);
+            processEvents(uri, config);
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltStackException(e);
         }
