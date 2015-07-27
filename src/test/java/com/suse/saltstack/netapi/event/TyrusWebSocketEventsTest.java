@@ -144,12 +144,11 @@ public class TyrusWebSocketEventsTest {
      */
     @Test
     public void testEventProcessingStateStopped() throws IOException {
-        try (EventStream streamEvents = new EventStream()) {
-            SimpleEventListenerClient eventListener = new SimpleEventListenerClient();
-            streamEvents.addEventListener(eventListener);
-
-            Assert.assertTrue(streamEvents.isEventStreamClosed());
-        }
+        EventStream streamEvents = new EventStream(clientConfig);
+        SimpleEventListenerClient eventListener = new SimpleEventListenerClient();
+        streamEvents.addEventListener(eventListener);
+        streamEvents.close();
+        Assert.assertTrue(streamEvents.isEventStreamClosed());
     }
 
     /**
