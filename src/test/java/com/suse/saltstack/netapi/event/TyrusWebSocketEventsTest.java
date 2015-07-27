@@ -1,5 +1,6 @@
 package com.suse.saltstack.netapi.event;
 
+import com.suse.saltstack.netapi.config.ClientConfig;
 import org.glassfish.tyrus.server.Server;
 import org.junit.After;
 import org.junit.Assert;
@@ -37,6 +38,11 @@ public class TyrusWebSocketEventsTest {
     private URI ws_uri;
 
     /**
+     * Client configuration used in every test
+     */
+    private ClientConfig clientConfig;
+
+    /**
      * Prepare test environment: start a server on localhost
      * and prepare WebSocket parameters.
      *
@@ -51,7 +57,11 @@ public class TyrusWebSocketEventsTest {
         serverEndpoint.start();
 
         ws_uri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
-                .resolve(WEBSOCKET_PATH + WEBSOCKET_ENDPOINT);
+                .resolve(WEBSOCKET_PATH);
+
+        clientConfig = new ClientConfig();
+        clientConfig.put(ClientConfig.TOKEN, "token");
+        clientConfig.put(ClientConfig.URL, ws_uri);
     }
 
     /**
@@ -68,11 +78,10 @@ public class TyrusWebSocketEventsTest {
         CountDownLatch latch = new CountDownLatch(1);
         int target = 6;
 
-        try (EventStream streamEvents = new EventStream()) {
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
             EventCountClient eventCountClient = new EventCountClient(target, latch);
             streamEvents.addEventListener(eventCountClient);
 
-            streamEvents.processEvents(ws_uri);
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue(eventCountClient.counter == target);
             streamEvents.close();
@@ -91,11 +100,10 @@ public class TyrusWebSocketEventsTest {
             throws IOException, DeploymentException, InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
-        try (EventStream streamEvents = new EventStream()) {
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
             EventContentClient eventContentClient = new EventContentClient(latch);
             streamEvents.addEventListener(eventContentClient);
 
-            streamEvents.processEvents(ws_uri);
             latch.await(30, TimeUnit.SECONDS);
             synchronized (eventContentClient.events) {
                 Assert.assertTrue(eventContentClient.events.get(1)
@@ -156,12 +164,11 @@ public class TyrusWebSocketEventsTest {
             throws IOException, DeploymentException, InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
-        try (EventStream streamEvents = new EventStream()) {
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
             EventStreamClosedClient eventStreamClosedClient =
                     new EventStreamClosedClient(latch);
             streamEvents.addEventListener(eventStreamClosedClient);
 
-            streamEvents.processEvents(ws_uri);
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertFalse(streamEvents.isEventStreamClosed());
             streamEvents.close();
