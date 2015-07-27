@@ -79,7 +79,8 @@ public class EventStream implements AutoCloseable {
      * @throws DeploymentException If annotatedEndpoint instance is not valid.
      * @throws IOException If WebSocket connection to remote server fails.
      */
-    public void processEvents(URI uri, ClientConfig config) throws DeploymentException, IOException {
+    public void processEvents(URI uri, ClientConfig config)
+            throws DeploymentException, IOException {
         synchronized (websocketContainer) {
             this.session = websocketContainer.connectToServer(this, uri);
             this.session.setMaxIdleTimeout(
