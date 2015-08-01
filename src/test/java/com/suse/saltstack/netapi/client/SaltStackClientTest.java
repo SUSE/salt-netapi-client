@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.datatypes.target.Glob;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -193,7 +194,8 @@ public class SaltStackClientTest {
         };
 
         Map<String, Object> retvals =
-                client.run("user", "pass", PAM, "local", "*", "pkg.install", args, kwargs);
+                client.run("user", "pass", PAM, "local", new Glob(),
+                "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -248,7 +250,7 @@ public class SaltStackClientTest {
         };
 
         Future<Map<String, Object>> future = client.runAsync("user", "pass",
-                PAM, "local", "*", "pkg.install", args, kwargs);
+                PAM, "local", new Glob(), "pkg.install", args, kwargs);
         Map<String, Object> retvals = future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
@@ -482,7 +484,7 @@ public class SaltStackClientTest {
             }
         };
 
-        ScheduledJob job = client.startCommand("*", "pkg.install", args, kwargs);
+        ScheduledJob job = client.startCommand(new Glob(), "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -554,8 +556,8 @@ public class SaltStackClientTest {
             }
         };
 
-        Future<ScheduledJob> future = client.startCommandAsync("*", "pkg.install", args,
-                kwargs);
+        Future<ScheduledJob> future = client.startCommandAsync(new Glob(), "pkg.install",
+                args, kwargs);
         ScheduledJob job = future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/minions"))
