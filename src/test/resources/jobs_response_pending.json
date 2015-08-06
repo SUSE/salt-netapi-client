@@ -1,0 +1,22 @@
+{
+   "info" : [
+      {
+         "jid" : "20150806165513400200",
+         "Target-type" : "glob",
+         "Function" : "cmd.run",
+         "StartTime" : "2015, Aug 06 16:55:13.400200",
+         "Arguments" : [
+            "sleep 30; echo testing"
+         ],
+         "Minions" : [
+            "mira"
+         ],
+         "User" : "adamm",
+         "Target" : "*",
+         "Result" : {}
+      }
+   ],
+   "return" : [
+      {}
+   ]
+}

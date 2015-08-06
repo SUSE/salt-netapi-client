@@ -14,10 +14,13 @@ import com.suse.saltstack.netapi.datatypes.target.Target;
 import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
+import com.suse.saltstack.netapi.results.Info;
+import com.suse.saltstack.netapi.results.JobState;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,7 +330,19 @@ public class SaltStackClient {
                 .getResult();
 
         // A list with one element is returned, we take the first
-        return result.getResult().get(0);
+        Map<String, Object> ret = result.getResult().get(0);
+        List<Info> result_info = result.getInfo();
+
+        if (result_info != null) {
+            // add all pending results
+            HashSet<String> minions = result_info.get(0).getMinions();
+            minions.removeAll(ret.keySet());
+
+            for (String pending_minion : minions)
+                ret.put(pending_minion, JobState.PENDING);
+        }
+
+        return ret;
     }
 
     /**
