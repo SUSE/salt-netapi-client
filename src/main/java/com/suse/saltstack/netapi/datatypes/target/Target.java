@@ -7,8 +7,17 @@ package com.suse.saltstack.netapi.datatypes.target;
  */
 public interface Target<T> {
 
-    T target();
+    /**
+     * Return the target.
+     *
+     * @return the target
+     */
+    public T target();
 
-    String targetType();
-
+    /**
+     * Return the target type.
+     *
+     * @return the target type
+     */
+    public String targetType();
 }

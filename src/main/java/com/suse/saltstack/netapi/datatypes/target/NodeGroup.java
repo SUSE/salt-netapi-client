@@ -7,15 +7,26 @@ public class NodeGroup implements Target<String> {
 
     private final String nodegroup;
 
+    /**
+     * Constructor expecting a nodegroup as string.
+     *
+     * @param nodegroup the nodegroup as string
+     */
     public NodeGroup(String nodegroup) {
         this.nodegroup = nodegroup;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String target() {
         return nodegroup;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String targetType() {
         return "nodegroup";
