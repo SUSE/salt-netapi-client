@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class MinionList implements Target<List<String>> {
 
-    private final java.util.List<String> targets;
+    private final List<String> targets;
 
     /**
      * Constructor taking a list of minions as strings.
