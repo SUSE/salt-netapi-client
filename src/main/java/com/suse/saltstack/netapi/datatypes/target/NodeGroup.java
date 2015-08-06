@@ -20,7 +20,7 @@ public class NodeGroup implements Target<String> {
      * {@inheritDoc}
      */
     @Override
-    public String target() {
+    public String getTarget() {
         return nodegroup;
     }
 
@@ -28,7 +28,7 @@ public class NodeGroup implements Target<String> {
      * {@inheritDoc}
      */
     @Override
-    public String targetType() {
+    public String getType() {
         return "nodegroup";
     }
 }

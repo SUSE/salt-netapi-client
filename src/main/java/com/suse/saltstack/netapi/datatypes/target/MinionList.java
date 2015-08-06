@@ -32,7 +32,7 @@ public class MinionList implements Target<List<String>> {
      * {@inheritDoc}
      */
     @Override
-    public List<String> target() {
+    public List<String> getTarget() {
         return targets;
     }
 
@@ -40,7 +40,7 @@ public class MinionList implements Target<List<String>> {
      * {@inheritDoc}
      */
     @Override
-    public String targetType() {
+    public String getType() {
         return "list";
     }
 }

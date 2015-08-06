@@ -12,12 +12,12 @@ public interface Target<T> {
      *
      * @return the target
      */
-    public T target();
+    public T getTarget();
 
     /**
      * Return the target type.
      *
      * @return the target type
      */
-    public String targetType();
+    public String getType();
 }

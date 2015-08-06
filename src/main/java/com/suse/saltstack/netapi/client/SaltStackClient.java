@@ -262,8 +262,8 @@ public class SaltStackClient {
             List<String> args, Map<String, String> kwargs) throws SaltStackException {
         Map<String, Object> props = new LinkedHashMap<String, Object>() {
             {
-                put("expr_form", target.targetType());
-                put("tgt", target.target());
+                put("expr_form", target.getType());
+                put("tgt", target.getTarget());
                 put("fun", function);
             }
         };
@@ -382,8 +382,8 @@ public class SaltStackClient {
                 put("password", password);
                 put("eauth", eauth.getValue());
                 put("client", client);
-                put("expr_form", target.targetType());
-                put("tgt", target.target());
+                put("expr_form", target.getType());
+                put("tgt", target.getTarget());
                 put("fun", function);
             }
         };

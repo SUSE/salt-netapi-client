@@ -27,7 +27,7 @@ public class Glob implements Target<String> {
      * {@inheritDoc}
      */
     @Override
-    public String target() {
+    public String getTarget() {
         return glob;
     }
 
@@ -35,7 +35,7 @@ public class Glob implements Target<String> {
      * {@inheritDoc}
      */
     @Override
-    public String targetType() {
+    public String getType() {
         return "glob";
     }
 }
