@@ -4,6 +4,7 @@ com.suse.saltstack.netapi.client.impl
 com.suse.saltstack.netapi.config
 com.suse.saltstack.netapi.datatypes
 com.suse.saltstack.netapi.datatypes.cherrypy
+com.suse.saltstack.netapi.datatypes.target
 com.suse.saltstack.netapi.event
 com.suse.saltstack.netapi.exception
 com.suse.saltstack.netapi.parser
