@@ -20,5 +20,4 @@ public class NodeGroup implements Target<String> {
     public String targetType() {
         return "nodegroup";
     }
-
 }

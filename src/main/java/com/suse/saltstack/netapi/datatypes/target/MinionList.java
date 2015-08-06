@@ -1,6 +1,5 @@
 package com.suse.saltstack.netapi.datatypes.target;
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import java.util.List;
 public class MinionList implements Target<List<String>> {
 
     private final java.util.List<String> targets;
-
 
     public MinionList(List<String> targets) {
         this.targets = targets;

@@ -19,7 +19,6 @@ import java.util.Scanner;
  */
 public class ClientUtils {
 
-
     private static final Gson GSON = new GsonBuilder().create();
 
     /**

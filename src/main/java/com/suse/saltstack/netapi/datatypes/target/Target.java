@@ -12,4 +12,3 @@ public interface Target<T> {
     String targetType();
 
 }
-
