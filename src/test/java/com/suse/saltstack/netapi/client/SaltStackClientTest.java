@@ -15,6 +15,7 @@ import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
+import com.suse.saltstack.netapi.results.JobState;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static com.suse.saltstack.netapi.AuthModule.PAM;
@@ -83,6 +84,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/keys_response.json"));
     static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/jobs_response.json"));
+    static final String JSON_JOBS_RESPONSE_PENDING = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/jobs_response_pending.json"));
     static final String JSON_JOBS_INVALID_START_TIME_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream(
             "/jobs_response_invalid_start_time.json"));
@@ -703,6 +706,21 @@ public class SaltStackClientTest {
         verify(1, getRequestedFor(urlEqualTo("/jobs"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testJobsPending() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_RESPONSE_PENDING)));
+
+        Map<String, Object> results = client.getJobResult("some-job-id");
+
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals(JobState.PENDING, results.get("mira"));
     }
 
     @Test
