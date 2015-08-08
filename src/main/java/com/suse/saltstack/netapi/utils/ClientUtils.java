@@ -5,7 +5,11 @@ import com.suse.saltstack.netapi.client.SaltStackClient;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Scanner;
+
+import static com.google.gson.internal.$Gson$Types.newParameterizedTypeWithOwner;
 
 /**
  * Utilities for {@link SaltStackClient}.
@@ -48,6 +52,14 @@ public class ClientUtils {
         String ret = scanner.useDelimiter("\\A").next();
         scanner.close();
         return ret;
+    }
+
+    /**
+     *  @see com.google.gson.internal.$Gson$Types#newParameterizedTypeWithOwner
+     */
+    public static ParameterizedType parameterizedType(Type ownerType, Type rawType,
+            Type... typeArguments) {
+        return newParameterizedTypeWithOwner(ownerType, rawType, typeArguments);
     }
 
 }
