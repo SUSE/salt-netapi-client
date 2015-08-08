@@ -125,16 +125,16 @@ public class SaltStackClient {
      */
     public Token login(final String username, final String password, final AuthModule eauth)
             throws SaltStackException {
-        Map<String, Object> props = new LinkedHashMap<String, Object>() {
-            {
-                put("username", username);
-                put("password", password);
-                put("eauth", eauth.getValue());
-            }
-        };
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("username", username);
+        props.put("password", password);
+        props.put("eauth", eauth.getValue());
+
+        String payload = gson.toJson(props);
+
         Result<List<Token>> result = connectionFactory
                 .create("/login", JsonParser.TOKEN, config)
-                .getResult(ClientUtils.makeJsonData(props, null, null).toString());
+                .getResult(payload);
 
         // For whatever reason they return a list of tokens here, take the first
         Token token = result.getResult().get(0);
@@ -261,22 +261,20 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public <T> ScheduledJob startCommand(final Target<T> target, final String function,
-            List<String> args, Map<String, String> kwargs) throws SaltStackException {
-        Map<String, Object> props = new LinkedHashMap<String, Object>() {
-            {
-                put("expr_form", target.getType());
-                put("tgt", target.getTarget());
-                put("fun", function);
-            }
-        };
+            List<Object> args, Map<String, Object> kwargs) throws SaltStackException {
+        Map<String, Object> props = new LinkedHashMap<>();
+        props.put("tgt", target.getTarget());
+        props.put("expr_form", target.getType());
+        props.put("fun", function);
+        props.put("arg", args);
+        props.put("kwarg", kwargs);
 
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
+        String payload = gson.toJson(Collections.singleton(props));
 
         // Connect to the minions endpoint and send the above lowstate data
         Result<List<ScheduledJob>> result = connectionFactory
                 .create("/minions", JsonParser.SCHEDULED_JOB,  config)
-                .getResult(jsonArray.toString());
+                .getResult(payload);
 
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
@@ -295,8 +293,8 @@ public class SaltStackClient {
      * @return Future containing the scheduled job
      */
     public <T> Future<ScheduledJob> startCommandAsync(final Target<T> target,
-            final String function, final List<String> args,
-            final Map<String, String> kwargs) {
+            final String function, final List<Object> args,
+            final Map<String, Object> kwargs) {
         return executor.submit(() -> startCommand(target, function, args, kwargs));
     }
 
@@ -372,26 +370,26 @@ public class SaltStackClient {
      */
     public <T> ResultInfo run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
-            final String function, List<String> args, Map<String, String> kwargs)
+            final String function, List<Object> args, Map<String, Object> kwargs)
             throws SaltStackException {
-        Map<String, Object> props = new LinkedHashMap<String, Object>() {
-            {
-                put("username", username);
-                put("password", password);
-                put("eauth", eauth.getValue());
-                put("client", client);
-                put("expr_form", target.getType());
-                put("tgt", target.getTarget());
-                put("fun", function);
-            }
-        };
+        Map<String, Object> props = new HashMap<>();
+        props.put("username", username);
+        props.put("password", password);
+        props.put("eauth", eauth.getValue());
+        props.put("client", client);
+        props.put("tgt", target.getTarget());
+        props.put("expr_form", target.getType());
+        props.put("fun", function);
+        props.put("arg", args);
+        props.put("kwarg", kwargs);
 
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
+        List<Map<String, Object>> list =  Collections.singletonList(props);
+
+        String payload = gson.toJson(list);
 
         ResultInfoSet result = connectionFactory
                 .create("/run", JsonParser.JOB_RESULTS, config)
-                .getResult(jsonArray.toString());
+                .getResult(payload);
 
         // A list with one element is returned, we take the first
         return result.get(0);
@@ -414,8 +412,8 @@ public class SaltStackClient {
      */
     public <T> Future<ResultInfo> runAsync(final String username,
             final String password, final AuthModule eauth, final String client,
-            final Target<T> target, final String function, final List<String> args,
-            final Map<String, String> kwargs) {
+            final Target<T> target, final String function, final List<Object> args,
+            final Map<String, Object> kwargs) {
         return executor.submit(() ->
                 run(username, password, eauth, client, target, function, args, kwargs));
     }
