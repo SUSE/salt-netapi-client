@@ -6,6 +6,7 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
+import com.suse.saltstack.netapi.utils.ClientUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -190,7 +191,9 @@ public class HttpClientConnection<T> implements Connection<T> {
             if (statusCode == HttpStatus.SC_OK ||
                     statusCode == HttpStatus.SC_ACCEPTED) {
                 // Parse result type from the returned JSON
-                return parser.parse(response.getEntity().getContent());
+                String data = ClientUtils.streamToString(response.getEntity().getContent());
+                System.out.println("Raw Response: " + data);
+                return parser.parse(ClientUtils.stringToStream(data));
             } else {
                 throw createSaltStackException(statusCode);
             }
