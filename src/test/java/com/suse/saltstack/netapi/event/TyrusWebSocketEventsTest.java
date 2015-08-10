@@ -25,7 +25,6 @@ public class TyrusWebSocketEventsTest {
     private static final int MOCK_HTTP_PORT = 8888;
     private static final String MOCK_HTTP_HOST = "localhost";
     private static final String WEBSOCKET_PATH = "/ws";
-    private static final String WEBSOCKET_ENDPOINT = "/token";
 
     /**
      * An instance of a {@link Server}
