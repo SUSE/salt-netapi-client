@@ -153,6 +153,7 @@ public class EventStream implements AutoCloseable {
      * that the event stream has been closed via {@link EventListener#eventStreamClosed()}.
      * Upon exit from this method, all subscribed listeners will be removed.
      */
+    @Override
     public void close() {
         // close the WebSocket session
         if (!isEventStreamClosed()) {
