@@ -15,6 +15,8 @@ import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
+import com.suse.saltstack.netapi.results.ResultInfo;
+import com.suse.saltstack.netapi.results.ResultInfoSet;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static com.suse.saltstack.netapi.AuthModule.PAM;
@@ -23,6 +25,7 @@ import static com.suse.saltstack.netapi.AuthModule.AUTO;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +86,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/keys_response.json"));
     static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/jobs_response.json"));
+    static final String JSON_JOBS_RESPONSE_PENDING = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/jobs_response_pending.json"));
     static final String JSON_JOBS_INVALID_START_TIME_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream(
             "/jobs_response_invalid_start_time.json"));
@@ -701,6 +706,37 @@ public class SaltStackClientTest {
         assertEquals(Arrays.asList("enable-autodestruction"),
                 jobs.get("20150304200110485012").getArguments().getArgs());
         verify(1, getRequestedFor(urlEqualTo("/jobs"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
+    @Test
+    public void testJobsPending() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_RESPONSE_PENDING)));
+
+        ResultInfoSet resultSet = client.getJobResultInfo("some-job-id");
+        assertEquals(1, resultSet.size());
+        ResultInfo results = resultSet.get(0);
+
+        HashSet<String> pendingMinions = new HashSet<String>() {
+            { add("mira"); }
+        };
+
+        assertNotNull(results);
+        assertEquals(0, results.getResults().size());
+        assertTrue(!results.getResult("mira").isPresent());
+        assertEquals("cmd.run", results.getFunction());
+        assertEquals("*", results.getTarget());
+        assertEquals("adamm", results.getUser());
+        assertEquals(pendingMinions, results.getMinions());
+        assertEquals(pendingMinions, results.getPendingMinions());
+        assertEquals("2015-08-06 16:55:13", DATE_FORMAT.format(results.getStartTime()));
+
+        verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
     }

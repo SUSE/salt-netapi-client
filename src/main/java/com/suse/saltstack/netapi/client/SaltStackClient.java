@@ -14,6 +14,7 @@ import com.suse.saltstack.netapi.datatypes.target.Target;
 import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
+import com.suse.saltstack.netapi.results.ResultInfoSet;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
@@ -328,6 +329,18 @@ public class SaltStackClient {
 
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
+    }
+
+    public ResultInfoSet getJobResultInfo(final ScheduledJob job)
+            throws SaltStackException {
+
+        return getJobResultInfo(job.getJid());
+    }
+
+    public ResultInfoSet getJobResultInfo(final String job) throws SaltStackException {
+        return connectionFactory
+                .create("/jobs/" + job, JsonParser.JOB_RESULTS, config)
+                .getResult();
     }
 
     /**
