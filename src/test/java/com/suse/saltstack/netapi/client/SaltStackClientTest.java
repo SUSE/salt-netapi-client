@@ -200,7 +200,7 @@ public class SaltStackClientTest {
 
         Map<String, Object> retvals =
                 client.run("user", "pass", PAM, "local", new Glob(),
-                "pkg.install", args, kwargs);
+                "pkg.install", args, kwargs).getResults();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -210,21 +210,21 @@ public class SaltStackClientTest {
         Map<String, Map<String, String>> expected =
                 new LinkedHashMap<String, Map<String, String>>() {
             {
-                put("i3-wm", new LinkedHashMap<String, String>() {
+                put("i3lock", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "4.10.1-1");
+                        put("new", "2.7-1");
                         put("old", "");
                     }
                 });
-                put("i3lock", new LinkedHashMap<String, String>() {
+                put("i3", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "2.6-1");
+                        put("new", "4.10.3-1");
                         put("old", "");
                     }
                 });
                 put("i3status", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "2.9-1");
+                        put("new", "2.9-2");
                         put("old", "");
                     }
                 });
@@ -254,9 +254,9 @@ public class SaltStackClientTest {
             }
         };
 
-        Future<Map<String, Object>> future = client.runAsync("user", "pass",
+        Future<ResultInfo> future = client.runAsync("user", "pass",
                 PAM, "local", new Glob(), "pkg.install", args, kwargs);
-        Map<String, Object> retvals = future.get();
+        Map<String, Object> retvals = future.get().getResults();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -266,21 +266,21 @@ public class SaltStackClientTest {
         Map<String, Map<String, String>> expected =
                 new LinkedHashMap<String, Map<String, String>>() {
             {
-                put("i3-wm", new LinkedHashMap<String, String>() {
+                put("i3lock", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "4.10.1-1");
+                        put("new", "2.7-1");
                         put("old", "");
                     }
                 });
-                put("i3lock", new LinkedHashMap<String, String>() {
+                put("i3", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "2.6-1");
+                        put("new", "4.10.3-1");
                         put("old", "");
                     }
                 });
                 put("i3status", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "2.9-1");
+                        put("new", "2.9-2");
                         put("old", "");
                     }
                 });
@@ -509,7 +509,8 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_RUN_RESPONSE)));
 
-        Map<String, Object> retvals = client.getJobResult("some-job-id");
+        Map<String, Object> retvals = client.getJobResult("some-job-id")
+                .get(0).getResults();
 
         verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json")));
@@ -517,21 +518,21 @@ public class SaltStackClientTest {
         Map<String, Map<String, String>> expected =
                 new LinkedHashMap<String, Map<String, String>>() {
             {
-                put("i3-wm", new LinkedHashMap<String, String>() {
+                put("i3lock", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "4.10.1-1");
+                        put("new", "2.7-1");
                         put("old", "");
                     }
                 });
-                put("i3lock", new LinkedHashMap<String, String>() {
+                put("i3", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "2.6-1");
+                        put("new", "4.10.3-1");
                         put("old", "");
                     }
                 });
                 put("i3status", new LinkedHashMap<String, String>() {
                     {
-                        put("new", "2.9-1");
+                        put("new", "2.9-2");
                         put("old", "");
                     }
                 });
@@ -718,13 +719,12 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_JOBS_RESPONSE_PENDING)));
 
-        ResultInfoSet resultSet = client.getJobResultInfo("some-job-id");
+        ResultInfoSet resultSet = client.getJobResult("some-job-id");
         assertEquals(1, resultSet.size());
         ResultInfo results = resultSet.get(0);
 
-        HashSet<String> pendingMinions = new HashSet<String>() {
-            { add("mira"); }
-        };
+        HashSet<String> pendingMinions = new HashSet<String>();
+        pendingMinions.add("mira");
 
         assertNotNull(results);
         assertEquals(0, results.getResults().size());

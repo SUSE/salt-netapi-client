@@ -16,6 +16,7 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
 import com.suse.saltstack.netapi.results.Result;
+import com.suse.saltstack.netapi.results.ResultInfo;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 import java.net.URI;
@@ -305,11 +306,10 @@ public class SaltStackClient {
      * {@code GET /job/<job-id>}
      *
      * @param job {@link ScheduledJob} object representing scheduled job
-     * @return Map key: minion id, value: command result from that minion
+     * @return {@link ResultInfoSet} representing result set from minions
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, Object> getJobResult(final ScheduledJob job)
-            throws SaltStackException {
+    public ResultInfoSet getJobResult(final ScheduledJob job) throws SaltStackException {
         return getJobResult(job.getJid());
     }
 
@@ -319,25 +319,10 @@ public class SaltStackClient {
      * {@code GET /job/<job-id>}
      *
      * @param job String representing scheduled job
-     * @return Map key: minion id, value: command result from that minion
+     * @return {@link ResultInfoSet} representing result set from minions
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, Object> getJobResult(final String job) throws SaltStackException {
-        Result<List<Map<String, Object>>> result = connectionFactory
-                .create("/jobs/" + job, JsonParser.RETVALS, config)
-                .getResult();
-
-        // A list with one element is returned, we take the first
-        return result.getResult().get(0);
-    }
-
-    public ResultInfoSet getJobResultInfo(final ScheduledJob job)
-            throws SaltStackException {
-
-        return getJobResultInfo(job.getJid());
-    }
-
-    public ResultInfoSet getJobResultInfo(final String job) throws SaltStackException {
+    public ResultInfoSet getJobResult(final String job) throws SaltStackException {
         return connectionFactory
                 .create("/jobs/" + job, JsonParser.JOB_RESULTS, config)
                 .getResult();
@@ -385,7 +370,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public <T> Map<String, Object> run(final String username, final String password,
+    public <T> ResultInfo run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
             final String function, List<String> args, Map<String, String> kwargs)
             throws SaltStackException {
@@ -404,12 +389,12 @@ public class SaltStackClient {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
 
-        Result<List<Map<String, Object>>> result = connectionFactory
-                .create("/run", JsonParser.RETVALS, config)
+        ResultInfoSet result = connectionFactory
+                .create("/run", JsonParser.JOB_RESULTS, config)
                 .getResult(jsonArray.toString());
 
         // A list with one element is returned, we take the first
-        return result.getResult().get(0);
+        return result.get(0);
     }
 
     /**
@@ -427,7 +412,7 @@ public class SaltStackClient {
      * @param kwargs map containing keyword arguments
      * @return Future containing Map key: minion id, value: command result from that minion
      */
-    public <T> Future<Map<String, Object>> runAsync(final String username,
+    public <T> Future<ResultInfo> runAsync(final String username,
             final String password, final AuthModule eauth, final String client,
             final Target<T> target, final String function, final List<String> args,
             final Map<String, String> kwargs) {
