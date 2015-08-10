@@ -98,7 +98,7 @@ public class EventStream implements AutoCloseable {
                     uri.getSchemeSpecificPart(), uri.getFragment())
                     .resolve("/ws/" + config.get(ClientConfig.TOKEN));
             websocketContainer.setDefaultMaxSessionIdleTimeout(
-                    (long) config.get(ClientConfig.SOCKET_TIMEOUT));
+                    config.get(ClientConfig.SOCKET_TIMEOUT));
             processEvents(uri, config);
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltStackException(e);
@@ -153,6 +153,7 @@ public class EventStream implements AutoCloseable {
      * that the event stream has been closed via {@link EventListener#eventStreamClosed()}.
      * Upon exit from this method, all subscribed listeners will be removed.
      */
+    @Override
     public void close() {
         // close the WebSocket session
         if (!isEventStreamClosed()) {

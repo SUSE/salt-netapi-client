@@ -61,7 +61,7 @@ public class ClientConfig {
 
     }
 
-    private final Map<Key, Object> store = new HashMap<>();
+    private final Map<Key<?>, Object> store = new HashMap<>();
 
     /**
      *  Sets the config for a key to the specified value.
