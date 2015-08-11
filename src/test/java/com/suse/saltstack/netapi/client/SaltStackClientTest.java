@@ -127,10 +127,10 @@ public class SaltStackClientTest {
                 .withRequestBody(equalToJson(JSON_LOGIN_REQUEST)));
 
         assertEquals("Token mismatch",
-                token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
-        assertEquals("EAuth mismatch", token.getEauth(), "auto");
-        assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
+                "f248284b655724ca8a86bcab4b8df608ebf5b08b", token.getToken());
+        assertEquals("EAuth mismatch", "auto", token.getEauth());
+        assertEquals("User mismatch", "user", token.getUser());
+        assertEquals("Perms mismatch", Arrays.asList(".*", "@wheel"), token.getPerms());
     }
 
     @Test(expected = SaltUserUnauthorizedException.class)
@@ -158,10 +158,10 @@ public class SaltStackClientTest {
                 .withRequestBody(equalToJson(JSON_LOGIN_REQUEST)));
 
         assertEquals("Token mismatch",
-                token.getToken(), "f248284b655724ca8a86bcab4b8df608ebf5b08b");
-        assertEquals("EAuth mismatch", token.getEauth(), "auto");
-        assertEquals("User mismatch", token.getUser(), "user");
-        assertEquals("Perms mismatch", token.getPerms(), Arrays.asList(".*", "@wheel"));
+                "f248284b655724ca8a86bcab4b8df608ebf5b08b", token.getToken());
+        assertEquals("EAuth mismatch", "auto", token.getEauth());
+        assertEquals("User mismatch", "user", token.getUser());
+        assertEquals("Perms mismatch", Arrays.asList(".*", "@wheel"), token.getPerms());
     }
 
     @Test(expected = ExecutionException.class)
@@ -228,7 +228,7 @@ public class SaltStackClientTest {
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), expected);
+        assertEquals(expected, retvals.get("minion-1"));
     }
 
     @Test
@@ -284,7 +284,7 @@ public class SaltStackClientTest {
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), expected);
+        assertEquals(expected, retvals.get("minion-1"));
     }
 
     @Test
@@ -492,8 +492,8 @@ public class SaltStackClientTest {
                 .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
         assertNotNull(job);
-        assertEquals(job.getJid(), "20150211105524392307");
-        assertEquals(job.getMinions(), Arrays.asList("myminion"));
+        assertEquals("20150211105524392307", job.getJid());
+        assertEquals(Arrays.asList("myminion"), job.getMinions());
     }
 
     @Test
@@ -535,7 +535,7 @@ public class SaltStackClientTest {
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(retvals.get("minion-1"), expected);
+        assertEquals(expected, retvals.get("minion-1"));
     }
 
     @Test
@@ -566,8 +566,8 @@ public class SaltStackClientTest {
                 .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
         assertNotNull(job);
-        assertEquals(job.getJid(), "20150211105524392307");
-        assertEquals(job.getMinions(), Arrays.asList("myminion"));
+        assertEquals("20150211105524392307", job.getJid());
+        assertEquals(Arrays.asList("myminion"), job.getMinions());
     }
 
     @Test

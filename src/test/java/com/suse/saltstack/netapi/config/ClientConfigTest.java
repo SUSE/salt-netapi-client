@@ -17,26 +17,26 @@ public class ClientConfigTest {
         Key<Integer> key = PROXY_PORT;
 
         assertEquals("New empty config should return defaultValue",
-                config.get(key), key.defaultValue);
+                key.defaultValue, config.get(key));
 
         Integer newValue = 123;
         config.put(key, newValue);
-        assertEquals("Should return the new configured value", config.get(key), newValue);
+        assertEquals("Should return the new configured value", newValue, config.get(key));
 
         config.put(key, key.defaultValue);
         assertEquals("Should return the new configured value",
-                config.get(key), key.defaultValue);
+                key.defaultValue, config.get(key));
 
         config.put(key, newValue);
-        assertEquals("Should return the new configured value", config.get(key), newValue);
+        assertEquals("Should return the new configured value", newValue, config.get(key));
         config.put(key, null);
         assertEquals("Should return the default value after putting in null",
                 config.get(key), key.defaultValue);
 
         config.put(key, newValue);
-        assertEquals("Should return the new configured value", config.get(key), newValue);
+        assertEquals("Should return the new configured value", newValue, config.get(key));
         config.remove(key);
         assertEquals("Should return the default value after removing the key",
-                config.get(key), key.defaultValue);
+                key.defaultValue, config.get(key));
     }
 }
