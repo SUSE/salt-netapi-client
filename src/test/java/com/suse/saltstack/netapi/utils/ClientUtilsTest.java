@@ -59,7 +59,7 @@ public class ClientUtilsTest {
         InputStream is = ClientUtils.stringToStream(TEST_STRING);
         try (Scanner scanner = new Scanner(is)) {
             String result = scanner.nextLine();
-            assertEquals("Result doesn't match test string", result, TEST_STRING);
+            assertEquals("Result doesn't match test string", TEST_STRING, result);
         }
     }
 
@@ -68,7 +68,7 @@ public class ClientUtilsTest {
         final String TEST_STRING = "SUSE";
         String result = ClientUtils.streamToString(
                 new ByteArrayInputStream(TEST_STRING.getBytes()));
-        assertEquals("Result doesn't match test string", result, TEST_STRING);
+        assertEquals("Result doesn't match test string", TEST_STRING, result);
     }
 
     @Test
