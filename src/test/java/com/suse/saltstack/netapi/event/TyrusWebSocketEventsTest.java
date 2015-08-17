@@ -1,6 +1,8 @@
 package com.suse.saltstack.netapi.event;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
+import com.suse.saltstack.netapi.datatypes.Event;
+
 import org.glassfish.tyrus.server.Server;
 import org.junit.After;
 import org.junit.Assert;
@@ -105,8 +107,9 @@ public class TyrusWebSocketEventsTest {
 
             latch.await(30, TimeUnit.SECONDS);
             synchronized (eventContentClient.events) {
-                Assert.assertTrue(eventContentClient.events.get(1)
-                        .contains("\"jid\": \"20150505113307407682\""));
+                Event event = eventContentClient.events.get(1);
+                Assert.assertTrue(event.getData().containsKey("jid"));
+                Assert.assertEquals("20150505113307407682", event.getData().get("jid"));
             }
             streamEvents.close();
         }
@@ -196,7 +199,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void notify(String event) {
+        public void notify(Event event) {
             counter++;
             if (counter == targetCount) {
                 latch.countDown();
@@ -212,7 +215,7 @@ public class TyrusWebSocketEventsTest {
      * Event listener client used for testing.
      */
     private class EventContentClient implements EventListener {
-        List<String> events = new ArrayList<>();
+        List<Event> events = new ArrayList<>();
         CountDownLatch latch;
 
         public EventContentClient(CountDownLatch latchIn) {
@@ -220,7 +223,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void notify(String event) {
+        public void notify(Event event) {
             synchronized (events) {
                 events.add(event);
                 if (events.size() > 2) {
@@ -239,7 +242,7 @@ public class TyrusWebSocketEventsTest {
      */
     private class SimpleEventListenerClient implements EventListener {
         @Override
-        public void notify(String event) {
+        public void notify(Event event) {
         }
 
         @Override
@@ -258,7 +261,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void notify(String event) {
+        public void notify(Event event) {
             this.latch.countDown();
         }
 

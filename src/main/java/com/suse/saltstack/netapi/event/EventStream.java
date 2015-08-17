@@ -1,7 +1,9 @@
 package com.suse.saltstack.netapi.event;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
+import com.suse.saltstack.netapi.datatypes.Event;
 import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.parser.JsonParser;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -188,16 +190,17 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * On each event received on the WebSocket,
-     * notify each listener with the event received.
+     * Notify listeners on each event received on the WebSocket.
      *
-     * @param event The message received on this WebSocket.
+     * @param message The message received on this WebSocket
      */
     @OnMessage
-    public void onMessage(String event) {
-        if (event != null && !event.equals("server received message")) {
+    public void onMessage(String message) {
+        if (message != null && !message.equals("server received message")) {
+            // Salt API adds a "data: " prefix that we need to ignore
+            Event event = JsonParser.EVENTS.parse(message.substring(6));
             synchronized (listeners) {
-                listeners.stream().forEach(l -> l.notify(event.trim()));
+                listeners.stream().forEach(l -> l.notify(event));
             }
         }
     }
