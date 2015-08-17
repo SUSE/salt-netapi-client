@@ -111,7 +111,6 @@ public class TyrusWebSocketEventsTest {
                 Assert.assertTrue(event.getData().containsKey("jid"));
                 Assert.assertEquals("20150505113307407682", event.getData().get("jid"));
             }
-            streamEvents.close();
         }
     }
 
