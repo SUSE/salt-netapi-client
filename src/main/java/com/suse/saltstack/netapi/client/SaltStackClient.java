@@ -406,7 +406,6 @@ public class SaltStackClient {
         List<Map<String, Object>> list =  Collections.singletonList(props);
 
         String payload = gson.toJson(list);
-        System.out.println("Payload: " + payload);
 
         Result<List<Map<String, Object>>> result = connectionFactory
                 .create("/run", JsonParser.RETVALS, config)
@@ -555,8 +554,6 @@ public class SaltStackClient {
         List<Map<String, Object>> list =  Collections.singletonList(props);
 
         String payload = gson.toJson(list);
-
-        System.out.println("Payload: " + payload);
 
         return connectionFactory
                 .create(endpoint, new JsonParser<>(type), config)
