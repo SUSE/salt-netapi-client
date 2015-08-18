@@ -15,7 +15,7 @@ import java.util.Optional;
 public class Pkg {
 
     /**
-     *
+     * Information about a package as returned by "pkg.search".
      */
     public class PackageInfo {
 
@@ -27,7 +27,7 @@ public class Pkg {
     }
 
     /**
-     *
+     * Package dictionary as returned by "pkg.file_dict".
      */
     public class PackageDict {
 
@@ -42,7 +42,6 @@ public class Pkg {
             return packages;
         }
     }
-
 
     private Pkg() { }
 
@@ -64,5 +63,4 @@ public class Pkg {
         return new LocalCall<>("pkg.list_pkgs", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, Map<String, List<String>>>>(){});
     }
-
 }

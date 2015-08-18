@@ -31,6 +31,4 @@ public class Event {
         return new LocalCall<>("event.fire_master", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, Boolean>>() {});
     }
-
-
 }

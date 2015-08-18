@@ -20,5 +20,4 @@ public class Cmd {
         return new LocalCall<>("cmd.run", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, String>>(){});
     }
-
 }

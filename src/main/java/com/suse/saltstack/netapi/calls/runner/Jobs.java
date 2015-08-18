@@ -29,8 +29,9 @@ import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
 public class Jobs {
 
     /**
+     * Information about a salt job as returned by 'jobs.list_job' and 'jobs.print_job'.
      *
-     * @param <R>
+     * @param <R> the result type of the called function
      */
     public static class Info<R> {
         @SerializedName("Function")

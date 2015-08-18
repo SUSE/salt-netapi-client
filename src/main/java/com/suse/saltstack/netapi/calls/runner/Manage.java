@@ -14,7 +14,6 @@ public class Manage {
 
     private Manage() { }
 
-
     public static RunnerCall<List<String>> down(boolean removekeys) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("removekeys", removekeys);
@@ -39,5 +38,4 @@ public class Manage {
     public static RunnerCall<List<String>> present() {
         return present(Optional.empty(), Optional.empty());
     }
-
 }

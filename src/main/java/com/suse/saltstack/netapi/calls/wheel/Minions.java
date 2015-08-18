@@ -21,5 +21,4 @@ public class Minions {
     public static WheelCall<List<String>> connected() {
         return CONNECTED;
     }
-
 }

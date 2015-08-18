@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.calls;
 
 /**
- * Possible values for the client parameter in the salt netapi
+ * Possible values for the client parameter in salt netapi calls.
  */
 public enum Client {
 
@@ -22,5 +22,4 @@ public enum Client {
     public String getValue() {
         return value;
     }
-
 }

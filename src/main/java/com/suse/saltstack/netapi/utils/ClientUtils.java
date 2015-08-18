@@ -55,11 +55,12 @@ public class ClientUtils {
     }
 
     /**
-     *  @see com.google.gson.internal.$Gson$Types#newParameterizedTypeWithOwner
+     * Helper for constructing parameterized types.
+     *
+     * @see com.google.gson.internal.$Gson$Types#newParameterizedTypeWithOwner
      */
     public static ParameterizedType parameterizedType(Type ownerType, Type rawType,
             Type... typeArguments) {
         return newParameterizedTypeWithOwner(ownerType, rawType, typeArguments);
     }
-
 }
