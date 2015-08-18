@@ -188,15 +188,12 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_RUN_RESPONSE)));
 
-        List<String> args = new ArrayList<>();
+        List<Object> args = new ArrayList<>();
         args.add("i3");
 
-        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
-            {
-                put("refresh", "true");
-                put("sysupgrade", "false");
-            }
-        };
+        Map<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", "true");
+        kwargs.put("sysupgrade", "false");
 
         Map<String, Object> retvals =
                 client.run("user", "pass", PAM, "local", new Glob(),
@@ -207,29 +204,22 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
-        Map<String, Map<String, String>> expected =
-                new LinkedHashMap<String, Map<String, String>>() {
-            {
-                put("i3lock", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "2.7-1");
-                        put("old", "");
-                    }
-                });
-                put("i3", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "4.10.3-1");
-                        put("old", "");
-                    }
-                });
-                put("i3status", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "2.9-2");
-                        put("old", "");
-                    }
-                });
-            }
-        };
+        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
+        i3.put("new", "4.10.3-1");
+        i3.put("old", "");
+
+        LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
+        i3lock.put("new", "2.7-1");
+        i3lock.put("old", "");
+
+        LinkedHashMap<String, String> i3status = new LinkedHashMap<>();
+        i3status.put("new", "2.9-2");
+        i3status.put("old", "");
+
+        Map<String, Map<String, String>> expected = new LinkedHashMap<>();
+        expected.put("i3", i3);
+        expected.put("i3lock", i3lock);
+        expected.put("i3status", i3status);
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
@@ -244,15 +234,12 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_RUN_RESPONSE)));
 
-        List<String> args = new ArrayList<>();
+        List<Object> args = new ArrayList<>();
         args.add("i3");
 
-        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
-            {
-                put("refresh", "true");
-                put("sysupgrade", "false");
-            }
-        };
+        Map<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", "true");
+        kwargs.put("sysupgrade", "false");
 
         Future<ResultInfo> future = client.runAsync("user", "pass",
                 PAM, "local", new Glob(), "pkg.install", args, kwargs);
@@ -263,29 +250,22 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
-        Map<String, Map<String, String>> expected =
-                new LinkedHashMap<String, Map<String, String>>() {
-            {
-                put("i3lock", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "2.7-1");
-                        put("old", "");
-                    }
-                });
-                put("i3", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "4.10.3-1");
-                        put("old", "");
-                    }
-                });
-                put("i3status", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "2.9-2");
-                        put("old", "");
-                    }
-                });
-            }
-        };
+        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
+        i3.put("new", "4.10.3-1");
+        i3.put("old", "");
+
+        LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
+        i3lock.put("new", "2.7-1");
+        i3lock.put("old", "");
+
+        LinkedHashMap<String, String> i3status = new LinkedHashMap<>();
+        i3status.put("new", "2.9-2");
+        i3status.put("old", "");
+
+        Map<String, Map<String, String>> expected = new LinkedHashMap<>();
+        expected.put("i3", i3);
+        expected.put("i3lock", i3lock);
+        expected.put("i3status", i3status);
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
@@ -479,15 +459,12 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_START_COMMAND_RESPONSE)));
 
-        List<String> args = new ArrayList<>();
+        List<Object> args = new ArrayList<>();
         args.add("i3");
 
-        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
-            {
-                put("refresh", "true");
-                put("sysupgrade", "false");
-            }
-        };
+        Map<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", "true");
+        kwargs.put("sysupgrade", "false");
 
         ScheduledJob job = client.startCommand(new Glob(), "pkg.install", args, kwargs);
 
@@ -515,29 +492,22 @@ public class SaltStackClientTest {
         verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json")));
 
-        Map<String, Map<String, String>> expected =
-                new LinkedHashMap<String, Map<String, String>>() {
-            {
-                put("i3lock", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "2.7-1");
-                        put("old", "");
-                    }
-                });
-                put("i3", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "4.10.3-1");
-                        put("old", "");
-                    }
-                });
-                put("i3status", new LinkedHashMap<String, String>() {
-                    {
-                        put("new", "2.9-2");
-                        put("old", "");
-                    }
-                });
-            }
-        };
+        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
+        i3.put("new", "4.10.3-1");
+        i3.put("old", "");
+
+        LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
+        i3lock.put("new", "2.7-1");
+        i3lock.put("old", "");
+
+        LinkedHashMap<String, String> i3status = new LinkedHashMap<>();
+        i3status.put("new", "2.9-2");
+        i3status.put("old", "");
+
+        Map<String, Map<String, String>> expected = new LinkedHashMap<>();
+        expected.put("i3", i3);
+        expected.put("i3lock", i3lock);
+        expected.put("i3status", i3status);
 
         assertNotNull(retvals);
         assertTrue(retvals.containsKey("minion-1"));
@@ -552,15 +522,12 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_START_COMMAND_RESPONSE)));
 
-        List<String> args = new ArrayList<>();
+        List<Object> args = new ArrayList<>();
         args.add("i3");
 
-        Map<String, String> kwargs = new LinkedHashMap<String, String>() {
-            {
-                put("refresh", "true");
-                put("sysupgrade", "false");
-            }
-        };
+        Map<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", "true");
+        kwargs.put("sysupgrade", "false");
 
         Future<ScheduledJob> future = client.startCommandAsync(new Glob(), "pkg.install",
                 args, kwargs);
