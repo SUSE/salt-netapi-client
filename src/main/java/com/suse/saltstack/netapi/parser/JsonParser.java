@@ -13,6 +13,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.suse.saltstack.netapi.datatypes.Arguments;
+import com.suse.saltstack.netapi.datatypes.Event;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
@@ -61,6 +62,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Result<Keys>>(){});
     public static final JsonParser<Map<String, Object>> MAP =
             new JsonParser<>(new TypeToken<Map<String, Object>>(){});
+    public static final JsonParser<Event> EVENTS =
+            new JsonParser<>(new TypeToken<Event>(){});
 
     private final TypeToken<T> type;
     private final Gson gson;
@@ -90,6 +93,15 @@ public class JsonParser<T> {
 
         // Parse result type from the returned JSON
         return gson.fromJson(streamReader, type.getType());
+    }
+
+    /**
+     * Parse JSON given as string.
+     * @param jsonString JSON input given as string
+     * @return The parsed object
+     */
+    public T parse(String jsonString) {
+        return gson.fromJson(jsonString, type.getType());
     }
 
     /**

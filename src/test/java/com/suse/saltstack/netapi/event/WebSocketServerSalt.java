@@ -37,7 +37,7 @@ public class WebSocketServerSalt {
                 session.getBasicRemote().sendText(s);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("IOException: " + e.getMessage());
         }
     }
 
