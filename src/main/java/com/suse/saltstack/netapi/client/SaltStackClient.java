@@ -731,12 +731,12 @@ public class SaltStackClient {
         customArgs.putAll(call.payload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
-        Result<List<LocalAsyncResult<R>>> result = call(call, Client.LOCAL_ASYNC, "/",
+        Result<List<LocalAsyncResult<R>>> wrapper = call(call, Client.LOCAL_ASYNC, "/",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
-        LocalAsyncResult<R> r = result.getResult().get(0);
-        r.setType(call.getReturnType());
-        return r;
+        LocalAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
     }
 
     /**
@@ -763,12 +763,12 @@ public class SaltStackClient {
         customArgs.put("eauth", authModule.getValue());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
-        Result<List<LocalAsyncResult<R>>> result = call(call, Client.LOCAL_ASYNC, "/run",
+        Result<List<LocalAsyncResult<R>>> wrapper = call(call, Client.LOCAL_ASYNC, "/run",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
-        LocalAsyncResult<R> r = result.getResult().get(0);
-        r.setType(call.getReturnType());
-        return r;
+        LocalAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
     }
 
     /**
@@ -786,9 +786,9 @@ public class SaltStackClient {
             throws SaltStackException {
         Result<List<RunnerAsyncResult<R>>> wrapper = call(call, Client.RUNNER_ASYNC, "/",
                 new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
-        RunnerAsyncResult<R> r = wrapper.getResult().get(0);
-        r.setType(call.getReturnType());
-        return r;
+        RunnerAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
     }
 
     /**
@@ -814,9 +814,9 @@ public class SaltStackClient {
         Result<List<RunnerAsyncResult<R>>> wrapper = call(call, Client.RUNNER_ASYNC, "/run",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
-        RunnerAsyncResult<R> r = wrapper.getResult().get(0);
-        r.setType(call.getReturnType());
-        return r;
+        RunnerAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
     }
 
     /**
@@ -834,9 +834,9 @@ public class SaltStackClient {
             throws SaltStackException {
         Result<List<WheelAsyncResult<R>>> wrapper = call(call, Client.WHEEL_ASYNC, "/",
                 new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
-        WheelAsyncResult<R> r = wrapper.getResult().get(0);
-        r.setType(call.getReturnType());
-        return r;
+        WheelAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
     }
 
     /**
@@ -862,9 +862,9 @@ public class SaltStackClient {
         Result<List<WheelAsyncResult<R>>> wrapper = call(call, Client.WHEEL_ASYNC, "/run",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
-        WheelAsyncResult<R> r = wrapper.getResult().get(0);
-        r.setType(call.getReturnType());
-        return r;
+        WheelAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
     }
 
     private <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
