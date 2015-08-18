@@ -151,10 +151,10 @@ public class Jobs {
                 (TypeToken<Map<String, Data<R>>>) TypeToken.get(type));
     }
 
-    public static RunnerCall<Map<String, Info>> printJob(String jid) {
+    public static RunnerCall<Map<String, Info<?>>> printJob(String jid) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("jid", jid);
         return new RunnerCall<>("jobs.print_job", Optional.of(args),
-                new TypeToken<Map<String, Info>>(){});
+                new TypeToken<Map<String, Info<?>>>(){});
     }
 }
