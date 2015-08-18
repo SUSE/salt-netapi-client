@@ -597,11 +597,11 @@ public class SaltStackClient {
     }
 
     /**
-     * Calls a wheel module function on the master and synchronously
+     * Calls a runner module function on the master and synchronously
      * waits for the result. Authentication is done with the token therefore you
      * have to login prior to using this function.
      *
-     * @param call the wheel module function to call
+     * @param call the runner module function to call
      * @param <R> the result type of the function
      * @return the result of the called function
      * @throws SaltStackException if anything goes wrong
