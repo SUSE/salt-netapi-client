@@ -22,6 +22,7 @@ import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.exception.ParsingException;
 import com.suse.saltstack.netapi.results.Result;
+import com.suse.saltstack.netapi.results.ResultInfoSet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,8 +50,8 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Result<List<ScheduledJob>>>(){});
     public static final JsonParser<Result<List<Map<String, Job>>>> JOBS =
             new JsonParser<>(new TypeToken<Result<List<Map<String, Job>>>>(){});
-    public static final JsonParser<Result<List<Map<String, Object>>>> RETVALS =
-            new JsonParser<>(new TypeToken<Result<List<Map<String, Object>>>>(){});
+    public static final JsonParser<ResultInfoSet> JOB_RESULTS =
+            new JsonParser<>(new TypeToken<ResultInfoSet>(){});
     public static final JsonParser<Result<List<Map<String, Map<String, Object>>>>> RETMAPS =
             new JsonParser<>(
             new TypeToken<Result<List<Map<String, Map<String, Object>>>>>(){});
