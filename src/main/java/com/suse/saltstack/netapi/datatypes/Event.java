@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.datatypes;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parse events into objects.
@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class Event {
 
     private String tag;
-    private HashMap<String, Object> data;
+    private Map<String, Object> data;
 
     /**
      * Return this event's tag.
@@ -22,7 +22,7 @@ public class Event {
      * Return this event's data.
      * @return the data
      */
-    public HashMap<String, Object> getData() {
+    public Map<String, Object> getData() {
         return data;
     }
 }
