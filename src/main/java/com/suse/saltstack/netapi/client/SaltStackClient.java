@@ -733,6 +733,7 @@ public class SaltStackClient {
         customArgs.putAll(call.payload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
+
         Result<List<LocalAsyncResult<R>>> wrapper = call(call, Client.LOCAL_ASYNC, "/",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
@@ -765,6 +766,7 @@ public class SaltStackClient {
         customArgs.put("eauth", authModule.getValue());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
+
         Result<List<LocalAsyncResult<R>>> wrapper = call(call, Client.LOCAL_ASYNC, "/run",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
@@ -813,6 +815,7 @@ public class SaltStackClient {
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
+
         Result<List<RunnerAsyncResult<R>>> wrapper = call(call, Client.RUNNER_ASYNC, "/run",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
@@ -861,6 +864,7 @@ public class SaltStackClient {
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
+
         Result<List<WheelAsyncResult<R>>> wrapper = call(call, Client.WHEEL_ASYNC, "/run",
                 Optional.of(customArgs),
                 new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
