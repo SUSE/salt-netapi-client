@@ -204,9 +204,9 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
-        LinkedHashMap<String, String> i3wm = new LinkedHashMap<>();
-        i3wm.put("new", "4.10.3-1");
-        i3wm.put("old", "");
+        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
+        i3.put("new", "4.10.3-1");
+        i3.put("old", "");
 
         LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
         i3lock.put("new", "2.7-1");
@@ -217,7 +217,7 @@ public class SaltStackClientTest {
         i3status.put("old", "");
 
         Map<String, Map<String, String>> expected = new LinkedHashMap<>();
-        expected.put("i3-wm", i3wm);
+        expected.put("i3", i3);
         expected.put("i3lock", i3lock);
         expected.put("i3status", i3status);
 
@@ -250,9 +250,9 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
-        LinkedHashMap<String, String> i3wm = new LinkedHashMap<>();
-        i3wm.put("new", "4.10.3-1");
-        i3wm.put("old", "");
+        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
+        i3.put("new", "4.10.3-1");
+        i3.put("old", "");
 
         LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
         i3lock.put("new", "2.7-1");
@@ -263,7 +263,7 @@ public class SaltStackClientTest {
         i3status.put("old", "");
 
         Map<String, Map<String, String>> expected = new LinkedHashMap<>();
-        expected.put("i3-wm", i3wm);
+        expected.put("i3", i3);
         expected.put("i3lock", i3lock);
         expected.put("i3status", i3status);
 
@@ -492,9 +492,9 @@ public class SaltStackClientTest {
         verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json")));
 
-        LinkedHashMap<String, String> i3wm = new LinkedHashMap<>();
-        i3wm.put("new", "4.10.3-1");
-        i3wm.put("old", "");
+        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
+        i3.put("new", "4.10.3-1");
+        i3.put("old", "");
 
         LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
         i3lock.put("new", "2.7-1");
@@ -505,7 +505,7 @@ public class SaltStackClientTest {
         i3status.put("old", "");
 
         Map<String, Map<String, String>> expected = new LinkedHashMap<>();
-        expected.put("i3-wm", i3wm);
+        expected.put("i3", i3);
         expected.put("i3lock", i3lock);
         expected.put("i3status", i3status);
 
