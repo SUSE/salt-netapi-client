@@ -13,11 +13,8 @@ import com.google.gson.annotations.SerializedName;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
 /**
- *
  * Represents the SaltStack's result information structure.
- *
  */
-
 public class ResultInfo {
 
     @SerializedName("Function")
@@ -103,7 +100,6 @@ public class ResultInfo {
      * value is returned.
      *
      * @param minion - name of a minion
-     *
      * @return {@link Optional} associated with the result from a given minion.
      */
     public Optional<Object> getResult(String minion) {
@@ -131,7 +127,6 @@ public class ResultInfo {
         resultsCache.putAll(rawResults);
         resultsCache.replaceAll(
                 (String key, Object result) -> ((Result<Object>) result).getResult());
-
         return resultsCache;
     }
 
@@ -142,7 +137,6 @@ public class ResultInfo {
      */
     public Set<String> getPendingMinions() {
         HashSet<String> pend = new HashSet<>(minions);
-
         pend.removeAll(rawResults.keySet());
         return pend;
     }
