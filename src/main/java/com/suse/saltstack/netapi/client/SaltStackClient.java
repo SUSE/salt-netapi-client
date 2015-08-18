@@ -871,6 +871,17 @@ public class SaltStackClient {
         return result;
     }
 
+    /**
+     * Generic interface to make a {@link Call} to an endpoint using a given {@link Client}.
+     *
+     * @param call the call
+     * @param client the client to use
+     * @param endpoint the endpoint
+     * @param custom map of arguments
+     * @param type return type
+     * @return the result of the call
+     * @throws SaltStackException if anything goes wrong
+     */
     private <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
             Object>> custom, TypeToken<R> type) throws SaltStackException {
         Map<String, Object> props = new HashMap<>();
@@ -886,6 +897,16 @@ public class SaltStackClient {
                 .getResult(payload);
     }
 
+    /**
+     * Convenience method to make a call without arguments.
+     *
+     * @param call the call
+     * @param client the client to use
+     * @param endpoint the endpoint
+     * @param type return type
+     * @return the result of the call
+     * @throws SaltStackException if anything goes wrong
+     */
     private <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
             throws SaltStackException {
         return call(call, client, endpoint, Optional.empty(), type);
