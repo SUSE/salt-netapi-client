@@ -85,7 +85,6 @@ public class TyrusWebSocketEventsTest {
 
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue(eventCountClient.counter == target);
-            streamEvents.close();
         }
     }
 
@@ -171,7 +170,6 @@ public class TyrusWebSocketEventsTest {
 
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertFalse(streamEvents.isEventStreamClosed());
-            streamEvents.close();
         }
     }
 
