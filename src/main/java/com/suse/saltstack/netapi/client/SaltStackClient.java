@@ -1,7 +1,18 @@
 package com.suse.saltstack.netapi.client;
 
-import com.google.gson.JsonArray;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.AuthModule;
+import com.suse.saltstack.netapi.calls.Call;
+import com.suse.saltstack.netapi.calls.Client;
+import com.suse.saltstack.netapi.calls.LocalAsyncResult;
+import com.suse.saltstack.netapi.calls.LocalCall;
+import com.suse.saltstack.netapi.calls.RunnerAsyncResult;
+import com.suse.saltstack.netapi.calls.RunnerCall;
+import com.suse.saltstack.netapi.calls.WheelAsyncResult;
+import com.suse.saltstack.netapi.calls.WheelCall;
+import com.suse.saltstack.netapi.calls.WheelResult;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
@@ -15,15 +26,20 @@ import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.utils.ClientUtils;
 
+import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
 
 /**
  * SaltStack API client.
@@ -38,6 +54,8 @@ public class SaltStackClient {
 
     /** The executor for async operations */
     private final ExecutorService executor;
+
+    private final Gson gson = new GsonBuilder().create();
 
     /**
      * Constructor for connecting to a given URL.
@@ -123,16 +141,16 @@ public class SaltStackClient {
      */
     public Token login(final String username, final String password, final AuthModule eauth)
             throws SaltStackException {
-        Map<String, Object> props = new LinkedHashMap<String, Object>() {
-            {
-                put("username", username);
-                put("password", password);
-                put("eauth", eauth.getValue());
-            }
-        };
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("username", username);
+        props.put("password", password);
+        props.put("eauth", eauth.getValue());
+
+        String payload = gson.toJson(props);
+
         Result<List<Token>> result = connectionFactory
                 .create("/login", JsonParser.TOKEN, config)
-                .getResult(ClientUtils.makeJsonData(props, null, null).toString());
+                .getResult(payload);
 
         // For whatever reason they return a list of tokens here, take the first
         Token token = result.getResult().get(0);
@@ -259,22 +277,20 @@ public class SaltStackClient {
      * @throws SaltStackException if anything goes wrong
      */
     public <T> ScheduledJob startCommand(final Target<T> target, final String function,
-            List<String> args, Map<String, String> kwargs) throws SaltStackException {
-        Map<String, Object> props = new LinkedHashMap<String, Object>() {
-            {
-                put("expr_form", target.getType());
-                put("tgt", target.getTarget());
-                put("fun", function);
-            }
-        };
+            List<Object> args, Map<String, Object> kwargs) throws SaltStackException {
+        Map<String, Object> props = new LinkedHashMap<>();
+        props.put("tgt", target.getTarget());
+        props.put("expr_form", target.getType());
+        props.put("fun", function);
+        props.put("arg", args);
+        props.put("kwarg", kwargs);
 
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
+        String payload = gson.toJson(Collections.singleton(props));
 
         // Connect to the minions endpoint and send the above lowstate data
         Result<List<ScheduledJob>> result = connectionFactory
                 .create("/minions", JsonParser.SCHEDULED_JOB,  config)
-                .getResult(jsonArray.toString());
+                .getResult(payload);
 
         // They return a list of tokens here, we take the first
         return result.getResult().get(0);
@@ -293,8 +309,8 @@ public class SaltStackClient {
      * @return Future containing the scheduled job
      */
     public <T> Future<ScheduledJob> startCommandAsync(final Target<T> target,
-            final String function, final List<String> args,
-            final Map<String, String> kwargs) {
+            final String function, final List<Object> args,
+            final Map<String, Object> kwargs) {
         return executor.submit(() -> startCommand(target, function, args, kwargs));
     }
 
@@ -374,26 +390,26 @@ public class SaltStackClient {
      */
     public <T> Map<String, Object> run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
-            final String function, List<String> args, Map<String, String> kwargs)
+            final String function, List<Object> args, Map<String, Object> kwargs)
             throws SaltStackException {
-        Map<String, Object> props = new LinkedHashMap<String, Object>() {
-            {
-                put("username", username);
-                put("password", password);
-                put("eauth", eauth.getValue());
-                put("client", client);
-                put("expr_form", target.getType());
-                put("tgt", target.getTarget());
-                put("fun", function);
-            }
-        };
+        Map<String, Object> props = new HashMap<>();
+        props.put("username", username);
+        props.put("password", password);
+        props.put("eauth", eauth.getValue());
+        props.put("client", client);
+        props.put("tgt", target.getTarget());
+        props.put("expr_form", target.getType());
+        props.put("fun", function);
+        props.put("arg", args);
+        props.put("kwarg", kwargs);
 
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(ClientUtils.makeJsonData(props, kwargs, args));
+        List<Map<String, Object>> list =  Collections.singletonList(props);
+
+        String payload = gson.toJson(list);
 
         Result<List<Map<String, Object>>> result = connectionFactory
                 .create("/run", JsonParser.RETVALS, config)
-                .getResult(jsonArray.toString());
+                .getResult(payload);
 
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
@@ -416,8 +432,8 @@ public class SaltStackClient {
      */
     public <T> Future<Map<String, Object>> runAsync(final String username,
             final String password, final AuthModule eauth, final String client,
-            final Target<T> target, final String function, final List<String> args,
-            final Map<String, String> kwargs) {
+            final Target<T> target, final String function, final List<Object> args,
+            final Map<String, Object> kwargs) {
         return executor.submit(() ->
                 run(username, password, eauth, client, target, function, args, kwargs));
     }
@@ -526,5 +542,375 @@ public class SaltStackClient {
      */
     public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
         return executor.submit(() -> sendEvent(eventTag, eventData));
+    }
+
+    /**
+     * Calls a execution module function on the given target and synchronously
+     * waits for the result. Authentication is done with the token therefore you
+     * have to login prior to using this function.
+     *
+     * @param call the execution module function to call on the target
+     * @param target the target for the function
+     * @param <R> the result type of the function
+     * @return a map containing the results with the minion name as key
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> Map<String, R> callSync(final LocalCall<R> call, Target<?> target)
+            throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.put("tgt", target.getTarget());
+        customArgs.put("expr_form", target.getType());
+
+        Type type = parameterizedType(null, Map.class, String.class,
+                call.getReturnType().getType());
+        Type listType = parameterizedType(null, List.class, type);
+        Type wrapperType = parameterizedType(null, Result.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Result<List<Map<String, R>>> wrapper = call(call, Client.LOCAL, "/",
+                Optional.of(customArgs),
+                (TypeToken<Result<List<Map<String, R>>>>) TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Calls a wheel module function on the master and synchronously
+     * waits for the result. Authentication is done with the token therefore you
+     * have to login prior to using this function.
+     *
+     * @param call the wheel module function to call
+     * @param <R> the result type of the function
+     * @return the result of the called function
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> WheelResult<R> callSync(final WheelCall<R> call) throws SaltStackException {
+        Type wheelResult = parameterizedType(null, WheelResult.class,
+                call.getReturnType().getType());
+        Type listType = parameterizedType(null, List.class, wheelResult);
+        Type wrapperType = parameterizedType(null, Result.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Result<List<WheelResult<R>>> wrapper = call(call, Client.WHEEL, "/",
+                (TypeToken<Result<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Calls a runner module function on the master and synchronously
+     * waits for the result. Authentication is done with the token therefore you
+     * have to login prior to using this function.
+     *
+     * @param call the runner module function to call
+     * @param <R> the result type of the function
+     * @return the result of the called function
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> R callSync(final RunnerCall<R> call) throws SaltStackException {
+        Type listType = parameterizedType(null, List.class, call.getReturnType().getType());
+        Type wrapperType = parameterizedType(null, Result.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Result<List<R>> wrapper = call(call, Client.RUNNER, "/",
+                (TypeToken<Result<List<R>>>) TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Calls a execution module function on the given target and synchronously
+     * waits for the result. Authentication is done with the given credentials
+     * no session token is created.
+     *
+     * @param call the execution module function to call on the target
+     * @param target the target for the function
+     * @param username username for authentication
+     * @param password password for authentication
+     * @param authModule authentication module to use
+     * @param <R> the result type of the function
+     * @return a map containing the results with the minion name as key
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> Map<String, R> callSync(final LocalCall<R> call, Target<?> target,
+            String username, String password, AuthModule authModule)
+            throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("username", username);
+        customArgs.put("password", password);
+        customArgs.put("eauth", authModule.getValue());
+        customArgs.put("tgt", target.getTarget());
+        customArgs.put("expr_form", target.getType());
+
+        Type mapType = parameterizedType(null, Map.class, String.class,
+                call.getReturnType().getType());
+        Type listType = parameterizedType(null, List.class, mapType);
+        Type wrapperType = parameterizedType(null, Result.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Result<List<Map<String, R>>> wrapper = call(call, Client.LOCAL, "/run",
+                Optional.of(customArgs),
+                (TypeToken<Result<List<Map<String, R>>>>) TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Calls a wheel module function on the master and synchronously
+     * waits for the result. Authentication is done with the given credentials
+     * no session token is created.
+     *
+     * @param call the wheel module function to call
+     * @param username username for authentication
+     * @param password password for authentication
+     * @param authModule authentication module to use
+     * @param <R> the result type of the function
+     * @return the result of the called function
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> WheelResult<R> callSync(WheelCall<R> call, String username, String password,
+            AuthModule authModule) throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("username", username);
+        customArgs.put("password", password);
+        customArgs.put("eauth", authModule.getValue());
+
+        Type wheelResult = parameterizedType(null, WheelResult.class,
+                call.getReturnType().getType());
+        Type listType = parameterizedType(null, List.class, wheelResult);
+        Type wrapperType = parameterizedType(null, Result.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Result<List<WheelResult<R>>> wrapper = call(call, Client.WHEEL, "/run",
+                Optional.of(customArgs),
+                (TypeToken<Result<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Calls a runner module function on the master and synchronously
+     * waits for the result. Authentication is done with the given credentials
+     * no session token is created.
+     *
+     * @param call the runner module function to call
+     * @param username username for authentication
+     * @param password password for authentication
+     * @param authModule authentication module to use
+     * @param <R> the result type of the function
+     * @return the result of the called function
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> R callSync(final RunnerCall<R> call, String username, String password,
+            AuthModule authModule) throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("username", username);
+        customArgs.put("password", password);
+        customArgs.put("eauth", authModule.getValue());
+
+        Type listType = parameterizedType(null, List.class, call.getReturnType().getType());
+        Type wrapperType = parameterizedType(null, Result.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Result<List<R>> wrapper = call(call, Client.RUNNER, "/run", Optional.of(customArgs),
+                (TypeToken<Result<List<R>>>) TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Calls a execution module function on the given target asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the token therefore you have to login prior
+     * to using this function.
+     *
+     * @param call the execution module function to call on the target
+     * @param target the target for the function
+     * @param <R> the result type of the function
+     * @return information about the scheduled job
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> LocalAsyncResult<R> callAsync(final LocalCall<R> call, Target<?> target)
+            throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("tgt", target.getTarget());
+        customArgs.put("expr_form", target.getType());
+
+        Result<List<LocalAsyncResult<R>>> wrapper = call(call, Client.LOCAL_ASYNC, "/",
+                Optional.of(customArgs),
+                new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
+        LocalAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
+    }
+
+    /**
+     * Calls a execution module function on the given target asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the given credentials no session token is created.
+     *
+     * @param call the execution module function to call on the target
+     * @param target the target for the function
+     * @param username username for authentication
+     * @param password password for authentication
+     * @param authModule authentication module to use
+     * @param <R> the result type of the function
+     * @return information about the scheduled job
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> LocalAsyncResult<R> callAsync(final LocalCall<R> call, Target<?> target,
+            String username, String password, AuthModule authModule)
+            throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("username", username);
+        customArgs.put("password", password);
+        customArgs.put("eauth", authModule.getValue());
+        customArgs.put("tgt", target.getTarget());
+        customArgs.put("expr_form", target.getType());
+
+        Result<List<LocalAsyncResult<R>>> wrapper = call(call, Client.LOCAL_ASYNC, "/run",
+                Optional.of(customArgs),
+                new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
+        LocalAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
+    }
+
+    /**
+     * Calls a runner module function on the master asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the token therefore you have to login prior
+     * to using this function.
+     *
+     * @param call the runner module function to call
+     * @param <R> the result type of the function
+     * @return information about the scheduled job
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> RunnerAsyncResult<R> callAsync(final RunnerCall<R> call)
+            throws SaltStackException {
+        Result<List<RunnerAsyncResult<R>>> wrapper = call(call, Client.RUNNER_ASYNC, "/",
+                new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
+        RunnerAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
+    }
+
+    /**
+     * Calls a runner module function on the master asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the given credentials no session token is created.
+     *
+     * @param call the runner module function to call
+     * @param username username for authentication
+     * @param password password for authentication
+     * @param authModule authentication module to use
+     * @param <R> the result type of the function
+     * @return information about the scheduled job
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> RunnerAsyncResult<R> callAsync(final RunnerCall<R> call, String username,
+            String password, AuthModule authModule) throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("username", username);
+        customArgs.put("password", password);
+        customArgs.put("eauth", authModule.getValue());
+
+        Result<List<RunnerAsyncResult<R>>> wrapper = call(call, Client.RUNNER_ASYNC, "/run",
+                Optional.of(customArgs),
+                new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
+        RunnerAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
+    }
+
+    /**
+     * Calls a wheel module function on the master asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the token therefore you have to login prior
+     * to using this function.
+     *
+     * @param call the wheel module function to call
+     * @param <R> the result type of the function
+     * @return information about the scheduled job
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> WheelAsyncResult<R> callAsync(final WheelCall<R> call)
+            throws SaltStackException {
+        Result<List<WheelAsyncResult<R>>> wrapper = call(call, Client.WHEEL_ASYNC, "/",
+                new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
+        WheelAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
+    }
+
+    /**
+     * Calls a wheel module function on the master asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the given credentials no session token is created.
+     *
+     * @param call the wheel module function to call
+     * @param username username for authentication
+     * @param password password for authentication
+     * @param authModule authentication module to use
+     * @param <R> the result type of the function
+     * @return information about the scheduled job
+     * @throws SaltStackException if anything goes wrong
+     */
+    public <R> WheelAsyncResult<R> callAsync(final WheelCall<R> call, String username,
+            String password, AuthModule authModule) throws SaltStackException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(call.payload());
+        customArgs.put("username", username);
+        customArgs.put("password", password);
+        customArgs.put("eauth", authModule.getValue());
+
+        Result<List<WheelAsyncResult<R>>> wrapper = call(call, Client.WHEEL_ASYNC, "/run",
+                Optional.of(customArgs),
+                new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
+        WheelAsyncResult<R> result = wrapper.getResult().get(0);
+        result.setType(call.getReturnType());
+        return result;
+    }
+
+    /**
+     * Generic interface to make a {@link Call} to an endpoint using a given {@link Client}.
+     *
+     * @param call the call
+     * @param client the client to use
+     * @param endpoint the endpoint
+     * @param custom map of arguments
+     * @param type return type
+     * @return the result of the call
+     * @throws SaltStackException if anything goes wrong
+     */
+    private <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
+            Object>> custom, TypeToken<R> type) throws SaltStackException {
+        Map<String, Object> props = new HashMap<>();
+        props.putAll(call.payload());
+        props.put("client", client.getValue());
+        custom.ifPresent(props::putAll);
+
+        List<Map<String, Object>> list = Collections.singletonList(props);
+        String payload = gson.toJson(list);
+
+        return connectionFactory
+                .create(endpoint, new JsonParser<>(type), config)
+                .getResult(payload);
+    }
+
+    /**
+     * Convenience method to make a call without arguments.
+     *
+     * @param call the call
+     * @param client the client to use
+     * @param endpoint the endpoint
+     * @param type return type
+     * @return the result of the call
+     * @throws SaltStackException if anything goes wrong
+     */
+    private <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
+            throws SaltStackException {
+        return call(call, client, endpoint, Optional.empty(), type);
     }
 }
