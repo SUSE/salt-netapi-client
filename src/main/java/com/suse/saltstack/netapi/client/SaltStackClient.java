@@ -570,7 +570,6 @@ public class SaltStackClient {
         Result<List<Map<String, R>>> wrapper = call(call, Client.LOCAL, "/",
                 Optional.of(customArgs),
                 (TypeToken<Result<List<Map<String, R>>>>) TypeToken.get(wrapperType));
-
         return wrapper.getResult().get(0);
     }
 
@@ -606,10 +605,10 @@ public class SaltStackClient {
      * @return the result of the called function
      * @throws SaltStackException if anything goes wrong
      */
-    public <R> R callSync(final RunnerCall<R> call)
-            throws SaltStackException {
+    public <R> R callSync(final RunnerCall<R> call) throws SaltStackException {
         Type listType = parameterizedType(null, List.class, call.getReturnType().getType());
         Type wrapperType = parameterizedType(null, Result.class, listType);
+
         @SuppressWarnings("unchecked")
         Result<List<R>> wrapper = call(call, Client.RUNNER, "/",
                 (TypeToken<Result<List<R>>>) TypeToken.get(wrapperType));
@@ -640,10 +639,12 @@ public class SaltStackClient {
         customArgs.put("eauth", authModule.getValue());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
+
         Type mapType = parameterizedType(null, Map.class, String.class,
                 call.getReturnType().getType());
         Type listType = parameterizedType(null, List.class, mapType);
         Type wrapperType = parameterizedType(null, Result.class, listType);
+
         @SuppressWarnings("unchecked")
         Result<List<Map<String, R>>> wrapper = call(call, Client.LOCAL, "/run",
                 Optional.of(customArgs),
@@ -671,10 +672,12 @@ public class SaltStackClient {
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
+
         Type wheelResult = parameterizedType(null, WheelResult.class,
                 call.getReturnType().getType());
         Type listType = parameterizedType(null, List.class, wheelResult);
         Type wrapperType = parameterizedType(null, Result.class, listType);
+
         @SuppressWarnings("unchecked")
         Result<List<WheelResult<R>>> wrapper = call(call, Client.WHEEL, "/run",
                 Optional.of(customArgs),
@@ -702,11 +705,12 @@ public class SaltStackClient {
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
+
         Type listType = parameterizedType(null, List.class, call.getReturnType().getType());
         Type wrapperType = parameterizedType(null, Result.class, listType);
+
         @SuppressWarnings("unchecked")
-        Result<List<R>> wrapper = call(call, Client.RUNNER, "/run",
-                Optional.of(customArgs),
+        Result<List<R>> wrapper = call(call, Client.RUNNER, "/run", Optional.of(customArgs),
                 (TypeToken<Result<List<R>>>) TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
