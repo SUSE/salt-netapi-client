@@ -6,18 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-
 /**
- * Class representing a function call of a salt wheel module
+ * Class representing a function call of a salt wheel module.
+ *
  * @param <R> the return type of the called function
  */
 public class WheelCall<R> implements Call<R> {
 
     private final String functionName;
     private final Optional<Map<String, Object>> kwargs;
-
     private final TypeToken<R> returnType;
-
 
     public WheelCall(String functionName, Optional<Map<String, Object>> kwargs,
             TypeToken<R> returnType) {
@@ -36,6 +34,4 @@ public class WheelCall<R> implements Call<R> {
         kwargs.ifPresent(payload::putAll);
         return payload;
     }
-
-
 }

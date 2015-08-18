@@ -14,7 +14,7 @@ import java.util.Optional;
 public class Key {
 
     /**
-     *
+     * Matching key fingerprints as returned by "key.finger".
      */
     public static class Minions {
         private Map<String, String> minions;
@@ -37,7 +37,6 @@ public class Key {
                 new TypeToken<Minions>(){});
     }
 
-
     public static WheelCall<Object> accept(String match) {
         Map<String, Object> args = new LinkedHashMap<>();
         args.put("match", match);
@@ -59,5 +58,4 @@ public class Key {
     public static WheelCall<Keys> listAll() {
         return LIST_ALL;
     }
-
 }

@@ -7,16 +7,15 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Class representing a function call of a salt runner module
+ * Class representing a function call of a salt runner module.
+ *
  * @param <R> the return type of the called function
  */
 public class RunnerCall<R> implements Call<R> {
 
     private final String functionName;
     private final Optional<Map<String, Object>> kwargs;
-
     private final TypeToken<R> returnType;
-
 
     public RunnerCall(String functionName, Optional<Map<String, Object>> kwargs,
             TypeToken<R> returnType) {

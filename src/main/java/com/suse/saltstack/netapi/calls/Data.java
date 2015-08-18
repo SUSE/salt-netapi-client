@@ -3,7 +3,8 @@ package com.suse.saltstack.netapi.calls;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Data field of a WheelResult
+ * Data field of a WheelResult.
+ *
  * @param <R> the return type of the called function
  */
 public class Data<R> {

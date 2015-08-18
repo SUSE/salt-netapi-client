@@ -39,12 +39,10 @@ public class Grains {
                 Optional.of(args), new TypeToken<Map<String, Map<String, Object>>>(){});
     }
 
-
     public static LocalCall<Map<String, Boolean>> hasValue(String key) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("key", key);
         return new LocalCall<>("grains.has_value", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, Boolean>>(){});
     }
-
 }

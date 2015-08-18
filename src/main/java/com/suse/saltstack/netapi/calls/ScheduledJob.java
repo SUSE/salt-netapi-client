@@ -3,7 +3,8 @@ package com.suse.saltstack.netapi.calls;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * Common class representing a scheduled job
+ * Common class representing a scheduled job.
+ *
  * @param <R> the return type of the called function
  */
 public class ScheduledJob<R> {

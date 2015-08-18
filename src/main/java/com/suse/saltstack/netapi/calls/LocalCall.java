@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Class representing a function call of a salt execution module
+ * Class representing a function call of a salt execution module.
+ *
  * @param <R> the return type of the called function
  */
 public class LocalCall<R> implements Call<R> {
@@ -16,9 +17,7 @@ public class LocalCall<R> implements Call<R> {
     private final String functionName;
     private final Optional<List<Object>> arg;
     private final Optional<Map<String, Object>> kwarg;
-
     private final TypeToken<R> returnType;
-
 
     public LocalCall(String functionName, Optional<List<Object>> arg,
             Optional<Map<String, Object>> kwarg, TypeToken<R> returnType) {
@@ -39,6 +38,4 @@ public class LocalCall<R> implements Call<R> {
         kwarg.ifPresent(kwarg -> payload.put("kwarg", kwarg));
         return payload;
     }
-
-
 }

@@ -43,11 +43,8 @@ public class Network {
         private String address;
     }
 
-
     public static LocalCall<Map<String, Map<String, Interface>>> interfaces() {
         return new LocalCall<>("network.interfaces", Optional.empty(), Optional.empty(),
                 new TypeToken<Map<String, Map<String, Interface>>>(){});
     }
-
-
 }
