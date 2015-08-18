@@ -544,28 +544,6 @@ public class SaltStackClient {
         return executor.submit(() -> sendEvent(eventTag, eventData));
     }
 
-    private <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
-            Object>> custom, TypeToken<R> type) throws SaltStackException {
-        Map<String, Object> props = new HashMap<>();
-        props.putAll(call.payload());
-        props.put("client", client.getValue());
-        custom.ifPresent(props::putAll);
-
-        List<Map<String, Object>> list =  Collections.singletonList(props);
-
-        String payload = gson.toJson(list);
-
-        return connectionFactory
-                .create(endpoint, new JsonParser<>(type), config)
-                .getResult(payload);
-    }
-
-
-    private <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
-            throws SaltStackException {
-        return call(call, client, endpoint, Optional.empty(), type);
-    }
-
     /**
      * Calls a execution module function on the given target and synchronously
      * waits for the result. Authentication is done with the token therefore you
@@ -887,4 +865,23 @@ public class SaltStackClient {
         return r;
     }
 
+    private <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
+            Object>> custom, TypeToken<R> type) throws SaltStackException {
+        Map<String, Object> props = new HashMap<>();
+        props.putAll(call.payload());
+        props.put("client", client.getValue());
+        custom.ifPresent(props::putAll);
+
+        List<Map<String, Object>> list = Collections.singletonList(props);
+        String payload = gson.toJson(list);
+
+        return connectionFactory
+                .create(endpoint, new JsonParser<>(type), config)
+                .getResult(payload);
+    }
+
+    private <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
+            throws SaltStackException {
+        return call(call, client, endpoint, Optional.empty(), type);
+    }
 }
