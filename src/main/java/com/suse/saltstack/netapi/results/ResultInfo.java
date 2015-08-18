@@ -108,8 +108,9 @@ public class ResultInfo {
      */
     public Optional<Object> getResult(String minion) {
         Result<Object> result;
-        if (rawResults == null || (result = rawResults.get(minion)) == null)
+        if (rawResults == null || (result = rawResults.get(minion)) == null) {
             return Optional.<Object>empty();
+        }
 
         return Optional.<Object>ofNullable(result.getResult());
     }
@@ -122,8 +123,9 @@ public class ResultInfo {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> getResults() {
-        if (rawResults == null || resultsCache.size() == rawResults.size())
+        if (rawResults == null || resultsCache.size() == rawResults.size()) {
             return resultsCache;
+        }
 
         resultsCache.clear();
         resultsCache.putAll(rawResults);
