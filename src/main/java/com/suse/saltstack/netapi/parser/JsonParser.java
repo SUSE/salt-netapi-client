@@ -87,6 +87,7 @@ public class JsonParser<T> {
     public T parse(InputStream inputStream) {
         Reader inputStreamReader = new InputStreamReader(inputStream);
         Reader streamReader = new BufferedReader(inputStreamReader);
+
         // Parse result type from the returned JSON
         return gson.fromJson(streamReader, type.getType());
     }
