@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-
 import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
 
 /**
