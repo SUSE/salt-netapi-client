@@ -7,7 +7,6 @@ import com.suse.saltstack.netapi.calls.Data;
 import com.suse.saltstack.netapi.calls.LocalAsyncResult;
 import com.suse.saltstack.netapi.calls.RunnerAsyncResult;
 import com.suse.saltstack.netapi.calls.RunnerCall;
-import com.suse.saltstack.netapi.calls.ScheduledJob;
 import com.suse.saltstack.netapi.calls.WheelAsyncResult;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Result;
@@ -99,22 +98,6 @@ public class Jobs {
 
     private Jobs() { }
 
-    public static RunnerCall<Info<Object>> listJob(String jid) {
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        args.put("jid", jid);
-        return new RunnerCall<>("jobs.list_job", Optional.of(args),
-                new TypeToken<Info<Object>>(){});
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <R> RunnerCall<Info<R>> listJob(ScheduledJob<R> jid) {
-        Type type = parameterizedType(null, Info.class, jid.getType().getType());
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        args.put("jid", jid.getJid());
-        return new RunnerCall<>("jobs.list_job", Optional.of(args),
-                (TypeToken<Info<R>>) TypeToken.get(type));
-    }
-
     public static RunnerCall<Map<String, Object>> lookupJid(String jid) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("jid", jid);
@@ -150,12 +133,5 @@ public class Jobs {
         Type type = parameterizedType(null, Map.class, String.class, dataType);
         return new RunnerCall<>("jobs.lookup_jid", Optional.of(args),
                 (TypeToken<Map<String, Data<R>>>) TypeToken.get(type));
-    }
-
-    public static RunnerCall<Map<String, Info<?>>> printJob(String jid) {
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        args.put("jid", jid);
-        return new RunnerCall<>("jobs.print_job", Optional.of(args),
-                new TypeToken<Map<String, Info<?>>>(){});
     }
 }
