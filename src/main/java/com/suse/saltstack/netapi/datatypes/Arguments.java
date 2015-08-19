@@ -10,13 +10,8 @@ import java.util.Map;
  */
 public class Arguments {
 
-    private List<Object> args;
-    private Map<String, Object> kwargs;
-
-    public Arguments() {
-        args = new ArrayList<>();
-        kwargs = new LinkedHashMap<>();
-    }
+    private final List<Object> args = new ArrayList<>();
+    private final Map<String, Object> kwargs = new LinkedHashMap<>();
 
     public List<Object> getArgs() {
         return args;

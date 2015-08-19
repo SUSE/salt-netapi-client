@@ -85,7 +85,6 @@ public class TyrusWebSocketEventsTest {
 
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue(eventCountClient.counter == target);
-            streamEvents.close();
         }
     }
 
@@ -171,7 +170,6 @@ public class TyrusWebSocketEventsTest {
 
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertFalse(streamEvents.isEventStreamClosed());
-            streamEvents.close();
         }
     }
 
@@ -188,9 +186,9 @@ public class TyrusWebSocketEventsTest {
      * Event listener client used for testing.
      */
     private class EventCountClient implements EventListener {
-        private int targetCount;
+        private final int targetCount;
         private int counter = 0;
-        private CountDownLatch latch;
+        private final CountDownLatch latch;
 
         public EventCountClient(int targetCount, CountDownLatch latchIn) {
             this.targetCount = targetCount;
@@ -253,7 +251,7 @@ public class TyrusWebSocketEventsTest {
      * Event listener client used for testing.
      */
     private class EventStreamClosedClient implements EventListener {
-        private CountDownLatch latch;
+        private final CountDownLatch latch;
 
         public EventStreamClosedClient(CountDownLatch latchIn) {
             this.latch = latchIn;

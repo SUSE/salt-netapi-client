@@ -31,6 +31,7 @@ public class LocalCall<R> implements Call<R> {
         return returnType;
     }
 
+    @Override
     public Map<String, Object> payload() {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("fun", functionName);
