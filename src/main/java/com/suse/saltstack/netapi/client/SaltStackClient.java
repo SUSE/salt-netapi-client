@@ -631,7 +631,7 @@ public class SaltStackClient {
             String username, String password, AuthModule authModule)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
@@ -666,7 +666,7 @@ public class SaltStackClient {
     public <R> WheelResult<R> callSync(WheelCall<R> call, String username, String password,
             AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
@@ -699,7 +699,7 @@ public class SaltStackClient {
     public <R> R callSync(final RunnerCall<R> call, String username, String password,
             AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
@@ -728,7 +728,7 @@ public class SaltStackClient {
     public <R> LocalAsyncResult<R> callAsync(final LocalCall<R> call, Target<?> target)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
@@ -758,7 +758,7 @@ public class SaltStackClient {
             String username, String password, AuthModule authModule)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
@@ -809,7 +809,7 @@ public class SaltStackClient {
     public <R> RunnerAsyncResult<R> callAsync(final RunnerCall<R> call, String username,
             String password, AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
@@ -858,7 +858,7 @@ public class SaltStackClient {
     public <R> WheelAsyncResult<R> callAsync(final WheelCall<R> call, String username,
             String password, AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(call.payload());
+        customArgs.putAll(call.getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
@@ -885,7 +885,7 @@ public class SaltStackClient {
     private <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
             Object>> custom, TypeToken<R> type) throws SaltStackException {
         Map<String, Object> props = new HashMap<>();
-        props.putAll(call.payload());
+        props.putAll(call.getPayload());
         props.put("client", client.getValue());
         custom.ifPresent(props::putAll);
 

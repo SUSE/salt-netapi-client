@@ -35,7 +35,7 @@ public class LocalCall<R> implements Call<R> {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Object> payload() {
+    public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("fun", functionName);
         arg.ifPresent(arg -> payload.put("arg", arg));

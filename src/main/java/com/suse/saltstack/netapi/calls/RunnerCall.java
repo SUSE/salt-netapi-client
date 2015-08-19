@@ -32,7 +32,7 @@ public class RunnerCall<R> implements Call<R> {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Object> payload() {
+    public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("fun", functionName);
         kwargs.ifPresent(kwargs -> payload.put("kwargs", kwargs));

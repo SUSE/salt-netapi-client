@@ -15,5 +15,5 @@ public interface Call<R> {
      *
      * @return call payload as a map of key/value pairs
      */
-    Map<String, Object> payload();
+    Map<String, Object> getPayload();
 }
