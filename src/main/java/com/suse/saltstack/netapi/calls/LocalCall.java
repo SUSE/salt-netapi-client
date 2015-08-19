@@ -31,6 +31,9 @@ public class LocalCall<R> implements Call<R> {
         return returnType;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, Object> payload() {
         HashMap<String, Object> payload = new HashMap<>();
