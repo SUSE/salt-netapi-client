@@ -115,8 +115,8 @@ public class Network {
         }
     }
 
-    public static LocalCall<Map<String, Map<String, Interface>>> interfaces() {
+    public static LocalCall<Map<String, Interface>> interfaces() {
         return new LocalCall<>("network.interfaces", Optional.empty(), Optional.empty(),
-                new TypeToken<Map<String, Map<String, Interface>>>(){});
+                new TypeToken<Map<String, Interface>>(){});
     }
 }
