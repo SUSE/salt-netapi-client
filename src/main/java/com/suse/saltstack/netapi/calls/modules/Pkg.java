@@ -45,22 +45,22 @@ public class Pkg {
 
     private Pkg() { }
 
-    public static LocalCall<Map<String, Map<String, PackageInfo>>> search(String criteria) {
+    public static LocalCall<Map<String, PackageInfo>> search(String criteria) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("criteria", criteria);
         return new LocalCall<>("pkg.search", Optional.empty(), Optional.of(args),
-                new TypeToken<Map<String, Map<String, PackageInfo>>>(){});
+                new TypeToken<Map<String, PackageInfo>>(){});
     }
 
-    public static LocalCall<Map<String, PackageDict>> fileDict(String... packages) {
+    public static LocalCall<PackageDict> fileDict(String... packages) {
         return new LocalCall<>("pkg.file_dict", Optional.of(Arrays.asList(packages)),
-                Optional.empty(), new TypeToken<Map<String, PackageDict>>(){});
+                Optional.empty(), new TypeToken<PackageDict>(){});
     }
 
-    public static LocalCall<Map<String, Map<String, List<String>>>> listPkgs() {
+    public static LocalCall<Map<String, List<String>>> listPkgs() {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("versions_as_list", true);
         return new LocalCall<>("pkg.list_pkgs", Optional.empty(), Optional.of(args),
-                new TypeToken<Map<String, Map<String, List<String>>>>(){});
+                new TypeToken<Map<String, List<String>>>(){});
     }
 }
