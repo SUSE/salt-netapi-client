@@ -608,7 +608,7 @@ public class SaltStackClientTest {
     @Test
     public void testJobs() throws Exception {
     	final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -681,7 +681,7 @@ public class SaltStackClientTest {
     @Test
     public void testJobsPending() throws Exception {
     	final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
