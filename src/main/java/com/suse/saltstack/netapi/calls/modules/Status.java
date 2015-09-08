@@ -4,8 +4,8 @@ import com.suse.saltstack.netapi.calls.LocalCall;
 
 import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,7 +44,7 @@ public class Status {
 
     public static LocalCall<Map<String, Map<String, Long>>> diskusage(
             String... pathsOrFSTypes) {
-        List<Object> args = Arrays.asList((Object[]) pathsOrFSTypes);
+        List<String> args = Arrays.asList(pathsOrFSTypes);
         return new LocalCall<>("status.diskusage", Optional.of(args), Optional.empty(),
                 new TypeToken<Map<String, Map<String, Long>>>(){});
     }
@@ -75,8 +75,7 @@ public class Status {
     }
 
     public static LocalCall<String> pid(String signature) {
-        List<Object> args = new ArrayList<>();
-        args.add(signature);
+        List<String> args = Collections.singletonList(signature);
         return new LocalCall<>("status.pid", Optional.of(args), Optional.empty(),
                 new TypeToken<String>(){});
     }

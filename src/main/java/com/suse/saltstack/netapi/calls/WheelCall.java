@@ -14,10 +14,10 @@ import java.util.Optional;
 public class WheelCall<R> implements Call<R> {
 
     private final String functionName;
-    private final Optional<Map<String, Object>> kwargs;
+    private final Optional<Map<String, ?>> kwargs;
     private final TypeToken<R> returnType;
 
-    public WheelCall(String functionName, Optional<Map<String, Object>> kwargs,
+    public WheelCall(String functionName, Optional<Map<String, ?>> kwargs,
             TypeToken<R> returnType) {
         this.functionName = functionName;
         this.kwargs = kwargs;
