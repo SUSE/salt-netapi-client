@@ -1,10 +1,10 @@
 package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.JsonParseException;
+import com.suse.saltstack.netapi.calls.wheel.Key;
 import com.suse.saltstack.netapi.datatypes.Arguments;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
-import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Request;
@@ -150,8 +150,8 @@ public class JsonParserTest {
     @Test
     public void testKeysParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/keys_response.json");
-        Result<Keys> result = JsonParser.KEYS.parse(is);
-        Keys keys = result.getResult();
+        Result<Key.Names> result = JsonParser.KEYS.parse(is);
+        Key.Names keys = result.getResult();
         assertNotNull("failed to parse", result);
         assertEquals(Arrays.asList("master.pem", "master.pub"), keys.getLocal());
         assertEquals(Arrays.asList("m1"), keys.getMinions());

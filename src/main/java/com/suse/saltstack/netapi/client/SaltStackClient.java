@@ -13,11 +13,11 @@ import com.suse.saltstack.netapi.calls.RunnerCall;
 import com.suse.saltstack.netapi.calls.WheelAsyncResult;
 import com.suse.saltstack.netapi.calls.WheelCall;
 import com.suse.saltstack.netapi.calls.WheelResult;
+import com.suse.saltstack.netapi.calls.wheel.Key;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.config.ProxySettings;
 import com.suse.saltstack.netapi.datatypes.Job;
-import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
@@ -469,7 +469,7 @@ public class SaltStackClient {
      * @return the keys
      * @throws SaltStackException if anything goes wrong
      */
-    public Keys keys() throws SaltStackException {
+    public Key.Names keys() throws SaltStackException {
         return connectionFactory.create("/keys", JsonParser.KEYS, config).getResult()
                 .getResult();
     }
@@ -483,7 +483,7 @@ public class SaltStackClient {
      *
      * @return Future containing the keys
      */
-    public Future<Keys> keysAsync() {
+    public Future<Key.Names> keysAsync() {
         return executor.submit(this::keys);
     }
 

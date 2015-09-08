@@ -3,6 +3,7 @@ package com.suse.saltstack.netapi.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.suse.saltstack.netapi.calls.wheel.Key;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.datatypes.target.Glob;
@@ -11,7 +12,6 @@ import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonSyntaxException;
 import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
-import com.suse.saltstack.netapi.datatypes.Keys;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
@@ -583,7 +583,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_KEYS_RESPONSE)));
 
-        Keys keys = client.keys();
+        Key.Names keys = client.keys();
 
         assertNotNull(keys);
         verify(1, getRequestedFor(urlEqualTo("/keys"))
@@ -599,7 +599,7 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_KEYS_RESPONSE)));
 
-        Keys keys = client.keysAsync().get();
+        Key.Names keys = client.keysAsync().get();
 
         assertNotNull(keys);
         verify(1, getRequestedFor(urlEqualTo("/keys"))
