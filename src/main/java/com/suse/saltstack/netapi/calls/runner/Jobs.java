@@ -1,6 +1,5 @@
 package com.suse.saltstack.netapi.calls.runner;
 
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.calls.Data;
@@ -8,7 +7,7 @@ import com.suse.saltstack.netapi.calls.LocalAsyncResult;
 import com.suse.saltstack.netapi.calls.RunnerAsyncResult;
 import com.suse.saltstack.netapi.calls.RunnerCall;
 import com.suse.saltstack.netapi.calls.WheelAsyncResult;
-import com.suse.saltstack.netapi.parser.JsonParser;
+import com.suse.saltstack.netapi.datatypes.StartTime;
 import com.suse.saltstack.netapi.results.Result;
 
 import java.lang.reflect.Type;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 
 import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
 
@@ -38,8 +38,7 @@ public class Jobs {
         private String jid;
 
         @SerializedName("StartTime")
-        @JsonAdapter(JsonParser.JobStartTimeJsonAdapter.class)
-        private Date startTime;
+        private StartTime startTime;
 
         @SerializedName("Arguments")
         private List<Object> arguments;
@@ -64,8 +63,12 @@ public class Jobs {
             return jid;
         }
 
+        public Date getStartTime(TimeZone tz) {
+            return startTime == null ? null : startTime.getDate(tz);
+        }
+
         public Date getStartTime() {
-            return startTime;
+            return startTime == null ? null : startTime.getDate();
         }
 
         public List<Object> getArguments() {

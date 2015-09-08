@@ -1,21 +1,14 @@
 package com.suse.saltstack.netapi.datatypes;
 
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.suse.saltstack.netapi.parser.JsonParser;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Representation of a previously run job.
  */
 public class Job {
-
-    // StartTime example from API: "2015, Mar 04 19:28:29.724698"
-    public static final SimpleDateFormat START_TIME_FORMAT =
-            new SimpleDateFormat("yyyy, MMM dd HH:mm:ss.SSS", Locale.US);
 
     @SerializedName("Function")
     private String function;
@@ -32,12 +25,8 @@ public class Job {
     @SerializedName("Arguments")
     private Arguments arguments;
 
-    /**
-     * Please note that start time will be in salt-master time zone
-     */
     @SerializedName("StartTime")
-    @JsonAdapter(JsonParser.JobStartTimeJsonAdapter.class)
-    private Date startTime;
+    private StartTime startTime;
 
     public String getFunction() {
         return function;
@@ -59,7 +48,22 @@ public class Job {
         return arguments;
     }
 
+    /**
+     * Returns start time at a given {@link TimeZone}
+     *
+     * @param tz TimeZone of the master associated with the Job
+     * @return Date representation of the start time.
+     */
+    public Date getStartTime(TimeZone tz) {
+        return startTime == null ? null : startTime.getDate(tz);
+    }
+
+    /**
+     *  Returns start time assuming default {@link TimeZone} is Salt master's timezone.
+     *
+     * @return Date representation of the start time.
+     */
     public Date getStartTime() {
-        return startTime;
+        return startTime == null ? null : startTime.getDate();
     }
 }

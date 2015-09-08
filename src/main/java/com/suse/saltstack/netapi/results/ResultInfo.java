@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.suse.saltstack.netapi.parser.JsonParser;
+import com.suse.saltstack.netapi.datatypes.StartTime;
 
 /**
  * Represents the SaltStack's result information structure.
@@ -21,8 +21,7 @@ public class ResultInfo {
     private String function;
 
     @SerializedName("StartTime")
-    @JsonAdapter(JsonParser.JobStartTimeJsonAdapter.class)
-    private Date startTime;
+    private StartTime startTime;
 
     @SerializedName("Arguments")
     private List<Object> arguments;
@@ -70,10 +69,20 @@ public class ResultInfo {
     /**
      * Returns start time of the job.
      *
+     * @param tz - TimeZone associated with the master of this job.
      * @return job start date
      */
+    public Date getStartTime(TimeZone tz) {
+        return startTime == null ? null : startTime.getDate(tz);
+    }
+
+    /**
+     *  Returns start time assuming default {@link TimeZone} is Salt master's timezone.
+     *
+     * @return Date representation of the start time.
+     */
     public Date getStartTime() {
-        return startTime;
+        return startTime == null ? null : startTime.getDate();
     }
 
     /**
