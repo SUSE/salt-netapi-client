@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,7 @@ public class JsonParser<T> {
         this.type = type;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
                 .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
                 .registerTypeAdapter(Stats.class, new StatsDeserializer())
                 .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
@@ -311,6 +313,31 @@ public class JsonParser<T> {
             // Remove microseconds because java Date does not support it
             String subStr = dateStr.substring(0, dateStr.length() - 3);
             return new StartTime(subStr);
+        }
+    }
+
+
+    /**
+     * Adapter to convert an ISO formatted string to LocalDateTime
+     */
+    private class LocalDateTimeISOAdapter extends TypeAdapter<LocalDateTime> {
+
+        @Override
+        public void write(JsonWriter jsonWriter, LocalDateTime date) throws IOException {
+            if (date == null) {
+                throw new JsonParseException("null is not a valid value for LocalDateTime");
+            } else {
+                jsonWriter.value(date.toString());
+            }
+        }
+
+        @Override
+        public LocalDateTime read(JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                throw new JsonParseException("null is not a valid value for LocalDateTime");
+            }
+            String dateStr = jsonReader.nextString();
+            return LocalDateTime.parse(dateStr);
         }
     }
 }
