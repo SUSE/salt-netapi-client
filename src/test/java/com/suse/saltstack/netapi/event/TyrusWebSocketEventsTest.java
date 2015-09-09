@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.websocket.CloseReason;
 import javax.websocket.DeploymentException;
 
 import java.io.IOException;
@@ -204,7 +205,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void eventStreamClosed() {
+        public void eventStreamClosed(CloseReason closeReason) {
         }
     }
 
@@ -230,7 +231,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void eventStreamClosed() {
+        public void eventStreamClosed(CloseReason closeReason) {
         }
     }
 
@@ -243,7 +244,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void eventStreamClosed() {
+        public void eventStreamClosed(CloseReason closeReason) {
         }
     }
 
@@ -263,7 +264,7 @@ public class TyrusWebSocketEventsTest {
         }
 
         @Override
-        public void eventStreamClosed() {
+        public void eventStreamClosed(CloseReason closeReason) {
         }
     }
 }
