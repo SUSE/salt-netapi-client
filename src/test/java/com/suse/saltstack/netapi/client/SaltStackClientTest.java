@@ -99,8 +99,6 @@ public class SaltStackClientTest {
     static final String JSON_LOGOUT_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/logout_response.json"));
 
-    private static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -609,6 +607,8 @@ public class SaltStackClientTest {
 
     @Test
     public void testJobs() throws Exception {
+        final SimpleDateFormat DATE_FORMAT =
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -680,6 +680,8 @@ public class SaltStackClientTest {
 
     @Test
     public void testJobsPending() throws Exception {
+        final SimpleDateFormat DATE_FORMAT =
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
