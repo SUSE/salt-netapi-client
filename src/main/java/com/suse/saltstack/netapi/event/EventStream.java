@@ -7,6 +7,7 @@ import com.suse.saltstack.netapi.parser.JsonParser;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
+import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
 import javax.websocket.EndpointConfig;
@@ -151,25 +152,17 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Closes the WebSocket {@link Session} and notifies all subscribed listeners.
-     * that the event stream has been closed via {@link EventListener#eventStreamClosed()}.
-     * Upon exit from this method, all subscribed listeners will be removed.
+     * Close the WebSocket {@link Session}.
      */
     @Override
     public void close() {
-        // close the WebSocket session
         if (!isEventStreamClosed()) {
             try {
-                this.session.close();
+                this.session.close(new CloseReason(CloseCodes.GOING_AWAY,
+                        "The listener has closed the event stream"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        // notify all the listeners and cleanup
-        synchronized (listeners) {
-            listeners.stream().forEach(l -> l.eventStreamClosed());
-            // clear out the listeners
-            listeners.clear();
         }
     }
 
@@ -217,14 +210,22 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * On closing WebSocket, refresh the Session and close all objects of this class.
+     * On closing the websocket, refresh the session and notify all subscribed listeners.
+     * Upon exit from this method, all subscribed listeners will be removed.
      *
-     * @param session The WebSocket {@link Session}
-     * @param closeReason A {@link CloseReason} for the closure of WebSocket.
+     * @param session the websocket {@link Session}
+     * @param closeReason the {@link CloseReason} for the websocket closure
      */
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
         this.session = session;
-        this.close();
+
+        // Notify all the listeners and cleanup
+        synchronized (listeners) {
+            listeners.stream().forEach(l -> l.eventStreamClosed(closeReason));
+
+            // Clear out the listeners
+            listeners.clear();
+        }
     }
 }
