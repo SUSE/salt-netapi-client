@@ -15,12 +15,12 @@ import java.util.Optional;
 public class LocalCall<R> implements Call<R> {
 
     private final String functionName;
-    private final Optional<List<Object>> arg;
-    private final Optional<Map<String, Object>> kwarg;
+    private final Optional<List<?>> arg;
+    private final Optional<Map<String, ?>> kwarg;
     private final TypeToken<R> returnType;
 
-    public LocalCall(String functionName, Optional<List<Object>> arg,
-            Optional<Map<String, Object>> kwarg, TypeToken<R> returnType) {
+    public LocalCall(String functionName, Optional<List<?>> arg,
+            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType) {
         this.functionName = functionName;
         this.arg = arg;
         this.kwarg = kwarg;

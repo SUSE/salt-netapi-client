@@ -14,10 +14,10 @@ import java.util.Optional;
 public class RunnerCall<R> implements Call<R> {
 
     private final String functionName;
-    private final Optional<Map<String, Object>> kwargs;
+    private final Optional<Map<String, ?>> kwargs;
     private final TypeToken<R> returnType;
 
-    public RunnerCall(String functionName, Optional<Map<String, Object>> kwargs,
+    public RunnerCall(String functionName, Optional<Map<String, ?>> kwargs,
             TypeToken<R> returnType) {
         this.functionName = functionName;
         this.kwargs = kwargs;
