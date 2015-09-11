@@ -12,8 +12,8 @@ import com.suse.saltstack.netapi.exception.ParsingException;
  * StartDate is a convenience wrapper allowing for parsing of StartDate in the
  * timezone appropriate to a given master.
  */
-
 public class StartTime {
+
     private final String dateString;
     private transient final Date defaultTzDate;
 
@@ -21,12 +21,19 @@ public class StartTime {
     private transient final SimpleDateFormat startJobDateFormat =
             new SimpleDateFormat("yyyy, MMM dd HH:mm:ss.SSS", Locale.US);
 
+    /**
+     * Construct a {@link StartTime} from a date given as string.
+     *
+     * @param dateString the start time formatted as string to be parsed
+     * @throws ParsingException in case of a problem while parsing dateString
+     */
     public StartTime(String dateString) throws ParsingException {
         try {
-            if (dateString != null)
+            if (dateString != null) {
                 this.defaultTzDate = startJobDateFormat.parse(dateString);
-            else
+            } else {
                 this.defaultTzDate = null;
+            }
         } catch (ParseException e) {
             throw new ParsingException(e);
         }
@@ -42,8 +49,9 @@ public class StartTime {
      * @return {@link Date} representation of StartTime at provided timezone
      */
     public synchronized Date getDate(TimeZone tz) {
-        if (dateString == null)
+        if (dateString == null) {
             return null;
+        }
 
         startJobDateFormat.setTimeZone(tz);
         try {
