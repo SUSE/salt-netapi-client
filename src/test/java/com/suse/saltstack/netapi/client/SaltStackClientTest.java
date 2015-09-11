@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,6 +54,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -630,6 +632,50 @@ public class SaltStackClientTest {
                 .withRequestBody(equalTo("")));
     }
 
+    @Test
+    public void testJobsDiffTz() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_JOBS_RESPONSE)));
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        TimeZone defaultTz = TimeZone.getDefault();
+        TimeZone tz = null;
+
+        for (String zone : TimeZone.getAvailableIDs()) {
+            tz = TimeZone.getTimeZone(zone);
+            long diff = tz.getRawOffset() -
+                    df.getTimeZone().getRawOffset();
+
+            // Pick a TZ far enough from default to avoid possible DST issues
+            if (Math.abs(diff) > 3600000 * 3) {
+                break;
+            }
+        }
+
+        Map<String, Job> jobs = client.getJobs();
+        Job job1 = jobs.get("20150304192951636258");
+        Job job2 = jobs.get("20150304200110485012");
+
+        assertEquals(df.parse("2015-03-04 19:29:51.636"), job1.getStartTime(defaultTz));
+        assertEquals(df.parse("2015-03-04 20:01:10.485"), job2.getStartTime(defaultTz));
+        assertEquals(df.parse("2015-03-04 19:29:51.636"), job1.getStartTime());
+        assertEquals(df.parse("2015-03-04 20:01:10.485"), job2.getStartTime());
+
+        df.setTimeZone(tz);
+        assertEquals(df.parse("2015-03-04 19:29:51.636"), job1.getStartTime(tz));
+        assertEquals(df.parse("2015-03-04 20:01:10.485"), job2.getStartTime(tz));
+        assertNotEquals(job1.getStartTime(defaultTz), job1.getStartTime(tz));
+        assertNotEquals(job2.getStartTime(defaultTz), job2.getStartTime(tz));
+
+        verify(1, getRequestedFor(urlEqualTo("/jobs"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withRequestBody(equalTo("")));
+    }
+
     @Test(expected = JsonSyntaxException.class)
     public void testJobsWithInvalidStartTime() throws Exception {
         stubFor(any(urlMatching(".*"))
@@ -655,6 +701,8 @@ public class SaltStackClientTest {
         Job job2 = jobs.get("20150304200110485012");
         assertNull(job1.getStartTime());
         assertNull(job2.getStartTime());
+        assertNull(job1.getStartTime(TimeZone.getDefault()));
+        assertNull(job2.getStartTime(TimeZone.getDefault()));
         verify(1, getRequestedFor(urlEqualTo("/jobs"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
@@ -704,6 +752,8 @@ public class SaltStackClientTest {
         assertEquals(pendingMinions, results.getMinions());
         assertEquals(pendingMinions, results.getPendingMinions());
         assertEquals("2015-08-06 16:55:13", DATE_FORMAT.format(results.getStartTime()));
+        assertEquals("2015-08-06 16:55:13",
+                DATE_FORMAT.format(results.getStartTime(DATE_FORMAT.getTimeZone())));
 
         verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json"))

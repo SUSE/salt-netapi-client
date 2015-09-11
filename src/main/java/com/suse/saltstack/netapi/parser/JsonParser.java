@@ -17,11 +17,11 @@ import com.suse.saltstack.netapi.datatypes.Arguments;
 import com.suse.saltstack.netapi.datatypes.Event;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
+import com.suse.saltstack.netapi.datatypes.StartTime;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Applications;
 import com.suse.saltstack.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
-import com.suse.saltstack.netapi.exception.ParsingException;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
 
@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +76,7 @@ public class JsonParser<T> {
         this.type = type;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
+                .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
                 .registerTypeAdapter(Stats.class, new StatsDeserializer())
                 .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
                 .create();
@@ -245,31 +245,27 @@ public class JsonParser<T> {
     /**
      * Json adapter to handle the Job.StartTime date format given by netapi
      */
-    public class JobStartTimeJsonAdapter extends TypeAdapter<Date> {
+    private class StartTimeAdapter extends TypeAdapter<StartTime> {
+
         @Override
-        public synchronized void write(JsonWriter out, Date value) throws IOException {
-            if (value == null) {
-                out.nullValue();
-                return;
-            }
-            String dateFormatAsString = Job.START_TIME_FORMAT.format(value);
-            out.value(dateFormatAsString);
+        public void write(JsonWriter jsonWriter, StartTime date) throws IOException {
+            if (date == null)
+                jsonWriter.nullValue();
+            else
+                jsonWriter.value(date.toString());
         }
 
         @Override
-        public synchronized Date read(JsonReader in) throws IOException {
-            if (in.peek() == JsonToken.NULL) {
-                in.nextNull();
+        public StartTime read(JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.nextNull();
                 return null;
             }
-            try {
-                String dateStr = in.nextString();
-                // Remove microseconds because java Date does not support it
-                dateStr = dateStr.substring(0, dateStr.length() - 3);
-                return Job.START_TIME_FORMAT.parse(dateStr);
-            } catch (ParseException e) {
-                throw new ParsingException(e);
-            }
+
+            String dateStr = jsonReader.nextString();
+            // Remove microseconds because java Date does not support it
+            String subStr = dateStr.substring(0, dateStr.length() - 3);
+            return new StartTime(subStr);
         }
     }
 }
