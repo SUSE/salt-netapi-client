@@ -249,10 +249,11 @@ public class JsonParser<T> {
 
         @Override
         public void write(JsonWriter jsonWriter, StartTime date) throws IOException {
-            if (date == null)
+            if (date == null) {
                 jsonWriter.nullValue();
-            else
+            } else {
                 jsonWriter.value(date.toString());
+            }
         }
 
         @Override
