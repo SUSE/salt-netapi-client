@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -31,9 +32,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Parser for Saltstack responses.
@@ -76,9 +80,11 @@ public class JsonParser<T> {
         this.type = type;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
                 .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
                 .registerTypeAdapter(Stats.class, new StatsDeserializer())
                 .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
+                .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
                 .create();
     }
 
@@ -123,6 +129,47 @@ public class JsonParser<T> {
             } catch (NumberFormatException | IllegalStateException e) {
                 throw new JsonParseException(e);
             }
+        }
+    }
+
+    /**
+     * TypeAdaptorFactory creating TypeAdapters for Optional
+     */
+    private class OptionalTypeAdapterFactory implements TypeAdapterFactory {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+            Type type = typeToken.getType();
+            boolean isOptional = typeToken.getRawType() == Optional.class;
+            boolean isParameterized = type instanceof ParameterizedType;
+            if (isOptional && isParameterized) {
+                Type elementType = ((ParameterizedType) type).getActualTypeArguments()[0];
+                TypeAdapter<?> elementAdapter = gson.getAdapter(TypeToken.get(elementType));
+                return (TypeAdapter<T>) optionalAdapter(elementAdapter);
+            } else {
+                return null;
+            }
+        }
+
+        private <A> TypeAdapter<Optional<A>> optionalAdapter(TypeAdapter<A> innerAdapter) {
+            return new TypeAdapter<Optional<A>>() {
+                @Override
+                public Optional<A> read(JsonReader in) throws IOException {
+                    if (in.peek() == JsonToken.NULL) {
+                        in.nextNull();
+                        return Optional.empty();
+                    } else {
+                        A value = innerAdapter.read(in);
+                        return Optional.of(value);
+                    }
+                }
+
+                @Override
+                public void write(JsonWriter out, Optional<A> optional) throws IOException {
+                    innerAdapter.write(out, optional.orElse(null));
+                }
+            };
         }
     }
 
@@ -267,6 +314,31 @@ public class JsonParser<T> {
             // Remove microseconds because java Date does not support it
             String subStr = dateStr.substring(0, dateStr.length() - 3);
             return new StartTime(subStr);
+        }
+    }
+
+
+    /**
+     * Adapter to convert an ISO formatted string to LocalDateTime
+     */
+    private class LocalDateTimeISOAdapter extends TypeAdapter<LocalDateTime> {
+
+        @Override
+        public void write(JsonWriter jsonWriter, LocalDateTime date) throws IOException {
+            if (date == null) {
+                throw new JsonParseException("null is not a valid value for LocalDateTime");
+            } else {
+                jsonWriter.value(date.toString());
+            }
+        }
+
+        @Override
+        public LocalDateTime read(JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                throw new JsonParseException("null is not a valid value for LocalDateTime");
+            }
+            String dateStr = jsonReader.nextString();
+            return LocalDateTime.parse(dateStr);
         }
     }
 }
