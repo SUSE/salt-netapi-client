@@ -171,7 +171,7 @@ public class SaltStackClientTest {
 
     @Test(expected = ExecutionException.class)
     public void testLoginAsyncFailure() throws Exception {
-        stubFor(any(urlMatching("*."))
+        stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
 
