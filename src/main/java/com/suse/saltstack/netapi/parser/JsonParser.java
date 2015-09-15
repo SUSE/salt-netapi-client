@@ -139,14 +139,14 @@ public class JsonParser<T> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+        public <A> TypeAdapter<A> create(Gson gson, TypeToken<A> typeToken) {
             Type type = typeToken.getType();
             boolean isOptional = typeToken.getRawType() == Optional.class;
             boolean isParameterized = type instanceof ParameterizedType;
             if (isOptional && isParameterized) {
                 Type elementType = ((ParameterizedType) type).getActualTypeArguments()[0];
                 TypeAdapter<?> elementAdapter = gson.getAdapter(TypeToken.get(elementType));
-                return (TypeAdapter<T>) optionalAdapter(elementAdapter);
+                return (TypeAdapter<A>) optionalAdapter(elementAdapter);
             } else {
                 return null;
             }
