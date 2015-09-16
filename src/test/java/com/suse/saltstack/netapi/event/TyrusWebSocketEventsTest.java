@@ -126,7 +126,7 @@ public class TyrusWebSocketEventsTest {
         SimpleEventListenerClient client3 = new SimpleEventListenerClient();
         SimpleEventListenerClient client4 = new SimpleEventListenerClient();
 
-        try (EventStream streamEvents = new EventStream()) {
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
             streamEvents.addEventListener(client1);
             streamEvents.addEventListener(client2);
             streamEvents.addEventListener(client3);

@@ -61,14 +61,6 @@ public class EventStream implements AutoCloseable {
     public Session session;
 
     /**
-     * A default constructor used to create this object empty. It prepare the WebSocket
-     * implementation, but it does not start the connection to the server
-     * and then the event processing too. This constructor is used for unit testing.
-     */
-    public EventStream() {
-    }
-
-    /**
      * Constructor used to create this object.
      * Automatically open a WebSocket and start event processing.
      *
