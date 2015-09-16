@@ -40,6 +40,16 @@ public class EventStream implements AutoCloseable {
     private final List<EventListener> listeners = new ArrayList<>();
 
     /**
+     * Default message buffer size in characters.
+     */
+    private final int defaultBufferSize = 1024;
+
+    /**
+     * Buffer for partial messages.
+     */
+    private final StringBuilder partialMessageBuffer = new StringBuilder(defaultBufferSize);
+
+    /**
      * The {@link WebSocketContainer} object for a @ClientEndpoint implementation.
      */
     private final WebSocketContainer websocketContainer =
@@ -183,18 +193,37 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Notify listeners on each event received on the WebSocket.
+     * Notify listeners on each event received on the websocket and buffer partial messages.
      *
-     * @param message The message received on this WebSocket
+     * @param partialMessage partial message received on this websocket
+     * @param last indicate the last part of a message
      */
     @OnMessage
-    public void onMessage(String message) {
-        if (message != null && !message.equals("server received message")) {
-            // Salt API adds a "data: " prefix that we need to ignore
-            Event event = JsonParser.EVENTS.parse(message.substring(6));
-            synchronized (listeners) {
-                listeners.stream().forEach(l -> l.notify(event));
+    public void onMessage(String partialMessage, boolean last) {
+        if (last) {
+            String message;
+            if (partialMessageBuffer.length() == 0) {
+                message = partialMessage;
+            } else {
+                partialMessageBuffer.append(partialMessage);
+                message = partialMessageBuffer.toString();
             }
+
+            // Notify all registered listeners
+            if (!message.equals("server received message")) {
+                // Salt API adds a "data: " prefix that we need to ignore
+                Event event = JsonParser.EVENTS.parse(message.substring(6));
+                synchronized (listeners) {
+                    listeners.stream().forEach(l -> l.notify(event));
+                }
+            }
+
+            // Empty the buffer (and reset size to the defaultBufferSize)
+            partialMessageBuffer.setLength(0);
+            partialMessageBuffer.trimToSize();
+            partialMessageBuffer.ensureCapacity(defaultBufferSize);
+        } else {
+            partialMessageBuffer.append(partialMessage);
         }
     }
 
