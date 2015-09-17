@@ -244,7 +244,7 @@ public class EventStream implements AutoCloseable {
     /**
      * On error, convert {@link Throwable} into {@link CloseReason} and close the session.
      *
-     * @param t The Throwable object received on the current error.
+     * @param throwable The Throwable object received on the current error.
      * @throws IOException in case of an error when closing the session
      */
     @OnError
