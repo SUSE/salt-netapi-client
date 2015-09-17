@@ -216,7 +216,7 @@ public class EventStream implements AutoCloseable {
                 partialMessageBuffer.append(partialMessage);
                 message = partialMessageBuffer.toString();
             }
-            if (maxMessageLength >= 0 && message.length() > maxMessageLength) {
+            if (maxMessageLength > 0 && message.length() > maxMessageLength) {
                 throw new MessageTooBigException(maxMessageLength);
             }
 
@@ -235,7 +235,7 @@ public class EventStream implements AutoCloseable {
             partialMessageBuffer.setLength(0);
         } else {
             partialMessageBuffer.append(partialMessage);
-            if (maxMessageLength >= 0 && partialMessageBuffer.length() > maxMessageLength) {
+            if (maxMessageLength > 0 && partialMessageBuffer.length() > maxMessageLength) {
                 throw new MessageTooBigException(maxMessageLength);
             }
         }
