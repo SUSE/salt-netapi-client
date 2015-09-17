@@ -64,7 +64,7 @@ public class EventStream implements AutoCloseable {
     /**
      * The WebSocket {@link Session}.
      */
-    public Session session;
+    private Session session;
 
     /**
      * Constructor used to create this object.
