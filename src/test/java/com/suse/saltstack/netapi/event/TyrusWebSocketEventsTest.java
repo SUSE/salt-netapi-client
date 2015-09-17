@@ -38,7 +38,7 @@ public class TyrusWebSocketEventsTest {
     /**
      * The WebSocket URI path to connect to the server.
      */
-    private URI ws_uri;
+    private URI wsUri;
 
     /**
      * Client configuration used in every test
@@ -59,12 +59,12 @@ public class TyrusWebSocketEventsTest {
                 null, WebSocketServerSalt.class);
         serverEndpoint.start();
 
-        ws_uri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
+        wsUri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
                 .resolve(WEBSOCKET_PATH);
 
         clientConfig = new ClientConfig();
         clientConfig.put(ClientConfig.TOKEN, "token");
-        clientConfig.put(ClientConfig.URL, ws_uri);
+        clientConfig.put(ClientConfig.URL, wsUri);
     }
 
     /**
