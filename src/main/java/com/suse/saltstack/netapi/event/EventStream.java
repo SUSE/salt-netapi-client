@@ -215,6 +215,11 @@ public class EventStream implements AutoCloseable {
             } else {
                 partialMessageBuffer.append(partialMessage);
                 message = partialMessageBuffer.toString();
+
+                // Reset the size to the defaultBufferSize and empty the buffer
+                partialMessageBuffer.setLength(defaultBufferSize);
+                partialMessageBuffer.trimToSize();
+                partialMessageBuffer.setLength(0);
             }
             if (maxMessageLength > 0 && message.length() > maxMessageLength) {
                 throw new MessageTooBigException(maxMessageLength);
@@ -228,11 +233,6 @@ public class EventStream implements AutoCloseable {
                     listeners.stream().forEach(l -> l.notify(event));
                 }
             }
-
-            // Reset the size to the defaultBufferSize and empty the buffer
-            partialMessageBuffer.setLength(defaultBufferSize);
-            partialMessageBuffer.trimToSize();
-            partialMessageBuffer.setLength(0);
         } else {
             partialMessageBuffer.append(partialMessage);
             if (maxMessageLength > 0 && partialMessageBuffer.length() > maxMessageLength) {
