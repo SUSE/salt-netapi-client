@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.websocket.CloseReason;
+import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.DeploymentException;
 
 import java.io.IOException;
@@ -172,6 +173,31 @@ public class TyrusWebSocketEventsTest {
     }
 
     /**
+     * Test setting a maximum message length and make sure the stream is closed.
+     *
+     * @throws Exception in case of an error
+     */
+    @Test
+    public void testMaxMessageLength() throws Exception {
+        int maxMessageLength = 10;
+        clientConfig.put(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH, maxMessageLength);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
+            EventStreamClosedClient eventListener = new EventStreamClosedClient(latch);
+            streamEvents.addEventListener(eventListener);
+
+            latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue(streamEvents.isEventStreamClosed());
+            Assert.assertEquals(CloseCodes.TOO_BIG,
+                    eventListener.closeReason.getCloseCode());
+            String message = "Message length exceeded the configured maximum (" +
+                    maxMessageLength + " characters)";
+            Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
+        }
+    }
+
+    /**
      * At the end of the test {@link Server} stops
      * and release its address for other test execution.
      */
@@ -250,6 +276,7 @@ public class TyrusWebSocketEventsTest {
      */
     private class EventStreamClosedClient implements EventListener {
         private final CountDownLatch latch;
+        CloseReason closeReason;
 
         public EventStreamClosedClient(CountDownLatch latchIn) {
             this.latch = latchIn;
@@ -262,6 +289,8 @@ public class TyrusWebSocketEventsTest {
 
         @Override
         public void eventStreamClosed(CloseReason closeReason) {
+            this.latch.countDown();
+            this.closeReason = closeReason;
         }
     }
 }
