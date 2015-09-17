@@ -138,9 +138,9 @@ public class TyrusWebSocketEventsTest {
     }
 
     /**
-     * Tests: event processing WebSocket session not open
+     * Test event processing websocket session closed by the listener.
      *
-     * @throws IOException Exception creating the {@link EventStream}
+     * @throws Exception in case of an error
      */
     @Test
     public void testEventProcessingStateStopped() throws Exception {
@@ -149,6 +149,10 @@ public class TyrusWebSocketEventsTest {
         streamEvents.addEventListener(eventListener);
         streamEvents.close();
         Assert.assertTrue(streamEvents.isEventStreamClosed());
+        Assert.assertEquals(CloseCodes.GOING_AWAY,
+                eventListener.closeReason.getCloseCode());
+        String message = "The listener has closed the event stream";
+        Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
     }
 
     /**
@@ -262,12 +266,15 @@ public class TyrusWebSocketEventsTest {
      * Simple Event ListenerClient
      */
     private class SimpleEventListenerClient implements EventListener {
+        CloseReason closeReason;
+
         @Override
         public void notify(Event event) {
         }
 
         @Override
         public void eventStreamClosed(CloseReason closeReason) {
+            this.closeReason = closeReason;
         }
     }
 
