@@ -43,7 +43,7 @@ public class EventStream implements AutoCloseable {
     /**
      * Default message buffer size in characters.
      */
-    private final int defaultBufferSize = 1024;
+    private final int defaultBufferSize = 0x400;
 
     /**
      * Maximum message length in characters, configurable via {@link ClientConfig}.
