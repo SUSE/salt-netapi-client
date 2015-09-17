@@ -230,7 +230,7 @@ public class EventStream implements AutoCloseable {
                 // Salt API adds a "data: " prefix that we need to ignore
                 Event event = JsonParser.EVENTS.parse(message.substring(6));
                 synchronized (listeners) {
-                    listeners.stream().forEach(l -> l.notify(event));
+                    listeners.stream().forEach(listener -> listener.notify(event));
                 }
             }
         } else {
@@ -271,7 +271,7 @@ public class EventStream implements AutoCloseable {
 
         // Notify all the listeners and cleanup
         synchronized (listeners) {
-            listeners.stream().forEach(l -> l.eventStreamClosed(closeReason));
+            listeners.stream().forEach(listener -> listener.eventStreamClosed(closeReason));
 
             // Clear out the listeners
             listeners.clear();
