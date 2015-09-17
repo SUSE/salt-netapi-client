@@ -13,7 +13,6 @@ import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.DeploymentException;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -71,9 +70,7 @@ public class TyrusWebSocketEventsTest {
      * Tests: listener insertion, listener notification, stream closed, stream content.
      * Source file contains 6 events: asserts listener notify method is called 6 times.
      *
-     * @throws IOException Exception creating the {@link EventStream}
-     * @throws DeploymentException Exception connecting WebSocket to {@link Server}
-     * @throws InterruptedException Exception using {@link CountDownLatch}
+     * @throws Exception in case of an error
      */
     @Test
     public void shouldFireNotifyMultipleTimes() throws Exception {
@@ -92,9 +89,7 @@ public class TyrusWebSocketEventsTest {
     /**
      * Tests: stream event content
      *
-     * @throws IOException Exception creating the {@link EventStream}
-     * @throws DeploymentException Exception connecting WebSocket to {@link Server}
-     * @throws InterruptedException Exception using {@link CountDownLatch}
+     * @throws Exception in case of an error
      */
     @Test
     public void testEventMessageContent() throws Exception {
@@ -116,7 +111,7 @@ public class TyrusWebSocketEventsTest {
     /**
      * Tests: listener management - count: +1 +1 +1 -1 -1 +1 == 2
      *
-     * @throws IOException Exception creating the {@link EventStream}
+     * @throws Exception in case of an error
      */
     @Test
     public void testListenerManagement() throws Exception {
@@ -158,9 +153,7 @@ public class TyrusWebSocketEventsTest {
     /**
      * Tests: event stream WebSocket session not closed
      *
-     * @throws IOException Exception creating the {@link EventStream}
-     * @throws DeploymentException Exception connecting WebSocket to {@link Server}
-     * @throws InterruptedException Exception using {@link CountDownLatch}
+     * @throws Exception in case of an error
      */
     @Test
     public void testEventStreamClosed() throws Exception {
