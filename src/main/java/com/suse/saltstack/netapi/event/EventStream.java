@@ -2,6 +2,7 @@ package com.suse.saltstack.netapi.event;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.datatypes.Event;
+import com.suse.saltstack.netapi.exception.MessageTooBigException;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
@@ -45,6 +46,11 @@ public class EventStream implements AutoCloseable {
     private final int defaultBufferSize = 1024;
 
     /**
+     * Maximum message length in characters, configurable via {@link ClientConfig}.
+     */
+    private final int maxMessageLength;
+
+    /**
      * Buffer for partial messages.
      */
     private final StringBuilder partialMessageBuffer = new StringBuilder(defaultBufferSize);
@@ -69,6 +75,7 @@ public class EventStream implements AutoCloseable {
      * @throws SaltStackException in case of an error during stream initialization
      */
     public EventStream(ClientConfig config) throws SaltStackException {
+        maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH);
         initializeStream(config);
     }
 
@@ -196,9 +203,11 @@ public class EventStream implements AutoCloseable {
      *
      * @param partialMessage partial message received on this websocket
      * @param last indicate the last part of a message
+     * @throws MessageTooBigException in case the message is longer than maxMessageLength
      */
     @OnMessage
-    public void onMessage(String partialMessage, boolean last) {
+    public void onMessage(String partialMessage, boolean last)
+            throws MessageTooBigException {
         if (last) {
             String message;
             if (partialMessageBuffer.length() == 0) {
@@ -206,6 +215,9 @@ public class EventStream implements AutoCloseable {
             } else {
                 partialMessageBuffer.append(partialMessage);
                 message = partialMessageBuffer.toString();
+            }
+            if (maxMessageLength >= 0 && message.length() > maxMessageLength) {
+                throw new MessageTooBigException(maxMessageLength);
             }
 
             // Notify all registered listeners
@@ -223,19 +235,27 @@ public class EventStream implements AutoCloseable {
             partialMessageBuffer.ensureCapacity(defaultBufferSize);
         } else {
             partialMessageBuffer.append(partialMessage);
+            if (maxMessageLength >= 0 && partialMessageBuffer.length() > maxMessageLength) {
+                throw new MessageTooBigException(maxMessageLength);
+            }
         }
     }
 
     /**
-     * On error, close all objects of this class.
+     * On error, convert {@link Throwable} into {@link CloseReason} and close the session.
      *
      * @param t The Throwable object received on the current error.
      * @throws IOException in case of an error when closing the session
      */
     @OnError
     public void onError(Throwable t) throws IOException {
-        this.close();
-        t.printStackTrace();
+        CloseReason closeReason;
+        if (t instanceof MessageTooBigException) {
+            closeReason = new CloseReason(CloseCodes.TOO_BIG, t.getMessage());
+        } else {
+            closeReason = new CloseReason(CloseCodes.CLOSED_ABNORMALLY, t.getMessage());
+        }
+        close(closeReason);
     }
 
     /**
