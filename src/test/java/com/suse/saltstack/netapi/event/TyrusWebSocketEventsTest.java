@@ -75,8 +75,7 @@ public class TyrusWebSocketEventsTest {
      * @throws InterruptedException Exception using {@link CountDownLatch}
      */
     @Test
-    public void shouldFireNotifyMultipleTimes()
-            throws IOException, DeploymentException, InterruptedException {
+    public void shouldFireNotifyMultipleTimes() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         int target = 6;
 
@@ -97,8 +96,7 @@ public class TyrusWebSocketEventsTest {
      * @throws InterruptedException Exception using {@link CountDownLatch}
      */
     @Test
-    public void testEventMessageContent()
-            throws IOException, DeploymentException, InterruptedException {
+    public void testEventMessageContent() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         try (EventStream streamEvents = new EventStream(clientConfig)) {
@@ -120,7 +118,7 @@ public class TyrusWebSocketEventsTest {
      * @throws IOException Exception creating the {@link EventStream}
      */
     @Test
-    public void testListenerManagement() throws IOException {
+    public void testListenerManagement() throws Exception {
         SimpleEventListenerClient client1 = new SimpleEventListenerClient();
         SimpleEventListenerClient client2 = new SimpleEventListenerClient();
         SimpleEventListenerClient client3 = new SimpleEventListenerClient();
@@ -144,7 +142,7 @@ public class TyrusWebSocketEventsTest {
      * @throws IOException Exception creating the {@link EventStream}
      */
     @Test
-    public void testEventProcessingStateStopped() throws IOException {
+    public void testEventProcessingStateStopped() throws Exception {
         EventStream streamEvents = new EventStream(clientConfig);
         SimpleEventListenerClient eventListener = new SimpleEventListenerClient();
         streamEvents.addEventListener(eventListener);
@@ -160,8 +158,7 @@ public class TyrusWebSocketEventsTest {
      * @throws InterruptedException Exception using {@link CountDownLatch}
      */
     @Test
-    public void testEventStreamClosed()
-            throws IOException, DeploymentException, InterruptedException {
+    public void testEventStreamClosed() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         try (EventStream streamEvents = new EventStream(clientConfig)) {

@@ -66,13 +66,10 @@ public class EventStream implements AutoCloseable {
      *
      * @param config Contains the necessary details such as EndPoint URL and
      * authentication token required to create the WebSocket.
+     * @throws SaltStackException in case of an error during stream initialization
      */
-    public EventStream(ClientConfig config) {
-        try {
-            initializeStream(config);
-        } catch (SaltStackException e) {
-            e.printStackTrace();
-        }
+    public EventStream(ClientConfig config) throws SaltStackException {
+        initializeStream(config);
     }
 
     /**
@@ -95,6 +92,9 @@ public class EventStream implements AutoCloseable {
 
     /**
      * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
+     *
+     * @param config the client configuration
+     * @throws SaltStackException in case of an error during stream initialization
      */
     private void initializeStream (ClientConfig config) throws SaltStackException {
         try {
@@ -155,16 +155,24 @@ public class EventStream implements AutoCloseable {
 
     /**
      * Close the WebSocket {@link Session}.
+     *
+     * @throws IOException in case of an error when closing the session
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
+        close(new CloseReason(CloseCodes.GOING_AWAY,
+                "The listener has closed the event stream"));
+    }
+
+    /**
+     * Close the WebSocket {@link Session} with a given close reason.
+     *
+     * @param closeReason the reason for the websocket closure
+     * @throws IOException in case of an error when closing the session
+     */
+    public void close(CloseReason closeReason) throws IOException {
         if (!isEventStreamClosed()) {
-            try {
-                this.session.close(new CloseReason(CloseCodes.GOING_AWAY,
-                        "The listener has closed the event stream"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            session.close(closeReason);
         }
     }
 
@@ -175,8 +183,7 @@ public class EventStream implements AutoCloseable {
      *
      * @param session The just started WebSocket {@link Session}.
      * @param config The {@link EndpointConfig} containing the handshake informations.
-     * @throws IOException Exception thrown if something goes wrong sending message
-     * to the remote peer.
+     * @throws IOException if something goes wrong sending message to the remote peer
      */
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) throws IOException {
@@ -223,9 +230,10 @@ public class EventStream implements AutoCloseable {
      * On error, close all objects of this class.
      *
      * @param t The Throwable object received on the current error.
+     * @throws IOException in case of an error when closing the session
      */
     @OnError
-    public void onError(Throwable t) {
+    public void onError(Throwable t) throws IOException {
         this.close();
         t.printStackTrace();
     }
