@@ -229,10 +229,10 @@ public class EventStream implements AutoCloseable {
                 }
             }
 
-            // Empty the buffer (and reset size to the defaultBufferSize)
-            partialMessageBuffer.setLength(0);
+            // Reset the size to the defaultBufferSize and empty the buffer
+            partialMessageBuffer.setLength(defaultBufferSize);
             partialMessageBuffer.trimToSize();
-            partialMessageBuffer.ensureCapacity(defaultBufferSize);
+            partialMessageBuffer.setLength(0);
         } else {
             partialMessageBuffer.append(partialMessage);
             if (maxMessageLength >= 0 && partialMessageBuffer.length() > maxMessageLength) {
