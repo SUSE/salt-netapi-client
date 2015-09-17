@@ -37,7 +37,7 @@ public class ClientConfig {
     /**
      * Maximum websocket message length in characters. The default value corresponds to
      * 10 MB, assuming that one character takes up 2 bytes. This limit can be disabled
-     * by setting a value <= 0.
+     * by setting a value less than or equal to 0.
      */
     public static final Key<Integer> WEBSOCKET_MAX_MESSAGE_LENGTH = new Key<>(5242880);
 
