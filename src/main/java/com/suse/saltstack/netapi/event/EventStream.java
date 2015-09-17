@@ -248,14 +248,9 @@ public class EventStream implements AutoCloseable {
      * @throws IOException in case of an error when closing the session
      */
     @OnError
-    public void onError(Throwable t) throws IOException {
-        CloseReason closeReason;
-        if (t instanceof MessageTooBigException) {
-            closeReason = new CloseReason(CloseCodes.TOO_BIG, t.getMessage());
-        } else {
-            closeReason = new CloseReason(CloseCodes.CLOSED_ABNORMALLY, t.getMessage());
-        }
-        close(closeReason);
+    public void onError(Throwable throwable) throws IOException {
+        close(new CloseReason(throwable instanceof MessageTooBigException ?
+                CloseCodes.TOO_BIG : CloseCodes.CLOSED_ABNORMALLY, throwable.getMessage()));
     }
 
     /**
