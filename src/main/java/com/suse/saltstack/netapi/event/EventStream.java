@@ -53,7 +53,7 @@ public class EventStream implements AutoCloseable {
     /**
      * Buffer for partial messages.
      */
-    private final StringBuilder partialMessageBuffer = new StringBuilder(defaultBufferSize);
+    private final StringBuilder messageBuffer = new StringBuilder(defaultBufferSize);
 
     /**
      * The {@link WebSocketContainer} object for a @ClientEndpoint implementation.
@@ -208,23 +208,23 @@ public class EventStream implements AutoCloseable {
     @OnMessage
     public void onMessage(String partialMessage, boolean last)
             throws MessageTooBigException {
-        if (maxMessageLength > 0 && partialMessageBuffer.length() +
-                partialMessage.length() > maxMessageLength) {
+        if (maxMessageLength > 0 &&
+                messageBuffer.length() + partialMessage.length() > maxMessageLength) {
             throw new MessageTooBigException(maxMessageLength);
         }
 
         if (last) {
             String message;
-            if (partialMessageBuffer.length() == 0) {
+            if (messageBuffer.length() == 0) {
                 message = partialMessage;
             } else {
-                partialMessageBuffer.append(partialMessage);
-                message = partialMessageBuffer.toString();
+                messageBuffer.append(partialMessage);
+                message = messageBuffer.toString();
 
                 // Reset the size to the defaultBufferSize and empty the buffer
-                partialMessageBuffer.setLength(defaultBufferSize);
-                partialMessageBuffer.trimToSize();
-                partialMessageBuffer.setLength(0);
+                messageBuffer.setLength(defaultBufferSize);
+                messageBuffer.trimToSize();
+                messageBuffer.setLength(0);
             }
 
             // Notify all registered listeners
@@ -236,7 +236,7 @@ public class EventStream implements AutoCloseable {
                 }
             }
         } else {
-            partialMessageBuffer.append(partialMessage);
+            messageBuffer.append(partialMessage);
         }
     }
 
