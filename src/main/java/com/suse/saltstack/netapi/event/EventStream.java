@@ -75,7 +75,8 @@ public class EventStream implements AutoCloseable {
      * @throws SaltStackException in case of an error during stream initialization
      */
     public EventStream(ClientConfig config) throws SaltStackException {
-        maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH);
+        maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) > 0 ?
+                config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) : Integer.MAX_VALUE;
         initializeStream(config);
     }
 
@@ -208,8 +209,7 @@ public class EventStream implements AutoCloseable {
     @OnMessage
     public void onMessage(String partialMessage, boolean last)
             throws MessageTooBigException {
-        if (maxMessageLength > 0 &&
-                messageBuffer.length() + partialMessage.length() > maxMessageLength) {
+        if (messageBuffer.length() + partialMessage.length() > maxMessageLength) {
             throw new MessageTooBigException(maxMessageLength);
         }
 
