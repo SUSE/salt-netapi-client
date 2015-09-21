@@ -56,7 +56,7 @@ public class Pkg {
         private ZonedDateTime buildDate;
         @SerializedName("build_host")
         private String buildHost;
-        private String decription;
+        private String description;
         private String group;
         @SerializedName("install_date")
         private ZonedDateTime installDate;
@@ -93,8 +93,8 @@ public class Pkg {
             return group;
         }
 
-        public String getDecription() {
-            return decription;
+        public String getDescription() {
+            return description;
         }
 
         public ZonedDateTime getInstallDate() {
