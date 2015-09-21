@@ -502,8 +502,9 @@ public class SaltStackClient {
      * {@code GET /events}
      *
      * @return the event stream
+     * @throws SaltStackException in case of an error during websocket stream initialization
      */
-    public EventStream events() {
+    public EventStream events() throws SaltStackException {
         return new EventStream(config);
     }
 

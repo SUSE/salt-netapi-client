@@ -2,6 +2,7 @@ package com.suse.saltstack.netapi.event;
 
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.datatypes.Event;
+import com.suse.saltstack.netapi.exception.MessageTooBigException;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
@@ -40,6 +41,21 @@ public class EventStream implements AutoCloseable {
     private final List<EventListener> listeners = new ArrayList<>();
 
     /**
+     * Default message buffer size in characters.
+     */
+    private final int defaultBufferSize = 0x400;
+
+    /**
+     * Maximum message length in characters, configurable via {@link ClientConfig}.
+     */
+    private final int maxMessageLength;
+
+    /**
+     * Buffer for partial messages.
+     */
+    private final StringBuilder messageBuffer = new StringBuilder(defaultBufferSize);
+
+    /**
      * The {@link WebSocketContainer} object for a @ClientEndpoint implementation.
      */
     private final WebSocketContainer websocketContainer =
@@ -48,15 +64,7 @@ public class EventStream implements AutoCloseable {
     /**
      * The WebSocket {@link Session}.
      */
-    public Session session;
-
-    /**
-     * A default constructor used to create this object empty. It prepare the WebSocket
-     * implementation, but it does not start the connection to the server
-     * and then the event processing too. This constructor is used for unit testing.
-     */
-    public EventStream() {
-    }
+    private Session session;
 
     /**
      * Constructor used to create this object.
@@ -64,13 +72,12 @@ public class EventStream implements AutoCloseable {
      *
      * @param config Contains the necessary details such as EndPoint URL and
      * authentication token required to create the WebSocket.
+     * @throws SaltStackException in case of an error during stream initialization
      */
-    public EventStream(ClientConfig config) {
-        try {
-            initializeStream(config);
-        } catch (SaltStackException e) {
-            e.printStackTrace();
-        }
+    public EventStream(ClientConfig config) throws SaltStackException {
+        maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) > 0 ?
+                config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) : Integer.MAX_VALUE;
+        initializeStream(config);
     }
 
     /**
@@ -93,6 +100,9 @@ public class EventStream implements AutoCloseable {
 
     /**
      * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
+     *
+     * @param config the client configuration
+     * @throws SaltStackException in case of an error during stream initialization
      */
     private void initializeStream (ClientConfig config) throws SaltStackException {
         try {
@@ -153,16 +163,24 @@ public class EventStream implements AutoCloseable {
 
     /**
      * Close the WebSocket {@link Session}.
+     *
+     * @throws IOException in case of an error when closing the session
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
+        close(new CloseReason(CloseCodes.GOING_AWAY,
+                "The listener has closed the event stream"));
+    }
+
+    /**
+     * Close the WebSocket {@link Session} with a given close reason.
+     *
+     * @param closeReason the reason for the websocket closure
+     * @throws IOException in case of an error when closing the session
+     */
+    public void close(CloseReason closeReason) throws IOException {
         if (!isEventStreamClosed()) {
-            try {
-                this.session.close(new CloseReason(CloseCodes.GOING_AWAY,
-                        "The listener has closed the event stream"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            session.close(closeReason);
         }
     }
 
@@ -173,8 +191,7 @@ public class EventStream implements AutoCloseable {
      *
      * @param session The just started WebSocket {@link Session}.
      * @param config The {@link EndpointConfig} containing the handshake informations.
-     * @throws IOException Exception thrown if something goes wrong sending message
-     * to the remote peer.
+     * @throws IOException if something goes wrong sending message to the remote peer
      */
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) throws IOException {
@@ -183,30 +200,56 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Notify listeners on each event received on the WebSocket.
+     * Notify listeners on each event received on the websocket and buffer partial messages.
      *
-     * @param message The message received on this WebSocket
+     * @param partialMessage partial message received on this websocket
+     * @param last indicate the last part of a message
+     * @throws MessageTooBigException in case the message is longer than maxMessageLength
      */
     @OnMessage
-    public void onMessage(String message) {
-        if (message != null && !message.equals("server received message")) {
-            // Salt API adds a "data: " prefix that we need to ignore
-            Event event = JsonParser.EVENTS.parse(message.substring(6));
-            synchronized (listeners) {
-                listeners.stream().forEach(l -> l.notify(event));
+    public void onMessage(String partialMessage, boolean last)
+            throws MessageTooBigException {
+        if (partialMessage.length() > maxMessageLength - messageBuffer.length()) {
+            throw new MessageTooBigException(maxMessageLength);
+        }
+
+        if (last) {
+            String message;
+            if (messageBuffer.length() == 0) {
+                message = partialMessage;
+            } else {
+                messageBuffer.append(partialMessage);
+                message = messageBuffer.toString();
+
+                // Reset the size to the defaultBufferSize and empty the buffer
+                messageBuffer.setLength(defaultBufferSize);
+                messageBuffer.trimToSize();
+                messageBuffer.setLength(0);
             }
+
+            // Notify all registered listeners
+            if (!message.equals("server received message")) {
+                // Salt API adds a "data: " prefix that we need to ignore
+                Event event = JsonParser.EVENTS.parse(message.substring(6));
+                synchronized (listeners) {
+                    listeners.stream().forEach(listener -> listener.notify(event));
+                }
+            }
+        } else {
+            messageBuffer.append(partialMessage);
         }
     }
 
     /**
-     * On error, close all objects of this class.
+     * On error, convert {@link Throwable} into {@link CloseReason} and close the session.
      *
-     * @param t The Throwable object received on the current error.
+     * @param throwable The Throwable object received on the current error.
+     * @throws IOException in case of an error when closing the session
      */
     @OnError
-    public void onError(Throwable t) {
-        this.close();
-        t.printStackTrace();
+    public void onError(Throwable throwable) throws IOException {
+        close(new CloseReason(throwable instanceof MessageTooBigException ?
+                CloseCodes.TOO_BIG : CloseCodes.CLOSED_ABNORMALLY, throwable.getMessage()));
     }
 
     /**
@@ -222,7 +265,7 @@ public class EventStream implements AutoCloseable {
 
         // Notify all the listeners and cleanup
         synchronized (listeners) {
-            listeners.stream().forEach(l -> l.eventStreamClosed(closeReason));
+            listeners.stream().forEach(listener -> listener.eventStreamClosed(closeReason));
 
             // Clear out the listeners
             listeners.clear();

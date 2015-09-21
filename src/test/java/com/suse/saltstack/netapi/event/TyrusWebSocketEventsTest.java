@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.websocket.CloseReason;
+import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.DeploymentException;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class TyrusWebSocketEventsTest {
     /**
      * The WebSocket URI path to connect to the server.
      */
-    private URI ws_uri;
+    private URI wsUri;
 
     /**
      * Client configuration used in every test
@@ -58,25 +58,22 @@ public class TyrusWebSocketEventsTest {
                 null, WebSocketServerSalt.class);
         serverEndpoint.start();
 
-        ws_uri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
+        wsUri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
                 .resolve(WEBSOCKET_PATH);
 
         clientConfig = new ClientConfig();
         clientConfig.put(ClientConfig.TOKEN, "token");
-        clientConfig.put(ClientConfig.URL, ws_uri);
+        clientConfig.put(ClientConfig.URL, wsUri);
     }
 
     /**
      * Tests: listener insertion, listener notification, stream closed, stream content.
      * Source file contains 6 events: asserts listener notify method is called 6 times.
      *
-     * @throws IOException Exception creating the {@link EventStream}
-     * @throws DeploymentException Exception connecting WebSocket to {@link Server}
-     * @throws InterruptedException Exception using {@link CountDownLatch}
+     * @throws Exception in case of an error
      */
     @Test
-    public void shouldFireNotifyMultipleTimes()
-            throws IOException, DeploymentException, InterruptedException {
+    public void shouldFireNotifyMultipleTimes() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         int target = 6;
 
@@ -92,13 +89,10 @@ public class TyrusWebSocketEventsTest {
     /**
      * Tests: stream event content
      *
-     * @throws IOException Exception creating the {@link EventStream}
-     * @throws DeploymentException Exception connecting WebSocket to {@link Server}
-     * @throws InterruptedException Exception using {@link CountDownLatch}
+     * @throws Exception in case of an error
      */
     @Test
-    public void testEventMessageContent()
-            throws IOException, DeploymentException, InterruptedException {
+    public void testEventMessageContent() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         try (EventStream streamEvents = new EventStream(clientConfig)) {
@@ -117,16 +111,16 @@ public class TyrusWebSocketEventsTest {
     /**
      * Tests: listener management - count: +1 +1 +1 -1 -1 +1 == 2
      *
-     * @throws IOException Exception creating the {@link EventStream}
+     * @throws Exception in case of an error
      */
     @Test
-    public void testListenerManagement() throws IOException {
+    public void testListenerManagement() throws Exception {
         SimpleEventListenerClient client1 = new SimpleEventListenerClient();
         SimpleEventListenerClient client2 = new SimpleEventListenerClient();
         SimpleEventListenerClient client3 = new SimpleEventListenerClient();
         SimpleEventListenerClient client4 = new SimpleEventListenerClient();
 
-        try (EventStream streamEvents = new EventStream()) {
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
             streamEvents.addEventListener(client1);
             streamEvents.addEventListener(client2);
             streamEvents.addEventListener(client3);
@@ -139,29 +133,30 @@ public class TyrusWebSocketEventsTest {
     }
 
     /**
-     * Tests: event processing WebSocket session not open
+     * Test event processing websocket session closed by the listener.
      *
-     * @throws IOException Exception creating the {@link EventStream}
+     * @throws Exception in case of an error
      */
     @Test
-    public void testEventProcessingStateStopped() throws IOException {
+    public void testEventProcessingStateStopped() throws Exception {
         EventStream streamEvents = new EventStream(clientConfig);
         SimpleEventListenerClient eventListener = new SimpleEventListenerClient();
         streamEvents.addEventListener(eventListener);
         streamEvents.close();
         Assert.assertTrue(streamEvents.isEventStreamClosed());
+        Assert.assertEquals(CloseCodes.GOING_AWAY,
+                eventListener.closeReason.getCloseCode());
+        String message = "The listener has closed the event stream";
+        Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
     }
 
     /**
      * Tests: event stream WebSocket session not closed
      *
-     * @throws IOException Exception creating the {@link EventStream}
-     * @throws DeploymentException Exception connecting WebSocket to {@link Server}
-     * @throws InterruptedException Exception using {@link CountDownLatch}
+     * @throws Exception in case of an error
      */
     @Test
-    public void testEventStreamClosed()
-            throws IOException, DeploymentException, InterruptedException {
+    public void testEventStreamClosed() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         try (EventStream streamEvents = new EventStream(clientConfig)) {
@@ -171,6 +166,31 @@ public class TyrusWebSocketEventsTest {
 
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertFalse(streamEvents.isEventStreamClosed());
+        }
+    }
+
+    /**
+     * Test setting a maximum message length and make sure the stream is closed.
+     *
+     * @throws Exception in case of an error
+     */
+    @Test
+    public void testMaxMessageLength() throws Exception {
+        int maxMessageLength = 10;
+        clientConfig.put(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH, maxMessageLength);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        try (EventStream streamEvents = new EventStream(clientConfig)) {
+            EventStreamClosedClient eventListener = new EventStreamClosedClient(latch);
+            streamEvents.addEventListener(eventListener);
+
+            latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue(streamEvents.isEventStreamClosed());
+            Assert.assertEquals(CloseCodes.TOO_BIG,
+                    eventListener.closeReason.getCloseCode());
+            String message = "Message length exceeded the configured maximum (" +
+                    maxMessageLength + " characters)";
+            Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
         }
     }
 
@@ -239,12 +259,15 @@ public class TyrusWebSocketEventsTest {
      * Simple Event ListenerClient
      */
     private class SimpleEventListenerClient implements EventListener {
+        CloseReason closeReason;
+
         @Override
         public void notify(Event event) {
         }
 
         @Override
         public void eventStreamClosed(CloseReason closeReason) {
+            this.closeReason = closeReason;
         }
     }
 
@@ -253,6 +276,7 @@ public class TyrusWebSocketEventsTest {
      */
     private class EventStreamClosedClient implements EventListener {
         private final CountDownLatch latch;
+        CloseReason closeReason;
 
         public EventStreamClosedClient(CountDownLatch latchIn) {
             this.latch = latchIn;
@@ -265,6 +289,8 @@ public class TyrusWebSocketEventsTest {
 
         @Override
         public void eventStreamClosed(CloseReason closeReason) {
+            this.closeReason = closeReason;
+            this.latch.countDown();
         }
     }
 }

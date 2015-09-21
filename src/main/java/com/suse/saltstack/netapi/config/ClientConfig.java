@@ -35,6 +35,13 @@ public class ClientConfig {
     public static final Key<String> PROXY_PASSWORD = new Key<>();
 
     /**
+     * Maximum websocket message length in characters. The default value corresponds to
+     * 10 MB, assuming that one character takes up 2 bytes. This limit can be disabled
+     * by setting a value less than or equal to 0.
+     */
+    public static final Key<Integer> WEBSOCKET_MAX_MESSAGE_LENGTH = new Key<>(0x500000);
+
+    /**
      * A key to use with {@link ClientConfig}.
      * @param <T> The type of the value associated with this key.
      */
