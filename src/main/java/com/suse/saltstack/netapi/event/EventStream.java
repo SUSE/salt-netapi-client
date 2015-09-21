@@ -209,7 +209,7 @@ public class EventStream implements AutoCloseable {
     @OnMessage
     public void onMessage(String partialMessage, boolean last)
             throws MessageTooBigException {
-        if (messageBuffer.length() + partialMessage.length() > maxMessageLength) {
+        if (partialMessage.length() > maxMessageLength - messageBuffer.length()) {
             throw new MessageTooBigException(maxMessageLength);
         }
 
