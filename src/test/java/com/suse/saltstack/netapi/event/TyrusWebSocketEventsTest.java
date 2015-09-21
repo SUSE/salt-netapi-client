@@ -289,8 +289,8 @@ public class TyrusWebSocketEventsTest {
 
         @Override
         public void eventStreamClosed(CloseReason closeReason) {
-            this.latch.countDown();
             this.closeReason = closeReason;
+            this.latch.countDown();
         }
     }
 }
