@@ -202,7 +202,7 @@ public class SaltStackClient {
      * @return Future containing a boolean result, true if logout was successful
      */
     public Future<Boolean> logoutAsync() {
-        return executor.submit(this::logout);
+        return executor.submit(() -> (Boolean) this.logout());
     }
 
     /**
@@ -540,7 +540,7 @@ public class SaltStackClient {
      * triggering the event.
      */
     public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
-        return executor.submit(() -> sendEvent(eventTag, eventData));
+        return executor.submit(() -> { return sendEvent(eventTag, eventData); });
     }
 
     /**
