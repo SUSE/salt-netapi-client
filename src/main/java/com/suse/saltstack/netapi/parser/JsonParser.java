@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,7 @@ public class JsonParser<T> {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeISOAdapter())
                 .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
                 .registerTypeAdapter(Stats.class, new StatsDeserializer())
                 .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
@@ -339,6 +341,30 @@ public class JsonParser<T> {
             }
             String dateStr = jsonReader.nextString();
             return LocalDateTime.parse(dateStr);
+        }
+    }
+
+    /**
+     * Adapter to convert an ISO formatted string to ZonedDateTime
+     */
+    private class ZonedDateTimeISOAdapter extends TypeAdapter<ZonedDateTime> {
+
+        @Override
+        public void write(JsonWriter jsonWriter, ZonedDateTime date) throws IOException {
+            if (date == null) {
+                throw new JsonParseException("null is not a valid value for ZonedDateTime");
+            } else {
+                jsonWriter.value(date.toString());
+            }
+        }
+
+        @Override
+        public ZonedDateTime read(JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                throw new JsonParseException("null is not a valid value for ZonedDateTime");
+            }
+            String dateStr = jsonReader.nextString();
+            return ZonedDateTime.parse(dateStr);
         }
     }
 }

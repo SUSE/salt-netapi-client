@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.calls.LocalCall;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,13 +53,13 @@ public class Pkg {
 
         private String architecture;
         @SerializedName("build_date")
-        private LocalDateTime buildDate;
+        private ZonedDateTime buildDate;
         @SerializedName("build_host")
         private String buildHost;
-        private String decription;
+        private String description;
         private String group;
         @SerializedName("install_date")
-        private LocalDateTime installDate;
+        private ZonedDateTime installDate;
         private String license;
         private String name;
         @SerializedName("new_features_have_been_added")
@@ -81,7 +81,7 @@ public class Pkg {
             return architecture;
         }
 
-        public LocalDateTime getBuildDate() {
+        public ZonedDateTime getBuildDate() {
             return buildDate;
         }
 
@@ -93,11 +93,11 @@ public class Pkg {
             return group;
         }
 
-        public String getDecription() {
-            return decription;
+        public String getDescription() {
+            return description;
         }
 
-        public LocalDateTime getInstallDate() {
+        public ZonedDateTime getInstallDate() {
             return installDate;
         }
 
