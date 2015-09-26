@@ -3,6 +3,7 @@ package com.suse.saltstack.netapi.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.suse.saltstack.netapi.calls.runner.Jobs;
 import com.suse.saltstack.netapi.calls.wheel.Key;
 import com.suse.saltstack.netapi.datatypes.Job;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
@@ -15,7 +16,6 @@ import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
 import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.utils.ClientUtils;
-import com.suse.saltstack.netapi.results.ResultInfo;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
 
 import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
@@ -241,7 +241,7 @@ public class SaltStackClientTest {
         kwargs.put("refresh", "true");
         kwargs.put("sysupgrade", "false");
 
-        Future<ResultInfo> future = client.runAsync("user", "pass",
+        Future<Jobs.Info<Object>> future = client.runAsync("user", "pass",
                 PAM, "local", new Glob(), "pkg.install", args, kwargs);
         Map<String, Object> retvals = future.get().getResults();
 
@@ -736,9 +736,9 @@ public class SaltStackClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_JOBS_RESPONSE_PENDING)));
 
-        ResultInfoSet resultSet = client.getJobResult("some-job-id");
+        ResultInfoSet<Object> resultSet = client.getJobResult("some-job-id");
         assertEquals(1, resultSet.size());
-        ResultInfo results = resultSet.get(0);
+        Jobs.Info<Object> results = resultSet.get(0);
 
         HashSet<String> pendingMinions = new HashSet<String>();
         pendingMinions.add("mira");
