@@ -21,6 +21,7 @@ public class ResultEvent {
 
     /**
      * Creates a new ResultEvent
+     * @param jid the id of the job this event is about
      * @param minionId the id of the minion sending the event
      * @param data data containing more information about this event
      */

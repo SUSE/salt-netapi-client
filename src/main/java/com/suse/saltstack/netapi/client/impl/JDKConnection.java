@@ -30,6 +30,7 @@ public class JDKConnection<T> implements Connection<T> {
      * Init a connection to a given SaltStack API endpoint.
      *
      * @param endpointIn the endpoint
+     * @param parserIn the parser to be used for parsing the result
      * @param configIn the config
      */
     public JDKConnection(String endpointIn, JsonParser<T> parserIn, ClientConfig configIn) {

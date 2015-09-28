@@ -57,6 +57,10 @@ public class ClientUtils {
     /**
      * Helper for constructing parameterized types.
      *
+     * @param ownerType the owner type
+     * @param rawType the raw type
+     * @param typeArguments the type arguments
+     * @return the parameterized type object
      * @see com.google.gson.internal.$Gson$Types#newParameterizedTypeWithOwner
      */
     public static ParameterizedType parameterizedType(Type ownerType, Type rawType,

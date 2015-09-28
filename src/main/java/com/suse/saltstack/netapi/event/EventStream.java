@@ -86,6 +86,7 @@ public class EventStream implements AutoCloseable {
      * End users should not call this methods directly.
      *
      * @param uri WebSocket URI
+     * @param config the client configuration
      * @throws DeploymentException If annotatedEndpoint instance is not valid.
      * @throws IOException If WebSocket connection to remote server fails.
      */

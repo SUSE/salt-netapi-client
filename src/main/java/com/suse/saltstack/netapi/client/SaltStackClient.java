@@ -240,6 +240,7 @@ public class SaltStackClient {
      * <p>
      * {@code GET /minions/<minion-id>}
      *
+     * @param minionId the minion ID
      * @return Map key: grain name, value: grain value
      * @throws SaltStackException if anything goes wrong
      * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
@@ -255,6 +256,7 @@ public class SaltStackClient {
      * <p>
      * {@code GET /minions/<minion-id>}
      *
+     * @param minionId the minion ID
      * @return Future with a map containing details of the minion
      * @throws SaltStackException if anything goes wrong
      * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
@@ -271,6 +273,7 @@ public class SaltStackClient {
      * <p>
      * {@code POST /minions}
      *
+     * @param <T> type of the tgt property for this command
      * @param target the target
      * @param function the function to execute
      * @param args list of non-keyword arguments
@@ -304,6 +307,7 @@ public class SaltStackClient {
      * <p>
      * {@code POST /minions}
      *
+     * @param <T> type of the tgt property for this command
      * @param target the target
      * @param function the function to execute
      * @param args list of non-keyword arguments
@@ -375,6 +379,7 @@ public class SaltStackClient {
      * <p>
      * {@code POST /run}
      *
+     * @param <T> type of the tgt property for this command
      * @param username the username
      * @param password the password
      * @param eauth the eauth type
@@ -418,6 +423,7 @@ public class SaltStackClient {
      * <p>
      * {@code POST /run}
      *
+     * @param <T> type of the tgt property for this command
      * @param username the username
      * @param password the password
      * @param eauth the eauth type
