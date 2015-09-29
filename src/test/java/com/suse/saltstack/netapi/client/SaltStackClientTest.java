@@ -101,7 +101,6 @@ public class SaltStackClientTest {
     static final String JSON_LOGOUT_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/logout_response.json"));
 
-
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 

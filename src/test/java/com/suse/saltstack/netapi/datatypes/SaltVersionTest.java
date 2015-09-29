@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-
 /**
  * SaltVersion class unit-tests.
  */
@@ -67,7 +66,6 @@ public class SaltVersionTest {
         assertTrue("a smaller year should result in a smaller version",
                 v1.compareTo(v2) > 0 && v2.compareTo(v1) < 0);
     }
-
 
     @Test
     public void testComparisonMonth() {
