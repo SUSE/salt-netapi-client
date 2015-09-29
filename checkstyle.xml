@@ -30,6 +30,7 @@
         <module name="ConstantName"/>
         <module name="EmptyBlock"/>
         <module name="EmptyLineSeparator">
+            <property name="allowMultipleEmptyLines" value="false"/>
             <property name="allowNoEmptyLineBetweenFields" value="true"/>
         </module>
         <module name="JavadocType"/>
