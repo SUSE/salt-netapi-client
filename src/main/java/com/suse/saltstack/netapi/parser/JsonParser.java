@@ -84,7 +84,7 @@ public class JsonParser<T> {
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
                 .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeISOAdapter())
                 .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
-                .registerTypeAdapter(Stats.class, new StatsDeserializer())
+                .registerTypeAdapter(Stats.class, new StatsAdapter())
                 .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
                 .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
                 .create();
@@ -176,33 +176,35 @@ public class JsonParser<T> {
     }
 
     /**
-     * Deserializer for the Stats object received from the API.
+     * Json TypeAdapter for the Stats object received from the API.
      */
-    private class StatsDeserializer implements JsonDeserializer<Stats> {
+    private class StatsAdapter extends TypeAdapter<Stats> {
 
         private static final String CP_APPLICATIONS = "CherryPy Applications";
         private static final String CP_SERVER_PREFIX = "CherryPy HTTPServer ";
 
         @Override
-        public Stats deserialize(JsonElement jsonElement, Type type,
-                JsonDeserializationContext jsonDeserializationContext)
-                throws JsonParseException {
-            try {
-                JsonObject stats = jsonElement.getAsJsonObject();
-                Applications app = gson.fromJson(stats.get(CP_APPLICATIONS),
-                        Applications.class);
-                HttpServer server = null;
-                for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-                    String key = entry.getKey();
-                    if (key.startsWith(CP_SERVER_PREFIX)) {
-                        server = gson.fromJson(entry.getValue(), HttpServer.class);
-                        break;
-                    }
+        public void write(JsonWriter jsonWriter, Stats stats) throws IOException {
+            throw new UnsupportedOperationException("Writing JSON not supported.");
+        }
+
+        @Override
+        public Stats read(JsonReader jsonReader) throws IOException {
+            Applications app = null;
+            HttpServer server = null;
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()) {
+                String name = jsonReader.nextName();
+                if (name.equals(CP_APPLICATIONS)) {
+                    app = gson.fromJson(jsonReader, Applications.class);
+                } else if (name.startsWith(CP_SERVER_PREFIX)) {
+                    server = gson.fromJson(jsonReader, HttpServer.class);
+                } else {
+                    jsonReader.skipValue();
                 }
-                return new Stats(app, server);
-            } catch (Exception e) {
-                throw new JsonParseException(e);
             }
+            jsonReader.endObject();
+            return new Stats(app, server);
         }
     }
 
