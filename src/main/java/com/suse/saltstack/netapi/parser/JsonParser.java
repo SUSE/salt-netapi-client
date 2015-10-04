@@ -2,10 +2,6 @@ package com.suse.saltstack.netapi.parser;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -36,6 +32,7 @@ import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,7 +82,7 @@ public class JsonParser<T> {
                 .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeISOAdapter())
                 .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
                 .registerTypeAdapter(Stats.class, new StatsAdapter())
-                .registerTypeAdapter(Arguments.class, new ArgumentsDeserializer())
+                .registerTypeAdapter(Arguments.class, new ArgumentsAdapter())
                 .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
                 .create();
     }
@@ -209,87 +206,72 @@ public class JsonParser<T> {
     }
 
     /**
-     * Deserializer for Arguments class.
+     * Json TypeAdapter for Arguments class.
      * Breaks the incoming arguments into args and kwargs parts
      * and fills a new Arguments instance.
      */
-    private class ArgumentsDeserializer implements JsonDeserializer<Arguments> {
+    private class ArgumentsAdapter extends TypeAdapter<Arguments> {
 
         private static final String KWARG_KEY = "__kwarg__";
 
         @Override
-        public Arguments deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
-            Arguments result = new Arguments();
+        public void write(JsonWriter jsonWriter, Arguments args) throws IOException {
+            throw new UnsupportedOperationException("Writing JSON not supported.");
+        }
 
-            if (json != null && json.isJsonArray()) {
-                for (JsonElement jsonElement : json.getAsJsonArray()) {
-                    fillArgs(result, jsonElement);
+        @Override
+        public Arguments read(JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                throw new JsonParseException("null is not a valid value for Arguments");
+            }
+            Arguments result = new Arguments();
+            jsonReader.beginArray();
+            while (jsonReader.hasNext()) {
+                if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                    Map<String, Object> arg = readObjectArgument(jsonReader);
+                    if (isKwarg(arg)) {
+                        arg.remove(KWARG_KEY);
+                        result.getKwargs().putAll(arg);
+                    } else {
+                        result.getArgs().add(arg);
+                    }
+                } else {
+                    result.getArgs().add(gson.fromJson(jsonReader, Object.class));
                 }
             }
-
+            jsonReader.endArray();
             return result;
         }
 
         /**
-         * Fills args/kwargs to given Arguments instance based on JSON data
-         * from jsonElement.
+         * Reads a generic object argument from the given JsonReader.
          *
-         * @param result Arguments to be filled
-         * @param jsonElement input JSON data
+         * @param jsonReader JsonReader expecting an object next
+         * @return Map representing a generic object argument
          */
-        private void fillArgs(Arguments result, JsonElement jsonElement) {
-            if (isKwarg(jsonElement)) {
-                filterKwarg(jsonElement);
-                fillKwargsFromObject(result, jsonElement.getAsJsonObject());
-            } else {
-                result.getArgs().add(gson.fromJson(jsonElement, Object.class));
+        private Map<String, Object> readObjectArgument(JsonReader jsonReader)
+                throws IOException {
+            Map<String, Object> arg = new LinkedHashMap<String, Object>();
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()) {
+                arg.put(jsonReader.nextName(), gson.fromJson(jsonReader, Object.class));
             }
+            jsonReader.endObject();
+            return arg;
         }
 
         /**
-         * Fills kwargs from given jsonObject key/values to given Arguments instance.
+         * Checks whether an object argument is kwarg.
+         * Object argument is kwarg if it contains __kwarg__ property set to true.
          *
-         * @param result Arguments to be filled
-         * @param jsonObject input json data
+         * @param arg object argument to be tested
+         * @return true if object argument is kwarg
          */
-        private void fillKwargsFromObject(Arguments result, JsonObject jsonObject) {
-            for (Map.Entry<String, JsonElement> kwItem : jsonObject.entrySet()) {
-                result.getKwargs().put(kwItem.getKey(),
-                        gson.fromJson(kwItem.getValue(),
-                        Object.class));
-            }
-        }
-
-        /**
-         * Checks whether element is kwarg or arg.
-         * Element is a kwarg if it's an object and contains __kwarg__ property set to true.
-         *
-         * @param jsonElement element to be tested
-         * @return true if element is kwarg
-         */
-        private boolean isKwarg(JsonElement jsonElement) {
-            if (!jsonElement.isJsonObject()) {
-                return false;
-            }
-
-            JsonElement kwarg = jsonElement.getAsJsonObject().get(KWARG_KEY);
+        private boolean isKwarg(Map<String, Object> arg) {
+            Object kwarg = arg.get(KWARG_KEY);
             return kwarg != null
-                    && kwarg.isJsonPrimitive()
-                    && kwarg.getAsJsonPrimitive().isBoolean()
-                    && kwarg.getAsBoolean();
-        }
-
-        /**
-         * Filters __kwarg__ flag from given element.
-         *
-         * @param jsonElement
-         */
-        private void filterKwarg(JsonElement jsonElement) {
-            if (jsonElement.isJsonObject()
-                    && jsonElement.getAsJsonObject().has(KWARG_KEY)) {
-                jsonElement.getAsJsonObject().remove(KWARG_KEY);
-            }
+                    && kwarg instanceof Boolean
+                    && ((Boolean) kwarg);
         }
     }
 
