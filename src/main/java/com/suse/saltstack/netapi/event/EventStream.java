@@ -84,31 +84,12 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * This method initiates the WebSocket handshake and its life.
-     * This method is intended for use during unit testing only!
-     * End users should not call this methods directly.
-     *
-     * @param uri WebSocket URI
-     * @param config the client configuration
-     * @throws DeploymentException If annotatedEndpoint instance is not valid.
-     * @throws IOException If WebSocket connection to remote server fails.
-     */
-    public void processEvents(URI uri, ClientConfig config)
-            throws DeploymentException, IOException {
-        synchronized (websocketContainer) {
-            this.session = websocketContainer.connectToServer(this, uri);
-            this.session.setMaxIdleTimeout(
-                    (long) config.get(ClientConfig.SOCKET_TIMEOUT));
-        }
-    }
-
-    /**
      * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
      *
      * @param config the client configuration
      * @throws SaltStackException in case of an error during stream initialization
      */
-    private void initializeStream (ClientConfig config) throws SaltStackException {
+    private void initializeStream(ClientConfig config) throws SaltStackException {
         try {
             URI uri = config.get(ClientConfig.URL);
             uri = new URI(uri.getScheme() == "https" ? "wss" : "ws",
@@ -116,7 +97,13 @@ public class EventStream implements AutoCloseable {
                     .resolve("/ws/" + config.get(ClientConfig.TOKEN));
             websocketContainer.setDefaultMaxSessionIdleTimeout(
                     (long) config.get(ClientConfig.SOCKET_TIMEOUT));
-            processEvents(uri, config);
+
+            // Initiate the websocket handshake
+            synchronized (websocketContainer) {
+                this.session = websocketContainer.connectToServer(this, uri);
+                this.session.setMaxIdleTimeout(
+                        (long) config.get(ClientConfig.SOCKET_TIMEOUT));
+            }
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltStackException(e);
         }
