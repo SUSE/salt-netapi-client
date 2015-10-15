@@ -74,13 +74,11 @@ public class TyrusWebSocketEventsTest {
      */
     @Test
     public void shouldFireNotifyMultipleTimes() throws Exception {
-        CountDownLatch latch = new CountDownLatch(1);
         int target = 6;
+        CountDownLatch latch = new CountDownLatch(1);
+        EventCountClient eventCountClient = new EventCountClient(target, latch);
 
-        try (EventStream streamEvents = new EventStream(clientConfig)) {
-            EventCountClient eventCountClient = new EventCountClient(target, latch);
-            streamEvents.addEventListener(eventCountClient);
-
+        try (EventStream streamEvents = new EventStream(clientConfig, eventCountClient)) {
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue(eventCountClient.counter == target);
         }
@@ -94,11 +92,9 @@ public class TyrusWebSocketEventsTest {
     @Test
     public void testEventMessageContent() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
+        EventContentClient eventContentClient = new EventContentClient(latch);
 
-        try (EventStream streamEvents = new EventStream(clientConfig)) {
-            EventContentClient eventContentClient = new EventContentClient(latch);
-            streamEvents.addEventListener(eventContentClient);
-
+        try (EventStream streamEvents = new EventStream(clientConfig, eventContentClient)) {
             latch.await(30, TimeUnit.SECONDS);
             synchronized (eventContentClient.events) {
                 Event event = eventContentClient.events.get(1);
@@ -120,9 +116,7 @@ public class TyrusWebSocketEventsTest {
         SimpleEventListenerClient client3 = new SimpleEventListenerClient();
         SimpleEventListenerClient client4 = new SimpleEventListenerClient();
 
-        try (EventStream streamEvents = new EventStream(clientConfig)) {
-            streamEvents.addEventListener(client1);
-            streamEvents.addEventListener(client2);
+        try (EventStream streamEvents = new EventStream(clientConfig, client1, client2)) {
             streamEvents.addEventListener(client3);
             streamEvents.removeEventListener(client2);
             streamEvents.removeEventListener(client3);
@@ -139,9 +133,8 @@ public class TyrusWebSocketEventsTest {
      */
     @Test
     public void testEventProcessingStateStopped() throws Exception {
-        EventStream streamEvents = new EventStream(clientConfig);
         SimpleEventListenerClient eventListener = new SimpleEventListenerClient();
-        streamEvents.addEventListener(eventListener);
+        EventStream streamEvents = new EventStream(clientConfig, eventListener);
         streamEvents.close();
         Assert.assertTrue(streamEvents.isEventStreamClosed());
         Assert.assertEquals(CloseCodes.GOING_AWAY,
@@ -158,12 +151,9 @@ public class TyrusWebSocketEventsTest {
     @Test
     public void testEventStreamClosed() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
+        EventStreamClosedClient eventListener = new EventStreamClosedClient(latch);
 
-        try (EventStream streamEvents = new EventStream(clientConfig)) {
-            EventStreamClosedClient eventStreamClosedClient =
-                    new EventStreamClosedClient(latch);
-            streamEvents.addEventListener(eventStreamClosedClient);
-
+        try (EventStream streamEvents = new EventStream(clientConfig, eventListener)) {
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertFalse(streamEvents.isEventStreamClosed());
         }
@@ -179,11 +169,9 @@ public class TyrusWebSocketEventsTest {
         int maxMessageLength = 10;
         clientConfig.put(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH, maxMessageLength);
         CountDownLatch latch = new CountDownLatch(1);
+        EventStreamClosedClient eventListener = new EventStreamClosedClient(latch);
 
-        try (EventStream streamEvents = new EventStream(clientConfig)) {
-            EventStreamClosedClient eventListener = new EventStreamClosedClient(latch);
-            streamEvents.addEventListener(eventListener);
-
+        try (EventStream streamEvents = new EventStream(clientConfig, eventListener)) {
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue(streamEvents.isEventStreamClosed());
             Assert.assertEquals(CloseCodes.TOO_BIG,

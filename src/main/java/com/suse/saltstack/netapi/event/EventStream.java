@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -67,16 +68,18 @@ public class EventStream implements AutoCloseable {
     private Session session;
 
     /**
-     * Constructor used to create this object.
-     * Automatically open a WebSocket and start event processing.
+     * Constructor used to create an event stream: open a websocket connection and start
+     * event processing.
      *
-     * @param config Contains the necessary details such as EndPoint URL and
-     * authentication token required to create the WebSocket.
+     * @param config client configuration containing the URL, token, timeouts, etc.
+     * @param listeners event listeners to be added before stream initialization
      * @throws SaltStackException in case of an error during stream initialization
      */
-    public EventStream(ClientConfig config) throws SaltStackException {
+    public EventStream(ClientConfig config, EventListener... listeners)
+            throws SaltStackException {
         maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) > 0 ?
                 config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) : Integer.MAX_VALUE;
+        Arrays.asList(listeners).forEach(this::addEventListener);
         initializeStream(config);
     }
 
