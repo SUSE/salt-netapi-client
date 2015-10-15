@@ -125,6 +125,24 @@ public class SaltStackClientTest {
 
         Token token = client.login("user", "pass", AUTO);
 
+        verifyLoginToken(token);
+    }
+
+    @Test
+    public void testLoginAsyncOk() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOGIN_RESPONSE)));
+
+        Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
+        Token token = futureToken.get();
+
+        verifyLoginToken(token);
+    }
+
+    private void verifyLoginToken(Token token) {
         verify(1, postRequestedFor(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
@@ -143,29 +161,6 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass", AUTO);
-    }
-
-    @Test
-    public void testLoginAsyncOk() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_LOGIN_RESPONSE)));
-
-        Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
-        Token token = futureToken.get();
-
-        verify(1, postRequestedFor(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalToJson(JSON_LOGIN_REQUEST)));
-
-        assertEquals("Token mismatch",
-                "f248284b655724ca8a86bcab4b8df608ebf5b08b", token.getToken());
-        assertEquals("EAuth mismatch", "auto", token.getEauth());
-        assertEquals("User mismatch", "user", token.getUser());
-        assertEquals("Perms mismatch", Arrays.asList(".*", "@wheel"), token.getPerms());
     }
 
     @Test(expected = ExecutionException.class)
@@ -198,31 +193,7 @@ public class SaltStackClientTest {
                 client.run("user", "pass", PAM, "local", new Glob(),
                 "pkg.install", args, kwargs).getResults();
 
-        verify(1, postRequestedFor(urlEqualTo("/run"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
-
-        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
-        i3.put("new", "4.10.3-1");
-        i3.put("old", "");
-
-        LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
-        i3lock.put("new", "2.7-1");
-        i3lock.put("old", "");
-
-        LinkedHashMap<String, String> i3status = new LinkedHashMap<>();
-        i3status.put("new", "2.9-2");
-        i3status.put("old", "");
-
-        Map<String, Map<String, String>> expected = new LinkedHashMap<>();
-        expected.put("i3", i3);
-        expected.put("i3lock", i3lock);
-        expected.put("i3status", i3status);
-
-        assertNotNull(retvals);
-        assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(expected, retvals.get("minion-1"));
+        verifyRunResults(retvals);
     }
 
     @Test
@@ -244,6 +215,10 @@ public class SaltStackClientTest {
                 PAM, "local", new Glob(), "pkg.install", args, kwargs);
         Map<String, Object> retvals = future.get().getResults();
 
+        verifyRunResults(retvals);
+    }
+
+    private void verifyRunResults(Map<String, Object> retvals) {
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
@@ -321,30 +296,7 @@ public class SaltStackClientTest {
 
         Map<String, Map<String, Object>> minions = client.getMinions();
 
-        verify(1, getRequestedFor(urlEqualTo("/minions"))
-                .withHeader("Accept", equalTo("application/json")));
-
-        assertNotNull(minions);
-        assertEquals(2, minions.size());
-
-        assertTrue(minions.containsKey("minion1"));
-        assertTrue(minions.containsKey("minion2"));
-
-        Map<String, Object> minion1 = minions.get("minion1");
-        assertEquals(56, minion1.size());
-        assertEquals("VirtualBox", minion1.get("biosversion"));
-
-        assertTrue(minion1.get("saltversioninfo") instanceof List);
-        List<String> saltVersionInfo = (List<String>) minion1.get("saltversioninfo");
-        assertEquals(2014.0, saltVersionInfo.get(0));
-        assertEquals(7.0, saltVersionInfo.get(1));
-        assertEquals(5.0, saltVersionInfo.get(2));
-        assertEquals(0.0, saltVersionInfo.get(3));
-
-        assertTrue(minion1.get("locale_info") instanceof Map);
-        Map<String, String> localeInfo = ((Map<String, String>) minion1.get("locale_info"));
-        assertEquals("en_US", localeInfo.get("defaultlanguage"));
-        assertEquals("UTF-8", localeInfo.get("defaultencoding"));
+        verifyMinions(minions);
     }
 
     @Test
@@ -359,6 +311,10 @@ public class SaltStackClientTest {
         Future<Map<String, Map<String, Object>>> future = client.getMinionsAsync();
         Map<String, Map<String, Object>> minions = future.get();
 
+        verifyMinions(minions);
+    }
+
+    private void verifyMinions(Map<String, Map<String, Object>> minions) {
         verify(1, getRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json")));
 
@@ -396,25 +352,7 @@ public class SaltStackClientTest {
 
         Map<String, Object> minion = client.getMinionDetails("minion2");
 
-        verify(1, getRequestedFor(urlEqualTo("/minions/minion2"))
-                .withHeader("Accept", equalTo("application/json")));
-
-        assertNotNull(minion);
-
-        assertEquals(56, minion.size());
-        assertEquals("VirtualBox", minion.get("biosversion"));
-
-        assertTrue(minion.get("saltversioninfo") instanceof List);
-        List<String> saltVersionInfo = (List<String>) minion.get("saltversioninfo");
-        assertEquals(2014.0, saltVersionInfo.get(0));
-        assertEquals(7.0, saltVersionInfo.get(1));
-        assertEquals(5.0, saltVersionInfo.get(2));
-        assertEquals(0.0, saltVersionInfo.get(3));
-
-        assertTrue(minion.get("locale_info") instanceof Map);
-        Map<String, String> localeInfo = ((Map<String, String>) minion.get("locale_info"));
-        assertEquals("en_US", localeInfo.get("defaultlanguage"));
-        assertEquals("UTF-8", localeInfo.get("defaultencoding"));
+        verifyMinionsDetails(minion);
     }
 
     @Test
@@ -429,6 +367,10 @@ public class SaltStackClientTest {
         Future<Map<String, Object>> future = client.getMinionDetailsAsync("minion2");
         Map<String, Object> minion = future.get();
 
+        verifyMinionsDetails(minion);
+    }
+
+    private void verifyMinionsDetails(Map<String, Object> minion) {
         verify(1, getRequestedFor(urlEqualTo("/minions/minion2"))
                 .withHeader("Accept", equalTo("application/json")));
 
@@ -584,10 +526,7 @@ public class SaltStackClientTest {
 
         Key.Names keys = client.keys();
 
-        assertNotNull(keys);
-        verify(1, getRequestedFor(urlEqualTo("/keys"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
+        verifyKeys(keys);
     }
 
     @Test
@@ -600,6 +539,10 @@ public class SaltStackClientTest {
 
         Key.Names keys = client.keysAsync().get();
 
+        verifyKeys(keys);
+    }
+
+    private void verifyKeys(Key.Names keys) {
         assertNotNull(keys);
         verify(1, getRequestedFor(urlEqualTo("/keys"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -823,11 +766,7 @@ public class SaltStackClientTest {
 
         boolean success = client.logout();
 
-        assertTrue(success);
-        verify(1, postRequestedFor(urlEqualTo("/logout"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
+        verifyLogout(success);
     }
 
     @Test
@@ -840,6 +779,10 @@ public class SaltStackClientTest {
 
         boolean success = client.logoutAsync().get();
 
+        verifyLogout(success);
+    }
+
+    private void verifyLogout(boolean success) {
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/logout"))
                 .withHeader("Accept", equalTo("application/json"))
