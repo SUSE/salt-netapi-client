@@ -22,6 +22,7 @@ import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.datatypes.target.Target;
+import com.suse.saltstack.netapi.event.EventListener;
 import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
@@ -507,11 +508,12 @@ public class SaltStackClient {
      * <p>
      * {@code GET /events}
      *
+     * @param listeners event listeners to be added before the stream is initialized
      * @return the event stream
      * @throws SaltStackException in case of an error during websocket stream initialization
      */
-    public EventStream events() throws SaltStackException {
-        return new EventStream(config);
+    public EventStream events(EventListener... listeners) throws SaltStackException {
+        return new EventStream(config, listeners);
     }
 
     /**
