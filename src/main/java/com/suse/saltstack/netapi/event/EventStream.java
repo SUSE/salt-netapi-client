@@ -100,9 +100,8 @@ public class EventStream implements AutoCloseable {
 
             // Initiate the websocket handshake
             synchronized (websocketContainer) {
-                this.session = websocketContainer.connectToServer(this, uri);
-                this.session.setMaxIdleTimeout(
-                        (long) config.get(ClientConfig.SOCKET_TIMEOUT));
+                session = websocketContainer.connectToServer(this, uri);
+                session.setMaxIdleTimeout((long) config.get(ClientConfig.SOCKET_TIMEOUT));
             }
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltStackException(e);
