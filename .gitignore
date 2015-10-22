@@ -3,6 +3,9 @@
 /.project
 /.settings/
 
+# Eclipse + checkstyle
+.checkstyle
+
 # IntelliJ IDEA
 /.idea/
 *.iml
