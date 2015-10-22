@@ -12,3 +12,6 @@
 
 # Build and test artifacts
 /target
+
+# OSX Metadata
+.DS_Store
