@@ -1,0 +1,5 @@
+{
+	"nginx":"1.4.6-1ubuntu3.3", 
+	"weechat": "0.4.2-3", 
+	"openvpn": "2.3.2-7ubuntu3.1"
+}
