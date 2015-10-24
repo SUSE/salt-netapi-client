@@ -80,7 +80,7 @@ public class PkgTest {
     }
 
     @Test
-    public void testLatestVersionsMultiplePackages() throws UnsupportedOperationException {
+    public void testLatestVersionsMultiplePackages() {
         TypeToken<Map<String, String>> type = Pkg.latestVersions(
                 "openvpn", "weechat", "tmux").getReturnType();
         InputStream is = this.getClass()

@@ -203,17 +203,11 @@ public class Pkg {
                 new TypeToken<String>(){});
     }
 
-    public static LocalCall<Map<String, String>> latestVersions(String... packages)
-            throws UnsupportedOperationException {
-        if (packages.length >= 2) {
-            return new LocalCall<>("pkg.latest_version",
-                    Optional.of(Arrays.asList(packages)),
+    public static LocalCall<Map<String, String>> latestVersions(String firstPackageName,
+            String secondPackageName, String...packages) {
+        return new LocalCall<>("pkg.latest_version",
+                    Optional.of(Arrays.asList(firstPackageName,
+                            secondPackageName, packages)),
                 Optional.empty(), new TypeToken<Map<String, String>>(){});
-        }
-        else {
-            throw new UnsupportedOperationException(
-                    "Please use "
-                    + "latestVersion(packageName) when calling with one parameter");
-        }
     }
 }
