@@ -40,5 +40,6 @@ public class TestTest {
         assertNull(parsed.getDependencies().get("cherrypy"));
         assertEquals("2.7.6 (default, Jun 22 2015, 17:58:13)",
                 parsed.getDependencies().get("Python"));
+        assertEquals(25, parsed.getDependencies().size());
     }
 }
