@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 
-import org.junit.Test;
-
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.calls.modules.Test.VersionInformation;
 import com.suse.saltstack.netapi.parser.JsonParser;
@@ -16,10 +14,9 @@ import com.suse.saltstack.netapi.parser.JsonParser;
  */
 public class TestTest {
 
-    @Test
+    @org.junit.Test
     public void testTestPing() {
-        TypeToken<Boolean> type =
-                com.suse.saltstack.netapi.calls.modules.Test.ping().getReturnType();
+        TypeToken<Boolean> type = Test.ping().getReturnType();
         InputStream is = this.getClass()
                 .getResourceAsStream("/modules/test/ping.json");
 
@@ -28,10 +25,9 @@ public class TestTest {
         assertEquals(true, parsed);
     }
 
-    @Test
+    @org.junit.Test
     public void testVersionsInformation() {
-        TypeToken<VersionInformation> type =
-                com.suse.saltstack.netapi.calls.modules.Test.versionsInformation()
+        TypeToken<VersionInformation> type = Test.versionsInformation()
                 .getReturnType();
         InputStream is = this.getClass()
                 .getResourceAsStream("/modules/test/versions_information.json");
