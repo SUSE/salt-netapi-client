@@ -13,6 +13,7 @@ import com.suse.saltstack.netapi.calls.RunnerCall;
 import com.suse.saltstack.netapi.calls.WheelAsyncResult;
 import com.suse.saltstack.netapi.calls.WheelCall;
 import com.suse.saltstack.netapi.calls.WheelResult;
+import com.suse.saltstack.netapi.calls.runner.Jobs;
 import com.suse.saltstack.netapi.calls.wheel.Key;
 import com.suse.saltstack.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.saltstack.netapi.config.ClientConfig;
@@ -27,7 +28,6 @@ import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.results.ResultInfo;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
 
 import java.lang.reflect.Type;
@@ -330,7 +330,8 @@ public class SaltStackClient {
      * @return {@link ResultInfoSet} representing result set from minions
      * @throws SaltStackException if anything goes wrong
      */
-    public ResultInfoSet getJobResult(final ScheduledJob job) throws SaltStackException {
+    public ResultInfoSet<Object> getJobResult(final ScheduledJob job)
+            throws SaltStackException {
         return getJobResult(job.getJid());
     }
 
@@ -343,7 +344,7 @@ public class SaltStackClient {
      * @return {@link ResultInfoSet} representing result set from minions
      * @throws SaltStackException if anything goes wrong
      */
-    public ResultInfoSet getJobResult(final String job) throws SaltStackException {
+    public ResultInfoSet<Object> getJobResult(final String job) throws SaltStackException {
         return connectionFactory
                 .create("/jobs/" + job, JsonParser.JOB_RESULTS, config)
                 .getResult();
@@ -392,7 +393,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public <T> ResultInfo run(final String username, final String password,
+    public <T> Jobs.Info<Object> run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
             final String function, List<Object> args, Map<String, Object> kwargs)
             throws SaltStackException {
@@ -411,7 +412,7 @@ public class SaltStackClient {
 
         String payload = gson.toJson(list);
 
-        ResultInfoSet result = connectionFactory
+        ResultInfoSet<Object> result = connectionFactory
                 .create("/run", JsonParser.JOB_RESULTS, config)
                 .getResult(payload);
 
@@ -435,7 +436,7 @@ public class SaltStackClient {
      * @param kwargs map containing keyword arguments
      * @return Future containing Map key: minion id, value: command result from that minion
      */
-    public <T> Future<ResultInfo> runAsync(final String username,
+    public <T> Future<Jobs.Info<Object>> runAsync(final String username,
             final String password, final AuthModule eauth, final String client,
             final Target<T> target, final String function, final List<Object> args,
             final Map<String, Object> kwargs) {

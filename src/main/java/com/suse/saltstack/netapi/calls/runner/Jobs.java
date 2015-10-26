@@ -12,6 +12,8 @@ import com.suse.saltstack.netapi.results.Result;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +55,14 @@ public class Jobs {
         private String target;
 
         @SerializedName("Result")
-        private Map<String, Result<R>> result;
+        private final Map<String, Result<R>> rawResults = new HashMap<>();
+        private transient final Map<String, R> resultsCache = new HashMap<>();
 
+        /**
+         * Returns function name.
+         *
+         * @return function name
+         */
         public String getFunction() {
             return function;
         }
@@ -63,38 +71,103 @@ public class Jobs {
             return jid;
         }
 
+        /**
+         * Returns start time of the job.
+         *
+         * @param tz - TimeZone associated with the master of this job.
+         * @return job start date
+         */
         public Date getStartTime(TimeZone tz) {
             return startTime == null ? null : startTime.getDate(tz);
         }
 
+        /**
+         *  Returns start time assuming default {@link TimeZone} is Salt master's timezone.
+         *
+         * @return Date representation of the start time.
+         */
         public Date getStartTime() {
             return startTime == null ? null : startTime.getDate();
         }
 
+        /**
+         * Returns a list of arguments supplied function.
+         *
+         * @return list of Objects
+         */
         public List<Object> getArguments() {
             return arguments;
         }
 
+        /**
+         * Returns set of minions this job was submitted to.
+         *
+         * @return minion set
+         */
         public Set<String> getMinions() {
             return minions;
         }
 
+        /**
+         * Returns user associated with this job.
+         *
+         * @return job's user
+         */
         public String getUser() {
             return user;
         }
 
+        /**
+         * Returns target of job submission.
+         *
+         * @return job submission target
+         */
         public String getTarget() {
             return target;
         }
 
-        public Map<String, Result<R>> getResult() {
-            return result;
+        /**
+         * Returns result map of available {@link Object} associated with each minion.
+         * Minions that have yet to return a value are not included in this mapping.
+         *
+         * @return Map&lt;String, Object&gt; of available job return values.
+         */
+        @SuppressWarnings("unchecked")
+        public Map<String, R> getResults() {
+            if (resultsCache.size() == rawResults.size()) {
+                return resultsCache;
+            }
+
+            resultsCache.clear();
+            resultsCache.putAll((Map<String, R>) rawResults);
+            resultsCache.replaceAll(
+                    (String key, R result) -> ((Result<R>) result).getResult());
+            return resultsCache;
         }
 
-        public Optional<R> resultOf(String minionKey) {
-            return Optional.ofNullable(result).flatMap(
-                r -> Optional.ofNullable(r.get(minionKey))
-            ).map(Result::getResult);
+        /**
+         * Returns job's return value that is associated with supplied minion
+         * as an {@link Optional}. If a minion has not returned a response, an empty
+         * value is returned.
+         *
+         * @param minion - name of a minion
+         * @return {@link Optional} associated with the result from a given minion.
+         */
+        public Optional<R> getResult(String minion) {
+            return Optional
+                    .ofNullable(rawResults.get(minion))
+                    .map(Result::getResult);
+        }
+
+        /**
+         * Returns a set of minions that have yet to return a result.
+         *
+         * @return set of minions that have not returned a result.
+         */
+        public Set<String> getPendingMinions() {
+            HashSet<String> pend = new HashSet<>(minions);
+            pend.removeAll(rawResults.keySet());
+            return pend;
         }
     }
 
