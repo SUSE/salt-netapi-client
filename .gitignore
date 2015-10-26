@@ -3,9 +3,15 @@
 /.project
 /.settings/
 
+# Eclipse + checkstyle
+.checkstyle
+
 # IntelliJ IDEA
 /.idea/
 *.iml
 
 # Build and test artifacts
 /target
+
+# OSX Metadata
+.DS_Store
