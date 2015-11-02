@@ -1,7 +1,21 @@
+sudo: required
 language: java
 jdk:
   - oraclejdk8
   - oraclejdk9
+
+services:
+  - docker
+
+before_install:
+- docker pull mbologna/saltstack-master
+- docker pull mbologna/saltstack-minion
+- docker run -d --name saltmaster -v `pwd`/docker/etc_master/salt:/etc/salt -p 8000:8000 mbologna/saltstack-master
+- docker run -d --name saltminion1 --link saltmaster -v `pwd`/docker/etc_minion1/salt:/etc/salt mbologna/saltstack-minion
+- docker run -d --name saltminion2 --link saltmaster -v `pwd`/docker/etc_minion2/salt:/etc/salt mbologna/saltstack-minion
+- docker ps -a
+- docker exec saltmaster /bin/sh -c "sleep 30; salt '*' test.ping"
+
 install: /bin/true
 script: mvn checkstyle:check javadoc:javadoc test package
 deploy:
@@ -19,4 +33,3 @@ after_success:
 env:
   global:
     - secure: XvflMMZoyQSbsCdOD98rFxsEvd+c9aNUulPf0IIKpp6OFcl0lEoq6c4cEd0C/qBtlZgBNTYmnWfOpWcrNZABa2PXAbi0p9lw/5/L9UgnlEfWG0NbVbJ/arb2DidgnidvVT5GhNNn31/38zwVcJVyo3yjRmf72ZwPbZKWGygKkjc=
-sudo: false
