@@ -13,7 +13,7 @@ import java.net.URI;
 import javax.websocket.CloseReason;
 
 /**
- * Example code: listen for events on salt's event bus
+ * Example code listening for events on salt's event bus.
  */
 public class Events {
 
