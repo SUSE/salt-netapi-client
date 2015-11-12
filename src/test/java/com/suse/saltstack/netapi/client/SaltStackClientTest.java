@@ -1,63 +1,61 @@
 package com.suse.saltstack.netapi.client;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.suse.saltstack.netapi.calls.wheel.Key;
-import com.suse.saltstack.netapi.datatypes.Job;
-import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
-import com.suse.saltstack.netapi.datatypes.target.Glob;
-import com.suse.saltstack.netapi.exception.SaltStackException;
-import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.gson.JsonSyntaxException;
-import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
-import com.suse.saltstack.netapi.datatypes.ScheduledJob;
-import com.suse.saltstack.netapi.datatypes.Token;
-import com.suse.saltstack.netapi.utils.ClientUtils;
-import com.suse.saltstack.netapi.results.ResultInfo;
-import com.suse.saltstack.netapi.results.ResultInfoSet;
-
-import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
-import static com.suse.saltstack.netapi.AuthModule.PAM;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.suse.saltstack.netapi.AuthModule.AUTO;
+import static com.suse.saltstack.netapi.AuthModule.PAM;
+import static com.suse.saltstack.netapi.config.ClientConfig.SOCKET_TIMEOUT;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.any;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+import com.suse.saltstack.netapi.calls.wheel.Key;
+import com.suse.saltstack.netapi.client.impl.JDKConnectionFactory;
+import com.suse.saltstack.netapi.datatypes.Job;
+import com.suse.saltstack.netapi.datatypes.ScheduledJob;
+import com.suse.saltstack.netapi.datatypes.Token;
+import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
+import com.suse.saltstack.netapi.datatypes.target.Glob;
+import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
+import com.suse.saltstack.netapi.results.ResultInfo;
+import com.suse.saltstack.netapi.results.ResultInfoSet;
+import com.suse.saltstack.netapi.utils.ClientUtils;
 
 /**
  * SaltStack API unit tests.
@@ -74,6 +72,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/get_minions_response.json"));
     static final String JSON_GET_MINION_DETAILS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/minion_details_response.json"));
+    static final String JSON_JOBS_RUN_RESPONSE = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/jobs_run_response.json"));
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/login_request.json"));
     static final String JSON_LOGIN_RESPONSE = ClientUtils.streamToString(
@@ -196,7 +196,7 @@ public class SaltStackClientTest {
 
         Map<String, Object> retvals =
                 client.run("user", "pass", PAM, "local", new Glob(),
-                "pkg.install", args, kwargs).getResults();
+                "pkg.install", args, kwargs);
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -240,9 +240,9 @@ public class SaltStackClientTest {
         kwargs.put("refresh", "true");
         kwargs.put("sysupgrade", "false");
 
-        Future<ResultInfo> future = client.runAsync("user", "pass",
+        Future<Map<String, Object>> future = client.runAsync("user", "pass",
                 PAM, "local", new Glob(), "pkg.install", args, kwargs);
-        Map<String, Object> retvals = future.get().getResults();
+        Map<String, Object> retvals = future.get();
 
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -483,7 +483,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
+                .withBody(JSON_JOBS_RUN_RESPONSE)));
 
         Map<String, Object> retvals = client.getJobResult("some-job-id")
                 .get(0).getResults();
