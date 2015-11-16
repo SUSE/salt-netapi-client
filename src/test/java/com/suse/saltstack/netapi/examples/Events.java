@@ -17,7 +17,7 @@ import javax.websocket.CloseReason;
  */
 public class Events {
 
-    private static final String SALT_API_URL = "http://my.salt.master:8000";
+    private static final String SALT_API_URL = "http://localhost:8000";
     private static final String USER = "saltdev";
     private static final String PASSWORD = "saltdev";
 
