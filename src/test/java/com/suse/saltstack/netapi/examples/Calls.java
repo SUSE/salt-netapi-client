@@ -34,29 +34,25 @@ public class Calls {
                 Test.ping(), globTarget, USER, PASSWORD, AuthModule.AUTO);
 
         System.out.println("--> Ping results:\n");
-        results.keySet().forEach(
-                key -> System.out.println(key + " -> " + results.get(key)));
+        results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        Map<String, Map<String, Object>> grains = client.callSync(
+        Map<String, Map<String, Object>> grainResults = client.callSync(
                 Grains.items(true), minionList, USER, PASSWORD, AuthModule.AUTO);
 
-        for (String minion : grains.keySet()) {
+        grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");
-            Map<String, Object> minionGrains = grains.get(minion);
-            minionGrains.keySet().forEach(
-                    key -> System.out.println(key + ": " + minionGrains.get(key)));
-        }
+            grains.forEach((key, value) -> System.out.println(key + ": " + value));
+        });
 
         // Call a wheel function: list accepted and pending minion keys
-        WheelResult<Key.Names> keysResult = client.callSync(
+        WheelResult<Key.Names> keyResults = client.callSync(
                 Key.listAll(), USER, PASSWORD, AuthModule.AUTO);
-        Key.Names keys = keysResult.getData().getResult();
+        Key.Names keys = keyResults.getData().getResult();
 
         System.out.println("\n--> Accepted minion keys:\n");
         keys.getMinions().forEach(minion -> System.out.println(minion));
-
         System.out.println("\n--> Pending minion keys:\n");
         keys.getUnacceptedMinions().forEach(minion -> System.out.println(minion));
     }
