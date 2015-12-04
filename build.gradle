@@ -29,6 +29,22 @@ checkstyle {
 	configFile = new File(rootDir, "checkstyle.xml")
     toolVersion = "2.17"
 }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
 test {
   testLogging.showStandardStreams = true
 }
