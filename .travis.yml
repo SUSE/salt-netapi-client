@@ -2,7 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 install: /bin/true
-script: mvn checkstyle:check javadoc:javadoc test package
+script: ./gradlew check javadoc test jar sourcesJar javadocJar
 deploy:
   provider: releases
   api_key:
