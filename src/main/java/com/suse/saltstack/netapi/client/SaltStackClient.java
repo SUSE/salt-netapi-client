@@ -2,21 +2,6 @@ package com.suse.saltstack.netapi.client;
 
 import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
 
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.AuthModule;
 import com.suse.saltstack.netapi.calls.Call;
 import com.suse.saltstack.netapi.calls.Client;
@@ -42,6 +27,22 @@ import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * SaltStack API client.
