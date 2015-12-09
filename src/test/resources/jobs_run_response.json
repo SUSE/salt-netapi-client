@@ -1,0 +1,59 @@
+{
+   "return" : [
+      {
+         "minion-1" : {
+            "i3status" : {
+               "old" : "",
+               "new" : "2.9-2"
+            },
+            "i3" : {
+               "old" : "",
+               "new" : "4.10.3-1"
+            },
+            "i3lock" : {
+               "new" : "2.7-1",
+               "old" : ""
+            }
+         }
+      }
+   ],
+   "info" : [
+      {
+         "Minions" : [
+            "minion-1"
+         ],
+         "Function" : "pkg.install",
+         "Arguments" : [
+            "i3",
+            {
+               "__kwarg__" : true,
+               "sysupgrade" : "false",
+               "refresh" : "true"
+            }
+         ],
+         "Target" : "*",
+         "jid" : "20150810200316696112",
+         "Result" : {
+            "minion-1" : {
+               "return" : {
+                  "i3lock" : {
+                     "old" : "",
+                     "new" : "2.7-1"
+                  },
+                  "i3" : {
+                     "old" : "",
+                     "new" : "4.10.3-1"
+                  },
+                  "i3status" : {
+                     "old" : "",
+                     "new" : "2.9-2"
+                  }
+               }
+            }
+         },
+         "User" : "adamm",
+         "Target-type" : "glob",
+         "StartTime" : "2015, Aug 10 20:03:16.696112"
+      }
+   ]
+}

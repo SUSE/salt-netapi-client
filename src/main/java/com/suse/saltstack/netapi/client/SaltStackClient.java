@@ -1,5 +1,19 @@
 package com.suse.saltstack.netapi.client;
 
+import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
+
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -27,22 +41,7 @@ import com.suse.saltstack.netapi.event.EventStream;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Result;
-import com.suse.saltstack.netapi.results.ResultInfo;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
-
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import static com.suse.saltstack.netapi.utils.ClientUtils.parameterizedType;
 
 /**
  * SaltStack API client.
@@ -392,7 +391,7 @@ public class SaltStackClient {
      * @return Map key: minion id, value: command result from that minion
      * @throws SaltStackException if anything goes wrong
      */
-    public <T> ResultInfo run(final String username, final String password,
+    public <T> Map<String, Object> run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
             final String function, List<Object> args, Map<String, Object> kwargs)
             throws SaltStackException {
@@ -411,12 +410,12 @@ public class SaltStackClient {
 
         String payload = gson.toJson(list);
 
-        ResultInfoSet result = connectionFactory
-                .create("/run", JsonParser.JOB_RESULTS, config)
+        Result<List<Map<String, Object>>> result = connectionFactory
+                .create("/run", JsonParser.RUN_RESULTS, config)
                 .getResult(payload);
 
         // A list with one element is returned, we take the first
-        return result.get(0);
+        return result.getResult().get(0);
     }
 
     /**
@@ -435,7 +434,7 @@ public class SaltStackClient {
      * @param kwargs map containing keyword arguments
      * @return Future containing Map key: minion id, value: command result from that minion
      */
-    public <T> Future<ResultInfo> runAsync(final String username,
+    public <T> Future<Map<String, Object>> runAsync(final String username,
             final String password, final AuthModule eauth, final String client,
             final Target<T> target, final String function, final List<Object> args,
             final Map<String, Object> kwargs) {
