@@ -344,7 +344,7 @@ public class SaltStackClientTest {
                 .withBody(JSON_GET_MINION_DETAILS_RESPONSE)));
 
         Map<String, Object> minion = client.getMinionDetails("minion2");
-        verifyMinionsDetails(minion);
+        verifyMinionDetails(minion);
     }
 
     @Test
@@ -357,11 +357,11 @@ public class SaltStackClientTest {
 
         Future<Map<String, Object>> future = client.getMinionDetailsAsync("minion2");
         Map<String, Object> minion = future.get();
-        verifyMinionsDetails(minion);
+        verifyMinionDetails(minion);
     }
 
     @SuppressWarnings("unchecked")
-    private void verifyMinionsDetails(Map<String, Object> minion) {
+    private void verifyMinionDetails(Map<String, Object> minion) {
         verify(1, getRequestedFor(urlEqualTo("/minions/minion2"))
                 .withHeader("Accept", equalTo("application/json")));
 
