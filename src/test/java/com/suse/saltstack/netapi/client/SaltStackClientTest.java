@@ -287,7 +287,6 @@ public class SaltStackClientTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetMinions() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
@@ -301,7 +300,6 @@ public class SaltStackClientTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetMinionsAsync() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
@@ -315,6 +313,7 @@ public class SaltStackClientTest {
         verifyMinions(minions);
     }
 
+    @SuppressWarnings("unchecked")
     private void verifyMinions(Map<String, Map<String, Object>> minions) {
         verify(1, getRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json")));
@@ -343,7 +342,6 @@ public class SaltStackClientTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetMinionDetails() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
@@ -357,7 +355,6 @@ public class SaltStackClientTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetMinionDetailsAsync() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
@@ -371,6 +368,7 @@ public class SaltStackClientTest {
         verifyMinionsDetails(minion);
     }
 
+    @SuppressWarnings("unchecked")
     private void verifyMinionsDetails(Map<String, Object> minion) {
         verify(1, getRequestedFor(urlEqualTo("/minions/minion2"))
                 .withHeader("Accept", equalTo("application/json")));
