@@ -125,7 +125,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_LOGIN_RESPONSE)));
 
         Token token = client.login("user", "pass", AUTO);
-
         verifyLoginToken(token);
     }
 
@@ -139,7 +138,6 @@ public class SaltStackClientTest {
 
         Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
         Token token = futureToken.get();
-
         verifyLoginToken(token);
     }
 
@@ -193,7 +191,6 @@ public class SaltStackClientTest {
         Map<String, Object> retvals =
                 client.run("user", "pass", PAM, "local", new Glob(),
                 "pkg.install", args, kwargs);
-
         verifyRunResults(retvals);
     }
 
@@ -215,7 +212,6 @@ public class SaltStackClientTest {
         Future<Map<String, Object>> future = client.runAsync("user", "pass",
                 PAM, "local", new Glob(), "pkg.install", args, kwargs);
         Map<String, Object> retvals = future.get();
-
         verifyRunResults(retvals);
     }
 
@@ -295,7 +291,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_GET_MINIONS_RESPONSE)));
 
         Map<String, Map<String, Object>> minions = client.getMinions();
-
         verifyMinions(minions);
     }
 
@@ -309,7 +304,6 @@ public class SaltStackClientTest {
 
         Future<Map<String, Map<String, Object>>> future = client.getMinionsAsync();
         Map<String, Map<String, Object>> minions = future.get();
-
         verifyMinions(minions);
     }
 
@@ -350,7 +344,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_GET_MINION_DETAILS_RESPONSE)));
 
         Map<String, Object> minion = client.getMinionDetails("minion2");
-
         verifyMinionsDetails(minion);
     }
 
@@ -364,7 +357,6 @@ public class SaltStackClientTest {
 
         Future<Map<String, Object>> future = client.getMinionDetailsAsync("minion2");
         Map<String, Object> minion = future.get();
-
         verifyMinionsDetails(minion);
     }
 
@@ -524,7 +516,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_KEYS_RESPONSE)));
 
         Key.Names keys = client.keys();
-
         verifyKeys(keys);
     }
 
@@ -537,7 +528,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_KEYS_RESPONSE)));
 
         Key.Names keys = client.keysAsync().get();
-
         verifyKeys(keys);
     }
 
@@ -764,7 +754,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_LOGOUT_RESPONSE)));
 
         boolean success = client.logout();
-
         verifyLogout(success);
     }
 
@@ -777,7 +766,6 @@ public class SaltStackClientTest {
                 .withBody(JSON_LOGOUT_RESPONSE)));
 
         boolean success = client.logoutAsync().get();
-
         verifyLogout(success);
     }
 
