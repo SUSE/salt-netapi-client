@@ -72,8 +72,6 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/get_minions_response.json"));
     static final String JSON_GET_MINION_DETAILS_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/minion_details_response.json"));
-    static final String JSON_JOBS_RUN_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/jobs_run_response.json"));
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/login_request.json"));
     static final String JSON_LOGIN_RESPONSE = ClientUtils.streamToString(
@@ -90,6 +88,8 @@ public class SaltStackClientTest {
             SaltStackClientTest.class.getResourceAsStream("/jobs_response.json"));
     static final String JSON_JOBS_RESPONSE_PENDING = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream("/jobs_response_pending.json"));
+    static final String JSON_JOBS_RESPONSE_RESULT = ClientUtils.streamToString(
+            SaltStackClientTest.class.getResourceAsStream("/jobs_response_result.json"));
     static final String JSON_JOBS_INVALID_START_TIME_RESPONSE = ClientUtils.streamToString(
             SaltStackClientTest.class.getResourceAsStream(
             "/jobs_response_invalid_start_time.json"));
@@ -483,7 +483,7 @@ public class SaltStackClientTest {
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_RUN_RESPONSE)));
+                .withBody(JSON_JOBS_RESPONSE_RESULT)));
 
         Map<String, Object> retvals = client.getJobResult("some-job-id")
                 .get(0).getResults();
