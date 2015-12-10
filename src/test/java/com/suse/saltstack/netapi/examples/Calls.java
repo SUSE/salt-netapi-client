@@ -30,16 +30,16 @@ public class Calls {
 
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");
-        Map<String, Boolean> results = client.callSync(
-                Test.ping(), globTarget, USER, PASSWORD, AuthModule.AUTO);
+        Map<String, Boolean> results = Test.ping().callSync(
+                client, globTarget, USER, PASSWORD, AuthModule.AUTO);
 
         System.out.println("--> Ping results:\n");
         results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        Map<String, Map<String, Object>> grainResults = client.callSync(
-                Grains.items(true), minionList, USER, PASSWORD, AuthModule.AUTO);
+        Map<String, Map<String, Object>> grainResults = Grains.items(false).callSync(
+                client, minionList, USER, PASSWORD, AuthModule.AUTO);
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");
@@ -47,8 +47,8 @@ public class Calls {
         });
 
         // Call a wheel function: list accepted and pending minion keys
-        WheelResult<Key.Names> keyResults = client.callSync(
-                Key.listAll(), USER, PASSWORD, AuthModule.AUTO);
+        WheelResult<Key.Names> keyResults = Key.listAll().callSync(
+                client, USER, PASSWORD, AuthModule.AUTO);
         Key.Names keys = keyResults.getData().getResult();
 
         System.out.println("\n--> Accepted minion keys:\n");
