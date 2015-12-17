@@ -1,0 +1,18 @@
+{
+  "return": [
+    {
+      "minion1": {
+        "beacons": [],
+        "grains": [],
+        "log_handlers": [],
+        "modules": [],
+        "output": [],
+        "proxymodules": [],
+        "renderers": [],
+        "returners": [],
+        "states": [],
+        "utils": []
+      }
+    }
+  ]
+}
