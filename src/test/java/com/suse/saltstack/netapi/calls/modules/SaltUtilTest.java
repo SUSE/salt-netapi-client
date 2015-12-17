@@ -46,11 +46,12 @@ public class SaltUtilTest {
     public void testSyncGrains() throws SaltStackException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_SYNCGRAINS_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_SYNCGRAINS_RESPONSE)));
 
-        Map<String, List<String>> response = SaltUtil.syncGrains().callSync(client, new MinionList("localhost"));
+        Map<String, List<String>> response = SaltUtil.syncGrains()
+                .callSync(client, new MinionList("localhost"));
 
         assertEquals(response.size(), 1);
         assertEquals(response.entrySet().iterator().next().getKey(), "localhost");
