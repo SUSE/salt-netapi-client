@@ -28,7 +28,7 @@ public class SaltUtilTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
-    static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
+    static final String JSON_SYNCGRAINS_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/saltutil/syncgrains.json"));
 
     @Rule
@@ -48,7 +48,7 @@ public class SaltUtilTest {
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_RUN_RESPONSE)));
+                        .withBody(JSON_SYNCGRAINS_RESPONSE)));
 
         Map<String, List<String>> response = SaltUtil.syncGrains().callSync(client, new MinionList("localhost"));
 
