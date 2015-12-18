@@ -31,6 +31,15 @@ public class SmbiosTest {
     static final String JSON_RECORDS_RESPONSE = ClientUtils.streamToString(
             SmbiosTest.class.getResourceAsStream("/modules/smbios/bios_records.json"));
 
+    static final String JSON_EMPTY_RESPONSE = ClientUtils.streamToString(
+            SmbiosTest.class.getResourceAsStream("/modules/smbios/empty_response.json"));
+
+    static final String JSON_ERROR_RESPONSE = ClientUtils.streamToString(
+            SmbiosTest.class.getResourceAsStream("/modules/smbios/error_response.json"));
+
+    static final String JSON_ALL_RESPONSE = ClientUtils.streamToString(
+            SmbiosTest.class.getResourceAsStream("/modules/smbios/all_records.json"));
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
@@ -43,7 +52,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testRecords() throws SaltStackException {
+    public void testRecordsOne() throws SaltStackException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -56,17 +65,61 @@ public class SmbiosTest {
         assertEquals(response.size(), 1);
         Map.Entry<String, List<Smbios.Record>> first = response
                 .entrySet().iterator().next();
-        assertEquals(first.getKey(), "minion1");
-        assertEquals(first.getValue().get(0).getDescription(), "BIOS Information");
-        assertEquals(first.getValue().get(0).getData().get("address"), "0xE8000");
-        assertEquals(((List) first.getValue().get(0).getData()
-                .get("characteristics")).size(), 2);
-        assertEquals(first.getValue().get(0).getData().get("release_date"), "04/01/2014");
-        assertEquals(first.getValue().get(0).getData().get("rom_size"), "64 kB");
-        assertEquals(first.getValue().get(0).getData().get("runtime_size"), "96 kB");
-        assertEquals(first.getValue().get(0).getData().get("vendor"), "SeaBIOS");
-        assertEquals(first.getValue().get(0).getData().get("version"),
-                "rel-1.7.5-0-ge51488c-20150524_160643-cloud127");
+        assertEquals("minion1", first.getKey());
+        assertEquals("BIOS Information", first.getValue().get(0).getDescription());
+        assertEquals("0xE8000", first.getValue().get(0).getData().get("address"));
+        assertEquals(2, ((List) first.getValue().get(0).getData()
+                .get("characteristics")).size()) ;
+        assertEquals("04/01/2014", first.getValue().get(0).getData().get("release_date"));
+        assertEquals("64 kB", first.getValue().get(0).getData().get("rom_size"));
+        assertEquals("96 kB", first.getValue().get(0).getData().get("runtime_size"));
+        assertEquals("SeaBIOS", first.getValue().get(0).getData().get("vendor"));
+        assertEquals("rel-1.7.5-0-ge51488c-20150524_160643-cloud127", first.getValue()
+                .get(0).getData().get("version"));
+    }
+
+    @Test
+    public void testRecordsAll() throws SaltStackException {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_ALL_RESPONSE)));
+
+        Map<String, List<Smbios.Record>> response = Smbios.records(null)
+                .callSync(client, new MinionList("minion1"));
+
+        assertEquals(response.size(), 1);
+        Map.Entry<String, List<Smbios.Record>> first = response
+                .entrySet().iterator().next();
+        assertEquals("minion1", first.getKey());
+        assertEquals(7, first.getValue().size());
+
+    }
+
+    @Test
+    public void testEmptyResponse() throws SaltStackException {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_EMPTY_RESPONSE)));
+
+        Map<String, List<Smbios.Record>> response = Smbios.records(Smbios.RecordType.BIOS)
+                .callSync(client, new MinionList("minion1"));
+        assertEquals(0, response.size());
+    }
+
+    @Test(expected = com.google.gson.JsonSyntaxException.class)
+    public void testErrorResponse() throws SaltStackException {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_ERROR_RESPONSE)));
+
+        Smbios.records(Smbios.RecordType.BIOS)
+                .callSync(client, new MinionList("minion1"));
     }
 
 }

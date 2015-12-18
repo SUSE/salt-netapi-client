@@ -1,0 +1,108 @@
+{
+  "return": [
+    {
+      "minion1": [
+        {
+          "data": {
+            "address": "0xE8000",
+            "characteristics": [
+              "BIOS characteristics not supported",
+              "Targeted content distribution is supported"
+            ],
+            "release_date": "04/01/2014",
+            "rom_size": "64 kB",
+            "runtime_size": "96 kB",
+            "vendor": "SeaBIOS",
+            "version": "rel-1.7.5-0-ge51488c-20150524_160643-cloud127"
+          },
+          "description": "BIOS Information",
+          "handle": "0x0000",
+          "type": 0
+        },
+        {
+          "data": {
+            "manufacturer": "QEMU",
+            "product_name": "Standard PC (i440FX + PIIX, 1996)",
+            "uuid": "75299898-533C-FF48-8B5C-BE026DF56F74",
+            "version": "pc-i440fx-2.1",
+            "wake-up_type": "Power Switch"
+          },
+          "description": "System Information",
+          "handle": "0x0100",
+          "type": 1
+        },
+        {
+          "data": {
+            "boot-up_state": "Safe",
+            "manufacturer": "QEMU",
+            "oem_information": "0x00000000",
+            "power_supply_state": "Safe",
+            "thermal_state": "Safe",
+            "type": "Other",
+            "version": "pc-i440fx-2.1"
+          },
+          "description": "Chassis Information",
+          "handle": "0x0300",
+          "type": 3
+        },
+        {
+          "data": {
+            "core_count": 1,
+            "core_enabled": 1,
+            "family": "Other",
+            "id": "A1 06 02 00 FF FB 8B 0F",
+            "manufacturer": "QEMU",
+            "socket_designation": "CPU 0",
+            "status": [
+              "Populated",
+              "Enabled"
+            ],
+            "thread_count": 1,
+            "type": "Central Processor",
+            "upgrade": "Other",
+            "version": "pc-i440fx-2.1"
+          },
+          "description": "Processor Information",
+          "handle": "0x0400",
+          "type": 4
+        },
+        {
+          "data": {
+            "error_correction_type": "Multi-bit ECC",
+            "location": "Other",
+            "maximum_capacity": "512 MB",
+            "use": "System Memory"
+          },
+          "description": "Physical Memory Array",
+          "handle": "0x1000",
+          "type": 16
+        },
+        {
+          "data": {
+            "array_handle": "0x1000",
+            "form_factor": "DIMM",
+            "locator": "DIMM 0",
+            "manufacturer": "QEMU",
+            "size": "512 MB",
+            "type": "RAM",
+            "type_detail": "Other"
+          },
+          "description": "Memory Device",
+          "handle": "0x1100",
+          "type": 17
+        },
+        {
+          "data": {
+            "ending_address": "0x0001FFFFFFF",
+            "physical_array_handle": "0x1000",
+            "range_size": "512 MB",
+            "starting_address": "0x00000000000"
+          },
+          "description": "Memory Array Mapped Address",
+          "handle": "0x1300",
+          "type": 19
+        }
+      ]
+    }
+  ]
+}
