@@ -118,9 +118,16 @@ public class Smbios {
         }
     }
 
+    /**
+     * smbios.records
+     * @param type the type of the record to get or null to get all records
+     * @return The {@link LocalCall} to use for getting the record(s)
+     */
     public static LocalCall<List<Record>> records(RecordType type) {
         Map<String, Object> args = new LinkedHashMap<>();
-        args.put("rec_type", type.getType());
+        if (type != null) {
+            args.put("rec_type", type.getType());
+        }
         args.put("clean", false);
         return new LocalCall<>("smbios.records", Optional.empty(), Optional.of(args),
                 new TypeToken<List<Record>>() { });
