@@ -99,6 +99,7 @@ public class Network {
 
         private String prefixlen;
         private String address;
+        private String scope;
 
         /**
          * @return the prefixlen
@@ -112,6 +113,13 @@ public class Network {
          */
         public String getAddress() {
             return address;
+        }
+
+        /**
+         * @return the scope
+         */
+        public String getScope() {
+            return scope;
         }
     }
 
