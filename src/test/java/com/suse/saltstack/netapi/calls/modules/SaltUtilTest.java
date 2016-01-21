@@ -60,9 +60,9 @@ public class SaltUtilTest {
         Map<String, List<String>> response = SaltUtil.syncGrains(null, true)
                 .callSync(client, new MinionList("minion1"));
 
-        assertEquals(response.size(), 1);
-        assertEquals(response.entrySet().iterator().next().getKey(), "minion1");
-        assertEquals(response.entrySet().iterator().next().getValue().size(), 0);
+        assertEquals(1, response.size());
+        assertEquals("minion1", response.entrySet().iterator().next().getKey());
+        assertEquals(0, response.entrySet().iterator().next().getValue().size());
     }
 
     @Test
@@ -76,9 +76,9 @@ public class SaltUtilTest {
         Map<String, List<String>> response = SaltUtil.syncModules(null, true)
                 .callSync(client, new MinionList("minion1"));
 
-        assertEquals(response.size(), 1);
-        assertEquals(response.entrySet().iterator().next().getKey(), "minion1");
-        assertEquals(response.entrySet().iterator().next().getValue().size(), 0);
+        assertEquals(1, response.size());
+        assertEquals("minion1", response.entrySet().iterator().next().getKey());
+        assertEquals(0, response.entrySet().iterator().next().getValue().size());
     }
 
     @Test
@@ -92,19 +92,18 @@ public class SaltUtilTest {
         Map<String, Map<String, Object>> response = SaltUtil.syncAll(null, true)
                 .callSync(client, new MinionList("minion1"));
 
-        assertEquals(response.size(), 1);
+        assertEquals(1, response.size());
         assertNotNull(response.get("minion1"));
         Map<String, Object> data = response.get("minion1");
-        assertEquals(((List) data.get("beacons")).size(), 0);
-        assertEquals(((List) data.get("grains")).size(), 0);
-        assertEquals(((List) data.get("log_handlers")).size(), 0);
-        assertEquals(((List) data.get("modules")).size(), 0);
-        assertEquals(((List) data.get("output")).size(), 0);
-        assertEquals(((List) data.get("proxymodules")).size(), 0);
-        assertEquals(((List) data.get("renderers")).size(), 0);
-        assertEquals(((List) data.get("returners")).size(), 0);
-        assertEquals(((List) data.get("states")).size(), 0);
-        assertEquals(((List) data.get("utils")).size(), 0);
+        assertEquals(0, ((List<?>) data.get("beacons")).size());
+        assertEquals(0, ((List<?>) data.get("grains")).size());
+        assertEquals(0, ((List<?>) data.get("log_handlers")).size());
+        assertEquals(0, ((List<?>) data.get("modules")).size());
+        assertEquals(0, ((List<?>) data.get("output")).size());
+        assertEquals(0, ((List<?>) data.get("proxymodules")).size());
+        assertEquals(0, ((List<?>) data.get("renderers")).size());
+        assertEquals(0, ((List<?>) data.get("returners")).size());
+        assertEquals(0, ((List<?>) data.get("states")).size());
+        assertEquals(0, ((List<?>) data.get("utils")).size());
     }
-
 }
