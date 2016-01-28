@@ -11,7 +11,7 @@
     "summary": "Vi IMproved",
     "source": "vim-7.4.326-2.62.src.rpm",
     "version": "7.4.326",
-    "architecture": "x86_64",
+    "arch": "x86_64",
     "signature": "RSA/SHA256, Wed 08 Oct 2014 03:45:49 PM UTC, Key ID 70af9e8139db7c82",
     "release": "2.62",
     "vendor": "SUSE LLC <https://www.suse.com/>",

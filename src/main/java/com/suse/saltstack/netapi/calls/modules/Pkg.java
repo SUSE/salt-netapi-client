@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * salt.modules.pkg
@@ -51,69 +52,68 @@ public class Pkg {
      */
     public static class Info {
 
-        private String architecture;
+        @SerializedName("arch")
+        private Optional<String> architecture = Optional.empty();
         @SerializedName("build_date")
-        private ZonedDateTime buildDate;
+        private Optional<ZonedDateTime> buildDate = Optional.empty();
+        @SerializedName("build_date_time_t")
+        private Optional<Long> buildDateUnixTime = Optional.empty();
         @SerializedName("build_host")
-        private String buildHost;
-        private String description;
-        private String group;
+        private Optional<String> buildHost = Optional.empty();
+        private Optional<String> description = Optional.empty();
+        private Optional<String> group = Optional.empty();
         @SerializedName("install_date")
-        private ZonedDateTime installDate;
-        private String license;
-        private String name;
+        private Optional<ZonedDateTime> installDate = Optional.empty();
+        @SerializedName("install_date_time_t")
+        private Optional<Long> installDateUnixTime = Optional.empty();
+        private Optional<String> license = Optional.empty();
         @SerializedName("new_features_have_been_added")
         private Optional<String> newFeaturesHaveBeenAdded = Optional.empty();
-        private String packager;
+        private Optional<String> packager = Optional.empty();
         private Optional<String> release = Optional.empty();
-        private String relocations;
-        private String signature;
-        private String size;
-        @SerializedName("source")
-        private String source;
-        private String summary;
-        private String url;
-        private String vendor;
-        private String version;
+        private Optional<String> relocations = Optional.empty();
+        private Optional<String> signature = Optional.empty();
+        private Optional<String> size = Optional.empty();
+        private Optional<String> source = Optional.empty();
+        private Optional<String> summary = Optional.empty();
+        private Optional<String> url = Optional.empty();
+        private Optional<String> vendor = Optional.empty();
+        private Optional<String> version = Optional.empty();
         private Optional<String> epoch = Optional.empty();
 
-        public String getArchitecture() {
+        public Optional<String> getArchitecture() {
             return architecture;
         }
 
-        public ZonedDateTime getBuildDate() {
+        public Optional<ZonedDateTime> getBuildDate() {
             return buildDate;
         }
 
-        public String getBuildHost() {
+        public Optional<String> getBuildHost() {
             return buildHost;
         }
 
-        public String getGroup() {
+        public Optional<String> getGroup() {
             return group;
         }
 
-        public String getDescription() {
+        public Optional<String> getDescription() {
             return description;
         }
 
-        public ZonedDateTime getInstallDate() {
+        public Optional<ZonedDateTime> getInstallDate() {
             return installDate;
         }
 
-        public String getLicense() {
+        public Optional<String> getLicense() {
             return license;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public Optional<String> getNewFeaturesHaveBeenAdded() {
             return newFeaturesHaveBeenAdded;
         }
 
-        public String getPackager() {
+        public Optional<String> getPackager() {
             return packager;
         }
 
@@ -121,40 +121,48 @@ public class Pkg {
             return release;
         }
 
-        public String getRelocations() {
+        public Optional<String> getRelocations() {
             return relocations;
         }
 
-        public String getSignature() {
+        public Optional<String> getSignature() {
             return signature;
         }
 
-        public String getSize() {
+        public Optional<String> getSize() {
             return size;
         }
 
-        public String getSource() {
+        public Optional<String> getSource() {
             return source;
         }
 
-        public String getSummary() {
+        public Optional<String> getSummary() {
             return summary;
         }
 
-        public String getUrl() {
+        public Optional<String> getUrl() {
             return url;
         }
 
-        public String getVendor() {
+        public Optional<String> getVendor() {
             return vendor;
         }
 
-        public String getVersion() {
+        public Optional<String> getVersion() {
             return version;
         }
 
         public Optional<String> getEpoch() {
             return epoch;
+        }
+
+        public Optional<Long> getBuildDateUnixTime() {
+            return buildDateUnixTime;
+        }
+
+        public Optional<Long> getInstallDateUnixTime() {
+            return installDateUnixTime;
         }
     }
 
@@ -179,13 +187,42 @@ public class Pkg {
                 new TypeToken<Map<String, List<String>>>(){});
     }
 
-    public static LocalCall<Map<String, Info>> infoInstalled(String... packages) {
+    /**
+     * Call 'pkg.info_installed' API.
+     *
+     * @param attributes list of attributes that should be included in the result
+     * @param packages optional give package names, otherwise return info about all packages
+     * @return the call
+     */
+    public static LocalCall<Map<String, Info>> infoInstalled(List<String> attributes,
+            boolean reportErrors, String... packages) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("attr", attributes.stream().collect(Collectors.joining(",")));
+        if (reportErrors) {
+            kwargs.put("errors", "report");
+        }
         return new LocalCall<>("pkg.info_installed", Optional.of(Arrays.asList(packages)),
-                Optional.empty(), new TypeToken<Map<String, Info>>(){});
+                Optional.of(kwargs), new TypeToken<Map<String, Info>>(){});
     }
 
     public static LocalCall<Map<String, Info>> infoAvailable(String... packages) {
         return new LocalCall<>("pkg.info_available", Optional.of(Arrays.asList(packages)),
                 Optional.empty(), new TypeToken<Map<String, Info>>(){});
+    }
+
+    /**
+     * Call 'pkg.install' API.
+     *
+     * @param refresh refresh repos before installation
+     * @param pkgs list of packages
+     * @return the call
+     */
+    public static LocalCall<Map<String, Object>> install(boolean refresh,
+            List<String> pkgs) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", refresh);
+        kwargs.put("pkgs", pkgs);
+        return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
+                new TypeToken<Map<String, Object>>() { });
     }
 }
