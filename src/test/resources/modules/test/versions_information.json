@@ -1,0 +1,38 @@
+{  
+   "Salt Version":{  
+      "Salt":"2015.8.0-574-g99384bc"
+   },
+   "System Versions":{  
+      "release":"3.13.0-65-generic",
+      "machine":"x86_64",
+      "dist":"Ubuntu 14.04 trusty",
+      "system":"Ubuntu 14.04 trusty"
+   },
+   "Dependency Versions":{  
+      "Mako":null,
+      "cherrypy":null,
+      "timelib":null,
+      "cffi":null,
+      "mysql-python":null,
+      "dateutil":null,
+      "Python":"2.7.6 (default, Jun 22 2015, 17:58:13)",
+      "RAET":null,
+      "Jinja2":"2.7.2",
+      "pygit2":null,
+      "PyYAML":"3.10",
+      "pycparser":null,
+      "msgpack-pure":null,
+      "ioflo":null,
+      "M2Crypto":"0.21.1",
+      "msgpack-python":"0.3.0",
+      "ZMQ":"4.0.4",
+      "python-gnupg":null,
+      "smmap":null,
+      "libnacl":null,
+      "pycrypto":"2.6.1",
+      "gitpython":null,
+      "gitdb":null,
+      "Tornado":"4.2.1",
+      "PyZMQ":"14.0.1"
+   }
+}
