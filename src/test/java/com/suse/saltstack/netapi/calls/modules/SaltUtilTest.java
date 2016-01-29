@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,7 +58,8 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SYNCGRAINS_RESPONSE)));
 
-        Map<String, List<String>> response = SaltUtil.syncGrains(null, true)
+        Map<String, List<String>> response = SaltUtil
+                .syncGrains(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
@@ -73,7 +75,8 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SYNCMODULES_RESPONSE)));
 
-        Map<String, List<String>> response = SaltUtil.syncModules(null, true)
+        Map<String, List<String>> response = SaltUtil
+                .syncModules(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
@@ -89,7 +92,8 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SYNCALL_RESPONSE)));
 
-        Map<String, Map<String, Object>> response = SaltUtil.syncAll(null, true)
+        Map<String, Map<String, Object>> response = SaltUtil
+                .syncAll(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());

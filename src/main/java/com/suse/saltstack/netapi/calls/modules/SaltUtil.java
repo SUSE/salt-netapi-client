@@ -13,33 +13,35 @@ import com.suse.saltstack.netapi.calls.LocalCall;
  */
 public class SaltUtil {
 
-    public static LocalCall<List<String>> syncGrains(String saltenv, boolean refresh) {
-        LinkedHashMap<String, Object> args = syncArgs(saltenv, refresh);
+    public static LocalCall<List<String>> syncGrains(
+            Optional<Boolean> refresh, Optional<String> saltenv) {
+        LinkedHashMap<String, Object> args = syncArgs(refresh, saltenv);
         return new LocalCall<>("saltutil.sync_grains", Optional.empty(),
                 Optional.of(args), new TypeToken<List<String>>() {
                 });
     }
 
-    public static LocalCall<List<String>> syncModules(String saltenv, boolean refresh) {
-        LinkedHashMap<String, Object> args = syncArgs(saltenv, refresh);
+    public static LocalCall<List<String>> syncModules(
+            Optional<Boolean> refresh, Optional<String> saltenv) {
+        LinkedHashMap<String, Object> args = syncArgs(refresh, saltenv);
         return new LocalCall<>("saltutil.sync_modules", Optional.empty(),
                 Optional.of(args), new TypeToken<List<String>>() {
                 });
     }
 
-    public static LocalCall<Map<String, Object>> syncAll(String saltenv, boolean refresh) {
-        LinkedHashMap<String, Object> args = syncArgs(saltenv, refresh);
+    public static LocalCall<Map<String, Object>> syncAll(
+            Optional<Boolean> refresh, Optional<String> saltenv) {
+        LinkedHashMap<String, Object> args = syncArgs(refresh, saltenv);
         return new LocalCall<>("saltutil.sync_all", Optional.empty(),
                 Optional.of(args), new TypeToken<Map<String, Object>>() {
                 });
     }
 
-    private static LinkedHashMap<String, Object> syncArgs(String saltenv, boolean refresh) {
+    private static LinkedHashMap<String, Object> syncArgs(
+            Optional<Boolean> refresh, Optional<String> saltenv) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        if (saltenv != null) {
-            args.put("saltenv", saltenv);
-        }
-        args.put("refresh", refresh);
+        refresh.ifPresent(value -> args.put("refresh", value));
+        saltenv.ifPresent(value -> args.put("saltenv", value));
         return args;
     }
 
