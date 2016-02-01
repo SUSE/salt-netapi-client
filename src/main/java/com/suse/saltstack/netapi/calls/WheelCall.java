@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.calls;
 
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.AuthModule;
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.results.Result;
 
@@ -57,7 +57,7 @@ public class WheelCall<R> implements Call<R> {
      * @return information about the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public WheelAsyncResult<R> callAsync(final SaltStackClient client)
+    public WheelAsyncResult<R> callAsync(final SaltClient client)
             throws SaltStackException {
         Result<List<WheelAsyncResult<R>>> wrapper = client.call(
                 this, Client.WHEEL_ASYNC, "/",
@@ -79,7 +79,7 @@ public class WheelCall<R> implements Call<R> {
      * @return information about the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public WheelAsyncResult<R> callAsync(final SaltStackClient client, String username,
+    public WheelAsyncResult<R> callAsync(final SaltClient client, String username,
             String password, AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
@@ -105,7 +105,7 @@ public class WheelCall<R> implements Call<R> {
      * @return the result of the called function
      * @throws SaltStackException if anything goes wrong
      */
-    public WheelResult<R> callSync(final SaltStackClient client)
+    public WheelResult<R> callSync(final SaltClient client)
             throws SaltStackException {
         Type wheelResult = parameterizedType(null, WheelResult.class,
                 getReturnType().getType());
@@ -130,7 +130,7 @@ public class WheelCall<R> implements Call<R> {
      * @return the result of the called function
      * @throws SaltStackException if anything goes wrong
      */
-    public WheelResult<R> callSync(final SaltStackClient client,
+    public WheelResult<R> callSync(final SaltClient client,
             String username, String password,
             AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();

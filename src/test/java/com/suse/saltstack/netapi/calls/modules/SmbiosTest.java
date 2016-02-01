@@ -16,7 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.datatypes.target.MinionList;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
@@ -43,12 +43,12 @@ public class SmbiosTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
-    private SaltStackClient client;
+    private SaltClient client;
 
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltStackClient(uri);
+        client = new SaltClient(uri);
     }
 
     @Test

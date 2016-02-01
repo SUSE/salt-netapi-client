@@ -1,6 +1,6 @@
 package com.suse.saltstack.netapi.utils;
 
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.Scanner;
 import static com.google.gson.internal.$Gson$Types.newParameterizedTypeWithOwner;
 
 /**
- * Utilities for {@link SaltStackClient}.
+ * Utilities for {@link SaltClient}.
  */
 public class ClientUtils {
 

@@ -1,7 +1,7 @@
 package com.suse.saltstack.netapi.examples;
 
 import com.suse.saltstack.netapi.AuthModule;
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.datatypes.Event;
 import com.suse.saltstack.netapi.datatypes.Token;
@@ -23,7 +23,7 @@ public class Events {
 
     public static void main(String[] args) {
         // Init client and set the timeout to infinite
-        SaltStackClient client = new SaltStackClient(URI.create(SALT_API_URL));
+        SaltClient client = new SaltClient(URI.create(SALT_API_URL));
         client.getConfig().put(ClientConfig.SOCKET_TIMEOUT, 0);
 
         try {

@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.calls;
 
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.AuthModule;
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.datatypes.target.Target;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.results.Result;
@@ -62,7 +62,7 @@ public class LocalCall<R> implements Call<R> {
      * @return information about the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public LocalAsyncResult<R> callAsync(final SaltStackClient client, Target<?> target)
+    public LocalAsyncResult<R> callAsync(final SaltClient client, Target<?> target)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
@@ -91,7 +91,7 @@ public class LocalCall<R> implements Call<R> {
      * @return information about the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public LocalAsyncResult<R> callAsync(final SaltStackClient client, Target<?> target,
+    public LocalAsyncResult<R> callAsync(final SaltClient client, Target<?> target,
             String username, String password, AuthModule authModule)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
@@ -121,7 +121,7 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, R> callSync(final SaltStackClient client, Target<?> target)
+    public Map<String, R> callSync(final SaltClient client, Target<?> target)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.put("tgt", target.getTarget());
@@ -152,7 +152,7 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltStackException if anything goes wrong
      */
-    public Map<String, R> callSync(final SaltStackClient client, Target<?> target,
+    public Map<String, R> callSync(final SaltClient client, Target<?> target,
             String username, String password, AuthModule authModule)
             throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();

@@ -105,7 +105,7 @@ public class SaltStackClientTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
-    private SaltStackClient client;
+    private SaltClient client;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -113,7 +113,7 @@ public class SaltStackClientTest {
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltStackClient(uri);
+        client = new SaltClient(uri);
     }
 
     @Test
@@ -251,7 +251,7 @@ public class SaltStackClientTest {
         // create a local SaltStackClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        SaltStackClient clientWithFastTimeout = new SaltStackClient(uri);
+        SaltClient clientWithFastTimeout = new SaltClient(uri);
         clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
 
         stubFor(any(urlMatching(".*"))
@@ -269,7 +269,7 @@ public class SaltStackClientTest {
         // create a local SaltStackClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        SaltStackClient clientWithFastTimeout = new SaltStackClient(uri,
+        SaltClient clientWithFastTimeout = new SaltClient(uri,
                 new JDKConnectionFactory());
         clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
 

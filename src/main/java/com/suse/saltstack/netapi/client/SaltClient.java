@@ -35,9 +35,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * SaltStack API client.
+ * Salt API client.
  */
-public class SaltStackClient {
+public class SaltClient {
 
     /** The configuration object */
     private final ClientConfig config = new ClientConfig();
@@ -53,40 +53,40 @@ public class SaltStackClient {
     /**
      * Constructor for connecting to a given URL.
      *
-     * @param url the SaltStack URL
+     * @param url the Salt API URL
      */
-    public SaltStackClient(URI url) {
+    public SaltClient(URI url) {
         this(url, new HttpClientConnectionFactory());
     }
 
     /**
      * Constructor for connecting to a given URL using a specific connection factory.
      *
-     * @param url the SaltStack URL
+     * @param url the Salt API URL
      * @param connectionFactory ConnectionFactory implementation
      */
-    public SaltStackClient(URI url, ConnectionFactory connectionFactory) {
+    public SaltClient(URI url, ConnectionFactory connectionFactory) {
         this(url, connectionFactory, Executors.newCachedThreadPool());
     }
 
     /**
      * Constructor for connecting to a given URL.
      *
-     * @param url the SaltStack URL
+     * @param url the Salt API URL
      * @param executor ExecutorService to be used for async operations
      */
-    public SaltStackClient(URI url, ExecutorService executor) {
+    public SaltClient(URI url, ExecutorService executor) {
         this(url, new HttpClientConnectionFactory(), executor);
     }
 
     /**
      * Constructor for connecting to a given URL using a specific connection factory.
      *
-     * @param url the SaltStack URL
+     * @param url the Salt API URL
      * @param connectionFactory ConnectionFactory implementation
      * @param executor ExecutorService to be used for async operations
      */
-    public SaltStackClient(URI url, ConnectionFactory connectionFactory,
+    public SaltClient(URI url, ConnectionFactory connectionFactory,
             ExecutorService executor) {
         // Put the URL in the config
         config.put(ClientConfig.URL, url);
@@ -104,7 +104,7 @@ public class SaltStackClient {
     }
 
     /**
-     * Configure to use a proxy when connecting to the SaltStack API.
+     * Configure to use a proxy when connecting to the Salt API.
      *
      * @param settings the proxy settings
      */
@@ -492,8 +492,8 @@ public class SaltStackClient {
      * to register/unregister for stream event notifications as well as close the event
      * stream.
      * <p>
-     * Note: {@link SaltStackClient#login(String, String, AuthModule)} or
-     * {@link SaltStackClient#loginAsync(String, String, AuthModule)} must be called prior
+     * Note: {@link SaltClient#login(String, String, AuthModule)} or
+     * {@link SaltClient#loginAsync(String, String, AuthModule)} must be called prior
      * to calling this method.
      * <p>
      * {@code GET /events}

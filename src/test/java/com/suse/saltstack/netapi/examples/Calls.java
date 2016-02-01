@@ -5,7 +5,7 @@ import com.suse.saltstack.netapi.calls.WheelResult;
 import com.suse.saltstack.netapi.calls.modules.Grains;
 import com.suse.saltstack.netapi.calls.modules.Test;
 import com.suse.saltstack.netapi.calls.wheel.Key;
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.datatypes.target.Glob;
 import com.suse.saltstack.netapi.datatypes.target.MinionList;
 import com.suse.saltstack.netapi.datatypes.target.Target;
@@ -26,7 +26,7 @@ public class Calls {
 
     public static void main(String[] args) throws SaltStackException {
         // Init the client
-        SaltStackClient client = new SaltStackClient(URI.create(SALT_API_URL));
+        SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");

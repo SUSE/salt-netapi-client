@@ -1,9 +1,9 @@
 package com.suse.saltstack.netapi.config;
 
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 
 /**
- * Class representing proxy settings to be used with {@link SaltStackClient}.
+ * Class representing proxy settings to be used with {@link SaltClient}.
  */
 public class ProxySettings {
 

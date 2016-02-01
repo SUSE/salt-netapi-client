@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.calls;
 
 import com.google.gson.reflect.TypeToken;
 import com.suse.saltstack.netapi.AuthModule;
-import com.suse.saltstack.netapi.client.SaltStackClient;
+import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.exception.SaltStackException;
 import com.suse.saltstack.netapi.results.Result;
 
@@ -57,7 +57,7 @@ public class RunnerCall<R> implements Call<R> {
      * @return information about the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public RunnerAsyncResult<R> callAsync(final SaltStackClient client)
+    public RunnerAsyncResult<R> callAsync(final SaltClient client)
             throws SaltStackException {
         Result<List<RunnerAsyncResult<R>>> wrapper = client.call(
                 this, Client.RUNNER_ASYNC, "/",
@@ -79,7 +79,7 @@ public class RunnerCall<R> implements Call<R> {
      * @return information about the scheduled job
      * @throws SaltStackException if anything goes wrong
      */
-    public RunnerAsyncResult<R> callAsync(final SaltStackClient client, String username,
+    public RunnerAsyncResult<R> callAsync(final SaltClient client, String username,
             String password, AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
@@ -108,7 +108,7 @@ public class RunnerCall<R> implements Call<R> {
      * @return the result of the called function
      * @throws SaltStackException if anything goes wrong
      */
-    public R callSync(final SaltStackClient client, String username, String password,
+    public R callSync(final SaltClient client, String username, String password,
             AuthModule authModule) throws SaltStackException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
@@ -135,7 +135,7 @@ public class RunnerCall<R> implements Call<R> {
      * @return the result of the called function
      * @throws SaltStackException if anything goes wrong
      */
-    public R callSync(final SaltStackClient client) throws SaltStackException {
+    public R callSync(final SaltClient client) throws SaltStackException {
         Type listType = parameterizedType(null, List.class, getReturnType().getType());
         Type wrapperType = parameterizedType(null, Result.class, listType);
 
