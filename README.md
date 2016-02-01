@@ -14,7 +14,13 @@ Add the following dependency to the `pom.xml` file of your project:
 </dependency>
 ```
 
+## Code examples
+
+There is some basic [code examples] (https://github.com/SUSE/saltstack-netapi-client-java/tree/master/src/test/java/com/suse/saltstack/netapi/examples) available to help you getting started with the library.
+
 ## Contributing
+
+Pull requests are always welcome, please see [issues] (https://github.com/SUSE/saltstack-netapi-client-java/issues) for a list of things to possibly tackle.
 
 ### Style guide
 
