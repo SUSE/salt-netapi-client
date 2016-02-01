@@ -671,7 +671,7 @@ public class SaltClientTest {
         assertEquals(1, resultSet.size());
         ResultInfo results = resultSet.get(0);
 
-        HashSet<String> pendingMinions = new HashSet<String>();
+        HashSet<String> pendingMinions = new HashSet<>();
         pendingMinions.add("mira");
 
         assertNotNull(results);
