@@ -59,48 +59,48 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * SaltStack API unit tests.
+ * Salt API client unit tests.
  */
-public class SaltStackClientTest {
+public class SaltClientTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
     static final String JSON_START_COMMAND_REQUEST = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/minions_request.json"));
+            SaltClientTest.class.getResourceAsStream("/minions_request.json"));
     static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/minions_response.json"));
+            SaltClientTest.class.getResourceAsStream("/minions_response.json"));
     static final String JSON_GET_MINIONS_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/get_minions_response.json"));
+            SaltClientTest.class.getResourceAsStream("/get_minions_response.json"));
     static final String JSON_GET_MINION_DETAILS_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/minion_details_response.json"));
+            SaltClientTest.class.getResourceAsStream("/minion_details_response.json"));
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/login_request.json"));
+            SaltClientTest.class.getResourceAsStream("/login_request.json"));
     static final String JSON_LOGIN_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/login_response.json"));
+            SaltClientTest.class.getResourceAsStream("/login_response.json"));
     static final String JSON_RUN_REQUEST = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/run_request.json"));
+            SaltClientTest.class.getResourceAsStream("/run_request.json"));
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/run_response.json"));
+            SaltClientTest.class.getResourceAsStream("/run_response.json"));
     static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/stats_response.json"));
+            SaltClientTest.class.getResourceAsStream("/stats_response.json"));
     static final String JSON_KEYS_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/keys_response.json"));
+            SaltClientTest.class.getResourceAsStream("/keys_response.json"));
     static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/jobs_response.json"));
+            SaltClientTest.class.getResourceAsStream("/jobs_response.json"));
     static final String JSON_JOBS_RESPONSE_PENDING = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/jobs_response_pending.json"));
+            SaltClientTest.class.getResourceAsStream("/jobs_response_pending.json"));
     static final String JSON_JOBS_RESPONSE_RESULT = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/jobs_response_result.json"));
+            SaltClientTest.class.getResourceAsStream("/jobs_response_result.json"));
     static final String JSON_JOBS_INVALID_START_TIME_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream(
+            SaltClientTest.class.getResourceAsStream(
             "/jobs_response_invalid_start_time.json"));
     static final String JSON_JOBS_NULL_START_TIME_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream(
+            SaltClientTest.class.getResourceAsStream(
             "/jobs_response_null_start_time.json"));
     static final String JSON_HOOK_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/hook_response.json"));
+            SaltClientTest.class.getResourceAsStream("/hook_response.json"));
     static final String JSON_LOGOUT_RESPONSE = ClientUtils.streamToString(
-            SaltStackClientTest.class.getResourceAsStream("/logout_response.json"));
+            SaltClientTest.class.getResourceAsStream("/logout_response.json"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
