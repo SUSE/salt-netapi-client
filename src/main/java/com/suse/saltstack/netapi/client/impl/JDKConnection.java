@@ -3,7 +3,7 @@ package com.suse.saltstack.netapi.client.impl;
 import com.suse.saltstack.netapi.client.Connection;
 import com.suse.saltstack.netapi.config.ClientConfig;
 
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
 import java.io.DataOutputStream;
@@ -43,7 +43,7 @@ public class JDKConnection<T> implements Connection<T> {
      * {@inheritDoc}
      */
     @Override
-    public T getResult(String data) throws SaltStackException {
+    public T getResult(String data) throws SaltException {
         return request("POST", data);
     }
 
@@ -51,7 +51,7 @@ public class JDKConnection<T> implements Connection<T> {
      * {@inheritDoc}
      */
     @Override
-    public T getResult() throws SaltStackException {
+    public T getResult() throws SaltException {
         return request("GET", null);
     }
 
@@ -60,10 +60,10 @@ public class JDKConnection<T> implements Connection<T> {
      *
      * @param method the HTTP method to use
      * @return object of type given by resultType
-     * @throws SaltStackException in case of a problem
+     * @throws SaltException in case of a problem
      */
     private T request(String method, String data)
-            throws SaltStackException {
+            throws SaltException {
         HttpURLConnection connection = null;
         try {
             // Setup and configure the connection
@@ -105,10 +105,10 @@ public class JDKConnection<T> implements Connection<T> {
                 return parser.parse(connection.getInputStream());
             } else {
                 // Request was not successful
-                throw new SaltStackException("Response code: " + responseCode);
+                throw new SaltException("Response code: " + responseCode);
             }
         } catch (IOException e) {
-            throw new SaltStackException(e);
+            throw new SaltException(e);
         } finally {
             // Clean up connection and streams
             if (connection != null) {

@@ -4,7 +4,7 @@ package com.suse.saltstack.netapi.exception;
  * Exception to be thrown in case of a websocket message exceeding the configurable
  * maximum message length.
  */
-public class MessageTooBigException extends SaltStackException {
+public class MessageTooBigException extends SaltException {
 
     /**
      * Constructor.

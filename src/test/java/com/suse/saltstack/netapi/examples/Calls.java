@@ -9,7 +9,7 @@ import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.datatypes.target.Glob;
 import com.suse.saltstack.netapi.datatypes.target.MinionList;
 import com.suse.saltstack.netapi.datatypes.target.Target;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 
 import java.net.URI;
 import java.util.List;
@@ -24,7 +24,7 @@ public class Calls {
     private static final String USER = "saltdev";
     private static final String PASSWORD = "saltdev";
 
-    public static void main(String[] args) throws SaltStackException {
+    public static void main(String[] args) throws SaltException {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 

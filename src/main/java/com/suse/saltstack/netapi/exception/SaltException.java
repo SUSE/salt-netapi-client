@@ -1,16 +1,16 @@
 package com.suse.saltstack.netapi.exception;
 
 /**
- * Exception to be thrown in case of problems with SaltStack.
+ * Exception to be thrown in case of problems with Salt.
  */
-public class SaltStackException extends Exception {
+public class SaltException extends Exception {
 
     /**
      * Constructor expecting a custom cause.
      *
      * @param cause the cause
      */
-    public SaltStackException(Throwable cause) {
+    public SaltException(Throwable cause) {
         super(cause);
     }
 
@@ -19,7 +19,7 @@ public class SaltStackException extends Exception {
      *
      * @param message the message
      */
-    public SaltStackException(String message) {
+    public SaltException(String message) {
         super(message);
     }
 }

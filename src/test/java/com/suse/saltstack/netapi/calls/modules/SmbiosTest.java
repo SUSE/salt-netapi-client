@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.datatypes.target.MinionList;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 /**
@@ -52,7 +52,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testRecordsOne() throws SaltStackException {
+    public void testRecordsOne() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -79,7 +79,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testRecordsAll() throws SaltStackException {
+    public void testRecordsAll() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -97,7 +97,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testEmptyResponse() throws SaltStackException {
+    public void testEmptyResponse() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -110,7 +110,7 @@ public class SmbiosTest {
     }
 
     @Test(expected = com.google.gson.JsonSyntaxException.class)
-    public void testErrorResponse() throws SaltStackException {
+    public void testErrorResponse() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)

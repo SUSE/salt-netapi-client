@@ -20,7 +20,7 @@ import org.junit.Test;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.saltstack.netapi.client.SaltClient;
 import com.suse.saltstack.netapi.datatypes.target.MinionList;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.utils.ClientUtils;
 
 /**
@@ -51,7 +51,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncGrains() throws SaltStackException {
+    public void testSyncGrains() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -68,7 +68,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncModules() throws SaltStackException {
+    public void testSyncModules() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -85,7 +85,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncAll() throws SaltStackException {
+    public void testSyncAll() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)

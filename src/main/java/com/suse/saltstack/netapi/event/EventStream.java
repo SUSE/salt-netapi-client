@@ -3,7 +3,7 @@ package com.suse.saltstack.netapi.event;
 import com.suse.saltstack.netapi.config.ClientConfig;
 import com.suse.saltstack.netapi.datatypes.Event;
 import com.suse.saltstack.netapi.exception.MessageTooBigException;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
 import javax.websocket.ClientEndpoint;
@@ -73,10 +73,10 @@ public class EventStream implements AutoCloseable {
      *
      * @param config client configuration containing the URL, token, timeouts, etc.
      * @param listeners event listeners to be added before stream initialization
-     * @throws SaltStackException in case of an error during stream initialization
+     * @throws SaltException in case of an error during stream initialization
      */
     public EventStream(ClientConfig config, EventListener... listeners)
-            throws SaltStackException {
+            throws SaltException {
         maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) > 0 ?
                 config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) : Integer.MAX_VALUE;
         Arrays.asList(listeners).forEach(this::addEventListener);
@@ -87,9 +87,9 @@ public class EventStream implements AutoCloseable {
      * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
      *
      * @param config the client configuration
-     * @throws SaltStackException in case of an error during stream initialization
+     * @throws SaltException in case of an error during stream initialization
      */
-    private void initializeStream(ClientConfig config) throws SaltStackException {
+    private void initializeStream(ClientConfig config) throws SaltException {
         try {
             URI uri = config.get(ClientConfig.URL);
             uri = new URI(uri.getScheme() == "https" ? "wss" : "ws",
@@ -104,7 +104,7 @@ public class EventStream implements AutoCloseable {
                 session.setMaxIdleTimeout((long) config.get(ClientConfig.SOCKET_TIMEOUT));
             }
         } catch (URISyntaxException | DeploymentException | IOException e) {
-            throw new SaltStackException(e);
+            throw new SaltException(e);
         }
     }
 

@@ -2,7 +2,7 @@ package com.suse.saltstack.netapi.client.impl;
 
 import com.suse.saltstack.netapi.client.Connection;
 import com.suse.saltstack.netapi.config.ClientConfig;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 
@@ -61,7 +61,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      * {@inheritDoc}
      */
     @Override
-    public T getResult(String data) throws SaltStackException {
+    public T getResult(String data) throws SaltException {
         return request(data);
     }
 
@@ -69,7 +69,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      * {@inheritDoc}
      */
     @Override
-    public T getResult() throws SaltStackException {
+    public T getResult() throws SaltException {
         return request(null);
     }
 
@@ -78,13 +78,13 @@ public class HttpClientConnection<T> implements Connection<T> {
      *
      * @param data the data to send with the request
      * @return object of type T
-     * @throws SaltStackException in case of a problem when executing the request
+     * @throws SaltException in case of a problem when executing the request
      */
-    private T request(String data) throws SaltStackException {
+    private T request(String data) throws SaltException {
         try (CloseableHttpClient httpClient = initializeHttpClient().build()) {
             return executeRequest(httpClient, prepareRequest(data));
         } catch (IOException e) {
-            throw new SaltStackException(e);
+            throw new SaltException(e);
         }
     }
 
@@ -180,11 +180,11 @@ public class HttpClientConnection<T> implements Connection<T> {
      *
      * @param httpClient the client to use for the request
      * @param httpRequest the prepared request to perform
-     * @throws SaltStackException if HTTP status code is not as expected (200 or 202)
+     * @throws SaltException if HTTP status code is not as expected (200 or 202)
      * @throws IOException in case of problems executing the request
      */
     private T executeRequest(CloseableHttpClient httpClient, HttpUriRequest httpRequest)
-            throws SaltStackException, IOException {
+            throws SaltException, IOException {
         try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_OK ||
@@ -201,13 +201,13 @@ public class HttpClientConnection<T> implements Connection<T> {
      * Create the appropriate exception for the given HTTP status code.
      *
      * @param statusCode HTTP status code
-     * @return {@link SaltStackException} instance
+     * @return {@link SaltException} instance
      */
-    private SaltStackException createSaltStackException(int statusCode) {
+    private SaltException createSaltStackException(int statusCode) {
         if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
             return new SaltUserUnauthorizedException(
                     "Salt user does not have sufficient permissions");
         }
-        return new SaltStackException("Response code: " + statusCode);
+        return new SaltException("Response code: " + statusCode);
     }
 }

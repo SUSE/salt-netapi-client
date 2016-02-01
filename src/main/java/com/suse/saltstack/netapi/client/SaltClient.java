@@ -14,7 +14,7 @@ import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.datatypes.target.Target;
 import com.suse.saltstack.netapi.event.EventListener;
 import com.suse.saltstack.netapi.event.EventStream;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.parser.JsonParser;
 import com.suse.saltstack.netapi.results.Result;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
@@ -130,10 +130,10 @@ public class SaltClient {
      * @param password the password
      * @param eauth the eauth type
      * @return the authentication token
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
     public Token login(final String username, final String password, final AuthModule eauth)
-            throws SaltStackException {
+            throws SaltException {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("username", username);
         props.put("password", password);
@@ -172,9 +172,9 @@ public class SaltClient {
      * {@code POST /logout}
      *
      * @return true if the logout was successful, otherwise false
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public boolean logout() throws SaltStackException {
+    public boolean logout() throws SaltException {
         Result<String> stringResult = connectionFactory
                 .create("/logout", JsonParser.STRING, config).getResult("");
         String logoutMessage = "Your token has been cleared";
@@ -202,11 +202,11 @@ public class SaltClient {
      * {@code GET /minions}
      *
      * @return map containing maps representing minions, keyed by minion id
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
      *     Grains</a>
      */
-    public Map<String, Map<String, Object>> getMinions() throws SaltStackException {
+    public Map<String, Map<String, Object>> getMinions() throws SaltException {
         return connectionFactory.create("/minions", JsonParser.RETMAPS, config)
                 .getResult().getResult().get(0);
     }
@@ -217,12 +217,12 @@ public class SaltClient {
      * {@code GET /minions}
      *
      * @return Future with a map containing maps representing minions, keyed by minion id
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
      *     Grains</a>
      */
     public Future<Map<String, Map<String, Object>>> getMinionsAsync()
-            throws SaltStackException {
+            throws SaltException {
         return executor.submit(this::getMinions);
     }
 
@@ -233,11 +233,11 @@ public class SaltClient {
      *
      * @param minionId the minion ID
      * @return Map key: grain name, value: grain value
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
      *     Grains</a>
      */
-    public Map<String, Object> getMinionDetails(String minionId) throws SaltStackException {
+    public Map<String, Object> getMinionDetails(String minionId) throws SaltException {
         return connectionFactory.create("/minions/" + minionId, JsonParser.RETMAPS, config)
                 .getResult().getResult().get(0).get(minionId);
     }
@@ -249,12 +249,12 @@ public class SaltClient {
      *
      * @param minionId the minion ID
      * @return Future with a map containing details of the minion
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
      *     Grains</a>
      */
     public Future<Map<String, Object>> getMinionDetailsAsync(final String minionId)
-            throws SaltStackException {
+            throws SaltException {
         return executor.submit(() -> getMinionDetails(minionId));
     }
 
@@ -270,10 +270,10 @@ public class SaltClient {
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
      * @return object representing the scheduled job
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
     public <T> ScheduledJob startCommand(final Target<T> target, final String function,
-            List<Object> args, Map<String, Object> kwargs) throws SaltStackException {
+            List<Object> args, Map<String, Object> kwargs) throws SaltException {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put("tgt", target.getTarget());
         props.put("expr_form", target.getType());
@@ -318,9 +318,9 @@ public class SaltClient {
      *
      * @param job {@link ScheduledJob} object representing scheduled job
      * @return {@link ResultInfoSet} representing result set from minions
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public ResultInfoSet getJobResult(final ScheduledJob job) throws SaltStackException {
+    public ResultInfoSet getJobResult(final ScheduledJob job) throws SaltException {
         return getJobResult(job.getJid());
     }
 
@@ -331,9 +331,9 @@ public class SaltClient {
      *
      * @param job String representing scheduled job
      * @return {@link ResultInfoSet} representing result set from minions
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public ResultInfoSet getJobResult(final String job) throws SaltStackException {
+    public ResultInfoSet getJobResult(final String job) throws SaltException {
         return connectionFactory
                 .create("/jobs/" + job, JsonParser.JOB_RESULTS, config)
                 .getResult();
@@ -345,9 +345,9 @@ public class SaltClient {
      * {@code GET /jobs}
      *
      * @return map containing run jobs keyed by job id
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public Map<String, Job> getJobs() throws SaltStackException {
+    public Map<String, Job> getJobs() throws SaltException {
         Result<List<Map<String, Job>>> result = connectionFactory
                 .create("/jobs", JsonParser.JOBS, config)
                 .getResult();
@@ -380,12 +380,12 @@ public class SaltClient {
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
      * @return Map key: minion id, value: command result from that minion
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
     public <T> Map<String, Object> run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
             final String function, List<Object> args, Map<String, Object> kwargs)
-            throws SaltStackException {
+            throws SaltException {
         Map<String, Object> props = new HashMap<>();
         props.put("username", username);
         props.put("password", password);
@@ -439,9 +439,9 @@ public class SaltClient {
      * {@code GET /stats}
      *
      * @return the stats
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public Stats stats() throws SaltStackException {
+    public Stats stats() throws SaltException {
         return connectionFactory.create("/stats", JsonParser.STATS, config).getResult();
     }
 
@@ -464,9 +464,9 @@ public class SaltClient {
      * {@code GET /keys}
      *
      * @return the keys
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public Key.Names keys() throws SaltStackException {
+    public Key.Names keys() throws SaltException {
         return connectionFactory.create("/keys", JsonParser.KEYS, config).getResult()
                 .getResult();
     }
@@ -500,9 +500,9 @@ public class SaltClient {
      *
      * @param listeners event listeners to be added before the stream is initialized
      * @return the event stream
-     * @throws SaltStackException in case of an error during websocket stream initialization
+     * @throws SaltException in case of an error during websocket stream initialization
      */
-    public EventStream events(EventListener... listeners) throws SaltStackException {
+    public EventStream events(EventListener... listeners) throws SaltException {
         return new EventStream(config, listeners);
     }
 
@@ -517,9 +517,9 @@ public class SaltClient {
      * successfully.
      * A value of false is returned only if Salt itself returns false; it does not mean a
      * communication failure.
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
-    public boolean sendEvent(String eventTag, String eventData) throws SaltStackException {
+    public boolean sendEvent(String eventTag, String eventData) throws SaltException {
         String tag = eventTag != null ? eventTag : "";
         Map<String, Object> result = connectionFactory
                 .create("/hook/" + tag, JsonParser.MAP, config)
@@ -550,10 +550,10 @@ public class SaltClient {
      * @param custom map of arguments
      * @param type return type
      * @return the result of the call
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
     public <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
-            Object>> custom, TypeToken<R> type) throws SaltStackException {
+            Object>> custom, TypeToken<R> type) throws SaltException {
         Map<String, Object> props = new HashMap<>();
         props.putAll(call.getPayload());
         props.put("client", client.getValue());
@@ -575,10 +575,10 @@ public class SaltClient {
      * @param endpoint the endpoint
      * @param type return type
      * @return the result of the call
-     * @throws SaltStackException if anything goes wrong
+     * @throws SaltException if anything goes wrong
      */
     public <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
-            throws SaltStackException {
+            throws SaltException {
         return call(call, client, endpoint, Optional.empty(), type);
     }
 }

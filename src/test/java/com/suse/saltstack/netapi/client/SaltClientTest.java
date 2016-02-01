@@ -28,7 +28,7 @@ import com.suse.saltstack.netapi.datatypes.ScheduledJob;
 import com.suse.saltstack.netapi.datatypes.Token;
 import com.suse.saltstack.netapi.datatypes.cherrypy.Stats;
 import com.suse.saltstack.netapi.datatypes.target.Glob;
-import com.suse.saltstack.netapi.exception.SaltStackException;
+import com.suse.saltstack.netapi.exception.SaltException;
 import com.suse.saltstack.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.saltstack.netapi.results.ResultInfo;
 import com.suse.saltstack.netapi.results.ResultInfoSet;
@@ -245,7 +245,7 @@ public class SaltClientTest {
 
     @Test
     public void testRunRequestWithSocketTimeout() throws Exception {
-        exception.expect(SaltStackException.class);
+        exception.expect(SaltException.class);
         exception.expectMessage(containsString("Read timed out"));
 
         // create a local SaltStackClient with a fast timeout configuration
@@ -263,7 +263,7 @@ public class SaltClientTest {
 
     @Test
     public void testRunRequestWithSocketTimeoutThroughJDKConnection() throws Exception {
-        exception.expect(SaltStackException.class);
+        exception.expect(SaltException.class);
         exception.expectMessage(containsString("Read timed out"));
 
         // create a local SaltStackClient with a fast timeout configuration
