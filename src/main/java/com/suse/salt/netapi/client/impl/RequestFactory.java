@@ -19,7 +19,7 @@ public class RequestFactory {
     private static final RequestFactory INSTANCE = new RequestFactory();
 
     /**
-     * Instantiates a new SaltStack request factory.
+     * Instantiates a new request factory.
      */
     private RequestFactory() {
     }

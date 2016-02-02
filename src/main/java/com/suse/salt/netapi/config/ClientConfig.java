@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A statically typed key/value store for the Saltstack client configuration.
+ * A statically typed key/value store for the Salt client configuration.
  */
 public class ClientConfig {
 

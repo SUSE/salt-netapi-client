@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Parser for Saltstack responses.
+ * Parser for Salt API responses.
  *
  * @param <T> The result type this parser produces.
  */

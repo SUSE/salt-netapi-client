@@ -3,7 +3,7 @@ package com.suse.salt.netapi.results;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Represents a SaltStack result.
+ * Represents a Salt API result.
  *
  * @param <T> The type of the value this result holds.
  */

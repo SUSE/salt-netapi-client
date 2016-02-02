@@ -249,7 +249,7 @@ public class SaltClientTest {
         exception.expect(SaltException.class);
         exception.expectMessage(containsString("Read timed out"));
 
-        // create a local SaltStackClient with a fast timeout configuration
+        // create a local SaltClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
         SaltClient clientWithFastTimeout = new SaltClient(uri);
@@ -267,7 +267,7 @@ public class SaltClientTest {
         exception.expect(SaltException.class);
         exception.expectMessage(containsString("Read timed out"));
 
-        // create a local SaltStackClient with a fast timeout configuration
+        // create a local SaltClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
         SaltClient clientWithFastTimeout = new SaltClient(uri,

@@ -23,7 +23,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * SaltStack events API WebSocket implementation test cases.
+ * Salt events API WebSocket implementation test cases.
  */
 public class TyrusWebSocketEventsTest {
 

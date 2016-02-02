@@ -28,7 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 /**
- * Class representation of a connection to SaltStack for issuing API requests
+ * Class representation of a connection to Salt for issuing API requests
  * using Apache's HttpClient.
  * @param <T> type of result retrieved using this HTTP connection
  */
@@ -44,7 +44,7 @@ public class HttpClientConnection<T> implements Connection<T> {
     private final JsonParser<T> parser;
 
     /**
-     * Init a connection to a given SaltStack API endpoint.
+     * Init a connection to a given Salt API endpoint.
      *
      * @param endpointIn the endpoint
      * @param parserIn the parser
@@ -192,7 +192,7 @@ public class HttpClientConnection<T> implements Connection<T> {
                 // Parse result type from the returned JSON
                 return parser.parse(response.getEntity().getContent());
             } else {
-                throw createSaltStackException(statusCode);
+                throw createSaltException(statusCode);
             }
         }
     }
@@ -203,7 +203,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      * @param statusCode HTTP status code
      * @return {@link SaltException} instance
      */
-    private SaltException createSaltStackException(int statusCode) {
+    private SaltException createSaltException(int statusCode) {
         if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
             return new SaltUserUnauthorizedException(
                     "Salt user does not have sufficient permissions");

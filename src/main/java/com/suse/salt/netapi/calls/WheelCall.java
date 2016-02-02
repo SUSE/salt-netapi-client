@@ -54,7 +54,7 @@ public class WheelCall<R> implements Call<R> {
      * Authentication is done with the token therefore you have to login prior
      * to using this function.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @return information about the scheduled job
      * @throws SaltException if anything goes wrong
      */
@@ -73,7 +73,7 @@ public class WheelCall<R> implements Call<R> {
      * returns information about the scheduled job that can be used to query the result.
      * Authentication is done with the given credentials no session token is created.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @param username username for authentication
      * @param password password for authentication
      * @param authModule authentication module to use
@@ -102,7 +102,7 @@ public class WheelCall<R> implements Call<R> {
      * waits for the result. Authentication is done with the token therefore you
      * have to login prior to using this function.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @return the result of the called function
      * @throws SaltException if anything goes wrong
      */
@@ -124,7 +124,7 @@ public class WheelCall<R> implements Call<R> {
      * waits for the result. Authentication is done with the given credentials
      * no session token is created.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @param username username for authentication
      * @param password password for authentication
      * @param authModule authentication module to use

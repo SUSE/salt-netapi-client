@@ -14,7 +14,7 @@ import com.suse.salt.netapi.datatypes.StartTime;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Represents the SaltStack's result information structure.
+ * Represents the Salt API's result information structure.
  */
 public class ResultInfo {
 

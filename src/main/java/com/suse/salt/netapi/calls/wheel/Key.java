@@ -18,7 +18,7 @@ import java.util.Optional;
 public class Key {
 
     /**
-     * Saltstack Keys information.
+     * Salt keys information.
      *
      * @param <T> type of data queried for each key state
      */
@@ -59,7 +59,7 @@ public class Key {
     }
 
     /**
-     * Saltstack Keys as returned by "key.list_all".
+     * Salt keys as returned by "key.list_all".
      */
     public static class Names extends Keys<List<String>> {
 

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 /**
- * Class representation of a connection to SaltStack for issuing API requests using JDK's
+ * Class representation of a connection to Salt for issuing API requests using JDK's
  * HttpURLConnection.
  * @param <T> type of result retrieved using this HTTP connection
  */
@@ -26,7 +26,7 @@ public class JDKConnection<T> implements Connection<T> {
     private final JsonParser<T> parser;
 
     /**
-     * Init a connection to a given SaltStack API endpoint.
+     * Init a connection to a given Salt API endpoint.
      *
      * @param endpointIn the endpoint
      * @param parserIn the parser to be used for parsing the result

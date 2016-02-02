@@ -1,7 +1,7 @@
 package com.suse.salt.netapi;
 
 /**
- * Saltstack authentication modules.
+ * Salt authentication modules.
  *
  * @see <a href="http://docs.saltstack.com/en/latest/ref/auth/all/">Modules</a>
  */

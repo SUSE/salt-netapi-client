@@ -58,7 +58,7 @@ public class LocalCall<R> implements Call<R> {
      * Authentication is done with the token therefore you have to login prior
      * to using this function.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @param target the target for the function
      * @return information about the scheduled job
      * @throws SaltException if anything goes wrong
@@ -84,7 +84,7 @@ public class LocalCall<R> implements Call<R> {
      * returns information about the scheduled job that can be used to query the result.
      * Authentication is done with the given credentials no session token is created.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @param target the target for the function
      * @param username username for authentication
      * @param password password for authentication
@@ -117,7 +117,7 @@ public class LocalCall<R> implements Call<R> {
      * waits for the result. Authentication is done with the token therefore you
      * have to login prior to using this function.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @param target the target for the function
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
@@ -145,7 +145,7 @@ public class LocalCall<R> implements Call<R> {
      * waits for the result. Authentication is done with the given credentials
      * no session token is created.
      *
-     * @param client connection instance with Saltstack
+     * @param client SaltClient instance
      * @param target the target for the function
      * @param username username for authentication
      * @param password password for authentication
