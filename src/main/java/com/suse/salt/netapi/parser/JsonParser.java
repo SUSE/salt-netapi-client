@@ -254,7 +254,7 @@ public class JsonParser<T> {
          */
         private Map<String, Object> readObjectArgument(JsonReader jsonReader)
                 throws IOException {
-            Map<String, Object> arg = new LinkedHashMap<String, Object>();
+            Map<String, Object> arg = new LinkedHashMap<>();
             jsonReader.beginObject();
             while (jsonReader.hasNext()) {
                 arg.put(jsonReader.nextName(), gson.fromJson(jsonReader, Object.class));
