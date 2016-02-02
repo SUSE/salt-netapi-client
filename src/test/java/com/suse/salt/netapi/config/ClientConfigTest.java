@@ -5,7 +5,6 @@ import org.junit.Test;
 import static com.suse.salt.netapi.config.ClientConfig.PROXY_PORT;
 import static org.junit.Assert.assertEquals;
 
-import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.config.ClientConfig.Key;
 
 /**

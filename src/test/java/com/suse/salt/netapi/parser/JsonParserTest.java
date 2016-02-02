@@ -10,7 +10,6 @@ import com.suse.salt.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.salt.netapi.datatypes.cherrypy.Request;
 import com.suse.salt.netapi.datatypes.cherrypy.ServerThread;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
-import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.Result;
 
 import com.google.gson.JsonParseException;

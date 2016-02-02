@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 
-import com.suse.salt.netapi.calls.modules.Test;
 import com.suse.salt.netapi.calls.modules.Test.VersionInformation;
 import com.suse.salt.netapi.parser.JsonParser;
 

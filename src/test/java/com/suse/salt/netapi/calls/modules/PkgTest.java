@@ -1,6 +1,5 @@
 package com.suse.salt.netapi.calls.modules;
 
-import com.suse.salt.netapi.calls.modules.Pkg;
 import com.suse.salt.netapi.parser.JsonParser;
 
 import com.google.gson.reflect.TypeToken;

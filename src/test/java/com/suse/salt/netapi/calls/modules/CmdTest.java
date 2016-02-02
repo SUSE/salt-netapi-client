@@ -6,7 +6,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import com.suse.salt.netapi.calls.modules.Cmd;
 import com.suse.salt.netapi.parser.JsonParser;
 
 import com.google.gson.reflect.TypeToken;

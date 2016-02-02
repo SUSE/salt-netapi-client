@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.wheel.Key;
-import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.impl.JDKConnectionFactory;
 import com.suse.salt.netapi.datatypes.Job;
 import com.suse.salt.netapi.datatypes.ScheduledJob;

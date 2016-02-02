@@ -3,8 +3,6 @@ package com.suse.salt.netapi.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.suse.salt.netapi.utils.ClientUtils;
-
 import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

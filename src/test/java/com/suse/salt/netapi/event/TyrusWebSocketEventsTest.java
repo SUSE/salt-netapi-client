@@ -2,8 +2,6 @@ package com.suse.salt.netapi.event;
 
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.datatypes.Event;
-import com.suse.salt.netapi.event.EventListener;
-import com.suse.salt.netapi.event.EventStream;
 
 import org.glassfish.tyrus.server.Server;
 import org.junit.After;
