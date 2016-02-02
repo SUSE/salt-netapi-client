@@ -38,7 +38,7 @@ import static org.junit.Assert.assertFalse;
 public class JsonParserTest {
 
     @Test
-    public void testSaltStackJobParser() throws Exception {
+    public void testJobsParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/minions_response.json");
         Result<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
         assertNotNull("failed to parse", result);
@@ -47,14 +47,14 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testSaltStackStringParser() throws Exception {
+    public void testStringParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/logout_response.json");
         Result<String> result = JsonParser.STRING.parse(is);
         assertNotNull(result);
     }
 
     @Test
-    public void testSaltStackTokenParser() throws Exception {
+    public void testTokenParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/login_response.json");
         Result<List<Token>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
@@ -67,13 +67,13 @@ public class JsonParserTest {
     }
 
     @Test(expected =  JsonParseException.class)
-    public void testSaltStackTokenParserWrongDate() throws Exception {
+    public void testTokenParserWrongDate() throws Exception {
         InputStream is = getClass().getResourceAsStream("/login_response_wrong_date.json");
         JsonParser.TOKEN.parse(is);
     }
 
     @Test
-    public void testSaltStackTokenParserDateMissing() throws Exception {
+    public void testTokenParserDateMissing() throws Exception {
         InputStream is = getClass()
                 .getResourceAsStream("/login_response_missing_date.json");
         Token token = JsonParser.TOKEN.parse(is).getResult().get(0);
@@ -167,7 +167,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testSaltStackJobsWithArgsParser() throws Exception {
+    public void testJobsWithArgsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response.json");
         Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
         assertNotNull("failed to parse", result);
@@ -186,7 +186,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testSaltStackJobsWithKwargsParser() throws Exception {
+    public void testJobsWithKwargsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response_kwargs.json");
         Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
         assertNotNull("failed to parse", result);
@@ -243,7 +243,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testSaltStackJobsWithArgsAsKwargsParser() throws Exception {
+    public void testJobsWithArgsAsKwargsParser() throws Exception {
         InputStream is = this.getClass()
                 .getResourceAsStream("/jobs_response_args_as_kwargs.json");
         Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
@@ -290,7 +290,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testSaltStackJobsMultipleKwargs() throws Exception {
+    public void testJobsMultipleKwargs() throws Exception {
         InputStream is = this.getClass()
                 .getResourceAsStream("/jobs_response_multiple_kwarg.json");
         Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
