@@ -8,7 +8,7 @@ Add the following dependency to the `pom.xml` file of your project:
 
 ```xml
 <dependency>
-    <groupId>com.suse.salt</groupId>
+    <groupId>com.suse.saltstack</groupId>
     <artifactId>saltstack-netapi-client-java</artifactId>
     <version>0.6.0</version>
 </dependency>
