@@ -8,10 +8,10 @@ deploy:
   api_key:
     secure: braT4pMYLy0ocRgNt4MrI0kWUPnQF455RNLXBAf3+ArSiCMpaoQkwoDnauI155+Kaq2sXDuFg/vCdNQ0h4Rd33qEW5vg810wQQKj9lleDJmfv2W6/DxpTDnvySR4ChAWv9BZBMFIPhdv/dfZWgZBFHluvXw2Bi4UMF0GXsNPjYs=
   file_glob: true
-  file: "target/saltstack-netapi-client-*.jar"
+  file: "target/salt-netapi-client-*.jar"
   skip_cleanup: true
   on:
-    repo: SUSE/saltstack-netapi-client-java
+    repo: SUSE/salt-netapi-client
     tags: true
 after_success:
   - scripts/publish_javadoc.sh

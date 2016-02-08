@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.suse.saltstack</groupId>
-  <artifactId>saltstack-netapi-client</artifactId>
+  <groupId>com.suse.salt</groupId>
+  <artifactId>salt-netapi-client</artifactId>
   <packaging>jar</packaging>
   <version>0.7.0-SNAPSHOT</version>
-  <name>saltstack-netapi-client-java</name>
-  <url>https://github.com/SUSE/saltstack-netapi-client-java</url>
-  <description>Java bindings for the SaltStack API</description>
+  <name>salt-netapi-client</name>
+  <url>https://github.com/SUSE/salt-netapi-client</url>
+  <description>Java bindings for the Salt API</description>
   <licenses>
     <license>
       <name>MIT License</name>
@@ -24,9 +24,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git@github.com:SUSE/saltstack-netapi-client-java.git</connection>
-    <developerConnection>scm:git:git@github.com:SUSE/saltstack-netapi-client-java.git</developerConnection>
-    <url>git@github.com:SUSE/saltstack-netapi-client-java.git</url>
+    <connection>scm:git:git@github.com:SUSE/salt-netapi-client.git</connection>
+    <developerConnection>scm:git:git@github.com:SUSE/salt-netapi-client.git</developerConnection>
+    <url>git@github.com:SUSE/salt-netapi-client.git</url>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
