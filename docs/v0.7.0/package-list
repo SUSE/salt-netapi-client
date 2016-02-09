@@ -1,0 +1,16 @@
+com.suse.salt.netapi
+com.suse.salt.netapi.calls
+com.suse.salt.netapi.calls.modules
+com.suse.salt.netapi.calls.runner
+com.suse.salt.netapi.calls.wheel
+com.suse.salt.netapi.client
+com.suse.salt.netapi.client.impl
+com.suse.salt.netapi.config
+com.suse.salt.netapi.datatypes
+com.suse.salt.netapi.datatypes.cherrypy
+com.suse.salt.netapi.datatypes.target
+com.suse.salt.netapi.event
+com.suse.salt.netapi.exception
+com.suse.salt.netapi.parser
+com.suse.salt.netapi.results
+com.suse.salt.netapi.utils
