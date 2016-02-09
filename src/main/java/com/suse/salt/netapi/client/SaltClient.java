@@ -544,11 +544,12 @@ public class SaltClient {
     /**
      * Generic interface to make a {@link Call} to an endpoint using a given {@link Client}.
      *
+     * @param <R> the object type that will be returned
      * @param call the call
      * @param client the client to use
      * @param endpoint the endpoint
      * @param custom map of arguments
-     * @param type return type
+     * @param type return type as a TypeToken
      * @return the result of the call
      * @throws SaltException if anything goes wrong
      */
@@ -570,10 +571,11 @@ public class SaltClient {
     /**
      * Convenience method to make a call without arguments.
      *
+     * @param <R> the object type that will be returned
      * @param call the call
      * @param client the client to use
      * @param endpoint the endpoint
-     * @param type return type
+     * @param type return type as a TypeToken
      * @return the result of the call
      * @throws SaltException if anything goes wrong
      */

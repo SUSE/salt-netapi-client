@@ -192,6 +192,7 @@ public class Pkg {
      * Call 'pkg.info_installed' API.
      *
      * @param attributes list of attributes that should be included in the result
+     * @param reportErrors if true will return an error message instead of corrupted text
      * @param packages optional give package names, otherwise return info about all packages
      * @return the call
      */
