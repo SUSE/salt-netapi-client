@@ -48,7 +48,8 @@ public class TestTest {
 
     @org.junit.Test
     public void testTestRandStr() {
-        TypeToken<Map<String, List<Map<String, String>>>> type = Test.randStr().getReturnType();
+        TypeToken<Map<String, List<Map<String, String>>>> type = Test.randStr()
+                .getReturnType();
         InputStream is = this.getClass()
                 .getResourceAsStream("/modules/test/rand_str.json");
 
@@ -56,6 +57,7 @@ public class TestTest {
         Map<String, List<Map<String, String>>> parsed = parser.parse(is);
         assertEquals(true, parsed.containsKey("return"));
         assertEquals(true, parsed.get("return").get(0).containsKey("minion1"));
-        assertEquals("6960283c0a8f1f2361ecdc3f9513c1d3", parsed.get("return").get(0).get("minion1"));
+        assertEquals("6960283c0a8f1f2361ecdc3f9513c1d3", parsed.get("return").get(0)
+                .get("minion1"));
     }
 }

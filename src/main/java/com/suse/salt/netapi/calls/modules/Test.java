@@ -33,7 +33,7 @@ public class Test {
 
     private static final LocalCall<Map<String, List<Map<String, String>>>> RAND_STR =
             new LocalCall<>("test.rand_str", Optional.empty(), Optional.empty(),
-                    new TypeToken<Map<String, List<Map<String, String>>>>(){});
+            new TypeToken<Map<String, List<Map<String, String>>>>(){});
 
 
     /**
