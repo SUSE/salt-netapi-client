@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import com.suse.salt.netapi.calls.modules.Test.VersionInformation;
 import com.suse.salt.netapi.parser.JsonParser;
@@ -42,5 +44,18 @@ public class TestTest {
         assertEquals("2.7.6 (default, Jun 22 2015, 17:58:13)",
                 parsed.getDependencies().get("Python"));
         assertEquals(25, parsed.getDependencies().size());
+    }
+
+    @org.junit.Test
+    public void testTestRandStr() {
+        TypeToken<Map<String, List<Map<String, String>>>> type = Test.randStr().getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/test/rand_str.json");
+
+        JsonParser<Map<String, List<Map<String, String>>>> parser = new JsonParser<>(type);
+        Map<String, List<Map<String, String>>> parsed = parser.parse(is);
+        assertEquals(true, parsed.containsKey("return"));
+        assertEquals(true, parsed.get("return").get(0).containsKey("minion1"));
+        assertEquals("6960283c0a8f1f2361ecdc3f9513c1d3", parsed.get("return").get(0).get("minion1"));
     }
 }

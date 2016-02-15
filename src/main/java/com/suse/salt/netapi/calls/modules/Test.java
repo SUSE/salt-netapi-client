@@ -31,6 +31,11 @@ public class Test {
             new LocalCall<>("test.providers", Optional.empty(), Optional.empty(),
             new TypeToken<Map<String, String>>(){});
 
+    private static final LocalCall<Map<String, List<Map<String, String>>>> RAND_STR =
+            new LocalCall<>("test.rand_str", Optional.empty(), Optional.empty(),
+                    new TypeToken<Map<String, List<Map<String, String>>>>(){});
+
+
     /**
      * Availability report of all execution modules
      */
@@ -150,5 +155,9 @@ public class Test {
         args.put("module", module);
         return new LocalCall<>("test.provider", Optional.empty(), Optional.of(args),
                 new TypeToken<String>() {});
+    }
+
+    public static LocalCall<Map<String, List<Map<String, String>>>> randStr() {
+        return RAND_STR;
     }
 }
