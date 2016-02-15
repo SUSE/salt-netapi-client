@@ -32,6 +32,33 @@ public class Test {
             new TypeToken<Map<String, String>>(){});
 
     /**
+     * The type of hash based on Python hashlib - only always supported types.
+     */
+    public enum HashType {
+
+        SHA1("sha1"),
+        MD5("md5"),
+        SHA256("sha256"),
+        SHA224("sha224"),
+        SHA512("sha512"),
+        SHA384("sha384");
+
+        private String hashType;
+
+        HashType(String hashType) {
+            this.hashType = hashType;
+        }
+
+        /**
+         *
+         * @return the corresponding hash type.
+         */
+        public String getHashType() {
+            return hashType;
+        }
+    }
+
+    /**
      * Availability report of all execution modules
      */
     public static class ModuleReport {
@@ -150,5 +177,14 @@ public class Test {
         args.put("module", module);
         return new LocalCall<>("test.provider", Optional.empty(), Optional.of(args),
                 new TypeToken<String>() {});
+    }
+
+    public static LocalCall<String> randStr(Optional<Integer> size,
+            Optional<HashType> hashType) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        size.ifPresent(sz -> args.put("size", sz));
+        hashType.ifPresent(ht -> args.put("hash_type", ht.getHashType()));
+        return new LocalCall<>("test.rand_str", Optional.empty(),
+                Optional.of(args), new TypeToken<String>(){});
     }
 }
