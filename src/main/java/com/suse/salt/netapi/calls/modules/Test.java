@@ -31,10 +31,6 @@ public class Test {
             new LocalCall<>("test.providers", Optional.empty(), Optional.empty(),
             new TypeToken<Map<String, String>>(){});
 
-    private static final LocalCall<Map<String, List<Map<String, String>>>> RAND_STR =
-            new LocalCall<>("test.rand_str", Optional.empty(), Optional.empty(),
-            new TypeToken<Map<String, List<Map<String, String>>>>(){});
-
 
     /**
      * Availability report of all execution modules
@@ -157,7 +153,12 @@ public class Test {
                 new TypeToken<String>() {});
     }
 
-    public static LocalCall<Map<String, List<Map<String, String>>>> randStr() {
-        return RAND_STR;
+    public static LocalCall<String> randStr(Optional<String> size,
+            Optional<String> hashType) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        size.ifPresent(sz -> args.put("size", sz));
+        hashType.ifPresent(ht -> args.put("hash_type", ht));
+        return new LocalCall<>("test.rand_str", Optional.empty(),
+                Optional.of(args), new TypeToken<String>(){});
     }
 }
