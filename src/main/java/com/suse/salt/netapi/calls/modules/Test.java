@@ -31,7 +31,6 @@ public class Test {
             new LocalCall<>("test.providers", Optional.empty(), Optional.empty(),
             new TypeToken<Map<String, String>>(){});
 
-
     /**
      * Availability report of all execution modules
      */
@@ -153,7 +152,7 @@ public class Test {
                 new TypeToken<String>() {});
     }
 
-    public static LocalCall<String> randStr(Optional<String> size,
+    public static LocalCall<String> randStr(Optional<Integer> size,
             Optional<String> hashType) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         size.ifPresent(sz -> args.put("size", sz));
