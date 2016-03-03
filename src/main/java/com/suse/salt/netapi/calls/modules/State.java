@@ -28,4 +28,8 @@ public class State {
         return apply(Arrays.asList(mods));
     }
 
+    public static LocalCall<Object> showHighstate() {
+        return new LocalCall<>("state.show_highstate", Optional.empty(), Optional.empty(),
+                new TypeToken<Object>() { });
+    }
 }
