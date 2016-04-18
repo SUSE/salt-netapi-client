@@ -3,7 +3,7 @@ package com.suse.salt.netapi.results;
 /**
  * Salt error containing a stacktrace if one is returned instead of a result
  */
-public class StackTraceError implements SaltError {
+final public class StackTraceError implements SaltError {
 
    private final String stacktrace;
 
@@ -18,5 +18,22 @@ public class StackTraceError implements SaltError {
    @Override
    public String toString() {
       return "StackTraceError(" + stacktrace + ")";
+   }
+
+   @Override
+   public int hashCode() {
+      return toString().hashCode();
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      } else if (obj == null) {
+         return false;
+      } else {
+         return obj instanceof StackTraceError &&
+                 ((StackTraceError) obj).getStacktrace().contentEquals(getStacktrace());
+      }
    }
 }
