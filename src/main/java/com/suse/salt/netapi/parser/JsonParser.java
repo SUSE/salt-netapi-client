@@ -32,6 +32,23 @@ import java.util.Map;
  */
 public class JsonParser<T> {
 
+    public static final Gson GSON = new GsonBuilder()
+            // null rejecting strict variants for primitives
+            .registerTypeAdapter(String.class, Adapters.STRING)
+            .registerTypeAdapter(Boolean.class, Adapters.BOOLEAN)
+            .registerTypeAdapter(Integer.class, Adapters.INTEGER)
+            .registerTypeAdapter(Long.class, Adapters.LONG)
+            .registerTypeAdapter(Double.class, Adapters.DOUBLE)
+            .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeISOAdapter())
+            .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
+            .registerTypeAdapter(Stats.class, new StatsAdapter())
+            .registerTypeAdapter(Arguments.class, new ArgumentsAdapter())
+            .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
+            .registerTypeAdapterFactory(new XorTypeAdapterFactory())
+            .create();
+
     public static final JsonParser<Result<String>> STRING =
             new JsonParser<>(new TypeToken<Result<String>>(){});
     public static final JsonParser<Result<List<Token>>> TOKEN =
@@ -58,18 +75,6 @@ public class JsonParser<T> {
 
     private final TypeToken<T> type;
     private final Gson gson;
-    public static final Gson GSON = new GsonBuilder()
-    .registerTypeAdapter(String.class, Adapters.STRING)
-    .registerTypeAdapter(Boolean.class, Adapters.BOOLEAN)
-    .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
-            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeISOAdapter())
-            .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
-            .registerTypeAdapter(Stats.class, new StatsAdapter())
-            .registerTypeAdapter(Arguments.class, new ArgumentsAdapter())
-            .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
-            .registerTypeAdapterFactory(new XorTypeAdapterFactory())
-            .create();
 
     /**
      * Created a new JsonParser for the given type.
