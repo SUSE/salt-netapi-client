@@ -1,6 +1,7 @@
 package com.suse.salt.netapi.calls.modules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
@@ -39,9 +40,9 @@ public class TestTest {
         assertEquals("3.13.0-65-generic", parsed.getSystem().get("release"));
         assertEquals("Ubuntu 14.04 trusty", parsed.getSystem().get("dist"));
         assertEquals("Ubuntu 14.04 trusty", parsed.getSystem().get("system"));
-        assertNull(parsed.getDependencies().get("cherrypy"));
+        assertFalse(parsed.getDependencies().get("cherrypy").isPresent());
         assertEquals("2.7.6 (default, Jun 22 2015, 17:58:13)",
-                parsed.getDependencies().get("Python"));
+                parsed.getDependencies().get("Python").get());
         assertEquals(25, parsed.getDependencies().size());
     }
 

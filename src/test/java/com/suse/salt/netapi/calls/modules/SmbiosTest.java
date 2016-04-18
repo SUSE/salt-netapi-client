@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import com.suse.salt.netapi.results.ModuleNotSupported;
 import com.suse.salt.netapi.results.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 import org.junit.Before;
@@ -112,7 +113,7 @@ public class SmbiosTest {
         assertEquals(0, response.size());
     }
 
-    @Test(expected = com.google.gson.JsonSyntaxException.class)
+    @Test
     public void testErrorResponse() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -120,7 +121,8 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_ERROR_RESPONSE)));
 
-        Smbios.records(Smbios.RecordType.BIOS)
+        Map<String, Xor<SaltError, List<Smbios.Record>>> result = Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
+        assertEquals(Xor.left(new ModuleNotSupported("smbios")), result.get("minion1"));
     }
 }

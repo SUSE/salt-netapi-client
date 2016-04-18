@@ -105,21 +105,21 @@ public class JsonParserTest {
         assertEquals(93.5, applications.getWritesPerRequest(), 0);
 
         Request req1 = applications.getRequests().get("140691837540096");
-        assertEquals(new Integer(54), req1.getBytesRead());
-        assertEquals(new Integer(187), req1.getBytesWritten());
-        assertEquals("200 OK", req1.getResponeStatus());
+        assertEquals(new Integer(54), req1.getBytesRead().get());
+        assertEquals(new Integer(187), req1.getBytesWritten().get());
+        assertEquals("200 OK", req1.getResponeStatus().get());
         assertEquals(new Date(1425821772580L), req1.getStartTime());
-        assertEquals(new Date(1425821772645L), req1.getEndTime());
+        assertEquals(new Date(1425821772645L), req1.getEndTime().get());
         assertEquals("127.0.0.1:45009", req1.getClient());
         assertEquals(0.06533312797546387, req1.getProcessingTime(), 0);
         assertEquals("POST /login HTTP/1.1", req1.getRequestLine());
 
         Request req2 = applications.getRequests().get("140691829147392");
-        assertEquals(null, req2.getBytesRead());
-        assertEquals(null, req2.getBytesWritten());
-        assertEquals(null, req2.getResponeStatus());
+        assertFalse(req2.getBytesRead().isPresent());
+        assertFalse(req2.getBytesWritten().isPresent());
+        assertFalse(req2.getResponeStatus().isPresent());
         assertEquals(new Date(1425821785119L), req2.getStartTime());
-        assertEquals(null, req2.getEndTime());
+        assertFalse(req2.getEndTime().isPresent());
         assertEquals("127.0.0.1:45015", req2.getClient());
         assertEquals(0.0002930164337158203, req2.getProcessingTime(), 0);
         assertEquals("GET /stats HTTP/1.1", req2.getRequestLine());
