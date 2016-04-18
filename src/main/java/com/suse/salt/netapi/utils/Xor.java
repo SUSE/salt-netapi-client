@@ -1,5 +1,6 @@
 package com.suse.salt.netapi.utils;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -87,6 +88,18 @@ public abstract class Xor<L, R> {
         public String toString() {
             return "Left(" + left.toString() + ")";
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            else if (obj == null || getClass() != obj.getClass()) return false;
+            else return Objects.equals(left, ((Left<?, ?>) obj).left);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash("Left", left);
+        }
     }
 
     public static final class Right<L, R> extends Xor<L, R> {
@@ -145,6 +158,17 @@ public abstract class Xor<L, R> {
             return "Right(" + right.toString() + ")";
         }
 
+        @Override
+        public int hashCode() {
+            return Objects.hash("Right", right);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            else if (obj == null || getClass() != obj.getClass()) return false;
+            else return Objects.equals(right, ((Right<?, ?>) obj).right);
+        }
     }
 
 }

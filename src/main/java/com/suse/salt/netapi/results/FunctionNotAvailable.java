@@ -3,7 +3,7 @@ package com.suse.salt.netapi.results;
 /**
  * Salt error when trying to execute a function that does not exist
  */
-public class FunctionNotAvailable implements SaltError {
+final public class FunctionNotAvailable implements SaltError {
 
    private final String functionName;
 
@@ -18,5 +18,22 @@ public class FunctionNotAvailable implements SaltError {
    @Override
    public String toString() {
       return "FunctionNotAvailable(" + functionName + ")";
+   }
+
+   @Override
+   public int hashCode() {
+      return toString().hashCode();
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      } else if (obj == null) {
+         return false;
+      } else {
+         return obj instanceof FunctionNotAvailable &&
+                 ((FunctionNotAvailable) obj).getFunctionName().contentEquals(getFunctionName());
+      }
    }
 }
