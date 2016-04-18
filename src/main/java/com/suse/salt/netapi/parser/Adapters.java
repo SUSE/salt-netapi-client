@@ -3,13 +3,12 @@ package com.suse.salt.netapi.parser;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
-class Adapters {
-    static final TypeAdapter<Boolean> BOOLEAN = new TypeAdapter<Boolean>() {
+public class Adapters {
+    public static final TypeAdapter<Boolean> BOOLEAN = new TypeAdapter<Boolean>() {
         @Override
         public Boolean read(JsonReader in) throws IOException {
             return in.nextBoolean();
@@ -24,7 +23,7 @@ class Adapters {
         }
     };
 
-    static final TypeAdapter<String> STRING = new TypeAdapter<String>() {
+    public static final TypeAdapter<String> STRING = new TypeAdapter<String>() {
         @Override
         public String read(JsonReader in) throws IOException {
             return in.nextString();
