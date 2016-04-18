@@ -19,6 +19,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,18 @@ public class JsonParser<T> {
 
     private final TypeToken<T> type;
     private final Gson gson;
+    public static final Gson GSON = new GsonBuilder()
+    .registerTypeAdapter(String.class, Adapters.STRING)
+    .registerTypeAdapter(Boolean.class, Adapters.BOOLEAN)
+    .registerTypeAdapter(Date.class, new DateAdapter().nullSafe())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeISOAdapter())
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeISOAdapter())
+            .registerTypeAdapter(StartTime.class, new StartTimeAdapter().nullSafe())
+            .registerTypeAdapter(Stats.class, new StatsAdapter())
+            .registerTypeAdapter(Arguments.class, new ArgumentsAdapter())
+            .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
+            .registerTypeAdapterFactory(new XorTypeAdapterFactory())
+            .create();
 
     /**
      * Created a new JsonParser for the given type.
