@@ -3,6 +3,7 @@ package com.suse.salt.netapi.datatypes.cherrypy;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Representation of request statistics.
@@ -10,19 +11,19 @@ import java.util.Date;
 public class Request {
 
     @SerializedName("Bytes Read")
-    private Integer bytesRead;
+    private Optional<Integer> bytesRead;
 
     @SerializedName("Bytes Written")
-    private Integer bytesWritten;
+    private Optional<Integer> bytesWritten;
 
     @SerializedName("Response Status")
-    private String responeStatus;
+    private Optional<String> responeStatus;
 
     @SerializedName("Start Time")
     private Date startTime;
 
     @SerializedName("End Time")
-    private Date endTime;
+    private Optional<Date> endTime;
 
     @SerializedName("Client")
     private String client;
@@ -33,15 +34,15 @@ public class Request {
     @SerializedName("Request-Line")
     private String requestLine;
 
-    public Integer getBytesRead() {
+    public Optional<Integer> getBytesRead() {
         return bytesRead;
     }
 
-    public Integer getBytesWritten() {
+    public Optional<Integer> getBytesWritten() {
         return bytesWritten;
     }
 
-    public String getResponeStatus() {
+    public Optional<String> getResponeStatus() {
         return responeStatus;
     }
 
@@ -49,7 +50,7 @@ public class Request {
         return startTime;
     }
 
-    public Date getEndTime() {
+    public Optional<Date> getEndTime() {
         return endTime;
     }
 
