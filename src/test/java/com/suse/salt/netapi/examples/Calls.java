@@ -16,7 +16,6 @@ import com.suse.salt.netapi.utils.Xor;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +41,8 @@ public class Calls {
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        Map<String, Xor<SaltError, Map<String, Object>>> grainResults = Grains.items(false).callSync(
+        Map<String, Xor<SaltError, Map<String, Object>>> grainResults =
+                Grains.items(false).callSync(
                 client, minionList, USER, PASSWORD, AuthModule.AUTO);
 
         grainResults.forEach((minion, grains) -> {
@@ -50,8 +50,8 @@ public class Calls {
             String message = grains.fold(
                     Object::toString,
                     m -> m.entrySet().stream()
-                            .map(e -> e.getKey() + ": " + e.getValue())
-                            .collect(Collectors.joining("\n"))
+                    .map(e -> e.getKey() + ": " + e.getValue())
+                    .collect(Collectors.joining("\n"))
             );
         });
 
