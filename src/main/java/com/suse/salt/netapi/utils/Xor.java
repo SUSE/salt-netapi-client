@@ -6,10 +6,17 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * Right biased disjunction mainly based on the Xor type from scala cats library.
+ * This type is used for collecting salt errors that are in the place of a normal result.
+ *
+ * @param <L> type of the left value
+ * @param <R> type of the right value
+ */
 public abstract class Xor<L, R> {
 
     public static <L, R> Left<L, R> left(L value) {
-       return new Left<>(value);
+        return new Left<>(value);
     }
 
     public static <L, R> Right<L, R> right(R value) {
@@ -17,22 +24,36 @@ public abstract class Xor<L, R> {
     }
 
     public abstract boolean isRight();
+
     public abstract boolean isLeft();
 
-    public abstract <T> T fold(Function<? super L, ? extends T> mapLeft, Function<? super R, ? extends T> mapRight);
+    public abstract <T> T fold(Function<? super L, ? extends T> mapLeft,
+            Function<? super R, ? extends T> mapRight);
 
     public abstract <T> Xor<L, T> map(Function<? super R, ? extends T> mapper);
-    public abstract <T> Xor<? super L, T> flatMap(Function<? super R, Xor<? super L, T>> mapper);
+
+    public abstract <T> Xor<? super L, T> flatMap(Function<? super R,
+            Xor<? super L, T>> mapper);
+
     public abstract Optional<L> left();
+
     public abstract Optional<R> right();
+
     public abstract R orElse(R value);
+
     public abstract R getOrElse(Supplier<? extends R> supplier);
+
     public abstract boolean exists(Predicate<R> p);
 
     public final Optional<R> option() {
         return right();
     }
 
+    /**
+     * Left branch of the Xor
+     * @param <L> type of the left value
+     * @param <R> type of the right value
+     */
     public static final class Left<L, R> extends Xor<L, R> {
         private final L left;
 
@@ -53,14 +74,15 @@ public abstract class Xor<L, R> {
         }
 
         public Optional<R> right() {
-           return Optional.empty();
+            return Optional.empty();
         }
 
         public <T> Xor<L, T> map(Function<? super R, ? extends T> mapper) {
             return left(left);
         }
 
-        public <T> Xor<? super L, T> flatMap(Function<? super R, Xor<? super L, T>> mapper) {
+        public <T> Xor<? super L, T> flatMap(Function<? super R,
+                Xor<? super L, T>> mapper) {
             return left(left);
         }
 
@@ -68,8 +90,9 @@ public abstract class Xor<L, R> {
             return mapper.apply(left);
         }
 
-        public <T> T fold(Function<? super L, ? extends T> mapLeft, Function<? super R, ? extends T> mapRight) {
-           return mapLeft.apply(left);
+        public <T> T fold(Function<? super L, ? extends T> mapLeft,
+                Function<? super R, ? extends T> mapRight) {
+            return mapLeft.apply(left);
         }
 
         public boolean exists(Predicate<R> p) {
@@ -91,9 +114,13 @@ public abstract class Xor<L, R> {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) return true;
-            else if (obj == null || getClass() != obj.getClass()) return false;
-            else return Objects.equals(left, ((Left<?, ?>) obj).left);
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            } else {
+                return Objects.equals(left, ((Left<?, ?>) obj).left);
+            }
         }
 
         @Override
@@ -102,6 +129,11 @@ public abstract class Xor<L, R> {
         }
     }
 
+    /**
+     * Right branch of the Xor
+     * @param <L> type of the left value
+     * @param <R> type of the right value
+     */
     public static final class Right<L, R> extends Xor<L, R> {
         private final R right;
 
@@ -129,7 +161,8 @@ public abstract class Xor<L, R> {
             return right(mapper.apply(right));
         }
 
-        public <T> Xor<? super L, T> flatMap(Function<? super R, Xor<? super L, T>> mapper) {
+        public <T> Xor<? super L, T> flatMap(Function<? super R,
+                Xor<? super L, T>> mapper) {
             return mapper.apply(right);
         }
 
@@ -137,7 +170,8 @@ public abstract class Xor<L, R> {
             return right(right);
         }
 
-        public <T> T fold(Function<? super L, ? extends T> mapLeft, Function<? super R, ? extends T> mapRight) {
+        public <T> T fold(Function<? super L, ? extends T> mapLeft,
+                Function<? super R, ? extends T> mapRight) {
             return mapRight.apply(right);
         }
 
@@ -165,9 +199,13 @@ public abstract class Xor<L, R> {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) return true;
-            else if (obj == null || getClass() != obj.getClass()) return false;
-            else return Objects.equals(right, ((Right<?, ?>) obj).right);
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            } else {
+                return Objects.equals(right, ((Right<?, ?>) obj).right);
+            }
         }
     }
 

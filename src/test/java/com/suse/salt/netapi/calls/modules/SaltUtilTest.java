@@ -67,7 +67,8 @@ public class SaltUtilTest {
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
-        assertEquals(0, response.entrySet().iterator().next().getValue().right().get().size());
+        assertEquals(0, response.entrySet().iterator().next()
+                .getValue().right().get().size());
     }
 
     @Test
@@ -84,7 +85,8 @@ public class SaltUtilTest {
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
-        assertEquals(0, response.entrySet().iterator().next().getValue().right().get().size());
+        assertEquals(0, response.entrySet().iterator().next()
+                .getValue().right().get().size());
     }
 
     @Test

@@ -5,35 +5,36 @@ package com.suse.salt.netapi.results;
  */
 final public class FunctionNotAvailable implements SaltError {
 
-   private final String functionName;
+    private final String functionName;
 
-   public FunctionNotAvailable(String fn) {
-      this.functionName = fn;
-   }
+    public FunctionNotAvailable(String fn) {
+        this.functionName = fn;
+    }
 
-   public String getFunctionName() {
-      return functionName;
-   }
+    public String getFunctionName() {
+        return functionName;
+    }
 
-   @Override
-   public String toString() {
-      return "FunctionNotAvailable(" + functionName + ")";
-   }
+    @Override
+    public String toString() {
+        return "FunctionNotAvailable(" + functionName + ")";
+    }
 
-   @Override
-   public int hashCode() {
-      return toString().hashCode();
-   }
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj) {
-         return true;
-      } else if (obj == null) {
-         return false;
-      } else {
-         return obj instanceof FunctionNotAvailable &&
-                 ((FunctionNotAvailable) obj).getFunctionName().contentEquals(getFunctionName());
-      }
-   }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else {
+            return obj instanceof FunctionNotAvailable &&
+                   ((FunctionNotAvailable) obj).getFunctionName()
+                         .contentEquals(getFunctionName());
+        }
+    }
 }

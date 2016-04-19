@@ -63,7 +63,8 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_RECORDS_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> response = Smbios.records(Smbios.RecordType.BIOS)
+        Map<String, Xor<SaltError, List<Smbios.Record>>> response =
+                Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
@@ -79,7 +80,8 @@ public class SmbiosTest {
         assertEquals("64 kB", record.getData().get("rom_size"));
         assertEquals("96 kB", record.getData().get("runtime_size"));
         assertEquals("SeaBIOS", record.getData().get("vendor"));
-        assertEquals("rel-1.7.5-0-ge51488c-20150524_160643-cloud127", record.getData().get("version"));
+        assertEquals("rel-1.7.5-0-ge51488c-20150524_160643-cloud127",
+                record.getData().get("version"));
     }
 
     @Test
@@ -108,7 +110,8 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_EMPTY_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> response = Smbios.records(Smbios.RecordType.BIOS)
+        Map<String, Xor<SaltError, List<Smbios.Record>>> response =
+                Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
         assertEquals(0, response.size());
     }
@@ -121,7 +124,8 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_ERROR_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> result = Smbios.records(Smbios.RecordType.BIOS)
+        Map<String, Xor<SaltError, List<Smbios.Record>>> result =
+                Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
         assertEquals(Xor.left(new ModuleNotSupported("smbios")), result.get("minion1"));
     }

@@ -10,7 +10,7 @@ final public class GenericSaltError implements SaltError {
     private final JsonElement json;
 
     public GenericSaltError(JsonElement json) {
-       this.json = json;
+        this.json = json;
     }
 
     @Override

@@ -60,7 +60,8 @@ public class ArgumentsAdapter extends TypeAdapter<Arguments> {
         Map<String, Object> arg = new LinkedHashMap<>();
         jsonReader.beginObject();
         while (jsonReader.hasNext()) {
-            arg.put(jsonReader.nextName(), JsonParser.GSON.fromJson(jsonReader, Object.class));
+            arg.put(jsonReader.nextName(),
+                    JsonParser.GSON.fromJson(jsonReader, Object.class));
         }
         jsonReader.endObject();
         return arg;

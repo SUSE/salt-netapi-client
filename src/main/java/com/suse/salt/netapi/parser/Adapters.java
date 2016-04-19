@@ -7,13 +7,18 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
+/**
+ * Strict null rejecting primitive type adapters.
+ */
 public class Adapters {
 
     public static final TypeAdapter<Double> DOUBLE = new TypeAdapter<Double>() {
+
         @Override
         public Double read(JsonReader in) throws IOException {
             return in.nextDouble();
         }
+
         @Override
         public void write(JsonWriter out, Double value) throws IOException {
             if (value == null) {
@@ -25,10 +30,12 @@ public class Adapters {
     };
 
     public static final TypeAdapter<Long> LONG = new TypeAdapter<Long>() {
+
         @Override
         public Long read(JsonReader in) throws IOException {
             return in.nextLong();
         }
+
         @Override
         public void write(JsonWriter out, Long value) throws IOException {
             if (value == null) {
@@ -40,10 +47,12 @@ public class Adapters {
     };
 
     public static final TypeAdapter<Integer> INTEGER = new TypeAdapter<Integer>() {
+
         @Override
         public Integer read(JsonReader in) throws IOException {
             return in.nextInt();
         }
+
         @Override
         public void write(JsonWriter out, Integer value) throws IOException {
             if (value == null) {
@@ -55,10 +64,12 @@ public class Adapters {
     };
 
     public static final TypeAdapter<Boolean> BOOLEAN = new TypeAdapter<Boolean>() {
+
         @Override
         public Boolean read(JsonReader in) throws IOException {
             return in.nextBoolean();
         }
+
         @Override
         public void write(JsonWriter out, Boolean value) throws IOException {
             if (value == null) {
@@ -70,10 +81,12 @@ public class Adapters {
     };
 
     public static final TypeAdapter<String> STRING = new TypeAdapter<String>() {
+
         @Override
         public String read(JsonReader in) throws IOException {
             return in.nextString();
         }
+
         @Override
         public void write(JsonWriter out, String value) throws IOException {
             if (value == null) {

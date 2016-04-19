@@ -124,21 +124,24 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
-    public Map<String, Xor<SaltError, R>> callSync(final SaltClient client, Target<?> target)
-            throws SaltException {
+    public Map<String, Xor<SaltError, R>> callSync(final SaltClient client,
+            Target<?> target) throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
-        Type xor = parameterizedType(null, Xor.class, SaltError.class, getReturnType().getType());
+        Type xor = parameterizedType(null, Xor.class, SaltError.class,
+                getReturnType().getType());
         Type map = parameterizedType(null, Map.class, String.class, xor);
         Type listType = parameterizedType(null, List.class, map);
         Type wrapperType = parameterizedType(null, Result.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<Map<String, Xor<SaltError, R>>>> wrapper = client.call(this, Client.LOCAL, "/",
+        Result<List<Map<String, Xor<SaltError, R>>>> wrapper = client.call(this,
+                Client.LOCAL, "/",
                 Optional.of(customArgs),
-                (TypeToken<Result<List<Map<String, Xor<SaltError, R>>>>>) TypeToken.get(wrapperType));
+                (TypeToken<Result<List<Map<String, Xor<SaltError, R>>>>>)
+                TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 
@@ -155,7 +158,8 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
-    public Map<String, Xor<SaltError, R>> callSync(final SaltClient client, Target<?> target,
+    public Map<String, Xor<SaltError, R>> callSync(
+            final SaltClient client, Target<?> target,
             String username, String password, AuthModule authModule)
             throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
@@ -166,15 +170,18 @@ public class LocalCall<R> implements Call<R> {
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
-        Type xor = parameterizedType(null, Xor.class, SaltError.class, getReturnType().getType());
+        Type xor = parameterizedType(null, Xor.class, SaltError.class,
+                getReturnType().getType());
         Type map = parameterizedType(null, Map.class, String.class, xor);
         Type listType = parameterizedType(null, List.class, map);
         Type wrapperType = parameterizedType(null, Result.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<Map<String, Xor<SaltError, R>>>> wrapper = client.call(this, Client.LOCAL, "/run",
+        Result<List<Map<String, Xor<SaltError, R>>>> wrapper = client.call(this,
+                Client.LOCAL, "/run",
                 Optional.of(customArgs),
-                (TypeToken<Result<List<Map<String, Xor<SaltError, R>>>>>) TypeToken.get(wrapperType));
+                (TypeToken<Result<List<Map<String, Xor<SaltError, R>>>>>)
+                TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 }
