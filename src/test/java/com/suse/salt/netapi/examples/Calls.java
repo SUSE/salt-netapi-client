@@ -10,10 +10,13 @@ import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.SaltError;
+import com.suse.salt.netapi.utils.Xor;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Example code calling salt modules using the generic interface.
@@ -30,7 +33,7 @@ public class Calls {
 
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");
-        Map<String, Boolean> results = Test.ping().callSync(
+        Map<String, Xor<SaltError, Boolean>> results = Test.ping().callSync(
                 client, globTarget, USER, PASSWORD, AuthModule.AUTO);
 
         System.out.println("--> Ping results:\n");
@@ -38,12 +41,18 @@ public class Calls {
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        Map<String, Map<String, Object>> grainResults = Grains.items(false).callSync(
+        Map<String, Xor<SaltError, Map<String, Object>>> grainResults =
+                Grains.items(false).callSync(
                 client, minionList, USER, PASSWORD, AuthModule.AUTO);
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");
-            grains.forEach((key, value) -> System.out.println(key + ": " + value));
+            String message = grains.fold(
+                    Object::toString,
+                    m -> m.entrySet().stream()
+                    .map(e -> e.getKey() + ": " + e.getValue())
+                    .collect(Collectors.joining("\n"))
+            );
         });
 
         // Call a wheel function: list accepted and pending minion keys
@@ -52,8 +61,8 @@ public class Calls {
         Key.Names keys = keyResults.getData().getResult();
 
         System.out.println("\n--> Accepted minion keys:\n");
-        keys.getMinions().forEach(minion -> System.out.println(minion));
+        keys.getMinions().forEach(System.out::println);
         System.out.println("\n--> Pending minion keys:\n");
-        keys.getUnacceptedMinions().forEach(minion -> System.out.println(minion));
+        keys.getUnacceptedMinions().forEach(System.out::println);
     }
 }

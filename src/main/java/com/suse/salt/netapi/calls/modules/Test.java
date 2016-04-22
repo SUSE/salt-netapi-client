@@ -133,17 +133,17 @@ public class Test {
         private final Map<String, String> system;
 
         @SerializedName("Dependency Versions")
-        private final Map<String, String> dependencies;
+        private final Map<String, Optional<String>> dependencies;
 
         public VersionInformation(Map<String, String> salt,
                 Map<String, String> system,
-                Map<String, String> dependencies) {
+                Map<String, Optional<String>> dependencies) {
             this.salt = salt;
             this.system = system;
             this.dependencies = dependencies;
         }
 
-        public Map<String, String> getDependencies() {
+        public Map<String, Optional<String>> getDependencies() {
             return dependencies;
         }
 
