@@ -15,6 +15,22 @@ import java.util.Optional;
  */
 public class File {
 
+    /**
+     * File module result object
+     */
+    public static class Result {
+        private Boolean result;
+        private String comment;
+
+        public Boolean getResult() {
+            return result;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+    }
+
     private File() { }
 
     /**
@@ -74,12 +90,12 @@ public class File {
      * @param dst   Destination path
      * @return      The {@link LocalCall} object to make the call
      */
-    public static LocalCall<Object> move(String src, String dst) {
+    public static LocalCall<Result> move(String src, String dst) {
         Map<String, Object> args = new LinkedHashMap<>();
         args.put("src", src);
         args.put("dst", dst);
         return new LocalCall<>("file.move", Optional.empty(), Optional.of(args),
-                new TypeToken<Object>(){});
+                new TypeToken<Result>(){});
     }
 
     /**
