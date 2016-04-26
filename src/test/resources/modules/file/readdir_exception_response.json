@@ -1,0 +1,7 @@
+{
+  "return": [
+    {
+      "minion1": "ERROR executing 'file.readdir': A valid directory was not specified."
+    }
+  ]
+}

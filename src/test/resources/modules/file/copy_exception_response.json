@@ -1,0 +1,7 @@
+{
+  "return": [
+    {
+      "minion1": "ERROR: Could not copy /test1 to /test2"
+    }
+  ]
+}

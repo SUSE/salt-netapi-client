@@ -1,0 +1,10 @@
+{
+  "return": [
+    {
+      "minion1": {
+        "comment": "'/test1' moved to '/test2'",
+        "result": true
+      }
+    }
+  ]
+}

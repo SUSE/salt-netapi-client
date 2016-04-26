@@ -1,0 +1,7 @@
+{
+  "return": [
+    {
+      "minion1": "ERROR: A valid directory was not specified."
+    }
+  ]
+}
