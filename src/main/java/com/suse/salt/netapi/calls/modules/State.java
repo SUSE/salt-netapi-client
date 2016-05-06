@@ -31,7 +31,7 @@ public class State {
         return apply(Arrays.asList(mods));
     }
 
-    public static LocalCall<Map<String, Object>> apply(String mod, 
+    public static LocalCall<Map<String, Object>> apply(String mod,
             Map<String, String> pillarArgs) {
         if (pillarArgs == null || pillarArgs.isEmpty()) {
             return apply(new ArrayList<String>() {
