@@ -27,12 +27,12 @@ public class State {
 
     public static LocalCall<Map<String, Object>> apply(List<String> mods,
             Optional<Map<String, Object>> pillar) {
-        LinkedHashMap args = new LinkedHashMap();
+        Map<String, Object> args = new LinkedHashMap();
         args.put("mods", mods);
         if (pillar.isPresent()) {
             args.put("pillar", pillar.get());
         }
-        return new LocalCall("state.apply", Optional.empty(), Optional.of(args),
+        return new LocalCall<>("state.apply", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, Object>>() { });
     }
 
