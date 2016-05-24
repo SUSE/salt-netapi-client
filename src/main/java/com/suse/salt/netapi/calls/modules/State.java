@@ -27,7 +27,7 @@ public class State {
 
     public static LocalCall<Map<String, Object>> apply(List<String> mods,
             Optional<Map<String, Object>> pillar) {
-        Map<String, Object> args = new LinkedHashMap();
+        Map<String, Object> args = new LinkedHashMap<>();
         args.put("mods", mods);
         if (pillar.isPresent()) {
             args.put("pillar", pillar.get());
