@@ -29,12 +29,8 @@ public class State {
             Optional<Map<String, Object>> pillar, Optional<Boolean> queue) {
         Map<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("mods", mods);
-        if (pillar.isPresent()) {
-            kwargs.put("pillar", pillar.get());
-        }
-        if (queue.isPresent()) {
-            kwargs.put("queue", queue.get());
-        }
+        pillar.ifPresent(p -> kwargs.put("pillar", p));
+        queue.ifPresent(q -> kwargs.put("queue", q));
         return new LocalCall<>("state.apply", Optional.empty(), Optional.of(kwargs),
                 new TypeToken<Map<String, Object>>() { });
     }
