@@ -5,6 +5,7 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,10 @@ public class Test {
     private static final LocalCall<Boolean> PING =
             new LocalCall<>("test.ping", Optional.empty(), Optional.empty(),
             new TypeToken<Boolean>(){});
+
+    private static final LocalCall<String> MISSING_FUNC =
+            new LocalCall<>("test.missing_func", Optional.empty(), Optional.empty(),
+            new TypeToken<String>(){});
 
     private static final LocalCall<VersionInformation> VERSIONS_INFORMATION =
             new LocalCall<>("test.versions_information", Optional.empty(), Optional.empty(),
@@ -160,4 +165,30 @@ public class Test {
         return new LocalCall<>("test.rand_str", Optional.empty(),
                 Optional.of(args), new TypeToken<String>(){});
     }
+
+    public static LocalCall<String> exception(String message) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("message", message);
+        return new LocalCall<>("test.exception", Optional.empty(), Optional.of(args),
+                new TypeToken<String>() {});
+    }
+
+    public static LocalCall<Boolean> sleep(Duration duration) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("length", duration.getSeconds());
+        return new LocalCall<>("test.sleep", Optional.empty(), Optional.of(args),
+                new TypeToken<Boolean>() {});
+    }
+
+    public static LocalCall<String> echo(String text) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("text", text);
+        return new LocalCall<>("test.echo", Optional.empty(), Optional.of(args),
+                new TypeToken<String>() {});
+    }
+
+    public static LocalCall<String> missingFunc() {
+        return MISSING_FUNC;
+    }
+
 }
