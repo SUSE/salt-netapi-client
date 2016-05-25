@@ -40,6 +40,9 @@ public class SaltUtilTest {
     static final String JSON_SYNCALL_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/saltutil/syncall.json"));
 
+    static final String JSON_REFRESHPILLAR_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/saltutil/refreshpillar.json"));
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
@@ -110,5 +113,22 @@ public class SaltUtilTest {
         assertEquals(0, ((List<?>) data.get("returners")).size());
         assertEquals(0, ((List<?>) data.get("states")).size());
         assertEquals(0, ((List<?>) data.get("utils")).size());
+    }
+
+    @Test
+    public void testRefreshPillar() throws SaltException {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_REFRESHPILLAR_RESPONSE)));
+
+        Map<String, Boolean> response = SaltUtil
+                .refreshPillar(Optional.of(true), Optional.empty())
+                .callSync(client, new MinionList("minion1"));
+        assertEquals(1, response.size());
+        assertNotNull(response.get("minion1"));
+        Boolean data = response.get("minion1");
+        assertEquals(true, data);
     }
 }

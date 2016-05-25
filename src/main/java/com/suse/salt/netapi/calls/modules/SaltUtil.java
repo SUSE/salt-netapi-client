@@ -38,6 +38,14 @@ public class SaltUtil {
                 });
     }
 
+    public static LocalCall<Boolean> refreshPillar(
+            Optional<Boolean> refresh, Optional<String> saltenv) {
+        LinkedHashMap<String, Object> args = syncArgs(refresh, saltenv);
+        return new LocalCall<>("saltutil.refresh_pillar", Optional.empty(),
+                Optional.of(args), new TypeToken<Boolean>() {
+                });
+    }
+
     private static LinkedHashMap<String, Object> syncArgs(
             Optional<Boolean> refresh, Optional<String> saltenv) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
