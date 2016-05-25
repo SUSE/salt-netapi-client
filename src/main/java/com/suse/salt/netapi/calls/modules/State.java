@@ -32,12 +32,12 @@ public class State {
         pillar.ifPresent(p -> kwargs.put("pillar", p));
         queue.ifPresent(q -> kwargs.put("queue", q));
         return new LocalCall<>("state.apply", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Object>>() { });
+                new TypeToken<Map<String, Object>>(){});
     }
 
     public static LocalCall<Object> showHighstate() {
         return new LocalCall<>("state.show_highstate", Optional.empty(), Optional.empty(),
-                new TypeToken<Object>() { });
+                new TypeToken<Object>(){});
     }
 
 }
