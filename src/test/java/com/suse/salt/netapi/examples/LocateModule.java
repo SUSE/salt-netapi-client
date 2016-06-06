@@ -33,7 +33,8 @@ public class LocateModule {
 
         String pattern = "ld.*";
 
-        LocalCall<List<String>> call = Locate.locate(pattern, Optional.empty(), Optional.empty(), Optional.empty());
+        LocalCall<List<String>> call = Locate.locate(pattern, Optional.empty(),
+                Optional.empty(), Optional.empty());
         Map<String, List<String>> results = call.callSync(client, globTarget);
         System.out.println("Results without regex, no count:");
         results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
@@ -41,7 +42,8 @@ public class LocateModule {
         Locate.LocateOpts opts = new Locate.LocateOpts();
         opts.setRegex(true);
         opts.setCount(true);
-        call = Locate.locate(pattern, Optional.empty(), Optional.empty(), Optional.of(opts));
+        call = Locate.locate(pattern, Optional.empty(), Optional.empty(),
+                Optional.of(opts));
         results = call.callSync(client, globTarget);
         System.out.println("Results setting regex and count to true:");
         results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
