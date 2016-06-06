@@ -21,7 +21,7 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
  */
 public class ResultTypeAdapterFactory implements TypeAdapterFactory {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <A> TypeAdapter<A> create(Gson gson, TypeToken<A> typeToken) {
         Type type = typeToken.getType();
         boolean isResult = typeToken.getRawType() == Result.class;
@@ -37,7 +37,7 @@ public class ResultTypeAdapterFactory implements TypeAdapterFactory {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private TypeAdapter<Result> wrap(TypeAdapter<Xor> xorTypeAdapter) {
         return new TypeAdapter<Result>() {
             @Override
