@@ -165,8 +165,8 @@ public class Locate {
      * @return The {@link LocalCall} object to make the call
      */
     public static LocalCall<List<String>> locate(String pattern, Optional<String> database,
-                                                 Optional<Integer> limit,
-                                                 Optional<LocateOpts> options) {
+            Optional<Integer> limit,
+            Optional<LocateOpts> options) {
         List<Object> args = new LinkedList<>();
         Map<String, Boolean> kwargs = new LinkedHashMap<>();
 
@@ -177,7 +177,6 @@ public class Locate {
         options.ifPresent(opts -> kwargs.putAll(opts.getOpts()));
 
         return new LocalCall<>("locate.locate", Optional.of(args), Optional.of(kwargs),
-                new TypeToken<List<String>>() {
-                });
+                new TypeToken<List<String>>() {});
     }
 }
