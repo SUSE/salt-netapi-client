@@ -156,10 +156,10 @@ public class LocateTest {
 
         Locate.Stats minion1 = response.get("minion1");
         assertNotNull(minion1);
-        assertEquals(Long.valueOf(178140L), minion1.getFiles());
-        assertEquals(Long.valueOf(12070L), minion1.getDirectories());
-        assertEquals(Long.valueOf(9345681L), minion1.getFileNamesBytes());
-        assertEquals(Long.valueOf(3969350L), minion1.getDatabaseBytes());
+        assertEquals(178140L, minion1.getFiles());
+        assertEquals(12070L, minion1.getDirectories());
+        assertEquals(9345681L, minion1.getFileNamesBytes());
+        assertEquals(3969350L, minion1.getDatabaseBytes());
         assertEquals("/var/lib/mlocate/mlocate.db", minion1.getDatabaseLocation());
     }
 
