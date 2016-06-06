@@ -37,7 +37,7 @@ public class ResultInfo {
     private String target;
 
     @SerializedName("Result")
-    private HashMap<String, Result<Object>> rawResults;
+    private HashMap<String, Return<Object>> rawResults;
     private transient final HashMap<String, Object> resultsCache = new HashMap<>();
 
     /**
@@ -113,7 +113,7 @@ public class ResultInfo {
      * @return {@link Optional} associated with the result from a given minion.
      */
     public Optional<Object> getResult(String minion) {
-        Result<Object> result;
+        Return<Object> result;
         if (rawResults == null || (result = rawResults.get(minion)) == null) {
             return Optional.<Object>empty();
         }
@@ -136,7 +136,7 @@ public class ResultInfo {
         resultsCache.clear();
         resultsCache.putAll(rawResults);
         resultsCache.replaceAll(
-                (String key, Object result) -> ((Result<Object>) result).getResult());
+                (String key, Object result) -> ((Return<Object>) result).getResult());
         return resultsCache;
     }
 

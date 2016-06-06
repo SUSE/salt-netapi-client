@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.suse.salt.netapi.results.ModuleNotSupported;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 import org.junit.Before;
@@ -63,14 +64,14 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_RECORDS_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> response =
+        Map<String, Result<List<Smbios.Record>>> response =
                 Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
-        Map.Entry<String, Xor<SaltError, List<Smbios.Record>>> first = response
+        Map.Entry<String, Result<List<Smbios.Record>>> first = response
                 .entrySet().iterator().next();
-        Smbios.Record record = first.getValue().right().get().get(0);
+        Smbios.Record record = first.getValue().result().get().get(0);
         assertEquals("minion1", first.getKey());
         assertEquals("BIOS Information", record.getDescription());
         assertEquals("0xE8000", record.getData().get("address"));
@@ -92,14 +93,14 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_ALL_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> response = Smbios.records(null)
+        Map<String, Result<List<Smbios.Record>>> response = Smbios.records(null)
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
-        Map.Entry<String, Xor<SaltError, List<Smbios.Record>>> first = response
+        Map.Entry<String, Result<List<Smbios.Record>>> first = response
                 .entrySet().iterator().next();
         assertEquals("minion1", first.getKey());
-        assertEquals(7, first.getValue().right().get().size());
+        assertEquals(7, first.getValue().result().get().size());
     }
 
     @Test
@@ -110,7 +111,7 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_EMPTY_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> response =
+        Map<String, Result<List<Smbios.Record>>> response =
                 Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
         assertEquals(0, response.size());
@@ -124,7 +125,7 @@ public class SmbiosTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_ERROR_RESPONSE)));
 
-        Map<String, Xor<SaltError, List<Smbios.Record>>> result =
+        Map<String, Result<List<Smbios.Record>>> result =
                 Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
         assertEquals(Xor.left(new ModuleNotSupported("smbios")), result.get("minion1"));

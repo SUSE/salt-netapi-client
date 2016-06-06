@@ -10,7 +10,7 @@ import com.suse.salt.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.salt.netapi.datatypes.cherrypy.Request;
 import com.suse.salt.netapi.datatypes.cherrypy.ServerThread;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
-import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +39,7 @@ public class JsonParserTest {
     @Test
     public void testJobsParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/minions_response.json");
-        Result<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
+        Return<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
         assertNotNull("failed to parse", result);
         String jid = result.getResult().get(0).getJid();
         assertEquals("unable to parse jid", "20150211105524392307", jid);
@@ -48,14 +48,14 @@ public class JsonParserTest {
     @Test
     public void testStringParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/logout_response.json");
-        Result<String> result = JsonParser.STRING.parse(is);
+        Return<String> result = JsonParser.STRING.parse(is);
         assertNotNull(result);
     }
 
     @Test
     public void testTokenParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/login_response.json");
-        Result<List<Token>> result = JsonParser.TOKEN.parse(is);
+        Return<List<Token>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("user", result.getResult().get(0).getUser());
         assertEquals("auto", result.getResult().get(0).getEauth());
@@ -156,7 +156,7 @@ public class JsonParserTest {
     @Test
     public void testKeysParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/keys_response.json");
-        Result<Key.Names> result = JsonParser.KEYS.parse(is);
+        Return<Key.Names> result = JsonParser.KEYS.parse(is);
         Key.Names keys = result.getResult();
         assertNotNull("failed to parse", result);
         assertEquals(Arrays.asList("master.pem", "master.pub"), keys.getLocal());
@@ -168,7 +168,7 @@ public class JsonParserTest {
     @Test
     public void testJobsWithArgsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
         assertNotNull("failed to parse", result);
 
         Map<String, Job> jobs = result.getResult().get(0);
@@ -187,7 +187,7 @@ public class JsonParserTest {
     @Test
     public void testJobsWithKwargsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response_kwargs.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
         assertNotNull("failed to parse", result);
 
         Map<String, Job> jobs = result.getResult().get(0);
@@ -245,7 +245,7 @@ public class JsonParserTest {
     public void testJobsWithArgsAsKwargsParser() throws Exception {
         InputStream is = this.getClass()
                 .getResourceAsStream("/jobs_response_args_as_kwargs.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
 
         Map<String, Job> jobs = result.getResult().get(0);
         Job job = jobs.get("20150315163041425361");
@@ -292,7 +292,7 @@ public class JsonParserTest {
     public void testJobsMultipleKwargs() throws Exception {
         InputStream is = this.getClass()
                 .getResourceAsStream("/jobs_response_multiple_kwarg.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
 
         Map<String, Job> jobs = result.getResult().get(0);
         Job job = jobs.get("20150306023815935637");

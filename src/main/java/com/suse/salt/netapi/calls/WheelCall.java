@@ -5,7 +5,7 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.exception.SaltException;
-import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -60,9 +60,9 @@ public class WheelCall<R> implements Call<R> {
      */
     public WheelAsyncResult<R> callAsync(final SaltClient client)
             throws SaltException {
-        Result<List<WheelAsyncResult<R>>> wrapper = client.call(
+        Return<List<WheelAsyncResult<R>>> wrapper = client.call(
                 this, Client.WHEEL_ASYNC, "/",
-                new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
+                new TypeToken<Return<List<WheelAsyncResult<R>>>>(){});
         WheelAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
@@ -88,10 +88,10 @@ public class WheelCall<R> implements Call<R> {
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
 
-        Result<List<WheelAsyncResult<R>>> wrapper = client.call(
+        Return<List<WheelAsyncResult<R>>> wrapper = client.call(
                 this, Client.WHEEL_ASYNC, "/run",
                 Optional.of(customArgs),
-                new TypeToken<Result<List<WheelAsyncResult<R>>>>(){});
+                new TypeToken<Return<List<WheelAsyncResult<R>>>>(){});
         WheelAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
@@ -111,11 +111,11 @@ public class WheelCall<R> implements Call<R> {
         Type wheelResult = parameterizedType(null, WheelResult.class,
                 getReturnType().getType());
         Type listType = parameterizedType(null, List.class, wheelResult);
-        Type wrapperType = parameterizedType(null, Result.class, listType);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<WheelResult<R>>> wrapper = client.call(this, Client.WHEEL, "/",
-                (TypeToken<Result<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
+        Return<List<WheelResult<R>>> wrapper = client.call(this, Client.WHEEL, "/",
+                (TypeToken<Return<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 
@@ -143,12 +143,12 @@ public class WheelCall<R> implements Call<R> {
         Type wheelResult = parameterizedType(null, WheelResult.class,
                 getReturnType().getType());
         Type listType = parameterizedType(null, List.class, wheelResult);
-        Type wrapperType = parameterizedType(null, Result.class, listType);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<WheelResult<R>>> wrapper = client.call(this, Client.WHEEL, "/run",
+        Return<List<WheelResult<R>>> wrapper = client.call(this, Client.WHEEL, "/run",
                 Optional.of(customArgs),
-                (TypeToken<Result<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
+                (TypeToken<Return<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 }

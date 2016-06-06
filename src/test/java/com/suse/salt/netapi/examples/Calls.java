@@ -10,6 +10,7 @@ import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 
@@ -33,7 +34,7 @@ public class Calls {
 
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");
-        Map<String, Xor<SaltError, Boolean>> results = Test.ping().callSync(
+        Map<String, Result<Boolean>> results = Test.ping().callSync(
                 client, globTarget, USER, PASSWORD, AuthModule.AUTO);
 
         System.out.println("--> Ping results:\n");
@@ -41,7 +42,7 @@ public class Calls {
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        Map<String, Xor<SaltError, Map<String, Object>>> grainResults =
+        Map<String, Result<Map<String, Object>>> grainResults =
                 Grains.items(false).callSync(
                 client, minionList, USER, PASSWORD, AuthModule.AUTO);
 

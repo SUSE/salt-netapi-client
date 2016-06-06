@@ -2,6 +2,7 @@ package com.suse.salt.netapi.utils;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -29,6 +30,9 @@ public abstract class Xor<L, R> {
 
     public abstract <T> T fold(Function<? super L, ? extends T> mapLeft,
             Function<? super R, ? extends T> mapRight);
+
+    public abstract void consume(Consumer<? super L> consumerLeft,
+                                 Consumer<? super R> consumerRight);
 
     public abstract <T> Xor<L, T> map(Function<? super R, ? extends T> mapper);
 
@@ -93,6 +97,11 @@ public abstract class Xor<L, R> {
         public <T> T fold(Function<? super L, ? extends T> mapLeft,
                 Function<? super R, ? extends T> mapRight) {
             return mapLeft.apply(left);
+        }
+
+        public void consume(Consumer<? super L> consumerLeft,
+                            Consumer<? super R> consumerRight) {
+            consumerLeft.accept(left);
         }
 
         public boolean exists(Predicate<R> p) {
@@ -173,6 +182,11 @@ public abstract class Xor<L, R> {
         public <T> T fold(Function<? super L, ? extends T> mapLeft,
                 Function<? super R, ? extends T> mapRight) {
             return mapRight.apply(right);
+        }
+
+        public void consume(Consumer<? super L> consumerLeft,
+                            Consumer<? super R> consumerRight) {
+            consumerRight.accept(right);
         }
 
         public boolean exists(Predicate<R> p) {

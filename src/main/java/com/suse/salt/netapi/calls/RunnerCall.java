@@ -5,7 +5,7 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.exception.SaltException;
-import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -60,9 +60,9 @@ public class RunnerCall<R> implements Call<R> {
      */
     public RunnerAsyncResult<R> callAsync(final SaltClient client)
             throws SaltException {
-        Result<List<RunnerAsyncResult<R>>> wrapper = client.call(
+        Return<List<RunnerAsyncResult<R>>> wrapper = client.call(
                 this, Client.RUNNER_ASYNC, "/",
-                new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
+                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){});
         RunnerAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
@@ -88,10 +88,10 @@ public class RunnerCall<R> implements Call<R> {
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
 
-        Result<List<RunnerAsyncResult<R>>> wrapper = client.call(
+        Return<List<RunnerAsyncResult<R>>> wrapper = client.call(
                 this, Client.RUNNER_ASYNC, "/run",
                 Optional.of(customArgs),
-                new TypeToken<Result<List<RunnerAsyncResult<R>>>>(){});
+                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){});
         RunnerAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
@@ -118,12 +118,12 @@ public class RunnerCall<R> implements Call<R> {
         customArgs.put("eauth", authModule.getValue());
 
         Type listType = parameterizedType(null, List.class, getReturnType().getType());
-        Type wrapperType = parameterizedType(null, Result.class, listType);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<R>> wrapper = client.call(
+        Return<List<R>> wrapper = client.call(
                 this, Client.RUNNER, "/run", Optional.of(customArgs),
-                (TypeToken<Result<List<R>>>) TypeToken.get(wrapperType));
+                (TypeToken<Return<List<R>>>) TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 
@@ -138,11 +138,11 @@ public class RunnerCall<R> implements Call<R> {
      */
     public R callSync(final SaltClient client) throws SaltException {
         Type listType = parameterizedType(null, List.class, getReturnType().getType());
-        Type wrapperType = parameterizedType(null, Result.class, listType);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<R>> wrapper = client.call(this, Client.RUNNER, "/",
-                (TypeToken<Result<List<R>>>) TypeToken.get(wrapperType));
+        Return<List<R>> wrapper = client.call(this, Client.RUNNER, "/",
+                (TypeToken<Return<List<R>>>) TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 
