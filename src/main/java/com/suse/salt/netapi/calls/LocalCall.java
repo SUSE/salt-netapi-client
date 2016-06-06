@@ -123,8 +123,8 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
-    public Map<String, Result<R>> callSync(final SaltClient client,
-                                           Target<?> target) throws SaltException {
+    public Map<String, Result<R>> callSync(final SaltClient client, Target<?> target)
+            throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());

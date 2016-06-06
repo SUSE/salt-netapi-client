@@ -32,7 +32,7 @@ public abstract class Xor<L, R> {
             Function<? super R, ? extends T> mapRight);
 
     public abstract void consume(Consumer<? super L> consumerLeft,
-                                 Consumer<? super R> consumerRight);
+            Consumer<? super R> consumerRight);
 
     public abstract <T> Xor<L, T> map(Function<? super R, ? extends T> mapper);
 
@@ -100,7 +100,7 @@ public abstract class Xor<L, R> {
         }
 
         public void consume(Consumer<? super L> consumerLeft,
-                            Consumer<? super R> consumerRight) {
+                Consumer<? super R> consumerRight) {
             consumerLeft.accept(left);
         }
 
@@ -185,7 +185,7 @@ public abstract class Xor<L, R> {
         }
 
         public void consume(Consumer<? super L> consumerLeft,
-                            Consumer<? super R> consumerRight) {
+                Consumer<? super R> consumerRight) {
             consumerRight.accept(right);
         }
 

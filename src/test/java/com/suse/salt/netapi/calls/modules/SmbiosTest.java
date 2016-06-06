@@ -13,7 +13,6 @@ import java.util.Map;
 
 import com.suse.salt.netapi.results.ModuleNotSupported;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 import org.junit.Before;
 import org.junit.Rule;
@@ -128,6 +127,7 @@ public class SmbiosTest {
         Map<String, Result<List<Smbios.Record>>> result =
                 Smbios.records(Smbios.RecordType.BIOS)
                 .callSync(client, new MinionList("minion1"));
-        assertEquals(Xor.left(new ModuleNotSupported("smbios")), result.get("minion1"));
+        assertEquals(Xor.left(new ModuleNotSupported("smbios")),
+                result.get("minion1").toXor());
     }
 }

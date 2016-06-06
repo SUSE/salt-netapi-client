@@ -16,6 +16,9 @@ import java.lang.reflect.Type;
 
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
+/**
+ * {@link TypeAdapterFactory} for creating type adapters for parsing {@link Result} objects.
+ */
 public class ResultTypeAdapterFactory implements TypeAdapterFactory {
 
     @SuppressWarnings("unchecked")
@@ -26,7 +29,8 @@ public class ResultTypeAdapterFactory implements TypeAdapterFactory {
         if (isResult && isParameterized) {
             Type typeParam = ((ParameterizedType) type).getActualTypeArguments()[0];
             Type xorType = parameterizedType(null, Xor.class, SaltError.class, typeParam);
-            TypeAdapter<Xor> xorAdapter = (TypeAdapter<Xor>)gson.getAdapter(TypeToken.get(xorType));
+            TypeAdapter<Xor> xorAdapter = (TypeAdapter<Xor>) gson
+                    .getAdapter(TypeToken.get(xorType));
             return (TypeAdapter<A>) wrap(xorAdapter);
         } else {
             return null;
@@ -34,11 +38,11 @@ public class ResultTypeAdapterFactory implements TypeAdapterFactory {
     }
 
     @SuppressWarnings("unchecked")
-    private  TypeAdapter<Result> wrap(TypeAdapter<Xor> xorTypeAdapter) {
+    private TypeAdapter<Result> wrap(TypeAdapter<Xor> xorTypeAdapter) {
         return new TypeAdapter<Result>() {
             @Override
             public Result read(JsonReader in) throws IOException {
-               return new Result(xorTypeAdapter.read(in));
+                return new Result(xorTypeAdapter.read(in));
             }
 
             @Override

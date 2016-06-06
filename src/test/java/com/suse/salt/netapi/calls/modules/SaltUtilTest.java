@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.SaltError;
-import com.suse.salt.netapi.utils.Xor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

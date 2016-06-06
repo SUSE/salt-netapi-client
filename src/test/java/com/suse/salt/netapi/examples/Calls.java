@@ -11,8 +11,6 @@ import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.SaltError;
-import com.suse.salt.netapi.utils.Xor;
 
 import java.net.URI;
 import java.util.List;
