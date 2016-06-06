@@ -4,7 +4,12 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.calls.LocalCall;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * salt.modules.locate
@@ -12,12 +17,14 @@ import java.util.*;
  */
 public class Locate {
 
-    private static final LocalCall<List<String>> VERSION = new LocalCall<>("locate.version",
+    private static final LocalCall<List<String>> VERSION = new LocalCall<>(
+            "locate.version",
             Optional.empty(), Optional.empty(),
             new TypeToken<List<String>>() {
             });
 
-    private static final LocalCall<List<String>> UPDATEDB = new LocalCall<>("locate.updatedb",
+    private static final LocalCall<List<String>> UPDATEDB = new LocalCall<>(
+            "locate.updatedb",
             Optional.empty(), Optional.empty(),
             new TypeToken<List<String>>() {
             });
@@ -61,6 +68,9 @@ public class Locate {
         }
     }
 
+    /**
+     * All possible options for "locate" method.
+     */
     public static class LocateOpts {
         private Map<String, Boolean> opts = new HashMap<>();
 
@@ -104,7 +114,8 @@ public class Locate {
     /**
      * Returns the version of locate.
      * <br>
-     * The result is a list of Strings representing each a line of the output of the 'locate --v' execution.
+     * The result is a list of Strings representing each a line of the output
+     * of the 'locate --v' execution.
      *
      * @return The {@link LocalCall} object to make the call
      */
@@ -116,7 +127,8 @@ public class Locate {
      * Updates the locate database.
      * <br>
      * A successful result will return an empty list of Strings.
-     * <br>If any error is returned, then a list of Strings representing each a line of the error output is returned.
+     * <br>If any error is returned, then a list of Strings representing each a line of
+     * the error output is returned.
      *
      * @return The {@link LocalCall} object to make the call
      */
@@ -135,7 +147,6 @@ public class Locate {
 
     /**
      * Performs a file lookup. Valid options (and their defaults) are:
-     * <p>
      * <ul>
      * <li>basename=False</li>
      * <li>count=False</li>
@@ -153,7 +164,9 @@ public class Locate {
      * @param options  More options to mofify the search.
      * @return The {@link LocalCall} object to make the call
      */
-    public static LocalCall<List<String>> locate(String pattern, Optional<String> database, Optional<Integer> limit, Optional<LocateOpts> options) {
+    public static LocalCall<List<String>> locate(String pattern, Optional<String> database,
+                                                 Optional<Integer> limit,
+                                                 Optional<LocateOpts> options) {
         List<Object> args = new LinkedList<>();
         Map<String, Boolean> kwargs = new LinkedHashMap<>();
 
@@ -163,7 +176,8 @@ public class Locate {
 
         options.ifPresent(opts -> kwargs.putAll(opts.getOpts()));
 
-        return new LocalCall<>("locate.locate", Optional.of(args), Optional.of(kwargs), new TypeToken<List<String>>() {
-        });
+        return new LocalCall<>("locate.locate", Optional.of(args), Optional.of(kwargs),
+                new TypeToken<List<String>>() {
+                });
     }
 }
