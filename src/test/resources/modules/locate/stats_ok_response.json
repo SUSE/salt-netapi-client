@@ -1,0 +1,13 @@
+{
+  "return": [
+    {
+      "minion1": {
+        "files": "178140",
+        "directories": "12070",
+        "bytes in file names": "9345681",
+        "bytes used to store database": "3969350",
+        "database": "/var/lib/mlocate/mlocate.db"
+      }
+    }
+  ]
+}
