@@ -34,31 +34,31 @@ public class LocateTest {
 
     private static final String JSON_NULL_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/null_response.json"));
+            "/modules/locate/null_response.json"));
 
     private static final String JSON_VERSION_OK_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/version_ok_response.json"));
+            "/modules/locate/version_ok_response.json"));
 
     private static final String JSON_UPDATEDB_OK_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/updatedb_ok_response.json"));
+            "/modules/locate/updatedb_ok_response.json"));
 
     private static final String JSON_UPDATEDB_ERROR_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/updatedb_error_response.json"));
+            "/modules/locate/updatedb_error_response.json"));
 
     private static final String JSON_STATS_OK_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/stats_ok_response.json"));
+            "/modules/locate/stats_ok_response.json"));
 
     private static final String JSON_LOCATE_OK_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/locate_ok_response.json"));
+            "/modules/locate/locate_ok_response.json"));
 
     private static final String JSON_LOCATE_NOINPUT_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
-                    "/modules/locate/locate_noinput_response.json"));
+            "/modules/locate/locate_noinput_response.json"));
 
     private SaltClient client;
 
@@ -80,9 +80,9 @@ public class LocateTest {
         // Test for successful responses
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_VERSION_OK_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_VERSION_OK_RESPONSE)));
 
         Map<String, List<String>> response = call.callSync(client,
                 new MinionList("minion1"));
@@ -94,9 +94,9 @@ public class LocateTest {
         // Test for null responses
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_NULL_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_NULL_RESPONSE)));
 
 
         response = call.callSync(client, new MinionList("minion1"));
@@ -113,9 +113,9 @@ public class LocateTest {
         // Test with a successful response
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_UPDATEDB_OK_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_UPDATEDB_OK_RESPONSE)));
 
         Map<String, List<String>> response = call.callSync(client,
                 new MinionList("minion1"));
@@ -126,9 +126,9 @@ public class LocateTest {
         // Test with an erroneous response
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_UPDATEDB_ERROR_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_UPDATEDB_ERROR_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
 
@@ -147,9 +147,9 @@ public class LocateTest {
         // Test with an erroneous response
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_STATS_OK_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_STATS_OK_RESPONSE)));
 
         Map<String, Locate.Stats> response = call.callSync(client,
                 new MinionList("minion1"));
@@ -173,9 +173,9 @@ public class LocateTest {
         // Test with an successful response
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_LOCATE_OK_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOCATE_OK_RESPONSE)));
 
         Map<String, List<String>> response = call.callSync(client,
                 new MinionList("minion1"));
@@ -188,9 +188,9 @@ public class LocateTest {
         // Test with an exception
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_LOCATE_NOINPUT_RESPONSE)));
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOCATE_NOINPUT_RESPONSE)));
 
         call.callSync(client, new MinionList("minion1"));
     }

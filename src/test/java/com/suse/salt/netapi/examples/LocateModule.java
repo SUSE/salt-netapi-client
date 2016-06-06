@@ -43,7 +43,7 @@ public class LocateModule {
         opts.setRegex(true);
         opts.setCount(true);
         call = Locate.locate(pattern, Optional.empty(), Optional.empty(),
-                Optional.of(opts));
+            Optional.of(opts));
         results = call.callSync(client, globTarget);
         System.out.println("Results setting regex and count to true:");
         results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
