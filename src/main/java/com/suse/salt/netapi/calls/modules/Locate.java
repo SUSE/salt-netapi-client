@@ -38,28 +38,28 @@ public class Locate {
      * Locate module result object
      */
     public static class Stats {
-        private Long files;
-        private Long directories;
+        private long files;
+        private long directories;
         @SerializedName("bytes in file names")
-        private Long fileNamesBytes;
+        private long fileNamesBytes;
         @SerializedName("bytes used to store database")
-        private Long databaseBytes;
+        private long databaseBytes;
         @SerializedName("database")
         private String databaseLocation;
 
-        public Long getFiles() {
+        public long getFiles() {
             return files;
         }
 
-        public Long getDirectories() {
+        public long getDirectories() {
             return directories;
         }
 
-        public Long getFileNamesBytes() {
+        public long getFileNamesBytes() {
             return fileNamesBytes;
         }
 
-        public Long getDatabaseBytes() {
+        public long getDatabaseBytes() {
             return databaseBytes;
         }
 
