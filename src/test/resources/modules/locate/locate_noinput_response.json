@@ -1,0 +1,7 @@
+{
+  "return": [
+    {
+      "minion1": "Passed invalid arguments to locate.locate: locate() takes at least 1 argument (0 given)\n\n    Performs a file lookup. Valid options (and their defaults) are::\n\n        basename=False\n        count=False\n        existing=False\n        follow=True\n        ignore=False\n        nofollow=False\n        wholename=True\n        regex=False\n        database=<locate's default database>\n        limit=<integer, not set by default>\n\n    See the manpage for ``locate(1)`` for further explanation of these options.\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' locate.locate\n    "
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "return": [
+    {
+      "minion1": [
+        "mlocate 0.26",
+        "Copyright (C) 2007 Red Hat, Inc. All rights reserved.",
+        "This software is distributed under the GPL v.2.",
+        "",
+        "This program is provided with NO WARRANTY, to the extent permitted by law."
+      ]
+    }
+  ]
+}
