@@ -54,4 +54,25 @@ public class Result<R> {
     public Xor<SaltError, R> toXor() {
         return xor;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Result<?> other = (Result<?>) obj;
+        return xor.equals(other.xor);
+    }
+
+    @Override
+    public String toString() {
+        return xor.fold(
+            error -> "Error(" + error + ")",
+            result -> "Result(" + result + ")"
+        );
+    }
 }
