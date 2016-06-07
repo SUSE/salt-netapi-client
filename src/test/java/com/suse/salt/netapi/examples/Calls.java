@@ -48,8 +48,8 @@ public class Calls {
             String grainsOutput = grains.fold(
                     error -> "Error: " + error.toString(),
                     grainsMap -> grainsMap.entrySet().stream()
-                            .map(e -> e.getKey() + ": " + e.getValue())
-                            .collect(Collectors.joining("\n"))
+                    .map(e -> e.getKey() + ": " + e.getValue())
+                    .collect(Collectors.joining("\n"))
             );
             System.out.println(grainsOutput);
         });
