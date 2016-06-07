@@ -1,10 +1,15 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
+
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.GenericSaltError;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +26,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -112,8 +116,10 @@ public class FileTest {
         LocalCall<String> call = File.chown("/test", "testuser", "testgroup");
         assertEquals("file.chown", call.getPayload().get("fun"));
 
-        Map<String, String> response = call.callSync(client, new MinionList("minion1"));
-        assertNull(response.get("minion1"));
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertEquals(new GenericSaltError(JsonNull.INSTANCE),
+                response.get("minion1").error().get());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -122,7 +128,7 @@ public class FileTest {
                 .withBody(JSON_FILENOTFOUND_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
-        assertEquals("File not found", response.get("minion1"));
+        assertEquals("File not found", response.get("minion1").result().get());
     }
 
     @Test
@@ -135,8 +141,9 @@ public class FileTest {
         LocalCall<String> call = File.chmod("/test", "755");
         assertEquals("file.set_mode", call.getPayload().get("fun"));
 
-        Map<String, String> response = call.callSync(client, new MinionList("minion1"));
-        assertEquals("0755", response.get("minion1"));
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertEquals("0755", response.get("minion1").result().get());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -145,7 +152,8 @@ public class FileTest {
                 .withBody(JSON_FILENOTFOUND_EXCEPTION_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
-        assertEquals("ERROR: /test: File not found", response.get("minion1"));
+        assertEquals("ERROR: /test: File not found",
+                response.get("minion1").result().get());
     }
 
     @Test
@@ -159,8 +167,9 @@ public class FileTest {
         LocalCall<Boolean> call = File.copy("/test1", "/test2", false, false);
         assertEquals("file.copy", call.getPayload().get("fun"));
 
-        Map<String, Boolean> response = call.callSync(client, new MinionList("minion1"));
-        assertTrue(response.get("minion1"));
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertTrue(response.get("minion1").result().get());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -169,10 +178,12 @@ public class FileTest {
                 .withBody(JSON_COPY_EXCEPTION_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
-        assertFalse(response.get("minion1"));
+        String errorMessage = "ERROR: Could not copy /test1 to /test2";
+        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
+                response.get("minion1").error().get());
     }
 
-    @Test(expected = com.google.gson.JsonSyntaxException.class)
+    @Test
     public final void testMove() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -183,9 +194,9 @@ public class FileTest {
         LocalCall<File.Result> call = File.move("/test1", "/test2");
         assertEquals("file.move", call.getPayload().get("fun"));
 
-        Map<String, File.Result> response = call.callSync(client,
+        Map<String, Result<File.Result>> response = call.callSync(client,
                 new MinionList("minion1"));
-        File.Result result = response.get("minion1");
+        File.Result result = response.get("minion1").result().get();
         assertTrue(result.getResult());
         assertEquals("'/test1' moved to '/test2'", result.getComment());
 
@@ -195,7 +206,11 @@ public class FileTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_MOVE_EXCEPTION_RESPONSE)));
 
-        call.callSync(client, new MinionList("minion1"));
+        response = call.callSync(client, new MinionList("minion1"));
+        String errorMessage = "ERROR: Unable to move '/test1' to '/test2': " +
+                "[Errno 2] No such file or directory: '/test1'";
+        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
+                response.get("minion1").error().get());
     }
 
     @Test
@@ -209,8 +224,9 @@ public class FileTest {
         LocalCall<Boolean> call = File.remove("/test");
         assertEquals("file.remove", call.getPayload().get("fun"));
 
-        Map<String, Boolean> response = call.callSync(client, new MinionList("minion1"));
-        assertTrue(response.get("minion1"));
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertTrue(response.get("minion1").result().get());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -219,7 +235,7 @@ public class FileTest {
                 .withBody(JSON_FALSE_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
-        assertFalse(response.get("minion1"));
+        assertFalse(response.get("minion1").result().get());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -228,7 +244,10 @@ public class FileTest {
                 .withBody(JSON_REMOVE_EXCEPTION_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
-        assertFalse(response.get("minion1"));
+        String errorMessage = "ERROR: Could not remove /test: " +
+                "[Errno 2] No such file or directory: '/test'";
+        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
+                response.get("minion1").error().get());
     }
 
     @Test
@@ -242,9 +261,10 @@ public class FileTest {
         LocalCall<String> call = File.getHash("/test", HashType.SHA256, 65536);
         assertEquals("file.get_hash", call.getPayload().get("fun"));
 
-        Map<String, String> response = call.callSync(client, new MinionList("minion1"));
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"));
         assertEquals("5a6e8ba50b0fae347f70ba75cf7738fdd1cef12009cc516171e72fa559e6daff",
-                response.get("minion1"));
+                response.get("minion1").result().get());
     }
 
     @Test
@@ -258,8 +278,9 @@ public class FileTest {
         LocalCall<Boolean> call = File.directoryExists("/test/");
         assertEquals("file.directory_exists", call.getPayload().get("fun"));
 
-        Map<String, Boolean> response = call.callSync(client, new MinionList("minion1"));
-        assertTrue(response.get("minion1"));
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertTrue(response.get("minion1").result().get());
     }
 
     @Test
@@ -273,8 +294,9 @@ public class FileTest {
         LocalCall<Boolean> call = File.fileExists("/test");
         assertEquals("file.file_exists", call.getPayload().get("fun"));
 
-        Map<String, Boolean> response = call.callSync(client, new MinionList("minion1"));
-        assertTrue(response.get("minion1"));
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertTrue(response.get("minion1").result().get());
     }
 
     @Test
@@ -288,8 +310,9 @@ public class FileTest {
         LocalCall<String> call = File.getMode("/test", true);
         assertEquals("file.get_mode", call.getPayload().get("fun"));
 
-        Map<String, String> response = call.callSync(client, new MinionList("minion1"));
-        assertEquals("0755", response.get("minion1"));
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertEquals("0755", response.get("minion1").result().get());
     }
 
     @Test
@@ -303,11 +326,13 @@ public class FileTest {
         LocalCall<String> call = File.mkdir("/test");
         assertEquals("file.mkdir", call.getPayload().get("fun"));
 
-        Map<String, String> response = call.callSync(client, new MinionList("minion1"));
-        assertNull(response.get("minion1"));
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertEquals(new GenericSaltError(JsonNull.INSTANCE),
+                response.get("minion1").error().get());
     }
 
-    @Test(expected = com.google.gson.JsonSyntaxException.class)
+    @Test
     public final void testReaddir() throws SaltException {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -318,9 +343,9 @@ public class FileTest {
         LocalCall<List<String>> call = File.readdir("/test/");
         assertEquals("file.readdir", call.getPayload().get("fun"));
 
-        Map<String, List<String>> response = call.callSync(client,
+        Map<String, Result<List<String>>> response = call.callSync(client,
                 new MinionList("minion1"));
-        List<String> result = response.get("minion1");
+        List<String> result = response.get("minion1").result().get();
         assertNotNull(result);
         assertArrayEquals(new String[]{".", "..", "test1", "test2", "test3"},
                 result.toArray());
@@ -330,7 +355,11 @@ public class FileTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_READDIR_EXCEPTION_RESPONSE)));
 
-        call.callSync(client, new MinionList("minion1"));
+        response = call.callSync(client, new MinionList("minion1"));
+        String errorMessage = "ERROR executing 'file.readdir': " +
+                "A valid directory was not specified.";
+        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
+                response.get("minion1").error().get());
     }
 
     @Test
@@ -344,8 +373,9 @@ public class FileTest {
         LocalCall<Boolean> call = File.rmdir("/test/");
         assertEquals("file.rmdir", call.getPayload().get("fun"));
 
-        Map<String, Boolean> response = call.callSync(client, new MinionList("minion1"));
-        assertTrue(response.get("minion1"));
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"));
+        assertTrue(response.get("minion1").result().get());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -354,6 +384,8 @@ public class FileTest {
                 .withBody(JSON_RMDIR_EXCEPTION_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"));
-        assertFalse(response.get("minion1"));
+        String errorMessage = "ERROR: A valid directory was not specified.";
+        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
+                response.get("minion1").error().get());
     }
 }

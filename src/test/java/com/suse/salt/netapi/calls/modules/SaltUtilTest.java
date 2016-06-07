@@ -126,12 +126,12 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_REFRESHPILLAR_RESPONSE)));
 
-        Map<String, Boolean> response = SaltUtil
+        Map<String, Result<Boolean>> response = SaltUtil
                 .refreshPillar(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
         assertEquals(1, response.size());
         assertNotNull(response.get("minion1"));
-        Boolean data = response.get("minion1");
+        Boolean data = response.get("minion1").result().get();
         assertEquals(true, data);
     }
 }
