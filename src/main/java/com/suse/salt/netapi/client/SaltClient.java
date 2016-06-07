@@ -16,7 +16,7 @@ import com.suse.salt.netapi.event.EventListener;
 import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
-import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.ResultInfoSet;
 
 import com.google.gson.Gson;
@@ -141,7 +141,7 @@ public class SaltClient {
 
         String payload = gson.toJson(props);
 
-        Result<List<Token>> result = connectionFactory
+        Return<List<Token>> result = connectionFactory
                 .create("/login", JsonParser.TOKEN, config)
                 .getResult(payload);
 
@@ -175,7 +175,7 @@ public class SaltClient {
      * @throws SaltException if anything goes wrong
      */
     public boolean logout() throws SaltException {
-        Result<String> stringResult = connectionFactory
+        Return<String> stringResult = connectionFactory
                 .create("/logout", JsonParser.STRING, config).getResult("");
         String logoutMessage = "Your token has been cleared";
         boolean result = logoutMessage.equals((stringResult.getResult()));
@@ -284,7 +284,7 @@ public class SaltClient {
         String payload = gson.toJson(Collections.singleton(props));
 
         // Connect to the minions endpoint and send the above lowstate data
-        Result<List<ScheduledJob>> result = connectionFactory
+        Return<List<ScheduledJob>> result = connectionFactory
                 .create("/minions", JsonParser.SCHEDULED_JOB,  config)
                 .getResult(payload);
 
@@ -348,7 +348,7 @@ public class SaltClient {
      * @throws SaltException if anything goes wrong
      */
     public Map<String, Job> getJobs() throws SaltException {
-        Result<List<Map<String, Job>>> result = connectionFactory
+        Return<List<Map<String, Job>>> result = connectionFactory
                 .create("/jobs", JsonParser.JOBS, config)
                 .getResult();
         return result.getResult().get(0);
@@ -401,7 +401,7 @@ public class SaltClient {
 
         String payload = gson.toJson(list);
 
-        Result<List<Map<String, Object>>> result = connectionFactory
+        Return<List<Map<String, Object>>> result = connectionFactory
                 .create("/run", JsonParser.RUN_RESULTS, config)
                 .getResult(payload);
 

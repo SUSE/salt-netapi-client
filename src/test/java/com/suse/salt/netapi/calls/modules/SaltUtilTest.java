@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.suse.salt.netapi.results.Result;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,13 +63,14 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SYNCGRAINS_RESPONSE)));
 
-        Map<String, List<String>> response = SaltUtil
+        Map<String, Result<List<String>>> response = SaltUtil
                 .syncGrains(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
-        assertEquals(0, response.entrySet().iterator().next().getValue().size());
+        assertEquals(0, response.entrySet().iterator().next()
+                .getValue().result().get().size());
     }
 
     @Test
@@ -79,13 +81,14 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SYNCMODULES_RESPONSE)));
 
-        Map<String, List<String>> response = SaltUtil
+        Map<String, Result<List<String>>> response = SaltUtil
                 .syncModules(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
-        assertEquals(0, response.entrySet().iterator().next().getValue().size());
+        assertEquals(0, response.entrySet().iterator().next()
+                .getValue().result().get().size());
     }
 
     @Test
@@ -96,13 +99,13 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SYNCALL_RESPONSE)));
 
-        Map<String, Map<String, Object>> response = SaltUtil
+        Map<String, Result<Map<String, Object>>> response = SaltUtil
                 .syncAll(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
 
         assertEquals(1, response.size());
         assertNotNull(response.get("minion1"));
-        Map<String, Object> data = response.get("minion1");
+        Map<String, Object> data = response.get("minion1").result().get();
         assertEquals(0, ((List<?>) data.get("beacons")).size());
         assertEquals(0, ((List<?>) data.get("grains")).size());
         assertEquals(0, ((List<?>) data.get("log_handlers")).size());
@@ -123,12 +126,12 @@ public class SaltUtilTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_REFRESHPILLAR_RESPONSE)));
 
-        Map<String, Boolean> response = SaltUtil
+        Map<String, Result<Boolean>> response = SaltUtil
                 .refreshPillar(Optional.of(true), Optional.empty())
                 .callSync(client, new MinionList("minion1"));
         assertEquals(1, response.size());
         assertNotNull(response.get("minion1"));
-        Boolean data = response.get("minion1");
+        Boolean data = response.get("minion1").result().get();
         assertEquals(true, data);
     }
 }

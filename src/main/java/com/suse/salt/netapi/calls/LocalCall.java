@@ -7,6 +7,7 @@ import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -70,10 +71,10 @@ public class LocalCall<R> implements Call<R> {
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
-        Result<List<LocalAsyncResult<R>>> wrapper = client.call(
+        Return<List<LocalAsyncResult<R>>> wrapper = client.call(
                 this, Client.LOCAL_ASYNC, "/",
                 Optional.of(customArgs),
-                new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
+                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){});
         LocalAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
@@ -103,10 +104,10 @@ public class LocalCall<R> implements Call<R> {
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
-        Result<List<LocalAsyncResult<R>>> wrapper = client.call(
+        Return<List<LocalAsyncResult<R>>> wrapper = client.call(
                 this, Client.LOCAL_ASYNC, "/run",
                 Optional.of(customArgs),
-                new TypeToken<Result<List<LocalAsyncResult<R>>>>(){});
+                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){});
         LocalAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
@@ -122,21 +123,23 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
-    public Map<String, R> callSync(final SaltClient client, Target<?> target)
+    public Map<String, Result<R>> callSync(final SaltClient client, Target<?> target)
             throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
-        Type type = parameterizedType(null, Map.class, String.class,
-                getReturnType().getType());
-        Type listType = parameterizedType(null, List.class, type);
-        Type wrapperType = parameterizedType(null, Result.class, listType);
+        Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+        Type map = parameterizedType(null, Map.class, String.class, xor);
+        Type listType = parameterizedType(null, List.class, map);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<Map<String, R>>> wrapper = client.call(this, Client.LOCAL, "/",
+        Return<List<Map<String, Result<R>>>> wrapper = client.call(this,
+                Client.LOCAL, "/",
                 Optional.of(customArgs),
-                (TypeToken<Result<List<Map<String, R>>>>) TypeToken.get(wrapperType));
+                (TypeToken<Return<List<Map<String, Result<R>>>>>)
+                TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 
@@ -153,7 +156,8 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
-    public Map<String, R> callSync(final SaltClient client, Target<?> target,
+    public Map<String, Result<R>> callSync(
+            final SaltClient client, Target<?> target,
             String username, String password, AuthModule authModule)
             throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
@@ -164,15 +168,17 @@ public class LocalCall<R> implements Call<R> {
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
 
-        Type mapType = parameterizedType(null, Map.class, String.class,
-                getReturnType().getType());
-        Type listType = parameterizedType(null, List.class, mapType);
-        Type wrapperType = parameterizedType(null, Result.class, listType);
+        Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+        Type map = parameterizedType(null, Map.class, String.class, xor);
+        Type listType = parameterizedType(null, List.class, map);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Result<List<Map<String, R>>> wrapper = client.call(this, Client.LOCAL, "/run",
+        Return<List<Map<String, Result<R>>>> wrapper = client.call(this,
+                Client.LOCAL, "/run",
                 Optional.of(customArgs),
-                (TypeToken<Result<List<Map<String, R>>>>) TypeToken.get(wrapperType));
+                (TypeToken<Return<List<Map<String, Result<R>>>>>)
+                TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 }

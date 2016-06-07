@@ -10,7 +10,7 @@ import com.suse.salt.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.salt.netapi.datatypes.cherrypy.Request;
 import com.suse.salt.netapi.datatypes.cherrypy.ServerThread;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
-import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +39,7 @@ public class JsonParserTest {
     @Test
     public void testJobsParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/minions_response.json");
-        Result<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
+        Return<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
         assertNotNull("failed to parse", result);
         String jid = result.getResult().get(0).getJid();
         assertEquals("unable to parse jid", "20150211105524392307", jid);
@@ -48,14 +48,14 @@ public class JsonParserTest {
     @Test
     public void testStringParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/logout_response.json");
-        Result<String> result = JsonParser.STRING.parse(is);
+        Return<String> result = JsonParser.STRING.parse(is);
         assertNotNull(result);
     }
 
     @Test
     public void testTokenParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/login_response.json");
-        Result<List<Token>> result = JsonParser.TOKEN.parse(is);
+        Return<List<Token>> result = JsonParser.TOKEN.parse(is);
         assertNotNull(result);
         assertEquals("user", result.getResult().get(0).getUser());
         assertEquals("auto", result.getResult().get(0).getEauth());
@@ -105,21 +105,21 @@ public class JsonParserTest {
         assertEquals(93.5, applications.getWritesPerRequest(), 0);
 
         Request req1 = applications.getRequests().get("140691837540096");
-        assertEquals(new Integer(54), req1.getBytesRead());
-        assertEquals(new Integer(187), req1.getBytesWritten());
-        assertEquals("200 OK", req1.getResponeStatus());
+        assertEquals(new Integer(54), req1.getBytesRead().get());
+        assertEquals(new Integer(187), req1.getBytesWritten().get());
+        assertEquals("200 OK", req1.getResponeStatus().get());
         assertEquals(new Date(1425821772580L), req1.getStartTime());
-        assertEquals(new Date(1425821772645L), req1.getEndTime());
+        assertEquals(new Date(1425821772645L), req1.getEndTime().get());
         assertEquals("127.0.0.1:45009", req1.getClient());
         assertEquals(0.06533312797546387, req1.getProcessingTime(), 0);
         assertEquals("POST /login HTTP/1.1", req1.getRequestLine());
 
         Request req2 = applications.getRequests().get("140691829147392");
-        assertEquals(null, req2.getBytesRead());
-        assertEquals(null, req2.getBytesWritten());
-        assertEquals(null, req2.getResponeStatus());
+        assertFalse(req2.getBytesRead().isPresent());
+        assertFalse(req2.getBytesWritten().isPresent());
+        assertFalse(req2.getResponeStatus().isPresent());
         assertEquals(new Date(1425821785119L), req2.getStartTime());
-        assertEquals(null, req2.getEndTime());
+        assertFalse(req2.getEndTime().isPresent());
         assertEquals("127.0.0.1:45015", req2.getClient());
         assertEquals(0.0002930164337158203, req2.getProcessingTime(), 0);
         assertEquals("GET /stats HTTP/1.1", req2.getRequestLine());
@@ -156,7 +156,7 @@ public class JsonParserTest {
     @Test
     public void testKeysParser() throws Exception {
         InputStream is = getClass().getResourceAsStream("/keys_response.json");
-        Result<Key.Names> result = JsonParser.KEYS.parse(is);
+        Return<Key.Names> result = JsonParser.KEYS.parse(is);
         Key.Names keys = result.getResult();
         assertNotNull("failed to parse", result);
         assertEquals(Arrays.asList("master.pem", "master.pub"), keys.getLocal());
@@ -168,7 +168,7 @@ public class JsonParserTest {
     @Test
     public void testJobsWithArgsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
         assertNotNull("failed to parse", result);
 
         Map<String, Job> jobs = result.getResult().get(0);
@@ -187,7 +187,7 @@ public class JsonParserTest {
     @Test
     public void testJobsWithKwargsParser() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/jobs_response_kwargs.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
         assertNotNull("failed to parse", result);
 
         Map<String, Job> jobs = result.getResult().get(0);
@@ -245,7 +245,7 @@ public class JsonParserTest {
     public void testJobsWithArgsAsKwargsParser() throws Exception {
         InputStream is = this.getClass()
                 .getResourceAsStream("/jobs_response_args_as_kwargs.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
 
         Map<String, Job> jobs = result.getResult().get(0);
         Job job = jobs.get("20150315163041425361");
@@ -292,7 +292,7 @@ public class JsonParserTest {
     public void testJobsMultipleKwargs() throws Exception {
         InputStream is = this.getClass()
                 .getResourceAsStream("/jobs_response_multiple_kwarg.json");
-        Result<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
+        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
 
         Map<String, Job> jobs = result.getResult().get(0);
         Job job = jobs.get("20150306023815935637");

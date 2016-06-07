@@ -8,7 +8,7 @@ import com.suse.salt.netapi.calls.RunnerAsyncResult;
 import com.suse.salt.netapi.calls.RunnerCall;
 import com.suse.salt.netapi.calls.WheelAsyncResult;
 import com.suse.salt.netapi.datatypes.StartTime;
-import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -54,7 +54,7 @@ public class Jobs {
         private String target;
 
         @SerializedName("Result")
-        private Map<String, Result<R>> result;
+        private Map<String, Return<R>> result;
 
         public String getFunction() {
             return function;
@@ -88,14 +88,14 @@ public class Jobs {
             return target;
         }
 
-        public Map<String, Result<R>> getResult() {
+        public Map<String, Return<R>> getResult() {
             return result;
         }
 
         public Optional<R> resultOf(String minionKey) {
             return Optional.ofNullable(result).flatMap(
                 r -> Optional.ofNullable(r.get(minionKey))
-            ).map(Result::getResult);
+            ).map(Return::getResult);
         }
     }
 
