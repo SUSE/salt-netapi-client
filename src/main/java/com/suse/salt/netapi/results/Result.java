@@ -44,7 +44,7 @@ public class Result<R> {
 
     public <T> Result<T> flatMap(Function<? super R, Result<T>> mapper) {
         return xor.fold(
-            e -> new Result<>(Xor.left(e)),
+            e -> new Result<T>(Xor.left(e)),
             mapper
         );
     }
