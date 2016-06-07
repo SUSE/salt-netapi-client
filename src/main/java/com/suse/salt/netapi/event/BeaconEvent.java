@@ -1,6 +1,10 @@
 package com.suse.salt.netapi.event;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.datatypes.Event;
+import com.suse.salt.netapi.parser.JsonParser;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,10 +18,12 @@ public class BeaconEvent {
     private static final Pattern PATTERN =
             Pattern.compile("^salt/beacon/([^/]+)/([^/]+)/(.*)$");
 
+    private static final Gson GSON = JsonParser.GSON;
+
     private final String beacon;
     private final String minionId;
     private final String additional;
-    private final Map<String, Object> data;
+    private final JsonElement data;
 
     /**
      * Creates a new BeaconEvent
@@ -26,8 +32,8 @@ public class BeaconEvent {
      * @param additional additional information depending on the beacon
      * @param data data containing more information about this event
      */
-    public BeaconEvent(String minionId, String beacon, String additional,
-            Map<String, Object> data) {
+    private BeaconEvent(String minionId, String beacon, String additional,
+            JsonElement data) {
         this.minionId = minionId;
         this.beacon = beacon;
         this.additional = additional;
@@ -62,12 +68,33 @@ public class BeaconEvent {
     }
 
     /**
-     * The event data containing more information about this event
-     *
+     * Return the event data parsed into the given type.
+     * @param type type token to parse data
+     * @param <R> type to parse the data into
      * @return the event data
      */
+    public <R> R getData(TypeToken<R> type) {
+        return GSON.fromJson(data, type.getType());
+    }
+
+    /**
+     * Return this event's data parsed into the given type.
+     * @param type class to parse data
+     * @param <R> type to parse the data into
+     * @return the data
+     */
+    public <R> R getData(Class<R> type) {
+        return GSON.fromJson(data, type);
+    }
+
+
+    /**
+     * Return event data as Map
+     * @return event data as map
+     */
     public Map<String, Object> getData() {
-        return data;
+        TypeToken<Map<String, Object>> typeToken = new TypeToken<Map<String, Object>>() {};
+        return getData(typeToken);
     }
 
     /**
@@ -79,7 +106,7 @@ public class BeaconEvent {
         Matcher matcher = PATTERN.matcher(event.getTag());
         if (matcher.matches()) {
             BeaconEvent result = new BeaconEvent(matcher.group(1), matcher.group(2),
-                    matcher.group(3), event.getData());
+                    matcher.group(3), event.getData(JsonElement.class));
             return Optional.of(result);
         } else {
             return Optional.empty();
