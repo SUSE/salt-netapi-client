@@ -19,10 +19,10 @@ public class File {
      * File module result object
      */
     public static class Result {
-        private Boolean result;
+        private boolean result;
         private String comment;
 
-        public Boolean getResult() {
+        public boolean getResult() {
             return result;
         }
 
