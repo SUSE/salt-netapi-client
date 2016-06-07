@@ -40,18 +40,18 @@ public class Calls {
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        Map<String, Result<Map<String, Object>>> grainResults =
-                Grains.items(false).callSync(
-                client, minionList, USER, PASSWORD, AuthModule.AUTO);
+        Map<String, Result<Map<String, Object>>> grainResults = Grains.items(false)
+                .callSync(client, minionList, USER, PASSWORD, AuthModule.AUTO);
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");
-            String message = grains.fold(
-                    Object::toString,
-                    m -> m.entrySet().stream()
-                    .map(e -> e.getKey() + ": " + e.getValue())
-                    .collect(Collectors.joining("\n"))
+            String grainsOutput = grains.fold(
+                    error -> "Error: " + error.toString(),
+                    grainsMap -> grainsMap.entrySet().stream()
+                            .map(e -> e.getKey() + ": " + e.getValue())
+                            .collect(Collectors.joining("\n"))
             );
+            System.out.println(grainsOutput);
         });
 
         // Call a wheel function: list accepted and pending minion keys
