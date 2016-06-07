@@ -42,6 +42,8 @@ public class Result<R> {
         return new Result<>(xor.map(mapper));
     }
 
+    // FIXME: Redundant definition of type arguments needed for oraclejdk8
+    @SuppressWarnings("unused")
     public <T> Result<T> flatMap(Function<? super R, Result<T>> mapper) {
         return xor.fold(
             e -> new Result<T>(Xor.left(e)),
