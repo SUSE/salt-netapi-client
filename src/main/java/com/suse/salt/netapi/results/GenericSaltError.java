@@ -10,19 +10,24 @@ import java.util.function.Function;
 final public class GenericSaltError implements SaltError {
 
     private final JsonElement json;
+    private final Throwable throwable;
 
-    public GenericSaltError(JsonElement json) {
+    public GenericSaltError(JsonElement json, Throwable throwable) {
         this.json = json;
+        this.throwable = throwable;
     }
 
-    @Override
-    public String toString() {
-        return "GenericSaltError(" + json.toString() + ")";
+    public JsonElement getJson() {
+        return json;
     }
 
     @Override
     public int hashCode() {
         return toString().hashCode();
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
     }
 
     public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
@@ -32,14 +37,8 @@ final public class GenericSaltError implements SaltError {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        } else if (obj == null) {
-            return false;
-        } else {
-            return obj instanceof GenericSaltError &&
-                    ((GenericSaltError) obj).json.equals(json);
-        }
+    public String toString() {
+        return "GenericSaltError(" + json.toString() + ", " + throwable.getMessage() + ")";
     }
+
 }

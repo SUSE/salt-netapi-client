@@ -66,10 +66,10 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
                             String module = mnsMatcher.group(1);
                             return Xor.left(new ModuleNotSupported(module));
                         } else {
-                            return Xor.left(new GenericSaltError(json));
+                            return Xor.left(new GenericSaltError(json, e));
                         }
                     } else {
-                        return Xor.left(new GenericSaltError(json));
+                        return Xor.left(new GenericSaltError(json, e));
                     }
                 }
             }

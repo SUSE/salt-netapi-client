@@ -118,8 +118,8 @@ public class FileTest {
 
         Map<String, Result<String>> response = call.callSync(client,
                 new MinionList("minion1"));
-        assertEquals(new GenericSaltError(JsonNull.INSTANCE),
-                response.get("minion1").error().get());
+        assertEquals(JsonNull.INSTANCE,
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
 
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -179,8 +179,9 @@ public class FileTest {
 
         response = call.callSync(client, new MinionList("minion1"));
         String errorMessage = "ERROR: Could not copy /test1 to /test2";
-        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
-                response.get("minion1").error().get());
+        assertEquals(new JsonPrimitive(errorMessage),
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
+
     }
 
     @Test
@@ -209,8 +210,8 @@ public class FileTest {
         response = call.callSync(client, new MinionList("minion1"));
         String errorMessage = "ERROR: Unable to move '/test1' to '/test2': " +
                 "[Errno 2] No such file or directory: '/test1'";
-        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
-                response.get("minion1").error().get());
+        assertEquals(new JsonPrimitive(errorMessage),
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
@@ -246,8 +247,8 @@ public class FileTest {
         response = call.callSync(client, new MinionList("minion1"));
         String errorMessage = "ERROR: Could not remove /test: " +
                 "[Errno 2] No such file or directory: '/test'";
-        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
-                response.get("minion1").error().get());
+        assertEquals(new JsonPrimitive(errorMessage),
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
@@ -328,8 +329,8 @@ public class FileTest {
 
         Map<String, Result<String>> response = call.callSync(client,
                 new MinionList("minion1"));
-        assertEquals(new GenericSaltError(JsonNull.INSTANCE),
-                response.get("minion1").error().get());
+        assertEquals(JsonNull.INSTANCE,
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
@@ -358,8 +359,8 @@ public class FileTest {
         response = call.callSync(client, new MinionList("minion1"));
         String errorMessage = "ERROR executing 'file.readdir': " +
                 "A valid directory was not specified.";
-        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
-                response.get("minion1").error().get());
+        assertEquals(new JsonPrimitive(errorMessage),
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
@@ -385,7 +386,7 @@ public class FileTest {
 
         response = call.callSync(client, new MinionList("minion1"));
         String errorMessage = "ERROR: A valid directory was not specified.";
-        assertEquals(new GenericSaltError(new JsonPrimitive(errorMessage)),
-                response.get("minion1").error().get());
+        assertEquals(new JsonPrimitive(errorMessage),
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
     }
 }
