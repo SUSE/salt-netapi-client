@@ -23,6 +23,7 @@ final public class GenericSaltError implements SaltError {
     @Override
     public int hashCode() {
         return toString().hashCode();
+    }
 
     public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
                       Function<ModuleNotSupported, ? extends T> modNotSupported,
