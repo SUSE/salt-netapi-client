@@ -1,5 +1,7 @@
 package com.suse.salt.netapi.results;
 
+import java.util.function.Function;
+
 /**
  * Salt error when trying to execute a function that does not exist
  */
@@ -13,6 +15,12 @@ final public class FunctionNotAvailable implements SaltError {
 
     public String getFunctionName() {
         return functionName;
+    }
+
+    public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
+               Function<ModuleNotSupported, ? extends T> modNotSupported,
+               Function<GenericSaltError, ? extends T> generic) {
+        return fnNotAvail.apply(this);
     }
 
     @Override

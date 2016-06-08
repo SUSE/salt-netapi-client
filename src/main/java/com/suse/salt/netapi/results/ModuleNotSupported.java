@@ -1,5 +1,7 @@
 package com.suse.salt.netapi.results;
 
+import java.util.function.Function;
+
 /**
  * Error that happens if a modules is not supported
  */
@@ -18,6 +20,12 @@ final public class ModuleNotSupported implements SaltError {
     @Override
     public String toString() {
         return "ModuleNotSupported(" + moduleName + ")";
+    }
+
+    public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
+                      Function<ModuleNotSupported, ? extends T> modNotSupported,
+                      Function<GenericSaltError, ? extends T> generic) {
+        return modNotSupported.apply(this);
     }
 
     @Override
