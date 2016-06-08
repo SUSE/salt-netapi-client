@@ -13,17 +13,13 @@ import com.suse.salt.netapi.results.FunctionNotAvailable;
 import com.suse.salt.netapi.results.GenericSaltError;
 import com.suse.salt.netapi.results.ModuleNotSupported;
 import com.suse.salt.netapi.results.SaltError;
-import com.suse.salt.netapi.results.StackTraceError;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * TypeAdaptorFactory creating TypeAdapters for Xor
@@ -70,16 +66,6 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
                             String module = mnsMatcher.group(1);
                             return Xor.left(new ModuleNotSupported(module));
                         } else {
-                            List<String> strings = Arrays.asList(string.split("\n"));
-                            if (strings.size() > 0) {
-                                if (strings.get(0).contentEquals("The minion function" +
-                                        " caused an exception: Traceback (most recent" +
-                                        " call last):")) {
-                                    String stacktrace = strings.stream().skip(1)
-                                            .collect(Collectors.joining("\n"));
-                                    return Xor.left(new StackTraceError(stacktrace));
-                                }
-                            }
                             return Xor.left(new GenericSaltError(json));
                         }
                     } else {
