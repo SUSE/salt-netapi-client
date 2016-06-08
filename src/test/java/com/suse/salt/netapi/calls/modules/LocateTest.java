@@ -1,6 +1,7 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.JsonNull;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
@@ -92,6 +93,19 @@ public class LocateTest {
         assertNotNull(response.get("minion1").result().get());
         assertEquals(5, response.get("minion1").result().get().size());
         assertEquals("mlocate 0.26", response.get("minion1").result().get().get(0));
+
+        // Test for null responses
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_NULL_RESPONSE)));
+
+
+        response = call.callSync(client, new MinionList("minion1"));
+
+        assertEquals(new GenericSaltError(JsonNull.INSTANCE),
+                response.get("minion1").error().get());
     }
 
     @Test
