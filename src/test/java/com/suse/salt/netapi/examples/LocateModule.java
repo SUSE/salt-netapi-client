@@ -7,6 +7,7 @@ import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.Result;
 
 import java.net.URI;
 import java.util.List;
@@ -35,9 +36,10 @@ public class LocateModule {
 
         LocalCall<List<String>> call = Locate.locate(pattern, Optional.empty(),
                 Optional.empty(), Optional.empty());
-        Map<String, List<String>> results = call.callSync(client, globTarget);
+        Map<String, Result<List<String>>> results = call.callSync(client, globTarget);
         System.out.println("Results without regex, no count:");
-        results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
+        results.forEach((minion, result) -> System.out.println(minion + " -> " + result
+                .result().get()));
 
         Locate.LocateOpts opts = new Locate.LocateOpts();
         opts.setRegex(true);
@@ -46,13 +48,15 @@ public class LocateModule {
             Optional.of(opts));
         results = call.callSync(client, globTarget);
         System.out.println("Results setting regex and count to true:");
-        results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
+        results.forEach((minion, result) -> System.out.println(minion + " -> " + result
+                .result().get()));
 
         opts = new Locate.LocateOpts();
         opts.setRegex(true);
         call = Locate.locate(pattern, Optional.empty(), Optional.of(2), Optional.of(opts));
         results = call.callSync(client, globTarget);
         System.out.println("Results setting regex to true and limiting the results to 2:");
-        results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
+        results.forEach((minion, result) -> System.out.println(minion + " -> " + result
+                .result().get()));
     }
 }

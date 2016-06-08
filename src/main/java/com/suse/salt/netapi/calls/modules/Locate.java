@@ -74,35 +74,35 @@ public class Locate {
     public static class LocateOpts {
         private Map<String, Boolean> opts = new HashMap<>();
 
-        public void setBasename(Boolean basename) {
+        public void setBasename(boolean basename) {
             opts.put("basename", basename);
         }
 
-        public void setCount(Boolean count) {
+        public void setCount(boolean count) {
             opts.put("count", count);
         }
 
-        public void setExisting(Boolean existing) {
+        public void setExisting(boolean existing) {
             opts.put("existing", existing);
         }
 
-        public void setFollow(Boolean follow) {
+        public void setFollow(boolean follow) {
             opts.put("follow", follow);
         }
 
-        public void setIgnore(Boolean ignore) {
+        public void setIgnore(boolean ignore) {
             opts.put("ignore", ignore);
         }
 
-        public void setNofollow(Boolean nofollow) {
+        public void setNofollow(boolean nofollow) {
             opts.put("nofollow", nofollow);
         }
 
-        public void setWholename(Boolean wholename) {
+        public void setWholename(boolean wholename) {
             opts.put("wholename", wholename);
         }
 
-        public void setRegex(Boolean regex) {
+        public void setRegex(boolean regex) {
             opts.put("regex", regex);
         }
 

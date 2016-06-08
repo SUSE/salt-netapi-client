@@ -5,6 +5,8 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.GenericSaltError;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +24,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -84,24 +85,13 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_VERSION_OK_RESPONSE)));
 
-        Map<String, List<String>> response = call.callSync(client,
+        Map<String, Result<List<String>>> response = call.callSync(client,
                 new MinionList("minion1"));
 
         assertNotNull(response.get("minion1"));
-        assertEquals(5, response.get("minion1").size());
-        assertEquals("mlocate 0.26", response.get("minion1").get(0));
-
-        // Test for null responses
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_NULL_RESPONSE)));
-
-
-        response = call.callSync(client, new MinionList("minion1"));
-
-        assertNull(response.get("minion1"));
+        assertNotNull(response.get("minion1").result().get());
+        assertEquals(5, response.get("minion1").result().get().size());
+        assertEquals("mlocate 0.26", response.get("minion1").result().get().get(0));
     }
 
     @Test
@@ -117,11 +107,11 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_UPDATEDB_OK_RESPONSE)));
 
-        Map<String, List<String>> response = call.callSync(client,
+        Map<String, Result<List<String>>> response = call.callSync(client,
                 new MinionList("minion1"));
 
         assertNotNull(response.get("minion1"));
-        assertTrue(response.get("minion1").isEmpty());
+        assertTrue(response.get("minion1").result().get().isEmpty());
 
         // Test with an erroneous response
         stubFor(any(urlMatching("/"))
@@ -133,9 +123,10 @@ public class LocateTest {
         response = call.callSync(client, new MinionList("minion1"));
 
         assertNotNull(response.get("minion1"));
-        assertEquals(1, response.get("minion1").size());
+        assertNotNull(response.get("minion1").result().get());
+        assertEquals(1, response.get("minion1").result().get().size());
         assertEquals("updatedb:/etc/updatedb.conf:17: unknown variable `test'",
-                response.get("minion1").get(0));
+                response.get("minion1").result().get().get(0));
     }
 
     @Test
@@ -151,10 +142,11 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_STATS_OK_RESPONSE)));
 
-        Map<String, Locate.Stats> response = call.callSync(client,
+        Map<String, Result<Locate.Stats>> response = call.callSync(client,
                 new MinionList("minion1"));
 
-        Locate.Stats minion1 = response.get("minion1");
+        assertNotNull(response.get("minion1"));
+        Locate.Stats minion1 = response.get("minion1").result().get();
         assertNotNull(minion1);
         assertEquals(178140L, minion1.getFiles());
         assertEquals(12070L, minion1.getDirectories());
@@ -163,7 +155,7 @@ public class LocateTest {
         assertEquals("/var/lib/mlocate/mlocate.db", minion1.getDatabaseLocation());
     }
 
-    @Test(expected = com.google.gson.JsonSyntaxException.class)
+    @Test
     public final void testLocate() throws SaltException {
         // First we get the call to use in the tests
         LocalCall<List<String>> call = Locate.locate("ld.so.cache", Optional.empty(),
@@ -177,10 +169,11 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOCATE_OK_RESPONSE)));
 
-        Map<String, List<String>> response = call.callSync(client,
+        Map<String, Result<List<String>>> response = call.callSync(client,
                 new MinionList("minion1"));
 
-        List<String> minion1 = response.get("minion1");
+        assertNotNull(response.get("minion1"));
+        List<String> minion1 = response.get("minion1").result().get();
         assertNotNull(minion1);
         assertEquals(1, minion1.size());
         assertEquals("/etc/ld.so.cache", minion1.get(0));
@@ -192,7 +185,11 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOCATE_NOINPUT_RESPONSE)));
 
-        call.callSync(client, new MinionList("minion1"));
+        response = call.callSync(client, new MinionList("minion1"));
+
+        assertNotNull(response.get("minion1"));
+        assertNotNull(response.get("minion1").error().get());
+        assertTrue(response.get("minion1").error().get() instanceof GenericSaltError);
     }
 
 }
