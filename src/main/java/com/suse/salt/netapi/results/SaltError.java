@@ -8,8 +8,8 @@ import java.util.function.Function;
 public interface SaltError {
 
     <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
-               Function<ModuleNotSupported, ? extends T> modNotSupported,
-               Function<GenericSaltError, ? extends T> generic);
+            Function<ModuleNotSupported, ? extends T> modNotSupported,
+            Function<GenericSaltError, ? extends T> generic);
 
 }
 

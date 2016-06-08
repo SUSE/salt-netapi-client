@@ -23,8 +23,8 @@ final public class ModuleNotSupported implements SaltError {
     }
 
     public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
-                      Function<ModuleNotSupported, ? extends T> modNotSupported,
-                      Function<GenericSaltError, ? extends T> generic) {
+            Function<ModuleNotSupported, ? extends T> modNotSupported,
+            Function<GenericSaltError, ? extends T> generic) {
         return modNotSupported.apply(this);
     }
 
