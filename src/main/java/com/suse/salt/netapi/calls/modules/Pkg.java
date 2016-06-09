@@ -232,7 +232,7 @@ public class Pkg {
 
     /**
      * @param refresh set true to perform a refresh before the installation
-     * @param pkgs map of packages (name -> version) to be installed
+     * @param pkgs map of packages (name to version) to be installed
      * @return the LocalCall object
      */
     public static LocalCall<Map<String, Object>> install(boolean refresh,
@@ -245,7 +245,7 @@ public class Pkg {
     }
 
     /**
-     * @param pkgs map of packages (name -> version) to be removed
+     * @param pkgs map of packages (name to version) to be removed
      * @return the LocalCall object
      */
     public static LocalCall<Map<String, Object>> remove(Map<String, String> pkgs) {
