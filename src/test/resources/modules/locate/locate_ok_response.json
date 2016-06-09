@@ -1,0 +1,9 @@
+{
+  "return": [
+    {
+      "minion1": [
+        "/etc/ld.so.cache"
+      ]
+    }
+  ]
+}

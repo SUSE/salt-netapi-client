@@ -48,6 +48,7 @@ public class JsonParser<T> {
             .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
             .registerTypeAdapterFactory(new XorTypeAdapterFactory())
             .registerTypeAdapterFactory(new ResultTypeAdapterFactory())
+            .registerTypeAdapterFactory(new CollectionTypeAdapterFactory())
             .create();
 
     public static final JsonParser<Return<String>> STRING =
