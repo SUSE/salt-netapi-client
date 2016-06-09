@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class Timezone {
 
-    private Timezone() {}
+    private Timezone() { }
 
     public static LocalCall<String> getOffset() {
         return new LocalCall<>("timezone.get_offset", Optional.empty(), Optional.empty(),
