@@ -104,8 +104,8 @@ public class LocateTest {
 
         response = call.callSync(client, new MinionList("minion1"));
 
-        assertEquals(new GenericSaltError(JsonNull.INSTANCE),
-                response.get("minion1").error().get());
+        assertEquals(JsonNull.INSTANCE,
+                ((GenericSaltError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
