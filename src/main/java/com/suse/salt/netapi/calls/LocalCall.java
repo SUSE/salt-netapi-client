@@ -28,13 +28,29 @@ public class LocalCall<R> implements Call<R> {
     private final Optional<List<?>> arg;
     private final Optional<Map<String, ?>> kwarg;
     private final TypeToken<R> returnType;
+    private final Optional<?> metadata;
 
     public LocalCall(String functionName, Optional<List<?>> arg,
-            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType) {
+            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+            Optional<?> metadata) {
         this.functionName = functionName;
         this.arg = arg;
         this.kwarg = kwarg;
         this.returnType = returnType;
+        this.metadata = metadata;
+    }
+
+    public LocalCall(String functionName, Optional<List<?>> arg,
+            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType) {
+        this(functionName, arg, kwarg, returnType, Optional.empty());
+    }
+
+    public LocalCall<R> withMetadata(Object metadata) {
+        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.of(metadata));
+    }
+
+    public LocalCall<R> withoutMetadata() {
+        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.empty());
     }
 
     public TypeToken<R> getReturnType() {
@@ -50,6 +66,7 @@ public class LocalCall<R> implements Call<R> {
         payload.put("fun", functionName);
         arg.ifPresent(arg -> payload.put("arg", arg));
         kwarg.ifPresent(kwarg -> payload.put("kwarg", kwarg));
+        metadata.ifPresent(m -> payload.put("metadata", m));
         return payload;
     }
 
