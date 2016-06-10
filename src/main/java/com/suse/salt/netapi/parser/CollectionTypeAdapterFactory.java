@@ -39,6 +39,7 @@ public class CollectionTypeAdapterFactory implements TypeAdapterFactory {
         TypeAdapter<?> elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));
         ObjectConstructor<T> constructor = constructorConstructor.get(typeToken);
 
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         TypeAdapter<T> result = new Adapter(elementTypeAdapter, constructor);
         return result;
     }
