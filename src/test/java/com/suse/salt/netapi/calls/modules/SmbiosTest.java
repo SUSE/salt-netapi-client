@@ -11,7 +11,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import com.suse.salt.netapi.results.ModuleNotSupported;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.Xor;
 import org.junit.Before;
@@ -20,6 +19,7 @@ import org.junit.Test;
 
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
+import com.suse.salt.netapi.errors.ModuleNotSupported;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
 

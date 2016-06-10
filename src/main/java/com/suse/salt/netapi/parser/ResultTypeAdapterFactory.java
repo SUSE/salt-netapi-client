@@ -6,8 +6,8 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;

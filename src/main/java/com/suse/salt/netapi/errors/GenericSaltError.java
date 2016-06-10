@@ -1,4 +1,4 @@
-package com.suse.salt.netapi.results;
+package com.suse.salt.netapi.errors;
 
 import com.google.gson.JsonElement;
 

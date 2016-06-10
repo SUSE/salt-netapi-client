@@ -1,5 +1,6 @@
 package com.suse.salt.netapi.results;
 
+import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.util.Optional;

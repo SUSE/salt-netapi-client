@@ -9,10 +9,11 @@ import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.suse.salt.netapi.results.FunctionNotAvailable;
-import com.suse.salt.netapi.results.GenericSaltError;
-import com.suse.salt.netapi.results.ModuleNotSupported;
-import com.suse.salt.netapi.results.SaltError;
+
+import com.suse.salt.netapi.errors.FunctionNotAvailable;
+import com.suse.salt.netapi.errors.GenericSaltError;
+import com.suse.salt.netapi.errors.ModuleNotSupported;
+import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;
