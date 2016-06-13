@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 import com.suse.salt.netapi.calls.LocalCall;
 
 import com.google.gson.reflect.TypeToken;
+import com.suse.salt.netapi.parser.JsonParser;
 
 /**
  * salt.modules.saltutil
@@ -52,6 +55,57 @@ public class SaltUtil {
         refresh.ifPresent(value -> args.put("refresh", value));
         saltenv.ifPresent(value -> args.put("saltenv", value));
         return args;
+    }
+
+    /**
+     * Info about a running job on a minion
+     */
+    public static class RunningInfo {
+        private String jid;
+        private String fun;
+        private int pid;
+        private String target;
+        @SerializedName("tgt_type")
+        private String targetType;
+        private String user;
+        private Optional<JsonElement> metadata = Optional.empty();
+
+        public <R> Optional<R> getMetadata(Class<R> type) {
+            return metadata.map(json -> JsonParser.GSON.fromJson(json, type));
+        }
+
+        public <R> Optional<R> getMetadata(TypeToken<R> type) {
+            return metadata.map(json -> JsonParser.GSON.fromJson(json, type.getType()));
+        }
+
+        public String getJid() {
+            return jid;
+        }
+
+        public String getFun() {
+            return fun;
+        }
+
+        public int getPid() {
+            return pid;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public String getTargetType() {
+            return targetType;
+        }
+
+        public String getUser() {
+            return user;
+        }
+    }
+
+    public static LocalCall<List<RunningInfo>> running() {
+        return new LocalCall<>("saltutil.running",
+                Optional.empty(), Optional.empty(), new TypeToken<List<RunningInfo>>() {});
     }
 
 }
