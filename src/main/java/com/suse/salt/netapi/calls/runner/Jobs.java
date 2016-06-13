@@ -2,12 +2,14 @@ package com.suse.salt.netapi.calls.runner;
 
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
+import com.google.gson.JsonElement;
 import com.suse.salt.netapi.calls.Data;
 import com.suse.salt.netapi.calls.LocalAsyncResult;
 import com.suse.salt.netapi.calls.RunnerAsyncResult;
 import com.suse.salt.netapi.calls.RunnerCall;
 import com.suse.salt.netapi.calls.WheelAsyncResult;
 import com.suse.salt.netapi.datatypes.StartTime;
+import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.annotations.SerializedName;
@@ -19,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -28,15 +29,12 @@ import java.util.TimeZone;
 public class Jobs {
 
     /**
-     * Information about a salt job as returned by 'jobs.list_job' and 'jobs.print_job'.
-     *
-     * @param <R> the result type of the called function
+     * Information about a salt job as returned by 'jobs.list_job'
      */
-    public static class Info<R> {
+    public static class Info {
+
         @SerializedName("Function")
         private String function;
-
-        private String jid;
 
         @SerializedName("StartTime")
         private StartTime startTime;
@@ -44,59 +42,71 @@ public class Jobs {
         @SerializedName("Arguments")
         private List<Object> arguments;
 
-        @SerializedName("Minions")
-        private Set<String> minions;
-
         @SerializedName("User")
         private String user;
 
         @SerializedName("Target")
-        private String target;
+        private Object target;
+
+        @SerializedName("Minions")
+        private List<String> minions;
+
+        @SerializedName("Target-type")
+        private String targetType;
+
+        private String jid;
 
         @SerializedName("Result")
-        private Map<String, Return<R>> result;
+        private Map<String, JsonElement> result;
 
         public String getFunction() {
             return function;
         }
 
-        public String getJid() {
-            return jid;
-        }
-
-        public Date getStartTime(TimeZone tz) {
-            return startTime == null ? null : startTime.getDate(tz);
-        }
-
-        public Date getStartTime() {
-            return startTime == null ? null : startTime.getDate();
+        public StartTime getStartTime() {
+            return startTime;
         }
 
         public List<Object> getArguments() {
             return arguments;
         }
 
-        public Set<String> getMinions() {
-            return minions;
-        }
-
         public String getUser() {
             return user;
         }
 
-        public String getTarget() {
+        public Object getTarget() {
             return target;
         }
 
-        public Map<String, Return<R>> getResult() {
-            return result;
+        public List<String> getMinions() {
+            return minions;
         }
 
-        public Optional<R> resultOf(String minionKey) {
-            return Optional.ofNullable(result).flatMap(
-                r -> Optional.ofNullable(r.get(minionKey))
-            ).map(Return::getResult);
+        public String getTargetType() {
+            return targetType;
         }
+
+        public String getJid() {
+            return jid;
+        }
+
+        public <T> Optional<T> getResult(String minionId, Class<T> type) {
+            return Optional.ofNullable(result.get(minionId)).map(result -> {
+                Type wrapperType = parameterizedType(null, Return.class, type);
+                Return<T> r = JsonParser.GSON.fromJson(result, wrapperType);
+                return r.getResult();
+            });
+        }
+
+        public <T> Optional<T> getResult(String minionId, TypeToken<T> type) {
+            return Optional.ofNullable(result.get(minionId)).map(result -> {
+                Type wrapperType = parameterizedType(null, Return.class, type.getType());
+                Return<T> r = JsonParser.GSON.fromJson(result, wrapperType);
+                return r.getResult();
+            });
+        }
+
     }
 
     private Jobs() { }
@@ -136,5 +146,63 @@ public class Jobs {
         Type type = parameterizedType(null, Map.class, String.class, dataType);
         return new RunnerCall<>("jobs.lookup_jid", Optional.of(args),
                 (TypeToken<Map<String, Data<R>>>) TypeToken.get(type));
+    }
+
+    /**
+     * Result entry of jobs.list_jobs
+     */
+    public static class ListJobsEntry {
+        @SerializedName("Function")
+        private String function;
+
+        @SerializedName("StartTime")
+        private StartTime startTime;
+
+        @SerializedName("Arguments")
+        private List<Object> arguments;
+
+        @SerializedName("User")
+        private String user;
+
+        @SerializedName("Target")
+        private Object target;
+
+        public String getFunction() {
+            return function;
+        }
+
+        public Date getStartTime(TimeZone tz) {
+            return startTime == null ? null : startTime.getDate(tz);
+        }
+
+        public Date getStartTime() {
+            return startTime == null ? null : startTime.getDate();
+        }
+
+        public List<Object> getArguments() {
+            return arguments;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public Object getTarget() {
+            return target;
+        }
+    }
+
+    public static RunnerCall<Map<String, ListJobsEntry>> listJobs(Object searchMetadata) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("search_metadata", searchMetadata);
+        return new RunnerCall<>("jobs.list_jobs", Optional.of(args),
+                new TypeToken<Map<String, ListJobsEntry>>() { });
+    }
+
+    public static RunnerCall<Info> listJob(String jid) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("jid", jid);
+        return new RunnerCall<>("jobs.list_job", Optional.of(args),
+                new TypeToken<Info>(){});
     }
 }
