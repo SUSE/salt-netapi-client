@@ -59,36 +59,36 @@ public class Network {
      */
     public static class INet {
 
-        private String broadcast;
-        private String netmask;
-        private String label;
-        private String address;
+        private Optional<String> broadcast;
+        private Optional<String> netmask;
+        private Optional<String> label;
+        private Optional<String> address;
 
         /**
          * @return the broadcast
          */
-        public String getBroadcast() {
+        public Optional<String> getBroadcast() {
             return broadcast;
         }
 
         /**
          * @return the netmask
          */
-        public String getNetmask() {
+        public Optional<String> getNetmask() {
             return netmask;
         }
 
         /**
          * @return the label
          */
-        public String getLabel() {
+        public Optional<String> getLabel() {
             return label;
         }
 
         /**
          * @return the address
          */
-        public String getAddress() {
+        public Optional<String> getAddress() {
             return address;
         }
     }
