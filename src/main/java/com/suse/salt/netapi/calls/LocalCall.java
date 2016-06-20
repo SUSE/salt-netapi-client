@@ -198,4 +198,36 @@ public class LocalCall<R> implements Call<R> {
                 TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
+
+    /**
+     * Call an execution module function on the given target via salt-ssh and synchronously
+     * wait for the result.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param rosterFile optional roster file (default: /etc/salt/roster)
+     * @return a map containing the results with the minion name as key
+     * @throws SaltException if anything goes wrong
+     */
+    public Map<String, Result<R>> callSyncSSH(final SaltClient client, Target<?> target,
+            Optional<String> rosterFile) throws SaltException {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.putAll(getPayload());
+        customArgs.put("tgt", target.getTarget());
+        customArgs.put("expr_form", target.getType());
+        rosterFile.ifPresent(r -> customArgs.put("roster_file", r));
+
+        Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+        Type map = parameterizedType(null, Map.class, String.class, xor);
+        Type listType = parameterizedType(null, List.class, map);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Return<List<Map<String, Result<R>>>> wrapper = client.call(this,
+                Client.SSH, "/run",
+                Optional.of(customArgs),
+                (TypeToken<Return<List<Map<String, Result<R>>>>>)
+                TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
 }
