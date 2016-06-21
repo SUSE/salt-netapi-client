@@ -8,6 +8,7 @@ import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
+import com.suse.salt.netapi.results.SSHResult;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -209,24 +210,25 @@ public class LocalCall<R> implements Call<R> {
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
-    public Map<String, Result<R>> callSyncSSH(final SaltClient client, Target<?> target,
-            Optional<String> rosterFile) throws SaltException {
+    public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
+            Target<?> target, Optional<String> rosterFile) throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
         rosterFile.ifPresent(r -> customArgs.put("roster_file", r));
 
-        Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+        Type xor = parameterizedType(null, Result.class,
+                parameterizedType(null, SSHResult.class, getReturnType().getType()));
         Type map = parameterizedType(null, Map.class, String.class, xor);
         Type listType = parameterizedType(null, List.class, map);
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Return<List<Map<String, Result<R>>>> wrapper = client.call(this,
+        Return<List<Map<String, Result<SSHResult<R>>>>> wrapper = client.call(this,
                 Client.SSH, "/run",
                 Optional.of(customArgs),
-                (TypeToken<Return<List<Map<String, Result<R>>>>>)
+                (TypeToken<Return<List<Map<String, Result<SSHResult<R>>>>>>)
                 TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
