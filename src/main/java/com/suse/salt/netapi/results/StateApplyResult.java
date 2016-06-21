@@ -17,7 +17,7 @@ public class StateApplyResult<R> {
     private double duration;
     @SerializedName("__run_num__")
     private int runNum;
-    private R changes;
+    protected R changes;
 
     public String getComment() {
         return comment;

@@ -1,7 +1,10 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
+import com.suse.salt.netapi.parser.JsonParser;
+import com.suse.salt.netapi.results.StateApplyResult;
 
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.Arrays;
@@ -15,24 +18,38 @@ import java.util.Optional;
  */
 public class State {
 
+    /**
+     * Result type for state.apply
+     */
+    public static class ApplyResult extends StateApplyResult<JsonElement> {
+
+        public <R> R getChanges(Class<R> dataType) {
+            return JsonParser.GSON.fromJson(changes, dataType);
+        }
+
+        public <R> R getChanges(TypeToken<R> dataType) {
+            return JsonParser.GSON.fromJson(changes, dataType.getType());
+        }
+    }
+
     private State() { }
 
-    public static LocalCall<Map<String, Object>> apply(List<String> mods) {
+    public static LocalCall<Map<String, ApplyResult>> apply(List<String> mods) {
         return apply(mods, Optional.empty(), Optional.empty());
     }
 
-    public static LocalCall<Map<String, Object>> apply(String... mods) {
+    public static LocalCall<Map<String, ApplyResult>> apply(String... mods) {
         return apply(Arrays.asList(mods), Optional.empty(), Optional.empty());
     }
 
-    public static LocalCall<Map<String, Object>> apply(List<String> mods,
+    public static LocalCall<Map<String, ApplyResult>> apply(List<String> mods,
             Optional<Map<String, Object>> pillar, Optional<Boolean> queue) {
         Map<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("mods", mods);
         pillar.ifPresent(p -> kwargs.put("pillar", p));
         queue.ifPresent(q -> kwargs.put("queue", q));
         return new LocalCall<>("state.apply", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Object>>(){});
+                new TypeToken<Map<String, ApplyResult>>(){});
     }
 
     public static LocalCall<Object> showHighstate() {
