@@ -3,6 +3,7 @@ package com.suse.salt.netapi.results;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Wrapper class for salt-ssh results.
@@ -18,7 +19,7 @@ public class SSHResult<T> {
     private String jid;
     private int retcode;
     @SerializedName("return")
-    private T returnAttribute;
+    private Optional<T> returnAttribute = Optional.empty();
 
     public String getFun() {
         return fun;
@@ -40,7 +41,7 @@ public class SSHResult<T> {
         return retcode;
     }
 
-    public T getReturn() {
+    public Optional<T> getReturn() {
         return returnAttribute;
     }
 }
