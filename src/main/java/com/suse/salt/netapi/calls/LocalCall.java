@@ -202,21 +202,38 @@ public class LocalCall<R> implements Call<R> {
 
     /**
      * Call an execution module function on the given target via salt-ssh and synchronously
+     * wait for the result. This call uses default values for all the available options.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @return a map containing the results with the minion name as key
+     * @throws SaltException if anything goes wrong
+     */
+    public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
+            Target<?> target) throws SaltException {
+        return callSyncSSH(client, target, Optional.empty(), Optional.empty());
+    }
+
+    /**
+     * Call an execution module function on the given target via salt-ssh and synchronously
      * wait for the result.
      *
      * @param client SaltClient instance
      * @param target the target for the function
      * @param rosterFile optional roster file (default: /etc/salt/roster)
+     * @param ignoreHostKeys use this option to disable 'StrictHostKeyChecking'
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
     public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            Target<?> target, Optional<String> rosterFile) throws SaltException {
+            Target<?> target, Optional<String> rosterFile, Optional<Boolean> ignoreHostKeys)
+            throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
-        rosterFile.ifPresent(r -> customArgs.put("roster_file", r));
+        rosterFile.ifPresent(value -> customArgs.put("roster_file", value));
+        ignoreHostKeys.ifPresent(value -> customArgs.put("ignore_host_keys", value));
 
         Type xor = parameterizedType(null, Result.class,
                 parameterizedType(null, SSHResult.class, getReturnType().getType()));
