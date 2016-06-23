@@ -211,7 +211,8 @@ public class LocalCall<R> implements Call<R> {
      */
     public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
             Target<?> target) throws SaltException {
-        return callSyncSSH(client, target, Optional.empty(), Optional.empty());
+        return callSyncSSH(client, target, Optional.empty(), Optional.empty(),
+                Optional.empty());
     }
 
     /**
@@ -222,18 +223,20 @@ public class LocalCall<R> implements Call<R> {
      * @param target the target for the function
      * @param rosterFile optional roster file (default: /etc/salt/roster)
      * @param ignoreHostKeys use this option to disable 'StrictHostKeyChecking'
+     * @param sudo run command via sudo (default: false)
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
     public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            Target<?> target, Optional<String> rosterFile, Optional<Boolean> ignoreHostKeys)
-            throws SaltException {
+            Target<?> target, Optional<String> rosterFile, Optional<Boolean> ignoreHostKeys,
+            Optional<Boolean> sudo) throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
         rosterFile.ifPresent(value -> customArgs.put("roster_file", value));
         ignoreHostKeys.ifPresent(value -> customArgs.put("ignore_host_keys", value));
+        sudo.ifPresent(value -> customArgs.put("ssh_sudo", value));
 
         Type xor = parameterizedType(null, Result.class,
                 parameterizedType(null, SSHResult.class, getReturnType().getType()));
