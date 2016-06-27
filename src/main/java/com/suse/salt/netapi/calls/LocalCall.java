@@ -206,9 +206,7 @@ public class LocalCall<R> implements Call<R> {
      *
      * @param client SaltClient instance
      * @param target the target for the function
-     * @param rosterFile optional roster file (default: /etc/salt/roster)
-     * @param ignoreHostKeys use this option to disable 'StrictHostKeyChecking'
-     * @param sudo run command via sudo (default: false)
+     * @param config Salt SSH configuration object
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
