@@ -202,21 +202,6 @@ public class LocalCall<R> implements Call<R> {
 
     /**
      * Call an execution module function on the given target via salt-ssh and synchronously
-     * wait for the result. This call uses default values for all the available options.
-     *
-     * @param client SaltClient instance
-     * @param target the target for the function
-     * @return a map containing the results with the minion name as key
-     * @throws SaltException if anything goes wrong
-     */
-    public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            Target<?> target) throws SaltException {
-        return callSyncSSH(client, target, Optional.empty(), Optional.empty(),
-                Optional.empty());
-    }
-
-    /**
-     * Call an execution module function on the given target via salt-ssh and synchronously
      * wait for the result.
      *
      * @param client SaltClient instance
@@ -228,15 +213,20 @@ public class LocalCall<R> implements Call<R> {
      * @throws SaltException if anything goes wrong
      */
     public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            Target<?> target, Optional<String> rosterFile, Optional<Boolean> ignoreHostKeys,
-            Optional<Boolean> sudo) throws SaltException {
+            Target<?> target, SaltSSHConfig config) throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("tgt", target.getTarget());
         customArgs.put("expr_form", target.getType());
-        rosterFile.ifPresent(value -> customArgs.put("roster_file", value));
-        ignoreHostKeys.ifPresent(value -> customArgs.put("ignore_host_keys", value));
-        sudo.ifPresent(value -> customArgs.put("ssh_sudo", value));
+
+        // Map config properties to arguments
+        config.getIgnoreHostKeys().ifPresent(
+                value -> customArgs.put("ignore_host_keys", value));
+        config.getNoHostKeys().ifPresent(value -> customArgs.put("no_host_keys", value));
+        config.getPrivateKeyFile().ifPresent(value -> customArgs.put("ssh_priv", value));
+        config.getRoster().ifPresent(value -> customArgs.put("roster", value));
+        config.getRosterFile().ifPresent(value -> customArgs.put("roster_file", value));
+        config.getSudo().ifPresent(value -> customArgs.put("ssh_sudo", value));
 
         Type xor = parameterizedType(null, Result.class,
                 parameterizedType(null, SSHResult.class, getReturnType().getType()));

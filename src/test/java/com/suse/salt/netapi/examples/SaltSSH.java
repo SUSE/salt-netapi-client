@@ -1,5 +1,6 @@
 package com.suse.salt.netapi.examples;
 
+import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.modules.Grains;
 import com.suse.salt.netapi.calls.modules.Test;
 import com.suse.salt.netapi.client.SaltClient;
@@ -24,10 +25,13 @@ public class SaltSSH {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 
+        // Setup the configuration for Salt SSH (use defaults)
+        SaltSSHConfig sshConfig = new SaltSSHConfig.Builder().build();
+
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");
         Map<String, Result<SSHResult<Boolean>>> minionResults =
-                Test.ping().callSyncSSH(client, globTarget);
+                Test.ping().callSyncSSH(client, globTarget, sshConfig);
 
         System.out.println("--> Ping results:\n");
         minionResults.forEach((minion, result) -> {
@@ -39,7 +43,7 @@ public class SaltSSH {
 
         // Get grains from all minions
         Map<String, Result<SSHResult<Map<String, Object>>>> grainResults =
-                Grains.items(false).callSyncSSH(client, globTarget);
+                Grains.items(false).callSyncSSH(client, globTarget, sshConfig);
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");
