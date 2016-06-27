@@ -7,12 +7,12 @@ import java.util.Optional;
  */
 public class SaltSSHConfig {
 
-    private Optional<Boolean> ignoreHostKeys = Optional.empty();
-    private Optional<Boolean> noHostKeys = Optional.empty();
-    private Optional<String> privateKeyFile = Optional.empty();
-    private Optional<String> roster = Optional.empty();
-    private Optional<String> rosterFile = Optional.empty();
-    private Optional<Boolean> sudo = Optional.empty();
+    private final Optional<Boolean> ignoreHostKeys;
+    private final Optional<Boolean> noHostKeys;
+    private final Optional<String> privateKeyFile;
+    private final Optional<String> roster;
+    private final Optional<String> rosterFile;
+    private final Optional<Boolean> sudo;
 
     private SaltSSHConfig(Builder builder) {
         ignoreHostKeys = builder.ignoreHostKeys;
