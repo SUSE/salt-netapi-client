@@ -49,12 +49,11 @@ public class SaltSSH {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");
             String grainsOutput = grains.fold(
                     error -> "Error: " + error.toString(),
-                    grainsMap -> {
-                            grainsMap.getReturn().ifPresent(gmap -> gmap.entrySet().stream()
+                    grainsMap -> grainsMap.getReturn()
+                            .map(g -> g.entrySet().stream()
                                     .map(e -> e.getKey() + ": " + e.getValue())
-                                    .collect(Collectors.joining("\n")));
-                            return "Minion did not return: " + minion;
-                    }
+                                    .collect(Collectors.joining("\n")))
+                            .orElse("Minion did not return: " + minion)
             );
             System.out.println(grainsOutput);
         });
