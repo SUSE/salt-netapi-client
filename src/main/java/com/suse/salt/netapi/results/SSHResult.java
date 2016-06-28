@@ -20,6 +20,8 @@ public class SSHResult<T> {
     private int retcode;
     @SerializedName("return")
     private Optional<T> returnAttribute = Optional.empty();
+    private Optional<String> stderr = Optional.empty();
+    private Optional<String> stdout = Optional.empty();
 
     public String getFun() {
         return fun;
@@ -43,5 +45,13 @@ public class SSHResult<T> {
 
     public Optional<T> getReturn() {
         return returnAttribute;
+    }
+
+    public Optional<String> getStderr() {
+        return stderr;
+    }
+
+    public Optional<String> getStdout() {
+        return stdout;
     }
 }
