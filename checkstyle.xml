@@ -19,7 +19,6 @@
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
             <property name="lineWrappingIndentation" value="8"/>
-            <property name="forceStrictCondition" value="true"/>
         </module>
         <module name="NeedBraces"/>
         <module name="RedundantImport"/>
