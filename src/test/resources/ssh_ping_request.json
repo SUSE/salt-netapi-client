@@ -1,0 +1,10 @@
+[
+  {
+    "expr_form": "glob",
+    "tgt": "*",
+    "client": "ssh",
+    "fun": "test.ping",
+    "roster_file": "/tmp/my-roster",
+    "ignore_host_keys": true
+  }
+]

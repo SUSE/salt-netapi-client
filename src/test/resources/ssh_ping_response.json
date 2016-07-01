@@ -1,0 +1,12 @@
+{
+  "return": [{
+    "my.minion": {
+      "fun_args": [],
+      "jid": "20160701150655664384",
+      "return": true,
+      "retcode": 0,
+      "fun": "test.ping",
+      "id": "my.minion"
+    }
+  }]
+}
