@@ -19,8 +19,6 @@ import com.suse.salt.netapi.client.SaltClientTest;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
-import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.SSHResult;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -31,8 +29,6 @@ import org.junit.Test;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Tests for LocalCall
@@ -73,6 +69,9 @@ public class LocalCallTest {
         assertEquals(runWithMetadata.getPayload().get("metadata"), "myMetadata");
     }
 
+    /**
+     * Verify correctness of the request body with an exemplary salt-ssh call.
+     */
     @Test
     public void testCallSyncSSH() throws SaltException {
         stubFor(any(urlMatching(".*"))
@@ -82,28 +81,29 @@ public class LocalCallTest {
                 .withBody(JSON_SSH_PING_RESPONSE)));
 
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
-        SaltSSHConfig config = new SaltSSHConfig.Builder()
-                .rosterFile("/tmp/my-roster")
-                .ignoreHostKeys(true)
-                .build();
         Target<String> target = new Glob("*");
-        Map<String, Result<SSHResult<Boolean>>> result =
-                run.callSyncSSH(client, target, config);
+        SaltSSHConfig config = new SaltSSHConfig.Builder()
+                .extraFilerefs("my/file/ref")
+                .identitiesOnly(true)
+                .ignoreHostKeys(true)
+                .keyDeploy(true)
+                .noHostKeys(true)
+                .passwd("pa55wd")
+                .priv("/home/user/.ssh/id_rsa")
+                .refreshCache(true)
+                .remotePortForwards("8888:my.host:443")
+                .roster("flat")
+                .rosterFile("/tmp/my-roster")
+                .sshMaxProcs(50)
+                .sudo(true)
+                .user("user")
+                .wipe(true)
+                .build();
 
-        // Verify the request
+        run.callSyncSSH(client, target, config);
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_SSH_PING_REQUEST)));
-
-        // Verify the result
-        assertEquals("test.ping", result.get("my.minion").result().get().getFun());
-        assertEquals(Collections.EMPTY_LIST,
-                result.get("my.minion").result().get().getFunArgs());
-        assertEquals("my.minion", result.get("my.minion").result().get().getId());
-        assertEquals("20160701150655664384",
-                result.get("my.minion").result().get().getJid());
-        assertEquals(0, result.get("my.minion").result().get().getRetcode());
-        assertTrue(result.get("my.minion").result().get().getReturn().get());
     }
 }

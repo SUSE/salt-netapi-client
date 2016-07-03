@@ -13,7 +13,7 @@ public class SaltSSHConfig {
     private final Optional<Boolean> keyDeploy;
     private final Optional<Boolean> noHostKeys;
     private final Optional<String> passwd;
-    private final Optional<String> privateKeyFile;
+    private final Optional<String> priv;
     private final Optional<Boolean> rawShell;
     private final Optional<Boolean> refreshCache;
     private final Optional<String> remotePortForwards;
@@ -33,7 +33,7 @@ public class SaltSSHConfig {
         keyDeploy = builder.keyDeploy;
         noHostKeys = builder.noHostKeys;
         passwd = builder.passwd;
-        privateKeyFile = builder.privateKeyFile;
+        priv = builder.priv;
         rawShell = builder.rawShell;
         refreshCache = builder.refreshCache;
         remotePortForwards = builder.remotePortForwards;
@@ -71,8 +71,8 @@ public class SaltSSHConfig {
         return passwd;
     }
 
-    public Optional<String> getPrivateKeyFile() {
-        return privateKeyFile;
+    public Optional<String> getPriv() {
+        return priv;
     }
 
     public Optional<Boolean> getRawShell() {
@@ -130,7 +130,7 @@ public class SaltSSHConfig {
         private Optional<Boolean> keyDeploy = Optional.empty();
         private Optional<Boolean> noHostKeys = Optional.empty();
         private Optional<String> passwd = Optional.empty();
-        private Optional<String> privateKeyFile = Optional.empty();
+        private Optional<String> priv = Optional.empty();
         private Optional<Boolean> rawShell = Optional.empty();
         private Optional<Boolean> refreshCache = Optional.empty();
         private Optional<String> remotePortForwards = Optional.empty();
@@ -218,11 +218,11 @@ public class SaltSSHConfig {
         /**
          * SSH private key file.
          *
-         * @param privateKeyFile the value to set
+         * @param priv the value to set
          * @return this builder
          */
-        public Builder privateKeyFile(String privateKeyFile) {
-            this.rosterFile = Optional.of(privateKeyFile);
+        public Builder priv(String priv) {
+            this.priv = Optional.of(priv);
             return this;
         }
 
