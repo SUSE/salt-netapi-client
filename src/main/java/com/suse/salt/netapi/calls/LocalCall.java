@@ -206,25 +206,36 @@ public class LocalCall<R> implements Call<R> {
      *
      * @param client SaltClient instance
      * @param target the target for the function
-     * @param config Salt SSH configuration object
+     * @param cfg Salt SSH configuration object
      * @return a map containing the results with the minion name as key
      * @throws SaltException if anything goes wrong
      */
     public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            Target<?> target, SaltSSHConfig config) throws SaltException {
-        Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(getPayload());
-        customArgs.put("tgt", target.getTarget());
-        customArgs.put("expr_form", target.getType());
+            Target<?> target, SaltSSHConfig cfg) throws SaltException {
+        Map<String, Object> args = new HashMap<>();
+        args.putAll(getPayload());
+        args.put("tgt", target.getTarget());
+        args.put("expr_form", target.getType());
 
         // Map config properties to arguments
-        config.getIgnoreHostKeys().ifPresent(
-                value -> customArgs.put("ignore_host_keys", value));
-        config.getNoHostKeys().ifPresent(value -> customArgs.put("no_host_keys", value));
-        config.getPrivateKeyFile().ifPresent(value -> customArgs.put("ssh_priv", value));
-        config.getRoster().ifPresent(value -> customArgs.put("roster", value));
-        config.getRosterFile().ifPresent(value -> customArgs.put("roster_file", value));
-        config.getSudo().ifPresent(value -> customArgs.put("ssh_sudo", value));
+        cfg.getExtraFilerefs().ifPresent(v -> args.put("extra_filerefs", v));
+        cfg.getIdentitiesOnly().ifPresent(v -> args.put("ssh_identities_only", v));
+        cfg.getIgnoreHostKeys().ifPresent(v -> args.put("ignore_host_keys", v));
+        cfg.getKeyDeploy().ifPresent(v -> args.put("ssh_key_deploy", v));
+        cfg.getNoHostKeys().ifPresent(v -> args.put("no_host_keys", v));
+        cfg.getPasswd().ifPresent(v -> args.put("ssh_passwd", v));
+        cfg.getPrivateKeyFile().ifPresent(v -> args.put("ssh_priv", v));
+        cfg.getRawShell().ifPresent(v -> args.put("raw_shell", v));
+        cfg.getRefreshCache().ifPresent(v -> args.put("refresh_cache", v));
+        cfg.getRemotePortForwards().ifPresent(v -> args.put("ssh_remote_port_forwards", v));
+        cfg.getRoster().ifPresent(v -> args.put("roster", v));
+        cfg.getRosterFile().ifPresent(v -> args.put("roster_file", v));
+        cfg.getScanPorts().ifPresent(v -> args.put("ssh_scan_ports", v));
+        cfg.getScanTimeout().ifPresent(v -> args.put("ssh_scan_timeout", v));
+        cfg.getSudo().ifPresent(v -> args.put("ssh_sudo", v));
+        cfg.getSSHMaxProcs().ifPresent(v -> args.put("ssh_max_procs", v));
+        cfg.getUser().ifPresent(v -> args.put("ssh_user", v));
+        cfg.getWipe().ifPresent(v -> args.put("ssh_wipe", v));
 
         Type xor = parameterizedType(null, Result.class,
                 parameterizedType(null, SSHResult.class, getReturnType().getType()));
@@ -235,7 +246,7 @@ public class LocalCall<R> implements Call<R> {
         @SuppressWarnings("unchecked")
         Return<List<Map<String, Result<SSHResult<R>>>>> wrapper = client.call(this,
                 Client.SSH, "/run",
-                Optional.of(customArgs),
+                Optional.of(args),
                 (TypeToken<Return<List<Map<String, Result<SSHResult<R>>>>>>)
                 TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
