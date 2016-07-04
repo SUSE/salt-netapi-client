@@ -8,6 +8,7 @@ import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
+import com.suse.salt.netapi.results.SSHResult;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -195,6 +196,58 @@ public class LocalCall<R> implements Call<R> {
                 Client.LOCAL, "/run",
                 Optional.of(customArgs),
                 (TypeToken<Return<List<Map<String, Result<R>>>>>)
+                TypeToken.get(wrapperType));
+        return wrapper.getResult().get(0);
+    }
+
+    /**
+     * Call an execution module function on the given target via salt-ssh and synchronously
+     * wait for the result.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param cfg Salt SSH configuration object
+     * @return a map containing the results with the minion name as key
+     * @throws SaltException if anything goes wrong
+     */
+    public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
+            Target<?> target, SaltSSHConfig cfg) throws SaltException {
+        Map<String, Object> args = new HashMap<>();
+        args.putAll(getPayload());
+        args.put("tgt", target.getTarget());
+        args.put("expr_form", target.getType());
+
+        // Map config properties to arguments
+        cfg.getExtraFilerefs().ifPresent(v -> args.put("extra_filerefs", v));
+        cfg.getIdentitiesOnly().ifPresent(v -> args.put("ssh_identities_only", v));
+        cfg.getIgnoreHostKeys().ifPresent(v -> args.put("ignore_host_keys", v));
+        cfg.getKeyDeploy().ifPresent(v -> args.put("ssh_key_deploy", v));
+        cfg.getNoHostKeys().ifPresent(v -> args.put("no_host_keys", v));
+        cfg.getPasswd().ifPresent(v -> args.put("ssh_passwd", v));
+        cfg.getPriv().ifPresent(v -> args.put("ssh_priv", v));
+        cfg.getRawShell().ifPresent(v -> args.put("raw_shell", v));
+        cfg.getRefreshCache().ifPresent(v -> args.put("refresh_cache", v));
+        cfg.getRemotePortForwards().ifPresent(v -> args.put("ssh_remote_port_forwards", v));
+        cfg.getRoster().ifPresent(v -> args.put("roster", v));
+        cfg.getRosterFile().ifPresent(v -> args.put("roster_file", v));
+        cfg.getScanPorts().ifPresent(v -> args.put("ssh_scan_ports", v));
+        cfg.getScanTimeout().ifPresent(v -> args.put("ssh_scan_timeout", v));
+        cfg.getSudo().ifPresent(v -> args.put("ssh_sudo", v));
+        cfg.getSSHMaxProcs().ifPresent(v -> args.put("ssh_max_procs", v));
+        cfg.getUser().ifPresent(v -> args.put("ssh_user", v));
+        cfg.getWipe().ifPresent(v -> args.put("ssh_wipe", v));
+
+        Type xor = parameterizedType(null, Result.class,
+                parameterizedType(null, SSHResult.class, getReturnType().getType()));
+        Type map = parameterizedType(null, Map.class, String.class, xor);
+        Type listType = parameterizedType(null, List.class, map);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
+
+        @SuppressWarnings("unchecked")
+        Return<List<Map<String, Result<SSHResult<R>>>>> wrapper = client.call(this,
+                Client.SSH, "/run",
+                Optional.of(args),
+                (TypeToken<Return<List<Map<String, Result<SSHResult<R>>>>>>)
                 TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }

@@ -1,0 +1,23 @@
+[
+  {
+    "expr_form": "glob",
+    "tgt": "*",
+    "client": "ssh",
+    "fun": "test.ping",
+    "extra_filerefs": "my/file/ref",
+    "ignore_host_keys": true,
+    "no_host_keys": true,
+    "refresh_cache": true,
+    "roster": "flat",
+    "roster_file": "/tmp/my-roster",
+    "ssh_identities_only": true,
+    "ssh_key_deploy": true,
+    "ssh_max_procs": 50,
+    "ssh_passwd": "pa55wd",
+    "ssh_priv": "/home/user/.ssh/id_rsa",
+    "ssh_remote_port_forwards": "8888:my.host:443",
+    "ssh_sudo": true,
+    "ssh_user": "user",
+    "ssh_wipe": true
+  }
+]
