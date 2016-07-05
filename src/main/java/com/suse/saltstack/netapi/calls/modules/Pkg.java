@@ -206,8 +206,8 @@ public class Pkg {
     public static LocalCall<Map<String, String>> latestVersion(String firstPackageName,
             String secondPackageName, String... packages) {
         return new LocalCall<>("pkg.latest_version",
-                    Optional.of(Arrays.asList(firstPackageName,
-                            secondPackageName, packages)),
-                Optional.empty(), new TypeToken<Map<String, String>>(){});
+                Optional.of(Arrays.asList(firstPackageName, secondPackageName, packages)),
+                Optional.empty(), new TypeToken<Map<String, String>>() {
+                });
     }
 }
