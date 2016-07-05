@@ -264,10 +264,10 @@ public class Pkg {
      * @return list of maps with one element each
      */
     private static List<Map<String, String>> preparePkgs(Map<String, String> pkgs) {
-        List<Map<String, String>> pkgsList = pkgs.entrySet().stream()
-                .map(entry -> Collections.unmodifiableMap(Stream.of(entry).collect(
-                Collectors.toMap(e -> e.getKey(), e -> e.getValue()))))
+        return pkgs.entrySet().stream()
+                .map(e -> Collections.unmodifiableMap(Stream.of(e)
+                        .collect(Collectors.<Map.Entry<String, String>, String, String>
+                                toMap(Map.Entry::getKey, Map.Entry::getValue))))
                 .collect(Collectors.toList());
-        return pkgsList;
     }
 }
