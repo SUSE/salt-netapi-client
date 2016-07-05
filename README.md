@@ -1,6 +1,6 @@
 # salt-netapi-client [![Build Status](https://travis-ci.org/SUSE/salt-netapi-client.svg?branch=master)](https://travis-ci.org/SUSE/salt-netapi-client)
 
-Java bindings for the [Salt API] (http://docs.saltstack.com/en/latest/ref/netapi/all/salt.netapi.rest_cherrypy.html#module-salt.netapi.rest_cherrypy.app), please have a look at the Javadoc for [v0.7.0] (http://suse.github.io/salt-netapi-client/docs/v0.7.0) or [master] (http://suse.github.io/salt-netapi-client/docs/master).
+Java bindings for the [Salt API] (http://docs.saltstack.com/en/latest/ref/netapi/all/salt.netapi.rest_cherrypy.html#module-salt.netapi.rest_cherrypy.app), please have a look at the Javadoc for [v0.8.0] (http://suse.github.io/salt-netapi-client/docs/v0.8.0) or [master] (http://suse.github.io/salt-netapi-client/docs/master).
 
 ## How to use it
 
@@ -10,7 +10,7 @@ Add the following dependency to the `pom.xml` file of your project:
 <dependency>
     <groupId>com.suse.salt</groupId>
     <artifactId>salt-netapi-client</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
