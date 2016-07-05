@@ -190,17 +190,17 @@ public class Pkg {
     }
 
     public static LocalCall<Boolean> upgradeAvailable(String packageName) {
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        args.put("package", packageName);
-        return new LocalCall<>("pkg.upgrade_available", Optional.empty(), Optional.of(args),
-                new TypeToken<Boolean>(){});
+        return new LocalCall<>("pkg.upgrade_available",
+                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+                new TypeToken<Boolean>() {
+                });
     }
 
     public static LocalCall<String> latestVersion(String packageName) {
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        args.put("package", packageName);
-        return new LocalCall<>("pkg.latest_version", Optional.empty(), Optional.of(args),
-                new TypeToken<String>(){});
+        return new LocalCall<>("pkg.latest_version",
+                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+                new TypeToken<String>() {
+                });
     }
 
     public static LocalCall<Map<String, String>> latestVersion(String firstPackageName,
