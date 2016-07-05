@@ -81,7 +81,7 @@ public class PkgTest {
 
     @Test
     public void testLatestVersionsMultiplePackages() {
-        TypeToken<Map<String, String>> type = Pkg.latestVersions(
+        TypeToken<Map<String, String>> type = Pkg.latestVersion(
                 "openvpn", "weechat", "tmux").getReturnType();
         InputStream is = this.getClass()
                 .getResourceAsStream("/modules/pkg/latest_version_multiple.json");

@@ -203,8 +203,8 @@ public class Pkg {
                 new TypeToken<String>(){});
     }
 
-    public static LocalCall<Map<String, String>> latestVersions(String firstPackageName,
-            String secondPackageName, String...packages) {
+    public static LocalCall<Map<String, String>> latestVersion(String firstPackageName,
+            String secondPackageName, String... packages) {
         return new LocalCall<>("pkg.latest_version",
                     Optional.of(Arrays.asList(firstPackageName,
                             secondPackageName, packages)),
