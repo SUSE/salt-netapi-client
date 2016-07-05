@@ -255,6 +255,28 @@ public class Pkg {
                 new TypeToken<Map<String, Object>>() { });
     }
 
+    public static LocalCall<Boolean> upgradeAvailable(String packageName) {
+        return new LocalCall<>("pkg.upgrade_available",
+                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+                new TypeToken<Boolean>() {
+                });
+    }
+
+    public static LocalCall<String> latestVersion(String packageName) {
+        return new LocalCall<>("pkg.latest_version",
+                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+                new TypeToken<String>() {
+                });
+    }
+
+    public static LocalCall<Map<String, String>> latestVersion(String firstPackageName,
+            String secondPackageName, String... packages) {
+        return new LocalCall<>("pkg.latest_version",
+                Optional.of(Arrays.asList(firstPackageName, secondPackageName, packages)),
+                Optional.empty(), new TypeToken<Map<String, String>>() {
+                });
+    }
+
     /**
      * From a given map (package name -> version), create a list of maps with just one
      * element each. This is how Salt requires us to send the 'pkgs' argument when multiple
