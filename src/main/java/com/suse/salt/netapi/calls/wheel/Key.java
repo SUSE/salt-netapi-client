@@ -86,6 +86,23 @@ public class Key {
         }
     }
 
+    /**
+     * A key pair as returned by gen() or gen_accept().
+     */
+    public static class Pair {
+
+        private String pub;
+        private String priv;
+
+        public String getPub() {
+            return pub;
+        }
+
+        public String getPriv() {
+            return priv;
+        }
+    }
+
     private Key() {
     }
 
@@ -97,6 +114,19 @@ public class Key {
         args.put("match", match);
         return new WheelCall<>("key.finger", Optional.of(args),
                 new TypeToken<Fingerprints>(){});
+    }
+
+    public static WheelCall<Pair> gen(String id) {
+        Map<String, Object> args = new LinkedHashMap<>();
+        args.put("id_", id);
+        return new WheelCall<>("key.gen", Optional.of(args), new TypeToken<Pair>(){});
+    }
+
+    public static WheelCall<Pair> genAccept(String id) {
+        Map<String, Object> args = new LinkedHashMap<>();
+        args.put("id_", id);
+        return new WheelCall<>("key.gen_accept", Optional.of(args),
+                new TypeToken<Pair>(){});
     }
 
     public static WheelCall<Object> accept(String match) {
