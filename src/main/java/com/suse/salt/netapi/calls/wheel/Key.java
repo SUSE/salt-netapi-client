@@ -87,7 +87,7 @@ public class Key {
     }
 
     /**
-     * A key pair as returned by gen() or gen_accept().
+     * A key pair as returned by "key.gen" or "key.gen_accept".
      */
     public static class Pair {
 
