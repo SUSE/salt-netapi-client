@@ -1,10 +1,8 @@
 package com.suse.salt.netapi.examples;
 
 import com.suse.salt.netapi.AuthModule;
-import com.suse.salt.netapi.calls.WheelResult;
 import com.suse.salt.netapi.calls.modules.Grains;
 import com.suse.salt.netapi.calls.modules.Test;
-import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.MinionList;
@@ -53,15 +51,5 @@ public class Calls {
             );
             System.out.println(grainsOutput);
         });
-
-        // Call a wheel function: list accepted and pending minion keys
-        WheelResult<Key.Names> keyResults = Key.listAll().callSync(
-                client, USER, PASSWORD, AuthModule.AUTO);
-        Key.Names keys = keyResults.getData().getResult();
-
-        System.out.println("\n--> Accepted minion keys:\n");
-        keys.getMinions().forEach(System.out::println);
-        System.out.println("\n--> Pending minion keys:\n");
-        keys.getUnacceptedMinions().forEach(System.out::println);
     }
 }
