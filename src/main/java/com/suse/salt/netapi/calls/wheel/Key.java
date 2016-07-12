@@ -91,14 +91,14 @@ public class Key {
      */
     public static class Pair {
 
-        private String pub;
-        private String priv;
+        private Optional<String> pub = Optional.empty();
+        private Optional<String> priv = Optional.empty();
 
-        public String getPub() {
+        public Optional<String> getPub() {
             return pub;
         }
 
-        public String getPriv() {
+        public Optional<String> getPriv() {
             return priv;
         }
     }
