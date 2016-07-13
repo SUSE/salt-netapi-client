@@ -13,6 +13,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Pkg unit tests.
@@ -56,5 +57,39 @@ public class PkgTest {
                 " Windows NT, and various versions\nof UNIX.\n\nFor SUSE Linux, Vim" +
                 " is used as /usr/bin/vi.", info.getDescription().get());
         assertEquals("2714880", info.getSize().get());
+    }
+
+    @Test
+    public void testUpgradeAvailable() {
+        TypeToken<Boolean> type = Pkg.upgradeAvailable("cloud-init").getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/upgrade_available.json");
+        JsonParser<Boolean> parser = new JsonParser<>(type);
+        Boolean parsed = parser.parse(is);
+        assertFalse(parsed);
+    }
+
+    @Test
+    public void testLatestVersionSinglePackage() {
+        TypeToken<String> type = Pkg.latestVersion("tinc").getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/latest_version_single.json");
+        JsonParser<String> parser = new JsonParser<>(type);
+        String parsed = parser.parse(is);
+        assertEquals("1.0.23-2", parsed);
+    }
+
+    @Test
+    public void testLatestVersionsMultiplePackages() {
+        TypeToken<Map<String, String>> type = Pkg.latestVersion(
+                "openvpn", "weechat", "tmux").getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/latest_version_multiple.json");
+        JsonParser<Map<String, String>> parser = new JsonParser<>(type);
+        Map<String, String> parsed = parser.parse(is);
+        assertEquals("1.4.6-1ubuntu3.3", parsed.get("nginx"));
+        assertEquals("0.4.2-3", parsed.get("weechat"));
+        assertEquals("2.3.2-7ubuntu3.1", parsed.get("openvpn"));
+        assertEquals(null, parsed.get("tmux")); // already at latest version
     }
 }
