@@ -227,7 +227,7 @@ public class Pkg {
         kwargs.put("refresh", refresh);
         kwargs.put("pkgs", pkgs);
         return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Object>>() { });
+                new TypeToken<Map<String, Object>>(){});
     }
 
     /**
@@ -241,7 +241,7 @@ public class Pkg {
         kwargs.put("refresh", refresh);
         kwargs.put("pkgs", preparePkgs(pkgs));
         return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Object>>() { });
+                new TypeToken<Map<String, Object>>(){});
     }
 
     /**
@@ -252,29 +252,26 @@ public class Pkg {
         LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("pkgs", preparePkgs(pkgs));
         return new LocalCall<>("pkg.remove", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Object>>() { });
+                new TypeToken<Map<String, Object>>(){});
     }
 
     public static LocalCall<Boolean> upgradeAvailable(String packageName) {
         return new LocalCall<>("pkg.upgrade_available",
                 Optional.of(Arrays.asList(packageName)), Optional.empty(),
-                new TypeToken<Boolean>() {
-                });
+                new TypeToken<Boolean>(){});
     }
 
     public static LocalCall<String> latestVersion(String packageName) {
         return new LocalCall<>("pkg.latest_version",
                 Optional.of(Arrays.asList(packageName)), Optional.empty(),
-                new TypeToken<String>() {
-                });
+                new TypeToken<String>(){});
     }
 
     public static LocalCall<Map<String, String>> latestVersion(String firstPackageName,
             String secondPackageName, String... packages) {
         return new LocalCall<>("pkg.latest_version",
                 Optional.of(Arrays.asList(firstPackageName, secondPackageName, packages)),
-                Optional.empty(), new TypeToken<Map<String, String>>() {
-                });
+                Optional.empty(), new TypeToken<Map<String, String>>(){});
     }
 
     /**
