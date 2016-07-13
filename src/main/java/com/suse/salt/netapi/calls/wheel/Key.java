@@ -122,9 +122,10 @@ public class Key {
         return new WheelCall<>("key.gen", Optional.of(args), new TypeToken<Pair>(){});
     }
 
-    public static WheelCall<Pair> genAccept(String id) {
+    public static WheelCall<Pair> genAccept(String id, Optional<Boolean> force) {
         Map<String, Object> args = new LinkedHashMap<>();
         args.put("id_", id);
+        force.ifPresent(value -> args.put("force", value));
         return new WheelCall<>("key.gen_accept", Optional.of(args),
                 new TypeToken<Pair>(){});
     }

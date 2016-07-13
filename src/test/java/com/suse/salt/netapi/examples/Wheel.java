@@ -7,6 +7,7 @@ import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.exception.SaltException;
 
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * Example code calling wheel functions.
@@ -32,7 +33,7 @@ public class Wheel {
         keys.getUnacceptedMinions().forEach(System.out::println);
 
         // Generate a new key pair and accept the public key
-        WheelResult<Key.Pair> genResults = Key.genAccept("new.minion.id")
+        WheelResult<Key.Pair> genResults = Key.genAccept("new.minion.id", Optional.empty())
                 .callSync(client, USER, PASSWORD, AuthModule.AUTO);
         Key.Pair keyPair = genResults.getData().getResult();
 
