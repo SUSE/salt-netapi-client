@@ -29,7 +29,7 @@ public class Zypper {
         private final boolean installed;
         private final boolean isbase;
         private final String productline;
-        private final String registerrelease;
+        private final boolean registerrelease;
         private final String release;
         private final String repo;
         private final String shortname;
@@ -39,7 +39,7 @@ public class Zypper {
 
         public ProductInfo(String name, String arch, String description, String eol,
                 String epoch, String flavor, boolean installed, boolean isbase,
-                String productline, String registerrelease, String release, String repo,
+                String productline, boolean registerrelease, String release, String repo,
                 String shortname, String summary, String vendor, String version) {
             this.name = name;
             this.arch = arch;
@@ -99,7 +99,7 @@ public class Zypper {
             return productline;
         }
 
-        public String getRegisterrelease() {
+        public boolean getRegisterrelease() {
             return registerrelease;
         }
 
