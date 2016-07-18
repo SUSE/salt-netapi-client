@@ -29,7 +29,7 @@ public class Zypper {
         private final boolean installed;
         private final boolean isbase;
         private final String productline;
-        private final Optional<String> registerrelease;
+        private final Optional<String> registerrelease = Optional.empty();
         private final String release;
         private final String repo;
         private final String shortname;
