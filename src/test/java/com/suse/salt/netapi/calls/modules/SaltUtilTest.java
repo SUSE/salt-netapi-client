@@ -32,6 +32,9 @@ public class SaltUtilTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
+    static final String JSON_SYNCBEACONS_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/saltutil/syncbeacons.json"));
+
     static final String JSON_SYNCGRAINS_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/saltutil/syncgrains.json"));
 
@@ -53,6 +56,24 @@ public class SaltUtilTest {
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
         client = new SaltClient(uri);
+    }
+
+    @Test
+    public void testSyncBeacons() throws SaltException {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_SYNCGRAINS_RESPONSE)));
+
+        Map<String, Result<List<String>>> response = SaltUtil
+                .syncBeacons(Optional.of(true), Optional.empty())
+                .callSync(client, new MinionList("minion1"));
+
+        assertEquals(1, response.size());
+        assertEquals("minion1", response.entrySet().iterator().next().getKey());
+        assertEquals(0, response.entrySet().iterator().next()
+                .getValue().result().get().size());
     }
 
     @Test

@@ -17,6 +17,14 @@ import com.suse.salt.netapi.parser.JsonParser;
  */
 public class SaltUtil {
 
+    public static LocalCall<List<String>> syncBeacons(
+            Optional<Boolean> refresh, Optional<String> saltenv) {
+        LinkedHashMap<String, Object> args = syncArgs(refresh, saltenv);
+        return new LocalCall<>("saltutil.sync_beacons", Optional.empty(),
+                Optional.of(args), new TypeToken<List<String>>() {
+                });
+    }
+
     public static LocalCall<List<String>> syncGrains(
             Optional<Boolean> refresh, Optional<String> saltenv) {
         LinkedHashMap<String, Object> args = syncArgs(refresh, saltenv);
