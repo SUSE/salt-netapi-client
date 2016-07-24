@@ -1,0 +1,12 @@
+[
+  {
+    "tgt": "*",
+    "eauth": "auto",
+    "password": "pa55wd",
+    "expr_form": "glob",
+    "batch": "1",
+    "client": "local_batch",
+    "fun": "test.ping",
+    "username": "user"
+  }
+]

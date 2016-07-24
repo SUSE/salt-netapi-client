@@ -1,0 +1,10 @@
+{
+  "return": [
+    {
+      "minion2": true
+    },
+    {
+      "minion1": true
+    }
+  ]
+}
