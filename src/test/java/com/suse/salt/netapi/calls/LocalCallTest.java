@@ -1,5 +1,18 @@
 package com.suse.salt.netapi.calls;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.modules.Cmd;
 import com.suse.salt.netapi.client.SaltClient;
@@ -17,9 +30,6 @@ import org.junit.Test;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.Assert.*;
 
 /**
  * Tests for LocalCall
@@ -42,7 +52,8 @@ public class LocalCallTest {
     static final String JSON_CALL_SYNC_BATCH_PING_REQUEST = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/call_sync_batch_ping_request.json"));
     static final String JSON_CALL_SYNC_BATCH_PING_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/call_sync_batch_ping_response.json"));
+            SaltClientTest.class.getResourceAsStream(
+                    "/call_sync_batch_ping_response.json"));
 
     private SaltClient client;
 
