@@ -17,6 +17,7 @@ import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.modules.Cmd;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.SaltClientTest;
+import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
@@ -104,7 +105,7 @@ public class LocalCallTest {
      * Verify correctness of the request body with an exemplary synchronous batch call.
      */
     @Test
-    public void testCallSyncBatch() throws SaltException {
+    public void testCallSyncWithBatch() throws SaltException {
         stubFor(any(urlMatching("/run"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -114,7 +115,7 @@ public class LocalCallTest {
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
         Target<String> target = new Glob("*");
 
-        run.callSyncBatch(client, target, "user", "pa55wd", AuthModule.AUTO, "1");
+        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO, Batch.asAmount(1));
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))

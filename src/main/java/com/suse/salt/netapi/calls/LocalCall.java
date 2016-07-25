@@ -4,6 +4,7 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
@@ -143,8 +144,27 @@ public class LocalCall<R> implements Call<R> {
      */
     public Map<String, Result<R>> callSync(final SaltClient client, Target<?> target)
             throws SaltException {
-        return callSyncBatchable(client, target, Optional.empty(),
+        return callSyncHelper(client, target, Optional.empty(),
                 Optional.empty(), Optional.empty(), Optional.empty()).get(0);
+    }
+
+    /**
+     * Calls a execution module function on the given target with batching and
+     * synchronously waits for the result. Authentication is done with the token
+     * therefore you have to login prior to using this function.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param batch  the batch specification
+     * @return A list of maps with each list representing each batch, and maps containing
+     * the results with the minion names as keys.
+     * @throws SaltException if anything goes wrong
+     */
+    public List<Map<String, Result<R>>> callSync(final SaltClient client, Target<?> target,
+            Batch batch)
+            throws SaltException {
+        return callSyncHelper(client, target, Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.of(batch));
     }
 
     /**
@@ -164,27 +184,8 @@ public class LocalCall<R> implements Call<R> {
             final SaltClient client, Target<?> target,
             String username, String password, AuthModule authModule)
             throws SaltException {
-        return callSyncBatchable(client, target, Optional.of(username),
+        return callSyncHelper(client, target, Optional.of(username),
                 Optional.of(password), Optional.of(authModule), Optional.empty()).get(0);
-    }
-
-    /**
-     * Calls a execution module function on the given target with batching and
-     * synchronously waits for the result. Authentication is done with the token
-     * therefore you have to login prior to using this function.
-     *
-     * @param client SaltClient instance
-     * @param target the target for the function
-     * @param batch  the batch parameter, e.g. 10, 10%, etc.
-     * @return A list of maps with each list representing each batch, and maps containing
-     * the results with the minion names as keys.
-     * @throws SaltException if anything goes wrong
-     */
-    public List<Map<String, Result<R>>> callSyncBatch(
-            final SaltClient client, Target<?> target, String batch)
-            throws SaltException {
-        return callSyncBatchable(client, target, Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.of(batch));
     }
 
     /**
@@ -197,39 +198,39 @@ public class LocalCall<R> implements Call<R> {
      * @param username username for authentication
      * @param password password for authentication
      * @param authModule authentication module to use
-     * @param batch the batch parameter, e.g. 10, 10%, etc.
+     * @param batch the batch specification
      * @return A list of maps with each list representing each batch, and maps containing
      * the results with the minion names as keys.
      * @throws SaltException if anything goes wrong
      */
-    public List<Map<String, Result<R>>> callSyncBatch(
+    public List<Map<String, Result<R>>> callSync(
             final SaltClient client, Target<?> target,
-            String username, String password, AuthModule authModule, String batch)
+            String username, String password, AuthModule authModule, Batch batch)
             throws SaltException {
-        return callSyncBatchable(client, target, Optional.of(username),
+        return callSyncHelper(client, target, Optional.of(username),
                 Optional.of(password), Optional.of(authModule), Optional.of(batch));
     }
 
     /**
-     * Calls a execution module function on the given target for batched or unbatched
-     * input, and provides option to use given credentials or to use a prior created
-     * token. Synchronously waits for the result.
+     * Helper to call an execution module function on the given target for batched or
+     * unbatched while also providing an option to use the given credentials or to use a
+     * prior created token. Synchronously waits for the result.
      *
      * @param client SaltClient instance
      * @param target the target for the function
      * @param username username for authentication, empty for token auth
      * @param password password for authentication, empty for token auth
      * @param authModule authentication module to use, empty for token auth
-     * @param batch the batch parameter, e.g. 10, 10%, etc., empty for unbatched
+     * @param batch the batch parameter, empty for unbatched
      * @return A list of maps with each list representing each batch, and maps containing
      * the results with the minion names as keys. The first list is the entire
      * output for unbatched input.
      * @throws SaltException
      */
-    private List<Map<String, Result<R>>> callSyncBatchable(
+    private List<Map<String, Result<R>>> callSyncHelper(
             final SaltClient client, Target<?> target,
             Optional<String> username, Optional<String> password,
-            Optional<AuthModule> authModule, Optional<String> batch)
+            Optional<AuthModule> authModule, Optional<Batch> batch)
             throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
@@ -238,7 +239,7 @@ public class LocalCall<R> implements Call<R> {
         username.ifPresent(v -> customArgs.put("username", v));
         password.ifPresent(v -> customArgs.put("password", v));
         authModule.ifPresent(v -> customArgs.put("eauth", v.getValue()));
-        batch.ifPresent(v -> customArgs.put("batch", v));
+        batch.ifPresent(v -> customArgs.put("batch", v.toString()));
 
         Client clientType = batch.isPresent() ? Client.LOCAL_BATCH : Client.LOCAL;
         // We need a different endpoint for credentials vs token auth
