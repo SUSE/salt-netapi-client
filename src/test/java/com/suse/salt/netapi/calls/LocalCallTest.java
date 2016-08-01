@@ -13,9 +13,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.modules.Cmd;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.SaltClientTest;
+import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
@@ -44,6 +46,15 @@ public class LocalCallTest {
             SaltClientTest.class.getResourceAsStream("/ssh_ping_request.json"));
     static final String JSON_SSH_PING_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/ssh_ping_response.json"));
+    static final String JSON_CALL_SYNC_PING_REQUEST = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream("/call_sync_ping_request.json"));
+    static final String JSON_CALL_SYNC_PING_RESPONSE = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream("/call_sync_ping_response.json"));
+    static final String JSON_CALL_SYNC_BATCH_PING_REQUEST = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream("/call_sync_batch_ping_request.json"));
+    static final String JSON_CALL_SYNC_BATCH_PING_RESPONSE = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream(
+                    "/call_sync_batch_ping_response.json"));
 
     private SaltClient client;
 
@@ -67,6 +78,48 @@ public class LocalCallTest {
         assertFalse(runWithoutMetadata.getPayload().containsKey("metadata"));
         assertTrue(runWithMetadata.getPayload().containsKey("metadata"));
         assertEquals(runWithMetadata.getPayload().get("metadata"), "myMetadata");
+    }
+
+    /**
+     * Verify correctness of the request body with an exemplary synchronous call.
+     */
+    @Test
+    public void testCallSync() throws SaltException {
+        stubFor(any(urlMatching("/run"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_CALL_SYNC_PING_RESPONSE)));
+
+        LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
+        Target<String> target = new Glob("*");
+
+        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO);
+        verify(1, postRequestedFor(urlEqualTo("/run"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson(JSON_CALL_SYNC_PING_REQUEST)));
+    }
+
+    /**
+     * Verify correctness of the request body with an exemplary synchronous batch call.
+     */
+    @Test
+    public void testCallSyncWithBatch() throws SaltException {
+        stubFor(any(urlMatching("/run"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_CALL_SYNC_BATCH_PING_RESPONSE)));
+
+        LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
+        Target<String> target = new Glob("*");
+
+        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO, Batch.asAmount(1));
+        verify(1, postRequestedFor(urlEqualTo("/run"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson(JSON_CALL_SYNC_BATCH_PING_REQUEST)));
     }
 
     /**

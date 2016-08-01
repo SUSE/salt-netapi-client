@@ -6,6 +6,7 @@ package com.suse.salt.netapi.calls;
 public enum Client {
 
     LOCAL("local"),
+    LOCAL_BATCH("local_batch"),
     LOCAL_ASYNC("local_async"),
     WHEEL("wheel"),
     WHEEL_ASYNC("wheel_async"),
