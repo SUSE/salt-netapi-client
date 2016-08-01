@@ -6,13 +6,13 @@ package com.suse.salt.netapi.calls;
 public enum Client {
 
     LOCAL("local"),
-    LOCAL_BATCH("local_batch"),
     LOCAL_ASYNC("local_async"),
-    WHEEL("wheel"),
-    WHEEL_ASYNC("wheel_async"),
+    LOCAL_BATCH("local_batch"),
     RUNNER("runner"),
     RUNNER_ASYNC("runner_async"),
-    SSH("ssh");
+    SSH("ssh"),
+    WHEEL("wheel"),
+    WHEEL_ASYNC("wheel_async");
 
     private final String value;
 
