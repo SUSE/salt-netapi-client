@@ -95,7 +95,16 @@ public class HttpClientConnection<T> implements Connection<T> {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
         configureTimeouts(httpClientBuilder);
         configureProxyIfSpecified(httpClientBuilder);
+        customizeHttpClient(httpClientBuilder);
         return httpClientBuilder;
+    }
+
+    /**
+     * Allow subclasses to customize the {@link HttpClientBuilder} as needed.
+     *
+     * @param httpClientBuilder the {@link HttpClientBuilder} to be customized
+     */
+    protected void customizeHttpClient(HttpClientBuilder httpClientBuilder) {
     }
 
     /**
