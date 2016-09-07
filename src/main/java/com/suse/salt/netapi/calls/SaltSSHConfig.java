@@ -227,10 +227,10 @@ public class SaltSSHConfig {
         }
 
         /**
-         * Select a random temp dir to deploy on the remote system. The dir will be cleaned
-         * after the execution.
+         * Don't execute a salt routine on the targets, execute a
+         * raw shell command.
          *
-         * @param rawShell the value to set
+         * @param rawShell if command should be execute as a shell command
          * @return this builder
          */
         public Builder rawShell(boolean rawShell) {
