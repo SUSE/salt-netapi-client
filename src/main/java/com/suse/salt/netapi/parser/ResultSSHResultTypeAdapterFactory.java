@@ -9,9 +9,7 @@ import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.suse.salt.netapi.errors.FunctionNotAvailable;
 import com.suse.salt.netapi.errors.GenericSaltError;
-import com.suse.salt.netapi.errors.ModuleNotSupported;
 import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
@@ -21,19 +19,14 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.suse.salt.netapi.utils.SaltErrorUtils.deriveError;
 
 /**
  * {@link TypeAdapterFactory} for creating type adapters for parsing wrapped
  * Result&lt;SSHResult&gt; objects.
  */
 public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
-
-    private static final Pattern FN_UNAVAILABLE =
-            Pattern.compile("'([^']+)' is not available.");
-    private static final Pattern MODULE_NOT_SUPPORTED =
-            Pattern.compile("'([^']+)' __virtual__ returned False");
 
     @Override
     @SuppressWarnings("unchecked")
@@ -80,13 +73,9 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                     }
                     return new Result<>(Xor.right(value));
                 } catch (Throwable e) {
-                    Optional<String> stdErr = extractStdErr(json);
-                    if (stdErr.isPresent()) {
-                        Optional<SaltError> saltError = deriveException(stdErr.get());
-                        return new Result<>(Xor.left(saltError.get()));
-                    } else {
-                        return new Result<>(Xor.left(new GenericSaltError(json, e)));
-                    }
+                    Optional<SaltError> saltError = deriveError(extractStdErr(json));
+                    return new Result<>(Xor.left(
+                            saltError.orElse(new GenericSaltError(json, e))));
                 }
             }
 
@@ -94,33 +83,23 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
             public void write(JsonWriter out, Result<SSHResult<R>> xor) throws IOException {
                 throw new JsonParseException("Writing Xor is not supported");
             }
+
+            private Optional<String> extractStdErr(JsonElement json) {
+                if (json.isJsonObject() && json.getAsJsonObject().has("stderr") &&
+                        json.getAsJsonObject().get("stderr").isJsonPrimitive() &&
+                        json.getAsJsonObject().get("stderr")
+                                .getAsJsonPrimitive().isString()) {
+                    return Optional.of(json.getAsJsonObject().get("stderr")
+                            .getAsJsonPrimitive().getAsString());
+                }
+
+                return Optional.empty();
+            }
         };
     }
 
-    public static Optional<SaltError> deriveException(String saltOutput) {
-        Matcher fnuMatcher = FN_UNAVAILABLE.matcher(saltOutput);
-        Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(saltOutput);
-        if (fnuMatcher.find()) {
-            String fn = fnuMatcher.group(1);
-            return Optional.of(new FunctionNotAvailable(fn));
-        } else if (mnsMatcher.find()) {
-            String module = mnsMatcher.group(1);
-            return Optional.of(new ModuleNotSupported(module));
-        }
-        return Optional.empty();
-    }
 
-    private Optional<String> extractStdErr(JsonElement json) {
-        if (json.isJsonObject() && json.getAsJsonObject().has("stderr") &&
-                            json.getAsJsonObject().get("stderr").isJsonPrimitive() &&
-                            json.getAsJsonObject().get("stderr")
-                                    .getAsJsonPrimitive().isString()) {
-            return Optional.of(json.getAsJsonObject().get("stderr")
-                    .getAsJsonPrimitive().getAsString());
-        }
 
-        return Optional.empty();
-    }
 
 }
 
