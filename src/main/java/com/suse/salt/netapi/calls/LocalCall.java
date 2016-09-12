@@ -284,7 +284,6 @@ public class LocalCall<R> implements Call<R> {
         cfg.getNoHostKeys().ifPresent(v -> args.put("no_host_keys", v));
         cfg.getPasswd().ifPresent(v -> args.put("ssh_passwd", v));
         cfg.getPriv().ifPresent(v -> args.put("ssh_priv", v));
-        cfg.getRawShell().ifPresent(v -> args.put("raw_shell", v));
         cfg.getRefreshCache().ifPresent(v -> args.put("refresh_cache", v));
         cfg.getRemotePortForwards().ifPresent(v -> args.put("ssh_remote_port_forwards", v));
         cfg.getRoster().ifPresent(v -> args.put("roster", v));

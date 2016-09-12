@@ -14,7 +14,6 @@ public class SaltSSHConfig {
     private final Optional<Boolean> noHostKeys;
     private final Optional<String> passwd;
     private final Optional<String> priv;
-    private final Optional<Boolean> rawShell;
     private final Optional<Boolean> refreshCache;
     private final Optional<String> remotePortForwards;
     private final Optional<String> roster;
@@ -34,7 +33,6 @@ public class SaltSSHConfig {
         noHostKeys = builder.noHostKeys;
         passwd = builder.passwd;
         priv = builder.priv;
-        rawShell = builder.rawShell;
         refreshCache = builder.refreshCache;
         remotePortForwards = builder.remotePortForwards;
         roster = builder.roster;
@@ -73,10 +71,6 @@ public class SaltSSHConfig {
 
     public Optional<String> getPriv() {
         return priv;
-    }
-
-    public Optional<Boolean> getRawShell() {
-        return rawShell;
     }
 
     public Optional<Boolean> getRefreshCache() {
@@ -131,7 +125,6 @@ public class SaltSSHConfig {
         private Optional<Boolean> noHostKeys = Optional.empty();
         private Optional<String> passwd = Optional.empty();
         private Optional<String> priv = Optional.empty();
-        private Optional<Boolean> rawShell = Optional.empty();
         private Optional<Boolean> refreshCache = Optional.empty();
         private Optional<String> remotePortForwards = Optional.empty();
         private Optional<String> roster = Optional.empty();
@@ -223,18 +216,6 @@ public class SaltSSHConfig {
          */
         public Builder priv(String priv) {
             this.priv = Optional.of(priv);
-            return this;
-        }
-
-        /**
-         * Don't execute a salt routine on the targets, execute a
-         * raw shell command.
-         *
-         * @param rawShell if command should be execute as a shell command
-         * @return this builder
-         */
-        public Builder rawShell(boolean rawShell) {
-            this.rawShell = Optional.of(rawShell);
             return this;
         }
 
