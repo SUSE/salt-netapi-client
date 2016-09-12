@@ -1,0 +1,5 @@
+{
+    "retcode": 255,
+    "stderr": "[CRITICAL] Unable to import msgpack or msgpack_pure python modules\n'test.pingme' is not available.",
+    "stdout": ""
+}

@@ -10,17 +10,22 @@ import com.suse.salt.netapi.datatypes.cherrypy.HttpServer;
 import com.suse.salt.netapi.datatypes.cherrypy.Request;
 import com.suse.salt.netapi.datatypes.cherrypy.ServerThread;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
+import com.suse.salt.netapi.errors.FunctionNotAvailable;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
+import com.suse.salt.netapi.results.SSHResult;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -30,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Json parser unit tests.
@@ -304,4 +310,75 @@ public class JsonParserTest {
         assertEquals(0, job.getArguments().getArgs().size());
         assertEquals(1, job.getArguments().getKwargs().size());
     }
+
+    @Test
+    public void testSaltSSHOutputSuccess() throws IOException {
+        InputStream is = this.getClass()
+                .getResourceAsStream("/salt_ssh_output_success.json");
+        JsonParser<Result<SSHResult<Boolean>>> resultJsonParser =
+                new JsonParser<>(new TypeToken<Result<SSHResult<Boolean>>>() {});
+
+        Result<SSHResult<Boolean>> result = resultJsonParser.parse(is);
+        assertFalse(result.error().isPresent());
+        assertTrue(result.result().isPresent());
+        SSHResult<Boolean> sshResult = result.result().get();
+        assertEquals(true, sshResult.getReturn().get());
+        assertEquals(0, sshResult.getRetcode());
+        assertEquals("silver", sshResult.getId());
+        assertEquals("test.ping", sshResult.getFun());
+        assertEquals(Arrays.asList("arg1", "arg2"), sshResult.getFunArgs());
+    }
+
+    @Test
+    public void testSaltSSHOutputFail() throws IOException {
+        InputStream is = this.getClass()
+                .getResourceAsStream("/salt_ssh_output_error.json");
+        JsonParser<Result<SSHResult<Boolean>>> resultJsonParser =
+                new JsonParser<>(new TypeToken<Result<SSHResult<Boolean>>>() {});
+
+        Result<SSHResult<Boolean>> result = resultJsonParser.parse(is);
+        assertFalse(result.result().isPresent());
+        assertTrue(result.error().isPresent());
+        assertTrue(result.error().get() instanceof FunctionNotAvailable);
+    }
+
+    @Test
+    public void testSaltSSHOutputEmptyReturn() throws IOException {
+        // successful call with empty return value
+        InputStream is = this.getClass()
+                .getResourceAsStream("/salt_ssh_output_success_empty_return.json");
+        JsonParser<Result<SSHResult<Boolean>>> resultJsonParser =
+                new JsonParser<>(new TypeToken<Result<SSHResult<Boolean>>>() {});
+
+        Result<SSHResult<Boolean>> result = resultJsonParser.parse(is);
+        assertFalse(result.error().isPresent());
+        assertTrue(result.result().isPresent());
+        SSHResult<Boolean> sshResult = result.result().get();
+        assertEquals(false, sshResult.getReturn().isPresent());
+        assertEquals(0, sshResult.getRetcode());
+        assertEquals("silver", sshResult.getId());
+        assertEquals("test.ping", sshResult.getFun());
+        assertEquals(Arrays.asList("arg1", "arg2"), sshResult.getFunArgs());
+    }
+
+    @Test
+    public void testSaltSSHOutputNonzeroRetCodeSuccess() throws IOException {
+        // e.g. calling "cmd.run 'sh -c false'" produces empty string result and nonzero
+        // return code. We want to handle this as a success.
+        InputStream is = this.getClass()
+                .getResourceAsStream("/salt_ssh_output_success_nonzero_return_code.json");
+        JsonParser<Result<SSHResult<String>>> resultJsonParser =
+                new JsonParser<>(new TypeToken<Result<SSHResult<String>>>() {});
+
+        Result<SSHResult<String>> result = resultJsonParser.parse(is);
+        assertFalse(result.error().isPresent());
+        assertTrue(result.result().isPresent());
+        SSHResult<String> sshResult = result.result().get();
+        assertEquals(true, sshResult.getReturn().isPresent());
+        assertEquals(1, sshResult.getRetcode());
+        assertEquals("silver", sshResult.getId());
+        assertEquals("cmd.run", sshResult.getFun());
+        assertEquals(Arrays.asList("sh", "-c", "false"), sshResult.getFunArgs());
+    }
+
 }

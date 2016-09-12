@@ -1,0 +1,8 @@
+{
+    "fun": "cmd.run",
+    "fun_args": ["sh", "-c", "false"],
+    "id": "silver",
+    "jid": "20160811022303912792",
+    "retcode": 1,
+    "return": ""
+}
