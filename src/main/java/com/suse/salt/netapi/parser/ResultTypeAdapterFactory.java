@@ -26,7 +26,8 @@ public class ResultTypeAdapterFactory implements TypeAdapterFactory {
         Type type = typeToken.getType();
         boolean isResult = typeToken.getRawType() == Result.class;
         boolean isParameterized = type instanceof ParameterizedType;
-        if (isResult && isParameterized) {
+        boolean isSSHResult = ResultSSHResultTypeAdapterFactory.isResultSSHResult(type);
+        if (isResult && isParameterized && !isSSHResult) {
             Type typeParam = ((ParameterizedType) type).getActualTypeArguments()[0];
             Type xorType = parameterizedType(null, Xor.class, SaltError.class, typeParam);
             TypeAdapter<Xor> xorAdapter = (TypeAdapter<Xor>) gson

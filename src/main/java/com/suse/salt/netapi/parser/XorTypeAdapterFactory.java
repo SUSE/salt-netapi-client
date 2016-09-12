@@ -38,7 +38,8 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
         Type type = typeToken.getType();
         boolean isXor = typeToken.getRawType() == Xor.class;
         boolean isParameterized = type instanceof ParameterizedType;
-        if (isXor && isParameterized) {
+        boolean isSSHResult = ResultSSHResultTypeAdapterFactory.isResultSSHResult(type);
+        if (isXor && isParameterized && !isSSHResult) {
             Type rightType = ((ParameterizedType) type).getActualTypeArguments()[1];
             TypeAdapter<?> elementAdapter = gson.getAdapter(TypeToken.get(rightType));
             return (TypeAdapter<A>) errorAdapter(elementAdapter);
