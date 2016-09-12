@@ -12,6 +12,7 @@ import com.google.gson.stream.JsonWriter;
 import com.suse.salt.netapi.errors.FunctionNotAvailable;
 import com.suse.salt.netapi.errors.GenericSaltError;
 import com.suse.salt.netapi.errors.ModuleNotSupported;
+import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
 import com.suse.salt.netapi.utils.Xor;
@@ -81,18 +82,8 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                 } catch (Throwable e) {
                     Optional<String> stdErr = extractStdErr(json);
                     if (stdErr.isPresent()) {
-                        String string = stdErr.get();
-                        Matcher fnuMatcher = FN_UNAVAILABLE.matcher(string);
-                        Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(string);
-                        if (fnuMatcher.find()) {
-                            String fn = fnuMatcher.group(1);
-                            return new Result<>(Xor.left(new FunctionNotAvailable(fn)));
-                        } else if (mnsMatcher.find()) {
-                            String module = mnsMatcher.group(1);
-                            return new Result<>(Xor.left(new ModuleNotSupported(module)));
-                        } else {
-                            return new Result<>(Xor.left(new GenericSaltError(json, e)));
-                        }
+                        Optional<SaltError> saltError = deriveException(stdErr.get());
+                        return new Result<>(Xor.left(saltError.get()));
                     } else {
                         return new Result<>(Xor.left(new GenericSaltError(json, e)));
                     }
@@ -104,6 +95,19 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                 throw new JsonParseException("Writing Xor is not supported");
             }
         };
+    }
+
+    public static Optional<SaltError> deriveException(String saltOutput) {
+        Matcher fnuMatcher = FN_UNAVAILABLE.matcher(saltOutput);
+        Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(saltOutput);
+        if (fnuMatcher.find()) {
+            String fn = fnuMatcher.group(1);
+            return Optional.of(new FunctionNotAvailable(fn));
+        } else if (mnsMatcher.find()) {
+            String module = mnsMatcher.group(1);
+            return Optional.of(new ModuleNotSupported(module));
+        }
+        return Optional.empty();
     }
 
     private Optional<String> extractStdErr(JsonElement json) {
