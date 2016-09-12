@@ -46,6 +46,7 @@ public class JsonParser<T> {
             .registerTypeAdapter(Stats.class, new StatsAdapter())
             .registerTypeAdapter(Arguments.class, new ArgumentsAdapter())
             .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
+            .registerTypeAdapterFactory(new ResultSSHResultTypeAdapterFactory())
             .registerTypeAdapterFactory(new XorTypeAdapterFactory())
             .registerTypeAdapterFactory(new ResultTypeAdapterFactory())
             .registerTypeAdapterFactory(new CollectionTypeAdapterFactory())
