@@ -19,6 +19,7 @@ import com.suse.salt.netapi.utils.Xor;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,12 +79,9 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                     }
                     return new Result<>(Xor.right(value));
                 } catch (Throwable e) {
-                    if (json.isJsonObject() && json.getAsJsonObject().has("stderr") &&
-                            json.getAsJsonObject().get("stderr").isJsonPrimitive() &&
-                            json.getAsJsonObject().get("stderr")
-                                    .getAsJsonPrimitive().isString()) {
-                        String string = json.getAsJsonObject().get("stderr")
-                                    .getAsJsonPrimitive().getAsString();
+                    Optional<String> stdErr = extractStdErr(json);
+                    if (stdErr.isPresent()) {
+                        String string = stdErr.get();
                         Matcher fnuMatcher = FN_UNAVAILABLE.matcher(string);
                         Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(string);
                         if (fnuMatcher.find()) {
@@ -106,6 +104,18 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                 throw new JsonParseException("Writing Xor is not supported");
             }
         };
+    }
+
+    private Optional<String> extractStdErr(JsonElement json) {
+        if (json.isJsonObject() && json.getAsJsonObject().has("stderr") &&
+                            json.getAsJsonObject().get("stderr").isJsonPrimitive() &&
+                            json.getAsJsonObject().get("stderr")
+                                    .getAsJsonPrimitive().isString()) {
+            return Optional.of(json.getAsJsonObject().get("stderr")
+                    .getAsJsonPrimitive().getAsString());
+        }
+
+        return Optional.empty();
     }
 
 }
