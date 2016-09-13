@@ -17,6 +17,8 @@ import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.Return;
+import com.suse.salt.netapi.results.SSHRawResult;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.ResultInfoSet;
 
 import com.google.gson.Gson;
@@ -408,6 +410,27 @@ public class SaltClient {
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
     }
+
+    public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final Target<T> target,
+            final String function)
+        throws SaltException {
+        Map<String, Object> props = new HashMap<>();
+        props.put("client", Client.SSH.getValue());
+        props.put("tgt", target.getTarget());
+        props.put("expr_form", target.getType());
+        props.put("fun", function);
+        props.put("raw_shell", true);
+
+        List<Map<String, Object>> list = Collections.singletonList(props);
+
+        String payload = gson.toJson(list);
+
+        Return<List<Map<String, Result<SSHRawResult>>>> result = connectionFactory
+                .create("/run", JsonParser.RUNSSHRAW_RESULTS, config).getResult(payload);
+
+        return result.getResult().get(0);
+    }
+
 
     /**
      * Asynchronously start any execution command bypassing normal session handling.
