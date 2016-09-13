@@ -413,6 +413,19 @@ public class SaltClient {
         return result.getResult().get(0);
     }
 
+    /**
+     * Calls salt-ssh with a command in raw shell mode (commands bypass Salt and
+     * gets executed as shell commands).
+     *
+     * @param <T> type of the tgt property for this command
+     * @param command to be executed
+     * @param target glob type, targets to be reached by the command
+     * @param cfg SaltSSH config holder
+     * @return a map in which every key is a host associated to the result of the
+     * raw command
+     * @throws SaltException
+     */
+
     public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final String command,
             final Target<T> target, SaltSSHConfig cfg)
         throws SaltException {

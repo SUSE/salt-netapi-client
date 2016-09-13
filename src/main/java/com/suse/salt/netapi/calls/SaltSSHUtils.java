@@ -7,8 +7,12 @@ import java.util.Map;
  */
 public class SaltSSHUtils {
 
+    /**
+     * Maps config parameters to salt-ssh rest arguments
+     * @param cfg SSH configuration to read values to be converted
+     * @param props properties to be set when rest calling
+     */
     public static void mapConfigPropsToArgs(SaltSSHConfig cfg, Map<String, Object> props) {
-        // Map config properties to arguments
         cfg.getExtraFilerefs().ifPresent(v -> props.put("extra_filerefs", v));
         cfg.getIdentitiesOnly().ifPresent(v -> props.put("ssh_identities_only", v));
         cfg.getIgnoreHostKeys().ifPresent(v -> props.put("ignore_host_keys", v));

@@ -1,7 +1,7 @@
 package com.suse.salt.netapi.results;
 
 /**
- * Wrapper class for salt-ssh results.
+ * Wrapper class for salt-ssh raw calls results.
  *
  */
 public class SSHRawResult {
