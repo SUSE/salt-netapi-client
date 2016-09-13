@@ -276,24 +276,7 @@ public class LocalCall<R> implements Call<R> {
         args.put("tgt", target.getTarget());
         args.put("expr_form", target.getType());
 
-        // Map config properties to arguments
-        cfg.getExtraFilerefs().ifPresent(v -> args.put("extra_filerefs", v));
-        cfg.getIdentitiesOnly().ifPresent(v -> args.put("ssh_identities_only", v));
-        cfg.getIgnoreHostKeys().ifPresent(v -> args.put("ignore_host_keys", v));
-        cfg.getKeyDeploy().ifPresent(v -> args.put("ssh_key_deploy", v));
-        cfg.getNoHostKeys().ifPresent(v -> args.put("no_host_keys", v));
-        cfg.getPasswd().ifPresent(v -> args.put("ssh_passwd", v));
-        cfg.getPriv().ifPresent(v -> args.put("ssh_priv", v));
-        cfg.getRefreshCache().ifPresent(v -> args.put("refresh_cache", v));
-        cfg.getRemotePortForwards().ifPresent(v -> args.put("ssh_remote_port_forwards", v));
-        cfg.getRoster().ifPresent(v -> args.put("roster", v));
-        cfg.getRosterFile().ifPresent(v -> args.put("roster_file", v));
-        cfg.getScanPorts().ifPresent(v -> args.put("ssh_scan_ports", v));
-        cfg.getScanTimeout().ifPresent(v -> args.put("ssh_scan_timeout", v));
-        cfg.getSudo().ifPresent(v -> args.put("ssh_sudo", v));
-        cfg.getSSHMaxProcs().ifPresent(v -> args.put("ssh_max_procs", v));
-        cfg.getUser().ifPresent(v -> args.put("ssh_user", v));
-        cfg.getWipe().ifPresent(v -> args.put("ssh_wipe", v));
+        SaltSSHUtils.mapConfigPropsToArgs(cfg, args);
 
         Type xor = parameterizedType(null, Result.class,
                 parameterizedType(null, SSHResult.class, getReturnType().getType()));
