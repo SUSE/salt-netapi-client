@@ -123,5 +123,4 @@ public class JsonParser<T> {
         return gson.fromJson(jsonString, type.getType());
     }
 
-
 }

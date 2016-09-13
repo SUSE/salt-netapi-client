@@ -3,6 +3,7 @@ package com.suse.salt.netapi.client;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.Call;
 import com.suse.salt.netapi.calls.Client;
+import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
@@ -412,7 +413,7 @@ public class SaltClient {
     }
 
     public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final String command,
-            final Target<T> target)
+            final Target<T> target, SaltSSHConfig cfg)
         throws SaltException {
         Map<String, Object> props = new HashMap<>();
         props.put("client", Client.SSH.getValue());
@@ -420,6 +421,26 @@ public class SaltClient {
         props.put("expr_form", target.getType());
         props.put("fun", command);
         props.put("raw_shell", true);
+
+        // Map config properties to arguments
+        cfg.getExtraFilerefs().ifPresent(v -> props.put("extra_filerefs", v));
+        cfg.getIdentitiesOnly().ifPresent(v -> props.put("ssh_identities_only", v));
+        cfg.getIgnoreHostKeys().ifPresent(v -> props.put("ignore_host_keys", v));
+        cfg.getKeyDeploy().ifPresent(v -> props.put("ssh_key_deploy", v));
+        cfg.getNoHostKeys().ifPresent(v -> props.put("no_host_keys", v));
+        cfg.getPasswd().ifPresent(v -> props.put("ssh_passwd", v));
+        cfg.getPriv().ifPresent(v -> props.put("ssh_priv", v));
+        cfg.getRefreshCache().ifPresent(v -> props.put("refresh_cache", v));
+        cfg.getRemotePortForwards()
+                .ifPresent(v -> props.put("ssh_remote_port_forwards", v));
+        cfg.getRoster().ifPresent(v -> props.put("roster", v));
+        cfg.getRosterFile().ifPresent(v -> props.put("roster_file", v));
+        cfg.getScanPorts().ifPresent(v -> props.put("ssh_scan_ports", v));
+        cfg.getScanTimeout().ifPresent(v -> props.put("ssh_scan_timeout", v));
+        cfg.getSudo().ifPresent(v -> props.put("ssh_sudo", v));
+        cfg.getSSHMaxProcs().ifPresent(v -> props.put("ssh_max_procs", v));
+        cfg.getUser().ifPresent(v -> props.put("ssh_user", v));
+        cfg.getWipe().ifPresent(v -> props.put("ssh_wipe", v));
 
         List<Map<String, Object>> list = Collections.singletonList(props);
 
