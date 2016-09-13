@@ -411,14 +411,14 @@ public class SaltClient {
         return result.getResult().get(0);
     }
 
-    public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final Target<T> target,
-            final String function)
+    public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final String command,
+            final Target<T> target)
         throws SaltException {
         Map<String, Object> props = new HashMap<>();
         props.put("client", Client.SSH.getValue());
         props.put("tgt", target.getTarget());
         props.put("expr_form", target.getType());
-        props.put("fun", function);
+        props.put("fun", command);
         props.put("raw_shell", true);
 
         List<Map<String, Object>> list = Collections.singletonList(props);
