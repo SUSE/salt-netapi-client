@@ -23,19 +23,17 @@ public class SaltErrorUtils {
      * @param saltOutput salt output
      * @return salt error corresponding to given string
      */
-    public static Optional<SaltError> deriveError(Optional<String> saltOutput) {
-        return saltOutput.map(output -> {
-            Matcher fnuMatcher = FN_UNAVAILABLE.matcher(output);
-            Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(output);
-            if (fnuMatcher.find()) {
-                String fn = fnuMatcher.group(1);
-                return new FunctionNotAvailable(fn);
-            } else if (mnsMatcher.find()) {
-                String module = mnsMatcher.group(1);
-                return new ModuleNotSupported(module);
-            }
-            return null;
-        });
+    public static Optional<SaltError> deriveError(String saltOutput) {
+        Matcher fnuMatcher = FN_UNAVAILABLE.matcher(saltOutput);
+        Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(saltOutput);
+        if (fnuMatcher.find()) {
+            String fn = fnuMatcher.group(1);
+            return Optional.of(new FunctionNotAvailable(fn));
+        } else if (mnsMatcher.find()) {
+            String module = mnsMatcher.group(1);
+            return Optional.of(new ModuleNotSupported(module));
+        }
+        return Optional.empty();
     }
 
 }

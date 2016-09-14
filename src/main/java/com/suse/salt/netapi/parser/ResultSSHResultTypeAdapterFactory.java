@@ -13,14 +13,13 @@ import com.suse.salt.netapi.errors.GenericSaltError;
 import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
+import com.suse.salt.netapi.utils.SaltErrorUtils;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
-
-import static com.suse.salt.netapi.utils.SaltErrorUtils.deriveError;
 
 /**
  * {@link TypeAdapterFactory} for creating type adapters for parsing wrapped
@@ -73,7 +72,8 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                     }
                     return new Result<>(Xor.right(value));
                 } catch (Throwable e) {
-                    Optional<SaltError> saltError = deriveError(extractStdErr(json));
+                    Optional<SaltError> saltError =
+                            extractStdErr(json).flatMap(SaltErrorUtils::deriveError);
                     return new Result<>(Xor.left(
                             saltError.orElse(new GenericSaltError(json, e))));
                 }

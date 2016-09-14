@@ -12,6 +12,7 @@ import com.google.gson.stream.JsonWriter;
 
 import com.suse.salt.netapi.errors.GenericSaltError;
 import com.suse.salt.netapi.errors.SaltError;
+import com.suse.salt.netapi.utils.SaltErrorUtils;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;
@@ -19,8 +20,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import static com.suse.salt.netapi.utils.SaltErrorUtils.deriveError;
 
 /**
  * TypeAdaptorFactory creating TypeAdapters for Xor
@@ -57,7 +56,8 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
                     R value = innerAdapter.fromJsonTree(json);
                     return Xor.right(value);
                 } catch (Throwable e) {
-                    Optional<SaltError> saltError = deriveError(extractErrorString(json));
+                    Optional<SaltError> saltError =
+                            extractErrorString(json).flatMap(SaltErrorUtils::deriveError);
                     return Xor.left(saltError.orElse(new GenericSaltError(json, e)));
                 }
             }
