@@ -98,9 +98,5 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
         };
     }
 
-
-
-
 }
-
 
