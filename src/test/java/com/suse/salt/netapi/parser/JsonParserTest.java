@@ -322,7 +322,7 @@ public class JsonParserTest {
         assertFalse(result.error().isPresent());
         assertTrue(result.result().isPresent());
         SSHResult<Boolean> sshResult = result.result().get();
-        assertEquals(true, sshResult.getReturn().get());
+        assertTrue(sshResult.getReturn().get());
         assertEquals(0, sshResult.getRetcode());
         assertEquals("silver", sshResult.getId());
         assertEquals("test.ping", sshResult.getFun());
@@ -354,7 +354,7 @@ public class JsonParserTest {
         assertFalse(result.error().isPresent());
         assertTrue(result.result().isPresent());
         SSHResult<Boolean> sshResult = result.result().get();
-        assertEquals(false, sshResult.getReturn().isPresent());
+        assertFalse(sshResult.getReturn().isPresent());
         assertEquals(0, sshResult.getRetcode());
         assertEquals("silver", sshResult.getId());
         assertEquals("test.ping", sshResult.getFun());
@@ -374,7 +374,7 @@ public class JsonParserTest {
         assertFalse(result.error().isPresent());
         assertTrue(result.result().isPresent());
         SSHResult<String> sshResult = result.result().get();
-        assertEquals(true, sshResult.getReturn().isPresent());
+        assertTrue(sshResult.getReturn().isPresent());
         assertEquals(1, sshResult.getRetcode());
         assertEquals("silver", sshResult.getId());
         assertEquals("cmd.run", sshResult.getFun());
