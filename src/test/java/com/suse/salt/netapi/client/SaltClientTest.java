@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.impl.JDKConnectionFactory;
 import com.suse.salt.netapi.datatypes.Job;
@@ -30,8 +31,10 @@ import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.ResultInfo;
 import com.suse.salt.netapi.results.ResultInfoSet;
+import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -79,8 +82,12 @@ public class SaltClientTest {
             SaltClientTest.class.getResourceAsStream("/login_response.json"));
     static final String JSON_RUN_REQUEST = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/run_request.json"));
+    static final String JSON_SSHRAW_RUN_REQUEST = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream("/ssh_raw_run_request.json"));
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/run_response.json"));
+    static final String JSON_SSHRAW_RUN_RESPONSE = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream("/ssh_raw_run_response.json"));
     static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/stats_response.json"));
     static final String JSON_KEYS_RESPONSE = ClientUtils.streamToString(
@@ -192,6 +199,33 @@ public class SaltClientTest {
                 client.run("user", "pass", PAM, "local", new Glob(),
                 "pkg.install", args, kwargs);
         verifyRunResults(retvals);
+    }
+
+    @Test
+    public void testRunRawSSHCommand() throws SaltException {
+        Map<String, Result<SSHRawResult>> retvals = null;
+
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse().withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_SSHRAW_RUN_RESPONSE)));
+
+        retvals = client.runRawSSHCommand("uptime", new Glob(),
+                new SaltSSHConfig.Builder().build());
+
+        SSHRawResult expectedResult = new SSHRawResult(0,
+                "Password: \n 17:42pm  up  19:16,  0 users,  "
+                        + "load average: 0.00, 0.01, 0.05\n",
+                "Could not create directory '/srv/salt/.ssh'.\r\n"
+                        + "Failed to add the host to the list of known hosts"
+                        + " (/srv/salt/.ssh/known_hosts).\r\n");
+        assertNotNull(retvals);
+        assertEquals(expectedResult, retvals.get("sumarm30").result().orElseGet(null));
+        verify(1,
+                postRequestedFor(urlEqualTo("/run"))
+                        .withHeader("Accept", equalTo("application/json"))
+                        .withHeader("Content-Type", equalTo("application/json"))
+                        .withRequestBody(equalToJson(JSON_SSHRAW_RUN_REQUEST)));
     }
 
     @Test

@@ -1,0 +1,9 @@
+[
+  {
+    "client": "ssh",
+    "tgt": "*",
+    "expr_form": "glob",
+    "raw_shell": true,
+    "fun": "uptime"
+  }
+]
