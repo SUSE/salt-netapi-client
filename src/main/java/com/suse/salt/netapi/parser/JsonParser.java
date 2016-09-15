@@ -8,13 +8,13 @@ import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.StartTime;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.ResultInfoSet;
-
+import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.SSHRawResult;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,6 +66,9 @@ public class JsonParser<T> {
             new TypeToken<Return<List<Map<String, Map<String, Object>>>>>(){});
     public static final JsonParser<Return<List<Map<String, Object>>>> RUN_RESULTS =
             new JsonParser<>(new TypeToken<Return<List<Map<String, Object>>>>(){});
+    public static final JsonParser<Return<List<Map<String, Result<SSHRawResult>>>>>
+            RUNSSHRAW_RESULTS = new JsonParser<>(
+                    new TypeToken<Return<List<Map<String, Result<SSHRawResult>>>>>() { });
     public static final JsonParser<Stats> STATS =
             new JsonParser<>(new TypeToken<Stats>(){});
     public static final JsonParser<Return<Key.Names>> KEYS =
@@ -119,6 +122,5 @@ public class JsonParser<T> {
     public T parse(String jsonString) {
         return gson.fromJson(jsonString, type.getType());
     }
-
 
 }

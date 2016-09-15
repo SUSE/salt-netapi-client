@@ -1,0 +1,11 @@
+{
+  "return": [
+    {
+      "sumarm30": {
+        "retcode": 0,
+        "stderr": "Could not create directory '/srv/salt/.ssh'.\r\nFailed to add the host to the list of known hosts (/srv/salt/.ssh/known_hosts).\r\n",
+        "stdout": "Password: \n 17:42pm  up  19:16,  0 users,  load average: 0.00, 0.01, 0.05\n"
+      }
+    }
+  ]
+}

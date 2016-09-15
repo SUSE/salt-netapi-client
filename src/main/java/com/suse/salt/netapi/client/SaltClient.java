@@ -3,6 +3,8 @@ package com.suse.salt.netapi.client;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.Call;
 import com.suse.salt.netapi.calls.Client;
+import com.suse.salt.netapi.calls.SaltSSHConfig;
+import com.suse.salt.netapi.calls.SaltSSHUtils;
 import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
@@ -17,6 +19,8 @@ import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.Return;
+import com.suse.salt.netapi.results.SSHRawResult;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.ResultInfoSet;
 
 import com.google.gson.Gson;
@@ -408,6 +412,42 @@ public class SaltClient {
         // A list with one element is returned, we take the first
         return result.getResult().get(0);
     }
+
+    /**
+     * Calls salt-ssh with a command in raw shell mode (commands bypass Salt and
+     * gets executed as shell commands).
+     *
+     * @param <T> type of the tgt property for this command
+     * @param command to be executed
+     * @param target glob type, targets to be reached by the command
+     * @param cfg SaltSSH config holder
+     * @return a map in which every key is a host associated to the result of the
+     * raw command
+     * @throws SaltException
+     */
+
+    public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final String command,
+            final Target<T> target, SaltSSHConfig cfg)
+        throws SaltException {
+        Map<String, Object> props = new HashMap<>();
+        props.put("client", Client.SSH.getValue());
+        props.put("tgt", target.getTarget());
+        props.put("expr_form", target.getType());
+        props.put("fun", command);
+        props.put("raw_shell", true);
+
+        SaltSSHUtils.mapConfigPropsToArgs(cfg, props);
+
+        List<Map<String, Object>> list = Collections.singletonList(props);
+
+        String payload = gson.toJson(list);
+
+        Return<List<Map<String, Result<SSHRawResult>>>> result = connectionFactory
+                .create("/run", JsonParser.RUNSSHRAW_RESULTS, config).getResult(payload);
+
+        return result.getResult().get(0);
+    }
+
 
     /**
      * Asynchronously start any execution command bypassing normal session handling.
