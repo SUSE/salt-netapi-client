@@ -10,16 +10,15 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import com.suse.salt.netapi.errors.FunctionNotAvailable;
 import com.suse.salt.netapi.errors.GenericSaltError;
-import com.suse.salt.netapi.errors.ModuleNotSupported;
 import com.suse.salt.netapi.errors.SaltError;
+import com.suse.salt.netapi.utils.SaltErrorUtils;
 import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.regex.Matcher;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -38,7 +37,8 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
         Type type = typeToken.getType();
         boolean isXor = typeToken.getRawType() == Xor.class;
         boolean isParameterized = type instanceof ParameterizedType;
-        if (isXor && isParameterized) {
+        boolean isSSHResult = ResultSSHResultTypeAdapterFactory.isResultSSHResult(type);
+        if (isXor && isParameterized && !isSSHResult) {
             Type rightType = ((ParameterizedType) type).getActualTypeArguments()[1];
             TypeAdapter<?> elementAdapter = gson.getAdapter(TypeToken.get(rightType));
             return (TypeAdapter<A>) errorAdapter(elementAdapter);
@@ -56,23 +56,17 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
                     R value = innerAdapter.fromJsonTree(json);
                     return Xor.right(value);
                 } catch (Throwable e) {
-                    if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
-                        String string = json.getAsJsonPrimitive().getAsString();
-                        Matcher fnuMatcher = FN_UNAVAILABLE.matcher(string);
-                        Matcher mnsMatcher = MODULE_NOT_SUPPORTED.matcher(string);
-                        if (fnuMatcher.find()) {
-                            String fn = fnuMatcher.group(1);
-                            return Xor.left(new FunctionNotAvailable(fn));
-                        } else if (mnsMatcher.find()) {
-                            String module = mnsMatcher.group(1);
-                            return Xor.left(new ModuleNotSupported(module));
-                        } else {
-                            return Xor.left(new GenericSaltError(json, e));
-                        }
-                    } else {
-                        return Xor.left(new GenericSaltError(json, e));
-                    }
+                    Optional<SaltError> saltError =
+                            extractErrorString(json).flatMap(SaltErrorUtils::deriveError);
+                    return Xor.left(saltError.orElse(new GenericSaltError(json, e)));
                 }
+            }
+
+            private Optional<String> extractErrorString(JsonElement json) {
+                if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
+                    return Optional.of(json.getAsJsonPrimitive().getAsString());
+                }
+                return Optional.empty();
             }
 
             @Override

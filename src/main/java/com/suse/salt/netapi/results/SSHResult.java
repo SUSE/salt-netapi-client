@@ -54,4 +54,18 @@ public class SSHResult<T> {
     public Optional<String> getStdout() {
         return stdout;
     }
+
+    @Override
+    public String toString() {
+        return "SSHResult{" +
+                "fun='" + fun + '\'' +
+                ", funArgs=" + funArgs +
+                ", id='" + id + '\'' +
+                ", jid='" + jid + '\'' +
+                ", retcode=" + retcode +
+                ", returnAttribute=" + returnAttribute +
+                ", stderr=" + stderr +
+                ", stdout=" + stdout +
+                '}';
+    }
 }

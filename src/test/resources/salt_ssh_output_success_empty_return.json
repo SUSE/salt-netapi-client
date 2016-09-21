@@ -1,0 +1,8 @@
+{
+    "fun": "test.ping",
+    "fun_args": ["arg1", "arg2"],
+    "id": "silver",
+    "jid": "20141202152721523072",
+    "retcode": 0,
+    "return": null
+}
