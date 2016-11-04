@@ -19,6 +19,7 @@ import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.SaltClientTest;
 import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.target.Glob;
+import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -134,7 +135,7 @@ public class LocalCallTest {
                 .withBody(JSON_SSH_PING_RESPONSE)));
 
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
-        Target<String> target = new Glob("*");
+        SSHTarget<String> target = new Glob("*");
         SaltSSHConfig config = new SaltSSHConfig.Builder()
                 .extraFilerefs("my/file/ref")
                 .identitiesOnly(true)

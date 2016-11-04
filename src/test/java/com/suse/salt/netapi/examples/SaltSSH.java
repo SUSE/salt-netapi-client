@@ -5,7 +5,7 @@ import com.suse.salt.netapi.calls.modules.Grains;
 import com.suse.salt.netapi.calls.modules.Test;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Glob;
-import com.suse.salt.netapi.datatypes.target.Target;
+import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
@@ -29,7 +29,7 @@ public class SaltSSH {
         SaltSSHConfig sshConfig = new SaltSSHConfig.Builder().build();
 
         // Ping all minions using a glob matcher
-        Target<String> globTarget = new Glob("*");
+        SSHTarget<String> globTarget = new Glob("*");
         Map<String, Result<SSHResult<Boolean>>> minionResults =
                 Test.ping().callSyncSSH(client, globTarget, sshConfig);
 
