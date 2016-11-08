@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Target for specifying a list of minions.
  */
-public class MinionList implements Target<List<String>> {
+public class MinionList implements Target<List<String>>, SSHTarget<List<String>> {
 
     private final List<String> targets;
 

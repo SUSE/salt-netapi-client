@@ -5,6 +5,7 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.Batch;
+import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
@@ -270,7 +271,7 @@ public class LocalCall<R> implements Call<R> {
      * @throws SaltException if anything goes wrong
      */
     public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            Target<?> target, SaltSSHConfig cfg) throws SaltException {
+            SSHTarget<?> target, SaltSSHConfig cfg) throws SaltException {
         Map<String, Object> args = new HashMap<>();
         args.putAll(getPayload());
         args.put("tgt", target.getTarget());
