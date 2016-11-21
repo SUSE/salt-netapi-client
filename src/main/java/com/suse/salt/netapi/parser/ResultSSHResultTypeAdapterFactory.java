@@ -9,7 +9,7 @@ import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.suse.salt.netapi.errors.GenericSaltError;
+import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
@@ -75,7 +75,7 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                     Optional<SaltError> saltError =
                             extractStdErr(json).flatMap(SaltErrorUtils::deriveError);
                     return new Result<>(Xor.left(
-                            saltError.orElse(new GenericSaltError(json, e))));
+                            saltError.orElse(new JsonParsingError(json, e))));
                 }
             }
 

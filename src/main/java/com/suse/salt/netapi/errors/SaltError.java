@@ -9,7 +9,8 @@ public interface SaltError {
 
     <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
             Function<ModuleNotSupported, ? extends T> modNotSupported,
-            Function<GenericSaltError, ? extends T> generic);
+            Function<JsonParsingError, ? extends T> jsonError,
+            Function<GenericError, ? extends T> generic);
 
 }
 

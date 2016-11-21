@@ -5,7 +5,7 @@ import com.google.gson.JsonNull;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.errors.GenericSaltError;
+import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -105,7 +105,7 @@ public class LocateTest {
         response = call.callSync(client, new MinionList("minion1"));
 
         assertEquals(JsonNull.INSTANCE,
-                ((GenericSaltError) response.get("minion1").error().get()).getJson());
+                ((JsonParsingError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class LocateTest {
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").error().get());
-        assertTrue(response.get("minion1").error().get() instanceof GenericSaltError);
+        assertTrue(response.get("minion1").error().get() instanceof JsonParsingError);
     }
 
 }

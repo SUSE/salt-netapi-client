@@ -10,7 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import com.suse.salt.netapi.errors.GenericSaltError;
+import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.errors.SaltError;
 import com.suse.salt.netapi.utils.SaltErrorUtils;
 import com.suse.salt.netapi.utils.Xor;
@@ -58,7 +58,7 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
                 } catch (Throwable e) {
                     Optional<SaltError> saltError =
                             extractErrorString(json).flatMap(SaltErrorUtils::deriveError);
-                    return Xor.left(saltError.orElse(new GenericSaltError(json, e)));
+                    return Xor.left(saltError.orElse(new JsonParsingError(json, e)));
                 }
             }
 
