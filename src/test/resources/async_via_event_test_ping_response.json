@@ -1,0 +1,14 @@
+{
+  "return": [
+    {
+      "jid": "20161115135014396739",
+      "minions": [
+        "minion1",
+        "minion2",
+        "minion3",
+        "minion4",
+        "minion5"
+      ]
+    }
+  ]
+}

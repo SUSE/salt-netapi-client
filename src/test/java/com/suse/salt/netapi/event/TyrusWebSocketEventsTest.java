@@ -6,15 +6,10 @@ import com.suse.salt.netapi.datatypes.Event;
 import org.glassfish.tyrus.server.Server;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
-import javax.websocket.DeploymentException;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -23,47 +18,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * Salt events API WebSocket implementation test cases.
  */
-public class TyrusWebSocketEventsTest {
+public class TyrusWebSocketEventsTest extends EventsInit {
 
-    private static final int MOCK_HTTP_PORT = 8888;
-    private static final String MOCK_HTTP_HOST = "localhost";
-    private static final String WEBSOCKET_PATH = "/ws";
-
-    /**
-     * An instance of a {@link Server}
-     */
-    private Server serverEndpoint;
-
-    /**
-     * The WebSocket URI path to connect to the server.
-     */
-    private URI wsUri;
-
-    /**
-     * Client configuration used in every test
-     */
-    private ClientConfig clientConfig;
-
-    /**
-     * Prepare test environment: start a server on localhost
-     * and prepare WebSocket parameters.
-     *
-     * @throws DeploymentException Exception thrown if something wrong
-     * starting the {@link Server}.
-     * @throws URISyntaxException Exception on wrong {@link URI} syntax.
-     */
-    @Before
-    public void init() throws DeploymentException, URISyntaxException {
-        serverEndpoint = new Server(MOCK_HTTP_HOST, MOCK_HTTP_PORT, WEBSOCKET_PATH,
-                null, WebSocketServerSalt.class);
-        serverEndpoint.start();
-
-        wsUri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
-                .resolve(WEBSOCKET_PATH);
-
-        clientConfig = new ClientConfig();
-        clientConfig.put(ClientConfig.TOKEN, "token");
-        clientConfig.put(ClientConfig.URL, wsUri);
+    @Override
+    public Class<?> config() {
+        return TyrusWebSocketEventsTestMessages.class;
     }
 
     /**

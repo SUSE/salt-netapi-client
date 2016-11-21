@@ -1,0 +1,6 @@
+data: { "tag": "salt/job/20161115135014396739/ret/minion1", "data": { "fun_args": [], "jid": "20161115135014396739", "return": true, "retcode": 0, "success": true, "cmd": "_return", "_stamp": "2016-11-14T16:34:20.950496", "fun": "test.ping", "id": "minion1" } }
+
+data: { "tag": "salt/job/20161115135014396739/ret/minion2", "data": { "fun_args": [], "jid": "20161115135014396739", "return": "garbage", "retcode": 0, "success": true, "cmd": "_return", "_stamp": "2016-11-14T16:34:20.950496", "fun": "test.ping", "id": "minion2" } }
+
+data: { "tag": "salt/run/20161118112030138076/ret", "data": { "_stamp": "2016-11-18T10:20:30.925821", "fun": "runner.jobs.list_job", "jid": "20161118112030138076", "return": { "Arguments": [], "Function": "test.ping", "Minions": [ "minion1", "minion2", "minion3", "minion4", "minion5" ], "Result": { "minion3": { "return": true }, "minion4": { "return": "garbage" } }, "StartTime": "2016, Nov 18 11:15:56.513356", "Target": "*", "Target-type": "glob", "User": "root", "jid": "20161115135014396739" }, "success": true, "user": "salt" }}
+
