@@ -17,6 +17,14 @@ public class Result<R> {
 
     private final Xor<SaltError, R> xor;
 
+    public static <T> Result<T> success(T r) {
+        return new Result<>(Xor.right(r));
+    }
+
+    public static <T> Result<T> error(SaltError e) {
+        return new Result<>(Xor.left(e));
+    }
+
     public Result(Xor<SaltError, R> xor) {
         this.xor = xor;
     }
