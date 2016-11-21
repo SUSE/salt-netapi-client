@@ -3,22 +3,34 @@ package com.suse.salt.netapi.calls;
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 import com.suse.salt.netapi.AuthModule;
+import com.suse.salt.netapi.calls.runner.Jobs;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.target.SSHTarget;
+import com.suse.salt.netapi.datatypes.Event;
 import com.suse.salt.netapi.datatypes.target.Target;
+import com.suse.salt.netapi.errors.GenericError;
+import com.suse.salt.netapi.event.EventListener;
+import com.suse.salt.netapi.event.EventStream;
+import com.suse.salt.netapi.event.JobReturnEvent;
+import com.suse.salt.netapi.event.RunnerReturnEvent;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHResult;
 
 import com.google.gson.reflect.TypeToken;
+import com.suse.salt.netapi.utils.ClientUtils;
 
+import javax.websocket.CloseReason;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 /**
  * Class representing a function call of a salt execution module.
@@ -46,6 +58,38 @@ public class LocalCall<R> implements Call<R> {
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType) {
         this(functionName, arg, kwarg, returnType, Optional.empty());
+    }
+
+    private static <R> Optional<Result<R>> onRunnerReturn(
+            String mid,
+            String jid,
+            RunnerReturnEvent rre,
+            TypeToken<Result<R>> tt
+    ) {
+        final RunnerReturnEvent.Data data = rre.getData();
+        if (data.getFun().contentEquals("runner.jobs.list_job")) {
+            Jobs.Info result = data.getResult(Jobs.Info.class);
+            if (result.getJid().equals(jid)) {
+                return result.getResult(mid, tt);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private static <R> Optional<Result<R>> onJobReturn(
+            String mid,
+            String jid,
+            JobReturnEvent jre,
+            TypeToken<Result<R>> tt
+    ) {
+        if (jre.getJobId().contentEquals(jid) && jre.getMinionId().contentEquals(mid)) {
+            return Optional.of(jre.getData().getResult(tt));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public LocalCall<R> withMetadata(Object metadata) {
@@ -98,6 +142,76 @@ public class LocalCall<R> implements Call<R> {
         LocalAsyncResult<R> result = wrapper.getResult().get(0);
         result.setType(getReturnType());
         return result;
+    }
+
+    /**
+     * Calls this salt call via the async client and returns the results
+     * as they come in via the event stream.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param events the event stream to use
+     * @param cancel future to cancel the action
+     * @return a map from minion id to future of the result.
+     * @throws SaltException if anything goes wrong
+     */
+    public Map<String, CompletionStage<Result<R>>> callAsync(
+            SaltClient client,
+            Target<?> target,
+            EventStream events,
+            CompletionStage<GenericError> cancel)
+            throws SaltException {
+        LocalAsyncResult<R> lar = this.callAsync(client, target);
+        TypeToken<R> returnTypeToken = this.getReturnType();
+        Type result = ClientUtils.parameterizedType(null,
+                Result.class, returnTypeToken.getType());
+        TypeToken<Result<R>> typeToken = (TypeToken<Result<R>>) TypeToken.get(result);
+        Map<String, CompletionStage<Result<R>>> collect =
+                lar.getMinions().stream().collect(Collectors.toMap(
+                    mid -> mid,
+                        mid -> {
+                            CompletableFuture<Result<R>> future = new CompletableFuture<>();
+                            EventListener listener = new EventListener() {
+                                @Override
+                                public void notify(Event event) {
+                                    Optional<RunnerReturnEvent> runner =
+                                            RunnerReturnEvent.parse(event);
+                                    if (runner.isPresent()) {
+                                        runner.flatMap(
+                                            e -> onRunnerReturn(mid, lar.getJid()
+                                                    , e, typeToken)
+                                        ).ifPresent(future::complete);
+                                    } else {
+                                        JobReturnEvent.parse(event).flatMap(
+                                            e -> onJobReturn(mid, lar.getJid(),
+                                                    e, typeToken)
+                                        ).ifPresent(future::complete);
+                                    }
+                                }
+
+                                @Override
+                                public void eventStreamClosed(CloseReason closeReason) {
+                                    future.complete(Result.error(
+                                            new GenericError(
+                                                    "EventStream closed with reason "
+                                                            + closeReason)
+                                    ));
+                                }
+                            };
+                            events.addEventListener(listener);
+                            cancel.whenComplete((v, e) -> {
+                                if (v != null) {
+                                    future.complete(Result.error(v));
+                                }
+                            });
+                            return (CompletionStage<Result<R>>) future.whenComplete(
+                                    (v, e) -> events.removeEventListener(listener));
+                        })
+                );
+        // fire off lookup to get a result event for minions that already finished
+        // before we installed the listeners
+        Jobs.lookupJid(lar).callAsync(client);
+        return collect;
     }
 
     /**

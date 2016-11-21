@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Event stream implementation based on a {@link ClientEndpoint} WebSocket.
@@ -222,7 +223,9 @@ public class EventStream implements AutoCloseable {
                 // Salt API adds a "data: " prefix that we need to ignore
                 Event event = JsonParser.EVENTS.parse(message.substring(6));
                 synchronized (listeners) {
-                    listeners.stream().forEach(listener -> listener.notify(event));
+                    List<EventListener> collect = listeners.stream()
+                            .collect(Collectors.toList());
+                    collect.forEach(listener -> listener.notify(event));
                 }
             }
         } else {
