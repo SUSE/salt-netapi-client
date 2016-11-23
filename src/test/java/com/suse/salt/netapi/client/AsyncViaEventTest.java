@@ -114,12 +114,12 @@ public class AsyncViaEventTest extends EventsInit {
         CountDownLatch countDownLatch = new CountDownLatch(5);
         Map<String, Result<Boolean>> results = new HashMap<>();
         Map<String, Long> times = new HashMap<>();
-        call.entrySet().forEach(entry -> {
-            entry.getValue().whenComplete((v, e) -> {
+        call.forEach((key, value) -> {
+            value.whenComplete((v, e) -> {
                 if (v != null) {
-                    results.put(entry.getKey(), v);
+                    results.put(key, v);
                 }
-                times.put(entry.getKey(), System.currentTimeMillis());
+                times.put(key, System.currentTimeMillis());
                 countDownLatch.countDown();
             });
         });
