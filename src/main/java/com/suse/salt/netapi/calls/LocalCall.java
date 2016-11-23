@@ -202,6 +202,8 @@ public class LocalCall<R> implements Call<R> {
                             cancel.whenComplete((v, e) -> {
                                 if (v != null) {
                                     future.complete(Result.error(v));
+                                } else if (e != null) {
+                                    future.completeExceptionally(e);
                                 }
                             });
                             return (CompletionStage<Result<R>>) future.whenComplete(
