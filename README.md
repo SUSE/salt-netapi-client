@@ -1,4 +1,7 @@
-# salt-netapi-client [![Build Status](https://travis-ci.org/SUSE/salt-netapi-client.svg?branch=master)](https://travis-ci.org/SUSE/salt-netapi-client)
+[![Build Status](https://travis-ci.org/SUSE/salt-netapi-client.svg?branch=master)](https://travis-ci.org/SUSE/salt-netapi-client)
+[![Maven Central](https://img.shields.io/maven-central/v/com.suse.salt/salt-netapi-client.svg)](https://mvnrepository.com/artifact/com.suse.salt/salt-netapi-client)
+
+# salt-netapi-client
 
 Java bindings for the [Salt API] (http://docs.saltstack.com/en/latest/ref/netapi/all/salt.netapi.rest_cherrypy.html#module-salt.netapi.rest_cherrypy.app), please have a look at the Javadoc for [v0.9.0] (http://suse.github.io/salt-netapi-client/docs/v0.9.0) or [master] (http://suse.github.io/salt-netapi-client/docs/master).
 
