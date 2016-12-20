@@ -86,12 +86,9 @@ public class Status {
                 new TypeToken<Map<Integer, Map<String, String>>>(){});
     }
 
-    public static LocalCall<Float> uptime() {
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        // This requires salt-master version to be >= 2015.8.4
-        args.put("human_readable", false);
-        return new LocalCall<>("status.uptime", Optional.empty(), Optional.of(args),
-                new TypeToken<Float>(){});
+    public static LocalCall<String> uptime() {
+        return new LocalCall<>("status.uptime", Optional.empty(), Optional.empty(),
+                new TypeToken<String>(){});
     }
 
     public static LocalCall<String> version() {
