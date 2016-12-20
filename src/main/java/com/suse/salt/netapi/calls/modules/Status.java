@@ -85,9 +85,9 @@ public class Status {
                 new TypeToken<Map<Integer, Map<String, String>>>(){});
     }
 
-    public static LocalCall<String> uptime() {
+    public static LocalCall<Map<String, Object>> uptime() {
         return new LocalCall<>("status.uptime", Optional.empty(), Optional.empty(),
-                new TypeToken<String>(){});
+                new TypeToken<Map<String, Object>>(){});
     }
 
     public static LocalCall<String> version() {
