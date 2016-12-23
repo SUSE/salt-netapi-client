@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -86,12 +85,9 @@ public class Status {
                 new TypeToken<Map<Integer, Map<String, String>>>(){});
     }
 
-    public static LocalCall<Float> uptime() {
-        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-        // This requires salt-master version to be >= 2015.8.4
-        args.put("human_readable", false);
-        return new LocalCall<>("status.uptime", Optional.empty(), Optional.of(args),
-                new TypeToken<Float>(){});
+    public static LocalCall<Map<String, Object>> uptime() {
+        return new LocalCall<>("status.uptime", Optional.empty(), Optional.empty(),
+                new TypeToken<Map<String, Object>>(){});
     }
 
     public static LocalCall<String> version() {
