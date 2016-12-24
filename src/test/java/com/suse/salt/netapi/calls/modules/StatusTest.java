@@ -24,7 +24,7 @@ import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 /**
- * Locate module unit tests.
+ * Status module unit tests.
  */
 public class StatusTest {
 
