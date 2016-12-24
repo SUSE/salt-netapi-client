@@ -29,10 +29,10 @@ import com.suse.salt.netapi.utils.ClientUtils;
 public class StatusTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
-    
+
     static final String JSON_UPTIME_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/status/uptime.json"));
-    
+
     private SaltClient client;
 
     @Rule
@@ -43,7 +43,7 @@ public class StatusTest {
         URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
         client = new SaltClient(uri);
     }
-    
+
     @Test
     public final void testUptime() throws SaltException {
         // First we get the call to use in the tests
