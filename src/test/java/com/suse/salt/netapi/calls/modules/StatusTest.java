@@ -9,9 +9,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +19,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.errors.GenericSaltError;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
