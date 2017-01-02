@@ -264,7 +264,7 @@ public class LocalCall<R> implements Call<R> {
         CompletableFuture<Void> allResolves = CompletableFuture.allOf(
                 futures.entrySet().stream().map(entry ->
                     //mask errors since CompletableFuture.allOf resolves on first error
-                    entry.getValue().handle((v, e) -> 0)
+                    entry.getValue().<Integer>handle((v, e) -> 0)
                 ).toArray(CompletableFuture[]::new)
         );
 
