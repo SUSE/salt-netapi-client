@@ -61,37 +61,6 @@ public class LocalCall<R> implements Call<R> {
         this(functionName, arg, kwarg, returnType, Optional.empty());
     }
 
-    private static <R> void onRunnerReturn(
-            String jid,
-            RunnerReturnEvent rre,
-            TypeToken<Result<R>> tt,
-            Map<String, CompletableFuture<Result<R>>> targets
-    ) {
-        final RunnerReturnEvent.Data data = rre.getData();
-        if (data.getFun().contentEquals("runner.jobs.list_job")) {
-            Jobs.Info result = data.getResult(Jobs.Info.class);
-            if (result.getJid().equals(jid)) {
-                targets.forEach((mid, f) -> {
-                    result.getResult(mid, tt).ifPresent(f::complete);
-                });
-            }
-        }
-    }
-
-    private static <R> void onJobReturn(
-            String jid,
-            JobReturnEvent jre,
-            TypeToken<Result<R>> tt,
-            Map<String, CompletableFuture<Result<R>>> targets
-    ) {
-        if (jre.getJobId().contentEquals(jid)) {
-            CompletableFuture<Result<R>> f = targets.get(jre.getMinionId());
-            if (f != null) {
-                f.complete(jre.getData().getResult(tt));
-            }
-        }
-    }
-
     public LocalCall<R> withMetadata(Object metadata) {
         return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.of(metadata));
     }
@@ -177,7 +146,6 @@ public class LocalCall<R> implements Call<R> {
         );
     }
 
-
     /**
      * Calls this salt call via the async client and returns the results
      * as they come in via the event stream.
@@ -203,7 +171,6 @@ public class LocalCall<R> implements Call<R> {
         );
     }
 
-
     /**
      * Calls this salt call via the async client and returns the results
      * as they come in via the event stream.
@@ -227,6 +194,7 @@ public class LocalCall<R> implements Call<R> {
         TypeToken<R> returnTypeToken = this.getReturnType();
         Type result = ClientUtils.parameterizedType(null,
                 Result.class, returnTypeToken.getType());
+        @SuppressWarnings("unchecked")
         TypeToken<Result<R>> typeToken = (TypeToken<Result<R>>) TypeToken.get(result);
 
         Map<String, CompletableFuture<Result<R>>> futures =
@@ -263,7 +231,7 @@ public class LocalCall<R> implements Call<R> {
 
         CompletableFuture<Void> allResolves = CompletableFuture.allOf(
                 futures.entrySet().stream().map(entry ->
-                    //mask errors since CompletableFuture.allOf resolves on first error
+                    // mask errors since CompletableFuture.allOf resolves on first error
                     entry.getValue().<Integer>handle((v, e) -> 0)
                 ).toArray(CompletableFuture[]::new)
         );
@@ -485,5 +453,36 @@ public class LocalCall<R> implements Call<R> {
                 (TypeToken<Return<List<Map<String, Result<SSHResult<R>>>>>>)
                 TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
+    }
+
+    private static <R> void onRunnerReturn(
+            String jid,
+            RunnerReturnEvent rre,
+            TypeToken<Result<R>> tt,
+            Map<String, CompletableFuture<Result<R>>> targets
+    ) {
+        final RunnerReturnEvent.Data data = rre.getData();
+        if (data.getFun().contentEquals("runner.jobs.list_job")) {
+            Jobs.Info result = data.getResult(Jobs.Info.class);
+            if (result.getJid().equals(jid)) {
+                targets.forEach((mid, f) -> {
+                    result.getResult(mid, tt).ifPresent(f::complete);
+                });
+            }
+        }
+    }
+
+    private static <R> void onJobReturn(
+            String jid,
+            JobReturnEvent jre,
+            TypeToken<Result<R>> tt,
+            Map<String, CompletableFuture<Result<R>>> targets
+    ) {
+        if (jre.getJobId().contentEquals(jid)) {
+            CompletableFuture<Result<R>> f = targets.get(jre.getMinionId());
+            if (f != null) {
+                f.complete(jre.getData().getResult(tt));
+            }
+        }
     }
 }

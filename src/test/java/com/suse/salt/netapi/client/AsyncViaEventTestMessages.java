@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- *
+ * Web socket endpoint mock returning messages from a file.
  */
 @ServerEndpoint(value = "/token")
 public class AsyncViaEventTestMessages extends MockingWebSocket {

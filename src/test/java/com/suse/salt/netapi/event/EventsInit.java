@@ -9,7 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- *
+ * Base class to prepare an environment for running tests.
  */
 public abstract class EventsInit {
 

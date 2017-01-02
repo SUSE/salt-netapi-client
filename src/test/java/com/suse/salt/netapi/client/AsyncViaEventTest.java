@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Salt events API WebSocket implementation test cases.
+ * Tests for callAsync() taking an event stream to return results as they come in.
  */
 public class AsyncViaEventTest extends EventsInit {
 
@@ -101,7 +101,7 @@ public class AsyncViaEventTest extends EventsInit {
         EventStream events = new EventStream(clientConfig);
 
         Map<String, CompletionStage<Result<Boolean>>> call =
-                 com.suse.salt.netapi.calls.modules.Test.ping().callAsync(
+                com.suse.salt.netapi.calls.modules.Test.ping().callAsync(
                     client,
                     Glob.ALL,
                     events,
@@ -152,6 +152,4 @@ public class AsyncViaEventTest extends EventsInit {
         assertEquals("canceled",
                 ((GenericError) results.get("minion5").error().get()).getMessage());
     }
-
-
 }
