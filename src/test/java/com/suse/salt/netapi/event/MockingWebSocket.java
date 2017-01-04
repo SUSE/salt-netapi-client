@@ -6,20 +6,20 @@ import java.util.stream.Stream;
 
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 /**
- * This class is intended to emulate the Server WebSocket
- * EndPoint where EventStream is connected to, and where events came from.
+ * Server endpoint to emulate the WebSocket based stream of Salt events.
  */
 @ServerEndpoint(value = "/token")
 public abstract class MockingWebSocket {
 
     /**
-     *
+     * A single message to be sent.
      */
     public static class Message {
         private String message;
@@ -45,8 +45,7 @@ public abstract class MockingWebSocket {
     }
 
     /**
-     * return the messages to send
-     * @return messages
+     * @return the messages to be sent
      */
     public abstract Stream<Message> messages();
 
@@ -77,5 +76,9 @@ public abstract class MockingWebSocket {
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
     }
 }

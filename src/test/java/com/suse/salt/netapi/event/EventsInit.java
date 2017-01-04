@@ -2,6 +2,7 @@ package com.suse.salt.netapi.event;
 
 import com.suse.salt.netapi.config.ClientConfig;
 import org.glassfish.tyrus.server.Server;
+import org.junit.After;
 import org.junit.Before;
 
 import javax.websocket.DeploymentException;
@@ -9,13 +10,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Base class to prepare an environment for running tests.
+ * Base class for running tests involving the WebSocket based event stream.
  */
 public abstract class EventsInit {
 
-    private static final int MOCK_HTTP_PORT = 8889;
-    private static final String MOCK_HTTP_HOST = "localhost";
-    private static final String WEBSOCKET_PATH = "/ws";
+    private static final int MOCK_WEBSOCKET_PORT = 8889;
+    private static final String MOCK_WEBSOCKET_HOST = "localhost";
+    private static final String MOCK_WEBSOCKET_PATH = "/ws";
 
     /**
      * An instance of a {@link Server}
@@ -33,8 +34,8 @@ public abstract class EventsInit {
     protected ClientConfig clientConfig;
 
     /**
-     * Prepare test environment: start a server on localhost
-     * and prepare WebSocket parameters.
+     * For each test make sure that the server endpoint to serve the event stream is started
+     * and prepare WebSocket related config parameters.
      *
      * @throws DeploymentException Exception thrown if something wrong
      * starting the {@link Server}.
@@ -42,16 +43,21 @@ public abstract class EventsInit {
      */
     @Before
     public void init() throws DeploymentException, URISyntaxException {
-        serverEndpoint = new Server(MOCK_HTTP_HOST, MOCK_HTTP_PORT, WEBSOCKET_PATH,
-                null, config());
+        serverEndpoint = new Server(MOCK_WEBSOCKET_HOST, MOCK_WEBSOCKET_PORT,
+                MOCK_WEBSOCKET_PATH, null, config());
         serverEndpoint.start();
 
-        wsUri = new URI("ws://" + MOCK_HTTP_HOST + ":" + MOCK_HTTP_PORT)
-                .resolve(WEBSOCKET_PATH);
+        wsUri = new URI("ws://" + MOCK_WEBSOCKET_HOST + ":" + MOCK_WEBSOCKET_PORT)
+                .resolve(MOCK_WEBSOCKET_PATH);
 
         clientConfig = new ClientConfig();
         clientConfig.put(ClientConfig.TOKEN, "token");
         clientConfig.put(ClientConfig.URL, wsUri);
+    }
+
+    @After
+    public void cleanup() {
+        serverEndpoint.stop();
     }
 
     public abstract Class<?> config();

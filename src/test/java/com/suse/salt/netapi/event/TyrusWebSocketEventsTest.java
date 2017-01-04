@@ -3,8 +3,6 @@ package com.suse.salt.netapi.event;
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.datatypes.Event;
 
-import org.glassfish.tyrus.server.Server;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -139,15 +137,6 @@ public class TyrusWebSocketEventsTest extends EventsInit {
                     maxMessageLength + " characters)";
             Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
         }
-    }
-
-    /**
-     * At the end of the test {@link Server} stops
-     * and release its address for other test execution.
-     */
-    @After
-    public void stop() {
-        serverEndpoint.stop();
     }
 
     /**
