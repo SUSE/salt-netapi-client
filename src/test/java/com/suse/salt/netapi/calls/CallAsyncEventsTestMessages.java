@@ -1,4 +1,4 @@
-package com.suse.salt.netapi.client;
+package com.suse.salt.netapi.calls;
 
 import com.suse.salt.netapi.event.MockingWebSocket;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  * Web socket endpoint mock returning messages from a file.
  */
 @ServerEndpoint(value = "/token")
-public class AsyncViaEventTestMessages extends MockingWebSocket {
+public class CallAsyncEventsTestMessages extends MockingWebSocket {
     @Override
     public Stream<Message> messages() {
         String[] split = ClientUtils.streamToString(MockingWebSocket.class
