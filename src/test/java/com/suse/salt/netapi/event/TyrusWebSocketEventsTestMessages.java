@@ -6,7 +6,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.util.stream.Stream;
 
 /**
- *
+ * Mocked WebSocket endpoint returning messages from a file.
  */
 @ServerEndpoint(value = "/token")
 public class TyrusWebSocketEventsTestMessages extends MockingWebSocket {
