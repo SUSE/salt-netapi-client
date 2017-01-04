@@ -5,7 +5,7 @@ import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.errors.GenericError;
 import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.event.EventStream;
-import com.suse.salt.netapi.event.EventsInit;
+import com.suse.salt.netapi.event.AbstractEventsTest;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests for callAsync() taking an event stream to return results as they come in.
  */
-public class AsyncViaEventTest extends EventsInit {
+public class AsyncViaEventTest extends AbstractEventsTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 

@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 /**
  * Base class for running tests involving the WebSocket based event stream.
  */
-public abstract class EventsInit {
+public abstract class AbstractEventsTest {
 
     private static final int MOCK_WEBSOCKET_PORT = 8889;
     private static final String MOCK_WEBSOCKET_HOST = "localhost";

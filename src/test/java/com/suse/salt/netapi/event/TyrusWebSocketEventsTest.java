@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Salt events API WebSocket implementation test cases.
  */
-public class TyrusWebSocketEventsTest extends EventsInit {
+public class TyrusWebSocketEventsTest extends AbstractEventsTest {
 
     @Override
     public Class<?> config() {
