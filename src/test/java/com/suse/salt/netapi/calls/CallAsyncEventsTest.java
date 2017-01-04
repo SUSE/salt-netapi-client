@@ -1,6 +1,8 @@
-package com.suse.salt.netapi.client;
+package com.suse.salt.netapi.calls;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.errors.GenericError;
 import com.suse.salt.netapi.errors.JsonParsingError;
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests for callAsync() taking an event stream to return results as they come in.
  */
-public class AsyncViaEventTest extends AbstractEventsTest {
+public class CallAsyncEventsTest extends AbstractEventsTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
@@ -57,7 +59,7 @@ public class AsyncViaEventTest extends AbstractEventsTest {
 
     @Override
     public Class<?> config() {
-        return AsyncViaEventTestMessages.class;
+        return CallAsyncEventsTestMessages.class;
     }
 
     public static <T> CompletableFuture<T> completeAfter(T value, Duration duration) {
@@ -72,7 +74,7 @@ public class AsyncViaEventTest extends AbstractEventsTest {
             Executors.newScheduledThreadPool(1);
 
     private String json(String name) {
-        return ClientUtils.streamToString(AsyncViaEventTest
+        return ClientUtils.streamToString(CallAsyncEventsTest
                 .class.getResourceAsStream(name));
     }
 
