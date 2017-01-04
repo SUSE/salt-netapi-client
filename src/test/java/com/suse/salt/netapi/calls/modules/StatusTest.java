@@ -60,8 +60,8 @@ public class StatusTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_DISKSTATS_RESPONSE)));
 
-        Map<String, Result<Map<String, Map<String, Object>>>> response = call.callSync(client,
-                new MinionList("minion"));
+        Map<String, Result<Map<String, Map<String, Object>>>> response =
+                call.callSync(client, new MinionList("minion"));
 
         assertNotNull(response.get("minion"));
         Map<String, Map<String, Object>> minion = response.get("minion").result().get();
