@@ -30,6 +30,9 @@ public class StatusTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
+    static final String JSON_LOADAVG_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/status/loadavg.json"));
+
     static final String JSON_DISKSTATS_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/status/diskstats.json"));
 
@@ -45,6 +48,32 @@ public class StatusTest {
     public void init() {
         URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
         client = new SaltClient(uri);
+    }
+
+    @Test
+    public final void testLoadavg() throws SaltException {
+        // First we get the call to use in the tests
+        LocalCall<Map<String, Double>> call = Status.loadavg();
+        assertEquals("status.loadavg", call.getPayload().get("fun"));
+
+        // Test with an successful response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_LOADAVG_RESPONSE)));
+
+        Map<String, Result<Map<String, Double>>> response =
+                call.callSync(client, new MinionList("minion"));
+
+        assertNotNull(response.get("minion"));
+        Map<String, Double> minion = response.get("minion").result().get();
+        assertNotNull(minion);
+
+        assertEquals(3, minion.size());
+        assertEquals(Double.valueOf(0.22), minion.get("15-min"));
+        assertEquals(Double.valueOf(0.1), minion.get("5-min"));
+        assertEquals(Double.valueOf(0.16), minion.get("1-min"));
     }
 
     @Test
