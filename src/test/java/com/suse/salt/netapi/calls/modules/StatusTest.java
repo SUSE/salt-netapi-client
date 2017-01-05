@@ -33,6 +33,9 @@ public class StatusTest {
     static final String JSON_LOADAVG_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/status/loadavg.json"));
 
+    static final String JSON_DISKUSAGE_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/status/diskusage.json"));
+
     static final String JSON_DISKSTATS_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/status/diskstats.json"));
 
@@ -74,6 +77,32 @@ public class StatusTest {
         assertEquals(Double.valueOf(0.22), minion.get("15-min"));
         assertEquals(Double.valueOf(0.1), minion.get("5-min"));
         assertEquals(Double.valueOf(0.16), minion.get("1-min"));
+    }
+
+    @Test
+    public final void testDiskusage() throws SaltException {
+        // First we get the call to use in the tests
+        LocalCall<Map<String, Map<String, Long>>> call = Status.diskusage();
+        assertEquals("status.diskusage", call.getPayload().get("fun"));
+
+        // Test with an successful response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_DISKUSAGE_RESPONSE)));
+
+        Map<String, Result<Map<String, Map<String, Long>>>> response =
+                call.callSync(client, new MinionList("minion"));
+
+        assertNotNull(response.get("minion"));
+        Map<String, Map<String, Long>> minion = response.get("minion").result().get();
+        assertNotNull(minion);
+
+        Map<String, Long> root = minion.get("/");
+        assertEquals(2, root.size());
+        assertEquals(Long.valueOf(2603425792L), root.get("available"));
+        assertEquals(Long.valueOf(8562601984L), root.get("total"));
     }
 
     @Test

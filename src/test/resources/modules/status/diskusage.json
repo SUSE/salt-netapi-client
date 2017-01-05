@@ -1,0 +1,36 @@
+{
+  "return":[
+    {
+      "minion":{
+        "/proc":{
+          "available":0,
+          "total":0
+        },
+        "/dev":{
+          "available":1960062976,
+          "total":1960108032
+        },
+        "/proc/sys/fs/binfmt_misc":{
+          "available":0,
+          "total":0
+        },
+        "/":{
+          "available":2603425792,
+          "total":8562601984
+        },
+        "/dev/pts":{
+          "available":0,
+          "total":0
+        },
+        "/sys":{
+          "available":0,
+          "total":0
+        },
+        "/dev/shm":{
+          "available":1968992256,
+          "total":1969004544
+        }
+      }
+    }
+  ]
+}
