@@ -30,6 +30,9 @@ public class StatusTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
+    static final String JSON_MEMINFO_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/status/meminfo.json"));
+
     static final String JSON_LOADAVG_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/status/loadavg.json"));
 
@@ -51,6 +54,66 @@ public class StatusTest {
     public void init() {
         URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
         client = new SaltClient(uri);
+    }
+
+    @Test
+    public final void testMeminfo() throws SaltException {
+        // First we get the call to use in the tests
+        LocalCall<Map<String, Map<String, Object>>> call = Status.meminfo();
+        assertEquals("status.meminfo", call.getPayload().get("fun"));
+
+        // Test with an successful response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_MEMINFO_RESPONSE)));
+
+        Map<String, Result<Map<String, Map<String, Object>>>> response =
+                call.callSync(client, new MinionList("minion"));
+
+        assertNotNull(response.get("minion"));
+
+        Map<String, Map<String, Object>> minion = response.get("minion").result().get();
+        assertNotNull(minion);
+
+        assertEquals(35, minion.size());
+
+        assertEquals("657292", minion.get("Active(file)").get("value"));
+        assertEquals("0", minion.get("WritebackTmp").get("value"));
+        assertEquals("0", minion.get("SwapTotal").get("value"));
+        assertEquals("194748", minion.get("Active(anon)").get("value"));
+        assertEquals("0", minion.get("SwapFree").get("value"));
+        assertEquals("1080", minion.get("KernelStack").get("value"));
+        assertEquals("1572220", minion.get("MemFree").get("value"));
+        assertEquals("408956", minion.get("Committed_AS").get("value"));
+        assertEquals("0", minion.get("NFS_Unstable").get("value"));
+        assertEquals("34359717488", minion.get("VmallocChunk").get("value"));
+        assertEquals("0", minion.get("Writeback").get("value"));
+        assertEquals("1132228", minion.get("Inactive(file)").get("value"));
+        assertEquals("3845716", minion.get("MemTotal").get("value"));
+        assertEquals("18752", minion.get("VmallocUsed").get("value"));
+        assertEquals("194800", minion.get("AnonPages").get("value"));
+        assertEquals("852040", minion.get("Active").get("value"));
+        assertEquals("16", minion.get("Inactive(anon)").get("value"));
+        assertEquals("1922856", minion.get("CommitLimit").get("value"));
+        assertEquals("1550520", minion.get("Cached").get("value"));
+        assertEquals("0", minion.get("SwapCached").get("value"));
+        assertEquals("34359738367", minion.get("VmallocTotal").get("value"));
+        assertEquals("56", minion.get("Shmem").get("value"));
+        assertEquals("29228", minion.get("Mapped").get("value"));
+        assertEquals("8364", minion.get("SUnreclaim").get("value"));
+        assertEquals("0", minion.get("Unevictable").get("value"));
+        assertEquals("256552", minion.get("SReclaimable").get("value"));
+        assertEquals("0", minion.get("Mlocked").get("value"));
+        assertEquals("0", minion.get("DirectMap2M").get("value"));
+        assertEquals("0", minion.get("Bounce").get("value"));
+        assertEquals("1132244", minion.get("Inactive").get("value"));
+        assertEquals("3968", minion.get("PageTables").get("value"));
+        assertEquals("3940352", minion.get("DirectMap4k").get("value"));
+        assertEquals("264916", minion.get("Slab").get("value"));
+        assertEquals("239048", minion.get("Buffers").get("value"));
+        assertEquals("44", minion.get("Dirty").get("value"));
     }
 
     @Test
