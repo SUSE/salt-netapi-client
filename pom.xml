@@ -17,10 +17,14 @@
   </licenses>
   <developers>
     <developer>
-      <email>jrenner@suse.com</email>
       <name>Johannes Renner</name>
+      <email>jrenner@suse.com</email>
       <url>https://github.com/renner</url>
-      <id>jrenner</id>
+    </developer>
+    <developer>
+      <name>Kevin Walter</name>
+      <email>kwalter@suse.com</email>
+      <url>https://github.com/lucidd</url>
     </developer>
   </developers>
   <scm>
