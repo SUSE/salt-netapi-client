@@ -1,0 +1,19 @@
+{
+  "return":[
+    {
+      "minion":{
+        "comment":[
+          "Restart using process argv:",
+          " /usr/bin/salt-minion",
+          " -d"
+        ],
+        "killed":10733,
+        "restart":{
+          "stderr":"",
+          "stdout":""
+        },
+        "retcode":0
+      }
+    }
+  ]
+}
