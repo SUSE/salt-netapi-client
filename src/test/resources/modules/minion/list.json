@@ -1,0 +1,25 @@
+{
+  "return":[
+    {
+      "master":{
+        "minions_rejected":[
+          "minionrejected1",
+          "minionrejected2"
+        ],
+        "minions_denied":[
+          "miniondenied1",
+          "miniondenied2"
+        ],
+        "minions_pre":[
+          "minionpre1",
+          "minionpre2"
+        ],
+        "minions":[
+          "minion1",
+          "minion2",
+          "master"
+        ]
+      }
+    }
+  ]
+}
