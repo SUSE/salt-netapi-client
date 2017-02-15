@@ -12,6 +12,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -118,6 +119,7 @@ public class HttpClientConnection<T> implements Connection<T> {
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(config.get(ClientConfig.CONNECT_TIMEOUT))
                 .setSocketTimeout(config.get(ClientConfig.SOCKET_TIMEOUT))
+                .setCookieSpec(CookieSpecs.STANDARD)
                 .build();
 
         httpClientBuilder.setDefaultRequestConfig(requestConfig);
