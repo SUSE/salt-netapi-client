@@ -96,10 +96,10 @@ public class Schedule {
      * those with "return_job":false
      */
     public static LocalCall<Map<String, Map<String, Object>>> list(boolean show_all) {
-      LinkedHashMap<String, Object> args = new LinkedHashMap<>();
-      args.put("show_all", show_all);
-      args.put("return_yaml", false);
-      return new LocalCall<>("schedule.list", Optional.empty(), Optional.of(args),
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("show_all", show_all);
+        args.put("return_yaml", false);
+        return new LocalCall<>("schedule.list", Optional.empty(), Optional.of(args),
               new TypeToken<Map<String, Map<String, Object>>>(){});
     }
 }
