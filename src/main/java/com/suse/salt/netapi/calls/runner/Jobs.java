@@ -2,6 +2,7 @@ package com.suse.salt.netapi.calls.runner;
 
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
@@ -29,6 +30,8 @@ import java.util.TimeZone;
  * salt.runners.jobs
  */
 public class Jobs {
+
+    private static final Gson GSON = JsonParser.GSON;
 
     /**
      * Information about a salt job as returned by 'jobs.list_job'
@@ -99,7 +102,7 @@ public class Jobs {
         public Optional<Object> getMetadata() {
             return metadata.flatMap(md -> {
                 try {
-                    return Optional.ofNullable(JsonParser.GSON.fromJson(md, Object.class));
+                    return Optional.ofNullable(GSON.fromJson(md, Object.class));
                 } catch (JsonSyntaxException ex) {
                     return Optional.empty();
                 }
@@ -109,7 +112,7 @@ public class Jobs {
         public <R> Optional<R> getMetadata(Class<R> dataType) {
             return metadata.flatMap(md -> {
                 try {
-                    return Optional.ofNullable(JsonParser.GSON.fromJson(md, dataType));
+                    return Optional.ofNullable(GSON.fromJson(md, dataType));
                 } catch (JsonSyntaxException ex) {
                     return Optional.empty();
                 }
@@ -119,7 +122,7 @@ public class Jobs {
         public <R> Optional<R> getMetadata(TypeToken<R> dataType) {
             return metadata.flatMap(md -> {
                 try {
-                    return Optional.ofNullable(JsonParser.GSON.fromJson(md, dataType.getType()));
+                    return Optional.ofNullable(GSON.fromJson(md, dataType.getType()));
                 } catch (JsonSyntaxException ex) {
                     return Optional.empty();
                 }
@@ -129,7 +132,7 @@ public class Jobs {
         public <T> Optional<T> getResult(String minionId, Class<T> type) {
             return Optional.ofNullable(result.get(minionId)).map(result -> {
                 Type wrapperType = parameterizedType(null, Return.class, type);
-                Return<T> r = JsonParser.GSON.fromJson(result, wrapperType);
+                Return<T> r = GSON.fromJson(result, wrapperType);
                 return r.getResult();
             });
         }
@@ -137,7 +140,7 @@ public class Jobs {
         public <T> Optional<T> getResult(String minionId, TypeToken<T> type) {
             return Optional.ofNullable(result.get(minionId)).map(result -> {
                 Type wrapperType = parameterizedType(null, Return.class, type.getType());
-                Return<T> r = JsonParser.GSON.fromJson(result, wrapperType);
+                Return<T> r = GSON.fromJson(result, wrapperType);
                 return r.getResult();
             });
         }
