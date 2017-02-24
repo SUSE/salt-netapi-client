@@ -3,6 +3,8 @@ package com.suse.salt.netapi.calls.runner;
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
+
 import com.suse.salt.netapi.calls.Data;
 import com.suse.salt.netapi.calls.LocalAsyncResult;
 import com.suse.salt.netapi.calls.RunnerAsyncResult;
@@ -56,6 +58,9 @@ public class Jobs {
 
         private String jid;
 
+        @SerializedName("Metadata")
+        private Optional<JsonElement> metadata = Optional.empty();
+
         @SerializedName("Result")
         private Map<String, JsonElement> result;
 
@@ -89,6 +94,36 @@ public class Jobs {
 
         public String getJid() {
             return jid;
+        }
+
+        public Optional<Object> getMetadata() {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(JsonParser.GSON.fromJson(md, Object.class));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        public <R> Optional<R> getMetadata(Class<R> dataType) {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(JsonParser.GSON.fromJson(md, dataType));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        public <R> Optional<R> getMetadata(TypeToken<R> dataType) {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(JsonParser.GSON.fromJson(md, dataType.getType()));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
         }
 
         public <T> Optional<T> getResult(String minionId, Class<T> type) {
