@@ -1,0 +1,17 @@
+{
+  "return":[
+    {
+      "minion":{
+        "__mine_interval":{
+          "function":"mine.update",
+          "name":"__mine_interval",
+          "enabled":true,
+          "return_job":false,
+          "jid_include":true,
+          "maxrunning":2,
+          "minutes":60
+        }
+      }
+    }
+  ]
+}
