@@ -4,7 +4,7 @@
   <groupId>com.suse.salt</groupId>
   <artifactId>salt-netapi-client</artifactId>
   <packaging>jar</packaging>
-  <version>0.10.0-SNAPSHOT</version>
+  <version>0.11.0-SNAPSHOT</version>
   <name>salt-netapi-client</name>
   <url>https://github.com/SUSE/salt-netapi-client</url>
   <description>Java bindings for the Salt API</description>
@@ -17,10 +17,14 @@
   </licenses>
   <developers>
     <developer>
-      <email>jrenner@suse.com</email>
       <name>Johannes Renner</name>
+      <email>jrenner@suse.com</email>
       <url>https://github.com/renner</url>
-      <id>jrenner</id>
+    </developer>
+    <developer>
+      <name>Kevin Walter</name>
+      <email>kwalter@suse.com</email>
+      <url>https://github.com/lucidd</url>
     </developer>
   </developers>
   <scm>

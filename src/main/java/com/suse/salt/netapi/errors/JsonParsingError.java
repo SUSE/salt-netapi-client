@@ -5,14 +5,14 @@ import com.google.gson.JsonElement;
 import java.util.function.Function;
 
 /**
- * Catch all error that contains the rest of the json which could not be parsed.
+ * Json parsing error that contains the rest of the json which could not be parsed.
  */
-final public class GenericSaltError implements SaltError {
+final public class JsonParsingError implements SaltError {
 
     private final JsonElement json;
     private final Throwable throwable;
 
-    public GenericSaltError(JsonElement json, Throwable throwable) {
+    public JsonParsingError(JsonElement json, Throwable throwable) {
         this.json = json;
         this.throwable = throwable;
     }
@@ -32,13 +32,15 @@ final public class GenericSaltError implements SaltError {
 
     public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
             Function<ModuleNotSupported, ? extends T> modNotSupported,
-            Function<GenericSaltError, ? extends T> generic) {
-        return generic.apply(this);
+            Function<JsonParsingError, ? extends T> jsonError,
+            Function<GenericError, ? extends T> generic
+    ) {
+        return jsonError.apply(this);
     }
 
     @Override
     public String toString() {
-        return "GenericSaltError(" + json.toString() + ", " + throwable.getMessage() + ")";
+        return "JsonParsingError(" + json.toString() + ", " + throwable.getMessage() + ")";
     }
 
 }

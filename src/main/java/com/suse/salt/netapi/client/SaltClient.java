@@ -423,9 +423,8 @@ public class SaltClient {
      * @param cfg SaltSSH config holder
      * @return a map in which every key is a host associated to the result of the
      * raw command
-     * @throws SaltException
+     * @throws SaltException if anything goes wrong
      */
-
     public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final String command,
             final Target<T> target, SaltSSHConfig cfg)
         throws SaltException {
@@ -447,7 +446,6 @@ public class SaltClient {
 
         return result.getResult().get(0);
     }
-
 
     /**
      * Asynchronously start any execution command bypassing normal session handling.
