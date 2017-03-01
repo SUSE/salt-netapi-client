@@ -13,7 +13,7 @@ public interface Call<R> {
      * Return the call payload as a map of key/value pairs. Usually this contains the
      * function name and arguments, but the various clients differ in the details.
      *
-     * @return call payload as a map of key/value pairss
+     * @return call payload as a map of key/value pairs
      */
     Map<String, Object> getPayload();
 }
