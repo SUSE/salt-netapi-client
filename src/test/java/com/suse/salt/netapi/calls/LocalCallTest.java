@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.modules.Cmd;
 import com.suse.salt.netapi.client.SaltClient;
@@ -29,16 +30,18 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * Tests for LocalCall
  */
 public class LocalCallTest {
 
-    private static final int MOCK_HTTP_PORT = 8888;
+    private static final int MOCK_HTTP_PORT = 8880;
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
@@ -58,6 +61,9 @@ public class LocalCallTest {
                     "/call_sync_batch_ping_response.json"));
 
     private SaltClient client;
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void init() {
@@ -81,6 +87,27 @@ public class LocalCallTest {
         assertEquals(runWithMetadata.getPayload().get("metadata"), "myMetadata");
     }
 
+    /**
+     * Verify that system return the correct module name
+     */
+    @Test
+    public void testModuleName() {
+        LocalCall<String> run = Cmd.run("echo 'hello world'");
+        assertEquals(run.getModuleName(),"cmd");
+
+    }
+
+    /**
+     * Verify that system throw IllegalArgumentException when function name is not in right
+     * format.
+     */
+    @Test
+    public void testFunctionName() {
+        exception.expect(IllegalArgumentException.class);
+        LocalCall<String> run = new LocalCall<>("cmdrun", Optional.empty(),
+                Optional.empty(), new TypeToken<String>(){});
+        System.out.println(run.getModuleName());
+    }
     /**
      * Verify correctness of the request body with an exemplary synchronous call.
      */

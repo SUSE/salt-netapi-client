@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.IllegalFormatException;
 import java.util.Scanner;
 
 /**
@@ -62,6 +63,17 @@ public class ClientUtilsTest {
         String result = ClientUtils.streamToString(
                 new ByteArrayInputStream(TEST_STRING.getBytes()));
         assertEquals("Result doesn't match test string", TEST_STRING, result);
+    }
+    @Test
+    public void testGetModuleNameFromRightFunction() {
+        final String TEST_STRING = "state.high";
+        String result = ClientUtils.getModuleNameFromFunction(TEST_STRING);
+        assertEquals("Result doesn't match test string", result, "state");
+    }
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetModuleNameFromWrongFunction() {
+        final String TEST_STRING = "statehigh";
+        ClientUtils.getModuleNameFromFunction(TEST_STRING);
     }
 
 }
