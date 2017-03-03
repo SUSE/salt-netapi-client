@@ -24,11 +24,12 @@ public class RunnerCall<R> extends AbstractCall<R> {
 
     public RunnerCall(String functionName, Optional<Map<String, ?>> kwargs,
             TypeToken<R> returnType) {
-        super(functionName,kwargs,returnType);
+        super(functionName, kwargs, returnType);
     }
-    public RunnerCall(String moduleName, String functionName, Optional<Map<String, ?>> kwargs,
-                      TypeToken<R> returnType) {
-        super(moduleName,functionName,kwargs,returnType);
+
+    public RunnerCall(String moduleName, String functionName,
+                      Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
+        super(moduleName, functionName, kwargs, returnType);
     }
 
      /**

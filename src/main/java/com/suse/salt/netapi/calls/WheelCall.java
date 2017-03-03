@@ -26,9 +26,10 @@ public class WheelCall<R> extends AbstractCall<R> {
                      TypeToken<R> returnType) {
         super(functionName, kwargs, returnType);
     }
-    public WheelCall(String moduleName, String functionName, Optional<Map<String, ?>> kwargs,
-                     TypeToken<R> returnType) {
-        super(moduleName,functionName, kwargs, returnType);
+
+    public WheelCall(String moduleName, String functionName,
+                     Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
+        super(moduleName, functionName, kwargs, returnType);
     }
 
     /**

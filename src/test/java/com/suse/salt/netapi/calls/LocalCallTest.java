@@ -90,10 +90,11 @@ public class LocalCallTest {
     /**
      * Verify that system return the correct module name
      */
+
     @Test
     public void testModuleName() {
         LocalCall<String> run = Cmd.run("echo 'hello world'");
-        assertEquals(run.getModuleName(),"cmd");
+        assertEquals(run.getModuleName(), "cmd");
 
     }
 
@@ -108,9 +109,11 @@ public class LocalCallTest {
                 Optional.empty(), new TypeToken<String>(){});
         System.out.println(run.getModuleName());
     }
+
     /**
      * Verify correctness of the request body with an exemplary synchronous call.
      */
+
     @Test
     public void testCallSync() throws SaltException {
         stubFor(any(urlMatching("/run"))

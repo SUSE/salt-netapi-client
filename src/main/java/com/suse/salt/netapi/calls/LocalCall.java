@@ -51,11 +51,10 @@ public class LocalCall<R> extends AbstractCall<R> {
         this.metadata = metadata;
     }
 
-
     public LocalCall(String moduleName, String functionName, Optional<List<?>> arg,
                      Optional<Map<String, ?>> kwargs, TypeToken<R> returnType,
                      Optional<?> metadata) {
-        super(moduleName,functionName, kwargs, returnType);
+        super(moduleName, functionName, kwargs, returnType);
         this.arg = arg;
         this.metadata = metadata;
     }
@@ -66,11 +65,13 @@ public class LocalCall<R> extends AbstractCall<R> {
     }
 
     public LocalCall<R> withMetadata(Object metadata) {
-        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(), Optional.of(metadata));
+        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(),
+                Optional.of(metadata));
     }
 
     public LocalCall<R> withoutMetadata() {
-        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(), Optional.empty());
+        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(),
+                Optional.empty());
     }
 
     /**

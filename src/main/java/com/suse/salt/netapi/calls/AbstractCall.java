@@ -19,7 +19,6 @@ public abstract class AbstractCall<R> implements Call<R> {
     private final TypeToken<R> returnType;
     private final Optional<Map<String, ?>> kwargs;
 
-
     AbstractCall(String functionName, Optional<Map<String, ?>> kwargs,
                  TypeToken<R> returnType) {
         this.moduleName = ClientUtils.getModuleNameFromFunction(functionName);
@@ -27,6 +26,7 @@ public abstract class AbstractCall<R> implements Call<R> {
         this.kwargs = kwargs;
         this.returnType = returnType;
     }
+
     AbstractCall(String moduleName, String functionName, Optional<Map<String, ?>> kwargs,
                  TypeToken<R> returnType) {
         this.moduleName = moduleName;
@@ -34,6 +34,7 @@ public abstract class AbstractCall<R> implements Call<R> {
         this.kwargs = kwargs;
         this.returnType = returnType;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -68,6 +69,7 @@ public abstract class AbstractCall<R> implements Call<R> {
     Optional<Map<String, ?>> getKwargs() {
         return kwargs;
     }
+
     /**
      * Reurn the type
      * @return returnType
