@@ -41,7 +41,7 @@ import java.util.Optional;
  */
 public class LocalCallTest {
 
-    private static final int MOCK_HTTP_PORT = 8880;
+    private static final int MOCK_HTTP_PORT = 8888;
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
