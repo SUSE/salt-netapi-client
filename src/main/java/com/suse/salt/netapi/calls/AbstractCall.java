@@ -42,7 +42,7 @@ public abstract class AbstractCall<R> implements Call<R> {
     public Map<String, Object> getPayload() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("fun", functionName);
-        kwargs.ifPresent(payload::putAll);
+        kwargs.ifPresent(kwargs -> payload.put("kwargs", kwargs));
         return payload;
     }
 
