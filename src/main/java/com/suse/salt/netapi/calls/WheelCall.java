@@ -31,6 +31,16 @@ public class WheelCall<R> extends AbstractCall<R> {
                      Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
         super(moduleName, functionName, kwargs, returnType);
     }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Object> getPayload() {
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("fun", getFunctionName());
+        getKwargs().ifPresent(payload::putAll);
+        return payload;
+    }
 
     /**
      * Calls a wheel module function on the master asynchronously and
