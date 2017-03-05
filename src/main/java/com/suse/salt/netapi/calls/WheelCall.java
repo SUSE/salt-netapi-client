@@ -31,6 +31,7 @@ public class WheelCall<R> extends AbstractCall<R> {
                      Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
         super(moduleName, functionName, kwargs, returnType);
     }
+
     /**
      * {@inheritDoc}
      */
