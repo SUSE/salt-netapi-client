@@ -55,7 +55,7 @@ public abstract class AbstractCall<R> implements Call<R> {
     }
 
     /**
-     * Return the function na,e
+     * Return the function name
      * @return functionName
      */
     String getFunctionName() {
