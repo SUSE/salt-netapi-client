@@ -27,6 +27,15 @@ public class Manage {
                 new TypeToken<List<String>>(){});
     }
 
+    public static RunnerCall<List<String>> up(Optional<Integer> timeout,
+            Optional<Integer> gatherJobTimeout) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        timeout.ifPresent(value -> args.put("timeout", value));
+        gatherJobTimeout.ifPresent(value -> args.put("gather_job_timeout", value));
+        return new RunnerCall<>("manage.up", Optional.of(args),
+                new TypeToken<List<String>>(){});
+    }
+
     public static RunnerCall<List<String>> present(Optional<String> subset,
             Optional<Boolean> showIpv4) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
