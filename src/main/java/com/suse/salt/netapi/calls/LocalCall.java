@@ -64,13 +64,15 @@ public class LocalCall<R> implements Call<R> {
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<Integer> timeout, Optional<Integer> gatherJobTimeout) {
-        this(functionName, arg, kwarg, returnType, Optional.empty(), timeout, gatherJobTimeout);
+        this(functionName, arg, kwarg, returnType, Optional.empty(),
+                timeout, gatherJobTimeout);
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<?> metadata) {
-        this(functionName, arg, kwarg, returnType, metadata, Optional.empty(), Optional.empty());
+        this(functionName, arg, kwarg, returnType, metadata, Optional.empty(),
+                Optional.empty());
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
@@ -101,7 +103,8 @@ public class LocalCall<R> implements Call<R> {
         kwarg.ifPresent(kwarg -> payload.put("kwarg", kwarg));
         metadata.ifPresent(m -> payload.put("metadata", m));
         timeout.ifPresent(timeout -> payload.put("timeout", timeout));
-        gatherJobTimeout.ifPresent(gatherJobTimeout -> payload.put("gather_job_timeout", gatherJobTimeout));
+        gatherJobTimeout.ifPresent(gatherJobTimeout -> payload.put("gather_job_timeout",
+                gatherJobTimeout));
         return payload;
     }
 
