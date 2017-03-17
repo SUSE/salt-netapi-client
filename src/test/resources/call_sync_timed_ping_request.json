@@ -1,0 +1,13 @@
+[
+  {
+    "tgt": "*",
+    "eauth": "auto",
+    "password": "pa55wd",
+    "expr_form": "glob",
+    "client": "local",
+    "fun": "test.ping",
+    "username": "user",
+    "timeout": 4,
+    "gather_job_timeout": 1
+  }
+]
