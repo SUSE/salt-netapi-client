@@ -52,8 +52,6 @@ public class LocalCallTest {
             SaltClientTest.class.getResourceAsStream("/call_sync_ping_request.json"));
     static final String JSON_CALL_SYNC_PING_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/call_sync_ping_response.json"));
-    static final String JSON_CALL_SYNC_TIMED_PING_REQUEST = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/call_sync_timed_ping_request.json"));
     static final String JSON_CALL_SYNC_BATCH_PING_REQUEST = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/call_sync_batch_ping_request.json"));
     static final String JSON_CALL_SYNC_BATCH_PING_RESPONSE = ClientUtils.streamToString(
@@ -84,6 +82,30 @@ public class LocalCallTest {
         assertEquals(runWithMetadata.getPayload().get("metadata"), "myMetadata");
     }
 
+    @Test
+    public void testWithTimeouts() {
+        LocalCall<String> run = Cmd.run("echo 'hello world'");
+        assertFalse(run.getPayload().containsKey("timeout"));
+        assertFalse(run.getPayload().containsKey("gather_job_timeout"));
+
+        LocalCall<String> runWithTimeouts = run.withTimeouts(Optional.of(4),
+                Optional.of(1));
+        assertFalse(run.getPayload().containsKey("timeout"));
+        assertFalse(run.getPayload().containsKey("gather_job_timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("gather_job_timeout"));
+        assertEquals(runWithTimeouts.getPayload().get("timeout"), 4);
+        assertEquals(runWithTimeouts.getPayload().get("gather_job_timeout"), 1);
+
+        LocalCall<String> runWithoutTimeouts = runWithTimeouts.withoutTimeouts();
+        assertFalse(runWithoutTimeouts.getPayload().containsKey("timeout"));
+        assertFalse(runWithoutTimeouts.getPayload().containsKey("gather_job_timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("gather_job_timeout"));
+        assertEquals(runWithTimeouts.getPayload().get("timeout"), 4);
+        assertEquals(runWithTimeouts.getPayload().get("gather_job_timeout"), 1);
+    }
+
     /**
      * Verify correctness of the request body with an exemplary synchronous call.
      */
@@ -103,28 +125,6 @@ public class LocalCallTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson(JSON_CALL_SYNC_PING_REQUEST)));
-    }
-
-    /**
-     * Verify correctness of the request body with an exemplary synchronous call.
-     */
-    @Test
-    public void testCallSyncWithTimeouts() throws SaltException {
-        stubFor(any(urlMatching("/run"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_CALL_SYNC_PING_RESPONSE)));
-
-        LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping(
-                Optional.of(4), Optional.of(1));
-        Target<String> target = new Glob("*");
-
-        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO);
-        verify(1, postRequestedFor(urlEqualTo("/run"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withRequestBody(equalToJson(JSON_CALL_SYNC_TIMED_PING_REQUEST)));
     }
 
     /**
