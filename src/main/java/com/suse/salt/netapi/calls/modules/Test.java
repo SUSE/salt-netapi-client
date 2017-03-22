@@ -138,12 +138,6 @@ public class Test {
         return PING;
     }
 
-    public static LocalCall<Boolean> ping(Optional<Integer> timeout,
-            Optional<Integer> gatherJobTimeout) {
-        return new LocalCall<>("test.ping", Optional.empty(), Optional.empty(),
-                new TypeToken<Boolean>() {}, timeout, gatherJobTimeout);
-    }
-
     public static LocalCall<VersionInformation> versionsInformation() {
         return VERSIONS_INFORMATION;
     }
