@@ -81,11 +81,24 @@ public class LocalCall<R> implements Call<R> {
     }
 
     public LocalCall<R> withMetadata(Object metadata) {
-        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.of(metadata));
+        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.of(metadata),
+                timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withoutMetadata() {
-        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.empty());
+        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.empty(),
+                timeout, gatherJobTimeout);
+    }
+
+    public LocalCall<R> withTimeouts(Optional<Integer> timeout,
+            Optional<Integer> gatherJobTimeout) {
+        return new LocalCall<>(functionName, arg, kwarg, returnType, metadata,
+                timeout, gatherJobTimeout);
+    }
+
+    public LocalCall<R> withoutTimeouts() {
+        return new LocalCall<>(functionName, arg, kwarg, returnType, metadata,
+                Optional.empty(), Optional.empty());
     }
 
     public TypeToken<R> getReturnType() {
