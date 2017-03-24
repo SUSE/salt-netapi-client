@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * Tests for LocalCall
@@ -79,6 +80,30 @@ public class LocalCallTest {
         assertFalse(runWithoutMetadata.getPayload().containsKey("metadata"));
         assertTrue(runWithMetadata.getPayload().containsKey("metadata"));
         assertEquals(runWithMetadata.getPayload().get("metadata"), "myMetadata");
+    }
+
+    @Test
+    public void testWithTimeouts() {
+        LocalCall<String> run = Cmd.run("echo 'hello world'");
+        assertFalse(run.getPayload().containsKey("timeout"));
+        assertFalse(run.getPayload().containsKey("gather_job_timeout"));
+
+        LocalCall<String> runWithTimeouts = run.withTimeouts(Optional.of(4),
+                Optional.of(1));
+        assertFalse(run.getPayload().containsKey("timeout"));
+        assertFalse(run.getPayload().containsKey("gather_job_timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("gather_job_timeout"));
+        assertEquals(runWithTimeouts.getPayload().get("timeout"), 4);
+        assertEquals(runWithTimeouts.getPayload().get("gather_job_timeout"), 1);
+
+        LocalCall<String> runWithoutTimeouts = runWithTimeouts.withoutTimeouts();
+        assertFalse(runWithoutTimeouts.getPayload().containsKey("timeout"));
+        assertFalse(runWithoutTimeouts.getPayload().containsKey("gather_job_timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("timeout"));
+        assertTrue(runWithTimeouts.getPayload().containsKey("gather_job_timeout"));
+        assertEquals(runWithTimeouts.getPayload().get("timeout"), 4);
+        assertEquals(runWithTimeouts.getPayload().get("gather_job_timeout"), 1);
     }
 
     /**
