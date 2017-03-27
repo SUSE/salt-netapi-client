@@ -38,71 +38,73 @@ import java.util.stream.Collectors;
  *
  * @param <R> the return type of the called function
  */
-public class LocalCall<R> implements Call<R> {
+public class LocalCall<R> extends AbstractCall<R> {
 
-    private final String functionName;
     private final Optional<List<?>> arg;
-    private final Optional<Map<String, ?>> kwarg;
-    private final TypeToken<R> returnType;
     private final Optional<?> metadata;
     private final Optional<Integer> timeout;
     private final Optional<Integer> gatherJobTimeout;
 
     public LocalCall(String functionName, Optional<List<?>> arg,
-            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+            Optional<Map<String, ?>> kwargs, TypeToken<R> returnType,
             Optional<?> metadata, Optional<Integer> timeout,
             Optional<Integer> gatherJobTimeout) {
-        this.functionName = functionName;
+        super(functionName, kwargs, returnType);
         this.arg = arg;
-        this.kwarg = kwarg;
-        this.returnType = returnType;
+        this.metadata = metadata;
+        this.timeout = timeout;
+        this.gatherJobTimeout = gatherJobTimeout;
+    }
+
+    public LocalCall(String moduleName, String functionName, Optional<List<?>> arg,
+                     Optional<Map<String, ?>> kwargs, TypeToken<R> returnType,
+                     Optional<?> metadata, Optional<Integer> timeout,
+                     Optional<Integer> gatherJobTimeout) {
+        super(moduleName, functionName, kwargs, returnType);
+        this.arg = arg;
         this.metadata = metadata;
         this.timeout = timeout;
         this.gatherJobTimeout = gatherJobTimeout;
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
-            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+            Optional<Map<String, ?>> kwargs, TypeToken<R> returnType,
             Optional<Integer> timeout, Optional<Integer> gatherJobTimeout) {
-        this(functionName, arg, kwarg, returnType, Optional.empty(),
+        this(functionName, arg, kwargs, returnType, Optional.empty(),
                 timeout, gatherJobTimeout);
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
-            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+            Optional<Map<String, ?>> kwargs, TypeToken<R> returnType,
             Optional<?> metadata) {
-        this(functionName, arg, kwarg, returnType, metadata, Optional.empty(),
+        this(functionName, arg, kwargs, returnType, metadata, Optional.empty(),
                 Optional.empty());
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
-            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType) {
-        this(functionName, arg, kwarg, returnType, Optional.empty());
+            Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
+        this(functionName, arg, kwargs, returnType, Optional.empty());
     }
 
     public LocalCall<R> withMetadata(Object metadata) {
-        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.of(metadata),
-                timeout, gatherJobTimeout);
+        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(),
+                Optional.of(metadata), timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withoutMetadata() {
-        return new LocalCall<>(functionName, arg, kwarg, returnType, Optional.empty(),
-                timeout, gatherJobTimeout);
+        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(),
+                Optional.empty(), timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withTimeouts(Optional<Integer> timeout,
             Optional<Integer> gatherJobTimeout) {
-        return new LocalCall<>(functionName, arg, kwarg, returnType, metadata,
-                timeout, gatherJobTimeout);
+        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(),
+                metadata, timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withoutTimeouts() {
-        return new LocalCall<>(functionName, arg, kwarg, returnType, metadata,
-                Optional.empty(), Optional.empty());
-    }
-
-    public TypeToken<R> getReturnType() {
-        return returnType;
+        return new LocalCall<>(getFunctionName(), arg, getKwargs(), getReturnType(),
+                metadata, Optional.empty(), Optional.empty());
     }
 
     /**
@@ -110,10 +112,8 @@ public class LocalCall<R> implements Call<R> {
      */
     @Override
     public Map<String, Object> getPayload() {
-        HashMap<String, Object> payload = new HashMap<>();
-        payload.put("fun", functionName);
+        Map<String, Object> payload = super.getPayload();
         arg.ifPresent(arg -> payload.put("arg", arg));
-        kwarg.ifPresent(kwarg -> payload.put("kwarg", kwarg));
         metadata.ifPresent(m -> payload.put("metadata", m));
         timeout.ifPresent(timeout -> payload.put("timeout", timeout));
         gatherJobTimeout.ifPresent(gatherJobTimeout -> payload.put("gather_job_timeout",
