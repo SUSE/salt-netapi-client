@@ -20,21 +20,16 @@ import java.util.Optional;
  *
  * @param <R> the return type of the called function
  */
-public class WheelCall<R> implements Call<R> {
-
-    private final String functionName;
-    private final Optional<Map<String, ?>> kwargs;
-    private final TypeToken<R> returnType;
+public class WheelCall<R> extends AbstractCall<R> {
 
     public WheelCall(String functionName, Optional<Map<String, ?>> kwargs,
-            TypeToken<R> returnType) {
-        this.functionName = functionName;
-        this.kwargs = kwargs;
-        this.returnType = returnType;
+                     TypeToken<R> returnType) {
+        super(functionName, kwargs, returnType);
     }
 
-    public TypeToken<R> getReturnType() {
-        return returnType;
+    public WheelCall(String moduleName, String functionName,
+                     Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
+        super(moduleName, functionName, kwargs, returnType);
     }
 
     /**
@@ -43,8 +38,8 @@ public class WheelCall<R> implements Call<R> {
     @Override
     public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put("fun", functionName);
-        kwargs.ifPresent(payload::putAll);
+        payload.put("fun", getFunctionName());
+        getKwargs().ifPresent(payload::putAll);
         return payload;
     }
 
