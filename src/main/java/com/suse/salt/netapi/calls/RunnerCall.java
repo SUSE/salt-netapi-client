@@ -20,19 +20,35 @@ import java.util.Optional;
  *
  * @param <R> the return type of the called function
  */
-public class RunnerCall<R> extends AbstractCall<R> {
+public class RunnerCall<R> implements Call<R> {
+
+    private final String functionName;
+    private final Optional<Map<String, ?>> kwargs;
+    private final TypeToken<R> returnType;
 
     public RunnerCall(String functionName, Optional<Map<String, ?>> kwargs,
             TypeToken<R> returnType) {
-        super(functionName, kwargs, returnType);
+        this.functionName = functionName;
+        this.kwargs = kwargs;
+        this.returnType = returnType;
     }
 
-    public RunnerCall(String moduleName, String functionName,
-                      Optional<Map<String, ?>> kwargs, TypeToken<R> returnType) {
-        super(moduleName, functionName, kwargs, returnType);
+    public TypeToken<R> getReturnType() {
+        return returnType;
     }
 
-     /**
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Object> getPayload() {
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("fun", functionName);
+        kwargs.ifPresent(kwargs -> payload.put("kwargs", kwargs));
+        return payload;
+    }
+
+    /**
      * Calls a runner module function on the master asynchronously and
      * returns information about the scheduled job that can be used to query the result.
      * Authentication is done with the token therefore you have to login prior
