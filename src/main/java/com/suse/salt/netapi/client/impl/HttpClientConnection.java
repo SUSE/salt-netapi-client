@@ -94,7 +94,7 @@ public class HttpClientConnection<T> implements Connection<T> {
      */
     private HttpClientBuilder initializeHttpClient() {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
-        configureTimeouts(httpClientBuilder);
+        configure(httpClientBuilder);
         configureProxyIfSpecified(httpClientBuilder);
         customizeHttpClient(httpClientBuilder);
         return httpClientBuilder;
@@ -109,13 +109,12 @@ public class HttpClientConnection<T> implements Connection<T> {
     }
 
     /**
-     * Configure the supplied HttpClientBuilder with timeout settings from the current
+     * Configure the supplied HttpClientBuilder with defaults and settings from the current
      * ClientConfig object.
      *
      * @param httpClientBuilder the {@link HttpClientBuilder} to be configured
      */
-    private void configureTimeouts(HttpClientBuilder httpClientBuilder) {
-        // Timeouts may be specified on configuration
+    private void configure(HttpClientBuilder httpClientBuilder) {
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(config.get(ClientConfig.CONNECT_TIMEOUT))
                 .setSocketTimeout(config.get(ClientConfig.SOCKET_TIMEOUT))
