@@ -4,7 +4,7 @@
   <groupId>com.suse.salt</groupId>
   <artifactId>salt-netapi-client</artifactId>
   <packaging>jar</packaging>
-  <version>0.11.0</version>
+  <version>0.11.1</version>
   <name>salt-netapi-client</name>
   <url>https://github.com/SUSE/salt-netapi-client</url>
   <description>Java bindings for the Salt API</description>
