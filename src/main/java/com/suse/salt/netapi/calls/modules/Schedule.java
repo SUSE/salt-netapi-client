@@ -94,6 +94,7 @@ public class Schedule {
      *
      * @param show_all if true display all the tasks including
      * those with "return_job":false
+     * @return call object to execute via the client
      */
     public static LocalCall<Map<String, Map<String, Object>>> list(boolean show_all) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
