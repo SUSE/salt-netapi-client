@@ -94,7 +94,7 @@ public class CmdTest {
         assertNotNull(response.get("minion"));
 
         Boolean output = response.get("minion").result().get();
-        assert(output);
+        assertEquals(true, output);
     }
 
     @Test

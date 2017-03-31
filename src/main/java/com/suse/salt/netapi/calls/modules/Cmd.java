@@ -40,5 +40,5 @@ public class Cmd {
         args.put("cmd", cmd);
         return new LocalCall<>("cmd.has_exec", Optional.empty(), Optional.of(args),
                 new TypeToken<Boolean>(){});
-  }
+    }
 }
