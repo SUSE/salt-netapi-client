@@ -23,8 +23,8 @@ import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
-
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.reflect.TypeToken;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -104,6 +104,27 @@ public class LocalCallTest {
         assertTrue(runWithTimeouts.getPayload().containsKey("gather_job_timeout"));
         assertEquals(runWithTimeouts.getPayload().get("timeout"), 4);
         assertEquals(runWithTimeouts.getPayload().get("gather_job_timeout"), 1);
+    }
+    /**
+     * Verify that system return the correct module name
+     */
+
+    @Test
+    public void testModuleName() {
+        LocalCall<String> run = Cmd.run("echo 'hello world'");
+        assertEquals(run.getModuleName(), "cmd");
+
+    }
+
+    /**
+     * Verify that system throw IllegalArgumentException when function name is not in right
+     * format.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testFunctionName() {
+        LocalCall<String> run = new LocalCall<>("cmdrun", Optional.empty(),
+                Optional.empty(), new TypeToken<String>(){});
+        System.out.println(run.getModuleName());
     }
 
     /**
