@@ -10,9 +10,8 @@ services:
 before_install:
 - docker pull mbologna/saltstack-master
 - docker pull mbologna/saltstack-minion
-- docker run -d --name saltmaster -v `pwd`/docker/etc_master/salt:/etc/salt -p 8000:8000 mbologna/saltstack-master
-- docker run -d --name saltminion1 --link saltmaster -v `pwd`/docker/etc_minion1/salt:/etc/salt mbologna/saltstack-minion
-- docker run -d --name saltminion2 --link saltmaster -v `pwd`/docker/etc_minion2/salt:/etc/salt mbologna/saltstack-minion
+- docker run -d --name saltmaster -p 8000:8000 -ti mbologna/saltstack-master
+- for i in {1..2}; do docker run -d --name saltminion$i --link saltmaster:salt mbologna/saltstack-minion ; done
 - docker ps -a
 - docker exec saltmaster /bin/sh -c "sleep 30; salt '*' test.ping"
 
