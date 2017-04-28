@@ -83,7 +83,7 @@ public class Schedule {
         args.put("job_kwargs", payload.get("kwarg"));
 
         args.put("name", name);
-        args.put("once", once.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        args.put("once", once.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
         args.put("metadata", metadata);
         return new LocalCall<>("schedule.add", Optional.empty(), Optional.of(args),
                 new TypeToken<Result>() { });

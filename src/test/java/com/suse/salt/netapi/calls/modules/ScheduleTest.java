@@ -9,6 +9,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Before;
@@ -77,5 +80,21 @@ public class ScheduleTest {
         assertEquals(2.0, job.get("maxrunning"));
         assertEquals(60.0, job.get("minutes"));
     }
-}
 
+    /**
+     * Salt cannot parse schedule dates that include a fraction of seconds. This test
+     * should make sure that a fraction of seconds is cut off before the request is sent.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public final void testAddDateTimeFormat() throws SaltException {
+        LocalDateTime scheduleDate = LocalDateTime.of(2017, 12, 24, 15, 30, 12, 345000000);
+        assertEquals("2017-12-24T15:30:12.345",
+                scheduleDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        LocalCall<com.suse.salt.netapi.calls.modules.Schedule.Result> call =
+                Schedule.add("Test Job", com.suse.salt.netapi.calls.modules.Test.ping(),
+                        scheduleDate, Collections.EMPTY_MAP);
+        Map<String, Object> kwarg = (Map<String, Object>) call.getPayload().get("kwarg");
+        assertEquals("2017-12-24T15:30:12", kwarg.get("once"));
+    }
+}
