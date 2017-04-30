@@ -1,6 +1,6 @@
 [
   {
-    "kwargs": {
+    "kwarg": {
       "jid": "20161115135014396739"
     },
     "client": "runner_async",
