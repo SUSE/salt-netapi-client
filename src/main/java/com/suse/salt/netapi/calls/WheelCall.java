@@ -5,8 +5,8 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
-
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -106,16 +106,17 @@ public class WheelCall<R> implements Call<R> {
      * @return the result of the called function
      * @throws SaltException if anything goes wrong
      */
-    public WheelResult<R> callSync(final SaltClient client)
+    public WheelResult<Result<R>> callSync(final SaltClient client)
             throws SaltException {
-        Type wheelResult = parameterizedType(null, WheelResult.class,
-                getReturnType().getType());
+    	Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+    	Type wheelResult = parameterizedType(null, WheelResult.class, xor);
         Type listType = parameterizedType(null, List.class, wheelResult);
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Return<List<WheelResult<R>>> wrapper = client.call(this, Client.WHEEL, "/",
-                (TypeToken<Return<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
+        Return<List<WheelResult<Result<R>>>> wrapper = client.call(this, Client.WHEEL, "/",
+                (TypeToken<Return<List<WheelResult<Result<R>>>>>)
+                			TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 
@@ -131,7 +132,7 @@ public class WheelCall<R> implements Call<R> {
      * @return the result of the called function
      * @throws SaltException if anything goes wrong
      */
-    public WheelResult<R> callSync(final SaltClient client,
+    public WheelResult<Result<R>> callSync(final SaltClient client,
             String username, String password,
             AuthModule authModule) throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
@@ -140,15 +141,16 @@ public class WheelCall<R> implements Call<R> {
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
 
-        Type wheelResult = parameterizedType(null, WheelResult.class,
-                getReturnType().getType());
+        Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+        Type wheelResult = parameterizedType(null, WheelResult.class, xor);
         Type listType = parameterizedType(null, List.class, wheelResult);
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Return<List<WheelResult<R>>> wrapper = client.call(this, Client.WHEEL, "/run",
-                Optional.of(customArgs),
-                (TypeToken<Return<List<WheelResult<R>>>>) TypeToken.get(wrapperType));
+        Return<List<WheelResult<Result<R>>>> wrapper = client.call(this, Client.WHEEL,
+        		      "/run", Optional.of(customArgs),
+        		      (TypeToken<Return<List<WheelResult<Result<R>>>>>)
+                		TypeToken.get(wrapperType));
         return wrapper.getResult().get(0);
     }
 }
