@@ -5,6 +5,7 @@ import com.suse.salt.netapi.calls.WheelResult;
 import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.Result;
 
 import java.net.URI;
 import java.util.Optional;
@@ -23,9 +24,10 @@ public class Wheel {
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 
         // List accepted and pending minion keys
-        WheelResult<Key.Names> keyResults = Key.listAll().callSync(
+        WheelResult<Result<Key.Names>> keyResults = Key.listAll().callSync(
                 client, USER, PASSWORD, AuthModule.AUTO);
-        Key.Names keys = keyResults.getData().getResult();
+        Result<Key.Names> resultKeys = keyResults.getData().getResult();
+        Key.Names keys = resultKeys.result().get();
 
         System.out.println("\n--> Accepted minion keys:\n");
         keys.getMinions().forEach(System.out::println);
@@ -33,9 +35,11 @@ public class Wheel {
         keys.getUnacceptedMinions().forEach(System.out::println);
 
         // Generate a new key pair and accept the public key
-        WheelResult<Key.Pair> genResults = Key.genAccept("new.minion.id", Optional.empty())
-                .callSync(client, USER, PASSWORD, AuthModule.AUTO);
-        Key.Pair keyPair = genResults.getData().getResult();
+        WheelResult<Result<Key.Pair>> genResults = Key.genAccept("new.minion.id",
+        		      Optional.empty()).callSync(client,
+        		    		  USER, PASSWORD, AuthModule.AUTO);
+        Result<Key.Pair> resultKeyPair = genResults.getData().getResult();
+        Key.Pair keyPair = resultKeyPair.result().get();
 
         System.out.println("\n--> New key pair:");
         System.out.println("\nPUB:\n\n" + keyPair.getPub());

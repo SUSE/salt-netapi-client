@@ -15,8 +15,8 @@ import com.suse.salt.netapi.calls.WheelResult;
 import com.suse.salt.netapi.calls.modules.SaltUtilTest;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
-
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import org.junit.Before;
@@ -59,9 +59,13 @@ public class KeyTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_KEY_GEN_RESPONSE)));
 
-        WheelResult<Key.Pair> keyPair = Key.gen("minion1").callSync(client);
-        assertTrue(keyPair.getData().getResult().getPub().isPresent());
-        assertTrue(keyPair.getData().getResult().getPriv().isPresent());
+        WheelResult<Result<Key.Pair>> keyPair = Key.gen("minion1").callSync(client);
+
+        Result<Key.Pair> resultData = keyPair.getData().getResult();
+        Key.Pair data = resultData.result().get();
+
+        assertTrue(data.getPub().isPresent());
+        assertTrue(data.getPriv().isPresent());
 
         verify(1, postRequestedFor(urlEqualTo("/"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -78,10 +82,14 @@ public class KeyTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_KEY_GEN_ACCEPT_RESPONSE)));
 
-        WheelResult<Key.Pair> keyPair = Key.genAccept(
+        WheelResult<Result<Key.Pair>> keyPair = Key.genAccept(
                 "minion1", Optional.empty()).callSync(client);
-        assertTrue(keyPair.getData().getResult().getPub().isPresent());
-        assertTrue(keyPair.getData().getResult().getPriv().isPresent());
+
+        Result<Key.Pair> resultData = keyPair.getData().getResult();
+        Key.Pair data = resultData.result().get();
+
+        assertTrue(data.getPub().isPresent());
+        assertTrue(data.getPriv().isPresent());
 
         verify(1, postRequestedFor(urlEqualTo("/"))
                 .withHeader("Accept", equalTo("application/json"))
