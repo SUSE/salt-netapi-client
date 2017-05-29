@@ -78,23 +78,23 @@ public class LocalCall<R> extends AbstractCall<R> {
     }
 
     public LocalCall<R> withMetadata(Object metadata) {
-        return new LocalCall<>(getFunctionName(), arg, kwarg, getReturnType(),
+        return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(),
                 Optional.of(metadata), timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withoutMetadata() {
-        return new LocalCall<>(getFunctionName(), arg, kwarg, getReturnType(),
+        return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(),
                 Optional.empty(), timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withTimeouts(Optional<Integer> timeout,
             Optional<Integer> gatherJobTimeout) {
-        return new LocalCall<>(getFunctionName(), arg, kwarg, getReturnType(), metadata,
+        return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
                 timeout, gatherJobTimeout);
     }
 
     public LocalCall<R> withoutTimeouts() {
-        return new LocalCall<>(getFunctionName(), arg, kwarg, getReturnType(), metadata,
+        return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
                 Optional.empty(), Optional.empty());
     }
 
@@ -104,7 +104,7 @@ public class LocalCall<R> extends AbstractCall<R> {
     @Override
     public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put("fun", getFunctionName());
+        payload.put("fun", getFunction());
         arg.ifPresent(arg -> payload.put("arg", arg));
         kwarg.ifPresent(kwarg -> payload.put("kwarg", kwarg));
         metadata.ifPresent(m -> payload.put("metadata", m));

@@ -36,7 +36,7 @@ public class RunnerCall<R> extends AbstractCall<R> {
     @Override
     public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put("fun", getFunctionName());
+        payload.put("fun", getFunction());
         kwargs.ifPresent(kwargs -> payload.put("kwarg", kwargs));
         return payload;
     }

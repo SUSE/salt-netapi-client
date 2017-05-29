@@ -28,7 +28,6 @@ public class WheelCall<R> extends AbstractCall<R> {
             TypeToken<R> returnType) {
         super(functionName, returnType);
         this.kwargs = kwargs;
-
     }
 
     /**
@@ -37,7 +36,7 @@ public class WheelCall<R> extends AbstractCall<R> {
     @Override
     public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put("fun", getFunctionName());
+        payload.put("fun", getFunction());
         kwargs.ifPresent(payload::putAll);
         return payload;
     }

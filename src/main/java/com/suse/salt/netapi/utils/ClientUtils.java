@@ -69,17 +69,18 @@ public class ClientUtils {
     }
 
     /**
-     * Get the name from function name e.g in case of 'state.high', this function will
-     * return 'state'.
-     * @param functionName
-     * @return module name
-     * @throws IllegalArgumentException
+     * Get the module name from a given function. In case of e.g. "test.ping", this method
+     * will return "test".
+     *
+     * @param function string containing module and function name (e.g. "test.ping")
+     * @return the module name
+     * @throws IllegalArgumentException if a given function string does not contain a '.'
      */
-    public static String getModuleNameFromFunction(final String functionName)
+    public static String getModuleNameFromFunction(final String function)
             throws IllegalArgumentException {
-        if (!functionName.contains(".")) {
-            throw new IllegalArgumentException(functionName);
+        if (!function.contains(".")) {
+            throw new IllegalArgumentException(function);
         }
-        return functionName.split("\\.")[0];
+        return function.split("\\.")[0];
     }
 }

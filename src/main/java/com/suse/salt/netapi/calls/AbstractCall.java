@@ -11,44 +11,45 @@ import com.suse.salt.netapi.utils.ClientUtils;
 public abstract class AbstractCall<R> implements Call<R> {
 
     private final String moduleName;
-    private final String functionName;
+    private final String function;
     private final TypeToken<R> returnType;
 
-    AbstractCall(String functionName, TypeToken<R> returnType) {
-        this.moduleName = ClientUtils.getModuleNameFromFunction(functionName);
-        this.functionName = functionName;
-        this.returnType = returnType;
-    }
-
-    AbstractCall(String moduleName, String functionName, TypeToken<R> returnType) {
-        this.moduleName = moduleName;
-        this.functionName = functionName;
+    /**
+     * Default constructor.
+     *
+     * @param function string containing module and function name (e.g. "test.ping")
+     * @param returnType the return type of this call
+     */
+    AbstractCall(String function, TypeToken<R> returnType) {
+        this.moduleName = ClientUtils.getModuleNameFromFunction(function);
+        this.function = function;
         this.returnType = returnType;
     }
 
     /**
-     * Returns the module name
+     * Return the module name.
+     *
+     * @return moduleName the module name
      */
-    public String getModuleName()
-    {
+    public String getModuleName() {
         return moduleName;
     }
 
     /**
-     * Return the function name
-     * @return functionName
+     * Return the function string containing module and function name (e.g. "test.ping").
+     *
+     * @return function string containing module and function name (e.g. "test.ping")
      */
-    String getFunctionName() {
-        return functionName;
+    String getFunction() {
+        return function;
     }
 
     /**
-     * Reurn the type
-     * @return returnType
+     * Return the return type of this call.
+     *
+     * @return returnType the return type of this call
      */
     public TypeToken<R> getReturnType() {
         return returnType;
     }
-
-
 }
