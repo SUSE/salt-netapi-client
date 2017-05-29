@@ -1,10 +1,8 @@
 package com.suse.salt.netapi.client.impl;
 
-import com.suse.salt.netapi.client.Connection;
-import com.suse.salt.netapi.config.ClientConfig;
-import com.suse.salt.netapi.exception.SaltException;
-import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
-import com.suse.salt.netapi.parser.JsonParser;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -24,9 +22,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
+import com.suse.salt.netapi.client.Connection;
+import com.suse.salt.netapi.config.ClientConfig;
+import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
+import com.suse.salt.netapi.parser.JsonParser;
 
 /**
  * Class representation of a connection to Salt for issuing API requests
