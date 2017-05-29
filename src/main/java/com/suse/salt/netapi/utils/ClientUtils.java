@@ -67,4 +67,19 @@ public class ClientUtils {
             Type... typeArguments) {
         return newParameterizedTypeWithOwner(ownerType, rawType, typeArguments);
     }
+
+    /**
+     * Get the name from function name e.g in case of 'state.high', this function will
+     * return 'state'.
+     * @param functionName
+     * @return module name
+     * @throws IllegalArgumentException
+     */
+    public static String getModuleNameFromFunction(final String functionName)
+            throws IllegalArgumentException {
+        if (!functionName.contains(".")) {
+            throw new IllegalArgumentException(functionName);
+        }
+        return functionName.split("\\.")[0];
+    }
 }
