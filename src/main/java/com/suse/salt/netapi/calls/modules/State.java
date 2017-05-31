@@ -57,4 +57,8 @@ public class State {
                 new TypeToken<Object>(){});
     }
 
+    public static LocalCall<Object> showHighstate() {
+        return new LocalCall<>("state.show_highstate", Optional.empty(), Optional.empty(),
+                new TypeToken<Object>() { });
+    }
 }
