@@ -52,4 +52,13 @@ public abstract class AbstractCall<R> implements Call<R> {
     public TypeToken<R> getReturnType() {
         return returnType;
     }
+
+    /**
+     * Return just the function name (e.g. "ping" ).
+     *
+     * @return just the function name (e.g. "ping").
+     */
+    public String getFunctionName() {
+        return ClientUtils.getFunctionNameFromFunction(function);
+    }
 }

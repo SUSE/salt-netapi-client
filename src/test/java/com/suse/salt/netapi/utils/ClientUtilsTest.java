@@ -77,4 +77,16 @@ public class ClientUtilsTest {
         ClientUtils.getModuleNameFromFunction(TEST_STRING);
     }
 
+    @Test
+    public void testGetFunctionNameFromFunction() {
+        final String TEST_STRING = "state.high";
+        String result = ClientUtils.getFunctionNameFromFunction(TEST_STRING);
+        assertEquals("Result doesn't match test string", result, "high");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetFunctionNameFromWrongFunction() {
+        final String TEST_STRING = "statehigh";
+        ClientUtils.getFunctionNameFromFunction(TEST_STRING);
+    }
 }

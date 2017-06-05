@@ -83,4 +83,20 @@ public class ClientUtils {
         }
         return function.split("\\.")[0];
     }
+
+    /**
+     * Extract the function name from a given function(containing module and function name).
+     * In case of e.g. "test.ping", this method will return "ping".
+     *
+     * @param function string containing module and function name (e.g. "test.ping")
+     * @return the function name
+     * @throws IllegalArgumentException if a given function string does not contain a '.'
+     */
+    public static String getFunctionNameFromFunction(final String function)
+            throws IllegalArgumentException {
+        if (!function.contains(".")) {
+            throw new IllegalArgumentException(function);
+        }
+        return function.split("\\.")[1];
+    }
 }
