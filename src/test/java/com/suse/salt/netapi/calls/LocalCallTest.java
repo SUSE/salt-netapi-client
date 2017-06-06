@@ -117,14 +117,24 @@ public class LocalCallTest {
     }
 
     /**
-     * Verify that system throw IllegalArgumentException when function name is not in right
+     * Verify that system return the correct module name
+     */
+
+    @Test
+    public void testFunctionName() {
+        LocalCall<String> run = Cmd.run("echo 'hello world'");
+        assertEquals(run.getFunctionName(), "run");
+
+    }
+
+    /**
+     * Verify that system throw IllegalArgumentException when function  is not in right
      * format.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testFunctionName() {
-        LocalCall<String> run = new LocalCall<>("cmdrun", Optional.empty(),
+    public void testFunction() {
+        new LocalCall<>("cmdrun", Optional.empty(),
                 Optional.empty(), new TypeToken<String>(){});
-        System.out.println(run.getModuleName());
     }
 
     /**
