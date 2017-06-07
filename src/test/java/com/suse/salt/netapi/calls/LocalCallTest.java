@@ -106,23 +106,13 @@ public class LocalCallTest {
         assertEquals(runWithTimeouts.getPayload().get("gather_job_timeout"), 1);
     }
     /**
-     * Verify that system return the correct module name
+     * Verify that system return the correct module name and function name
      */
 
     @Test
-    public void testModuleName() {
+    public void testCorrectFunction() {
         LocalCall<String> run = Cmd.run("echo 'hello world'");
         assertEquals(run.getModuleName(), "cmd");
-
-    }
-
-    /**
-     * Verify that system return the correct module name
-     */
-
-    @Test
-    public void testFunctionName() {
-        LocalCall<String> run = Cmd.run("echo 'hello world'");
         assertEquals(run.getFunctionName(), "run");
 
     }
@@ -132,7 +122,7 @@ public class LocalCallTest {
      * format.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testFunction() {
+    public void testIncorrectFunction() {
         new LocalCall<>("cmdrun", Optional.empty(),
                 Optional.empty(), new TypeToken<String>(){});
     }

@@ -24,8 +24,9 @@ public abstract class AbstractCall<R> implements Call<R> {
     AbstractCall(String function, TypeToken<R> returnType) {
         this.function = function;
         this.returnType = returnType;
-        this.moduleName = ClientUtils.getModuleNameFromFunction(function);
-        this.functionName = ClientUtils.getFunctionNameFromFunction(function);
+        String[] splitFunction = ClientUtils.splitFunction(function);
+        this.moduleName = splitFunction[0];
+        this.functionName = splitFunction[1];
     }
 
     /**

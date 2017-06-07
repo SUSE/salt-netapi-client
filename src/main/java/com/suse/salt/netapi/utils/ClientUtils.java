@@ -69,34 +69,17 @@ public class ClientUtils {
     }
 
     /**
-     * Get the module name from a given function. In case of e.g. "test.ping", this method
-     * will return "test".
+     * Extract the module and function name from the function string based on '.' .
+     * In case of e.g. "test.ping", this method will return String array {'test','ping'}
      *
      * @param function string containing module and function name (e.g. "test.ping")
-     * @return the module name
+     * @return String array containing module name as 1st element and function name as 2nd
      * @throws IllegalArgumentException if a given function string does not contain a '.'
      */
-    public static String getModuleNameFromFunction(final String function)
-            throws IllegalArgumentException {
+    public static String[] splitFunction(final String function) {
         if (!function.contains(".")) {
             throw new IllegalArgumentException(function);
         }
-        return function.split("\\.")[0];
-    }
-
-    /**
-     * Extract the function name from a given function(containing module and function name).
-     * In case of e.g. "test.ping", this method will return "ping".
-     *
-     * @param function string containing module and function name (e.g. "test.ping")
-     * @return the function name
-     * @throws IllegalArgumentException if a given function string does not contain a '.'
-     */
-    public static String getFunctionNameFromFunction(final String function)
-            throws IllegalArgumentException {
-        if (!function.contains(".")) {
-            throw new IllegalArgumentException(function);
-        }
-        return function.split("\\.")[1];
+        return function.split("\\.");
     }
 }
