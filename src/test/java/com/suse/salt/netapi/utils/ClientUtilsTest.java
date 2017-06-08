@@ -65,16 +65,17 @@ public class ClientUtilsTest {
     }
 
     @Test
-    public void testGetModuleNameFromRightFunction() {
+    public void testCorrectFunction() {
         final String TEST_STRING = "state.high";
-        String result = ClientUtils.getModuleNameFromFunction(TEST_STRING);
-        assertEquals("Result doesn't match test string", result, "state");
+        String[] result = ClientUtils.splitFunction(TEST_STRING);
+        assertEquals("Module name doesn't match expected result", result[0], "state");
+        assertEquals("Function name doesn't match expected result", result[1], "high");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetModuleNameFromWrongFunction() {
+    public void testIncorrectFunction() {
         final String TEST_STRING = "statehigh";
-        ClientUtils.getModuleNameFromFunction(TEST_STRING);
+        ClientUtils.splitFunction(TEST_STRING);
     }
 
 }
