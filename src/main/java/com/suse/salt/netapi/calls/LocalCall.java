@@ -374,8 +374,13 @@ public class LocalCall<R> extends AbstractCall<R> {
             final SaltClient client, Target<?> target,
             String username, String password, AuthModule authModule)
             throws SaltException {
-        return callSyncHelper(client, target, Optional.of(username),
-                Optional.of(password), Optional.of(authModule), Optional.empty()).get(0);
+        Map<String, Result<R>> result = callSyncHelper(client, target, Optional.of(username),
+        Optional.of(password), Optional.of(authModule), Optional.empty()).get(0);
+        if (!result.isEmpty()) {
+                return result;
+        } else {
+                throw new SaltException("The target you defined does not match any minions.");
+        }
     }
 
     /**

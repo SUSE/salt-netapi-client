@@ -37,6 +37,7 @@ public class Calls {
         results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
 
         // Get the grains from a list of minions
+        // Please make sure that the minions in the MinionList are also running
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
         Map<String, Result<Map<String, Object>>> grainResults = Grains.items(false)
                 .callSync(client, minionList, USER, PASSWORD, AuthModule.AUTO);
