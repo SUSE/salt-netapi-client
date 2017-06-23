@@ -38,7 +38,8 @@ public class Calls {
 
         // Get the grains from a list of minions
         Target<List<String>> minionList = new MinionList("minion1", "minion2");
-        // If all minions in MinionList are down, callSync method will return an empty value.
+        // If all minions in MinionList are down,
+        // callSync method will return an empty value.
         Map<String, Result<Map<String, Object>>> grainResults = Grains.items(false)
                 .callSync(client, minionList, USER, PASSWORD, AuthModule.AUTO);
 
