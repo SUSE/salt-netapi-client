@@ -19,6 +19,8 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -266,6 +268,18 @@ public class Jobs {
     public static RunnerCall<Map<String, ListJobsEntry>> listJobs(Object searchMetadata) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("search_metadata", searchMetadata);
+        return new RunnerCall<>("jobs.list_jobs", Optional.of(args),
+                new TypeToken<Map<String, ListJobsEntry>>() { });
+    }
+
+    public static RunnerCall<Map<String, ListJobsEntry>> listJobs(Object searchMetadata,
+            LocalDateTime startTime, LocalDateTime endTime) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("search_metadata", searchMetadata);
+        args.put("start_time",
+                startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        args.put("end_time",
+                endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
         return new RunnerCall<>("jobs.list_jobs", Optional.of(args),
                 new TypeToken<Map<String, ListJobsEntry>>() { });
     }
