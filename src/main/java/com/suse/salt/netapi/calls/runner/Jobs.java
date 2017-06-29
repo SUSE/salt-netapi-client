@@ -205,6 +205,9 @@ public class Jobs {
         @SerializedName("Target")
         private Object target;
 
+        @SerializedName("Metadata")
+        private Optional<JsonElement> metadata = Optional.empty();
+
         public String getFunction() {
             return function;
         }
@@ -227,6 +230,36 @@ public class Jobs {
 
         public Object getTarget() {
             return target;
+        }
+
+        public Optional<Object> getMetadata() {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(GSON.fromJson(md, Object.class));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        public <R> Optional<R> getMetadata(Class<R> dataType) {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(GSON.fromJson(md, dataType));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        public <R> Optional<R> getMetadata(TypeToken<R> dataType) {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(GSON.fromJson(md, dataType.getType()));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
         }
     }
 
