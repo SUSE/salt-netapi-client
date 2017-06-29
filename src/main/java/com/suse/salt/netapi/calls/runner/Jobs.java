@@ -19,6 +19,8 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -205,6 +207,9 @@ public class Jobs {
         @SerializedName("Target")
         private Object target;
 
+        @SerializedName("Metadata")
+        private Optional<JsonElement> metadata = Optional.empty();
+
         public String getFunction() {
             return function;
         }
@@ -228,11 +233,53 @@ public class Jobs {
         public Object getTarget() {
             return target;
         }
+
+        public Optional<Object> getMetadata() {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(GSON.fromJson(md, Object.class));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        public <R> Optional<R> getMetadata(Class<R> dataType) {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(GSON.fromJson(md, dataType));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        public <R> Optional<R> getMetadata(TypeToken<R> dataType) {
+            return metadata.flatMap(md -> {
+                try {
+                    return Optional.ofNullable(GSON.fromJson(md, dataType.getType()));
+                } catch (JsonSyntaxException ex) {
+                    return Optional.empty();
+                }
+            });
+        }
     }
 
     public static RunnerCall<Map<String, ListJobsEntry>> listJobs(Object searchMetadata) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         args.put("search_metadata", searchMetadata);
+        return new RunnerCall<>("jobs.list_jobs", Optional.of(args),
+                new TypeToken<Map<String, ListJobsEntry>>() { });
+    }
+
+    public static RunnerCall<Map<String, ListJobsEntry>> listJobs(Object searchMetadata,
+            LocalDateTime startTime, LocalDateTime endTime) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("search_metadata", searchMetadata);
+        args.put("start_time",
+                startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        args.put("end_time",
+                endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
         return new RunnerCall<>("jobs.list_jobs", Optional.of(args),
                 new TypeToken<Map<String, ListJobsEntry>>() { });
     }
