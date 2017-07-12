@@ -24,9 +24,9 @@ public class ClientConfig {
      * Timeout in milliseconds for waiting for data.
      * A timeout of zero is interpreted as an infinite timeout.
      * A negative value is interpreted as undefined (system default).
-     * Default value is 10000ms (10s)
+     * Default value is 20000ms (20s)
      */
-    public static final Key<Integer> SOCKET_TIMEOUT = new Key<>(10000);
+    public static final Key<Integer> SOCKET_TIMEOUT = new Key<>(20000);
 
     // Proxy settings
     public static final Key<String> PROXY_HOSTNAME = new Key<>();
