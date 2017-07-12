@@ -19,6 +19,7 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.exception.SaltException;
+import com.suse.salt.netapi.results.CmdExecCodeAllResult;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -124,7 +125,7 @@ public class CmdTest {
     @Test
     public void testCmdExecCodeAll() throws SaltException {
         // First we get the call to use in the tests
-        LocalCall<Map<String, Object>> call =
+        LocalCall<CmdExecCodeAllResult> call =
                 Cmd.execCodeAll("python", "import sys; print sys.version");
         assertEquals("cmd.exec_code_all", call.getPayload().get("fun"));
 
@@ -135,17 +136,15 @@ public class CmdTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_EXEC_CODE_ALL_RESPONSE)));
 
-        Map<String, Result<Map<String, Object>>> response =
+        Map<String, Result<CmdExecCodeAllResult>> response =
                 call.callSync(client, new MinionList("minion"));
 
         assertNotNull(response.get("minion"));
-        Map<String, Object> output = response.get("minion").result().get();
-        assertEquals(4, output.size());
-
-        assertEquals(27299.0, output.get("pid"));
-        assertEquals(0.0, output.get("retcode"));
-        assertEquals("", output.get("stderr"));
+        CmdExecCodeAllResult result = response.get("minion").result().get();
+        assertEquals(27299, result.getPid());
+        assertEquals(0, result.getRetcode());
+        assertEquals("", result.getStderr());
         assertEquals("2.6.6 (r266:84292, Jul 23 2015, 15:22:56) "
-                + "[GCC 4.4.7 20120313 (Red Hat 4.4.7-11)]", output.get("stdout"));
+                + "[GCC 4.4.7 20120313 (Red Hat 4.4.7-11)]", result.getStdout());
     }
 }
