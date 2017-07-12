@@ -19,7 +19,7 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.exception.SaltException;
-import com.suse.salt.netapi.results.CmdExecCodeAllResult;
+import com.suse.salt.netapi.results.CmdExecCodeAll;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -125,7 +125,7 @@ public class CmdTest {
     @Test
     public void testCmdExecCodeAll() throws SaltException {
         // First we get the call to use in the tests
-        LocalCall<CmdExecCodeAllResult> call =
+        LocalCall<CmdExecCodeAll> call =
                 Cmd.execCodeAll("python", "import sys; print sys.version");
         assertEquals("cmd.exec_code_all", call.getPayload().get("fun"));
 
@@ -136,11 +136,11 @@ public class CmdTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_EXEC_CODE_ALL_RESPONSE)));
 
-        Map<String, Result<CmdExecCodeAllResult>> response =
+        Map<String, Result<CmdExecCodeAll>> response =
                 call.callSync(client, new MinionList("minion"));
 
         assertNotNull(response.get("minion"));
-        CmdExecCodeAllResult result = response.get("minion").result().get();
+        CmdExecCodeAll result = response.get("minion").result().get();
         assertEquals(27299, result.getPid());
         assertEquals(0, result.getRetcode());
         assertEquals("", result.getStderr());
