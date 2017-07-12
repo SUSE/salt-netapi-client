@@ -1,12 +1,12 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
+import com.suse.salt.netapi.results.CmdExecCodeAllResult;
 
 import com.google.gson.reflect.TypeToken;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,10 +16,10 @@ public class Cmd {
 
     private Cmd() { }
 
-    public static LocalCall<Map<String, Object>> execCodeAll(String lang, String code) {
+    public static LocalCall<CmdExecCodeAllResult> execCodeAll(String lang, String code) {
         LinkedHashMap<String, Object> args = new LinkedHashMap<>();
         return new LocalCall<>("cmd.exec_code_all", Optional.of(Arrays.asList(lang, code)),
-                Optional.of(args), new TypeToken<Map<String, Object>>(){});
+                Optional.of(args), new TypeToken<CmdExecCodeAllResult>(){});
     }
 
     public static LocalCall<String> run(String cmd) {
