@@ -1,7 +1,7 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
-
+import com.suse.salt.netapi.utils.Xor;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
@@ -222,6 +222,21 @@ public class Pkg {
         args.put("versions_as_list", true);
         return new LocalCall<>("pkg.list_pkgs", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, List<String>>>(){});
+    }
+
+    /**
+     * Call 'pkg.list_pkgs'
+     * @param attributes list of attributes that should be included in the result
+     * @return the call. For each package, the map can contain a String (only the version)
+     * or an Info object containing specified attributes depending on Salt version and
+     * minion support
+     */
+    public static LocalCall<Map<String, List<Xor<String, Info>>>> listPkgs(
+            List<String> attributes) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("attr", attributes);
+        return new LocalCall<>("pkg.list_pkgs", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, List<Xor<String, Info>>>>(){});
     }
 
     /**

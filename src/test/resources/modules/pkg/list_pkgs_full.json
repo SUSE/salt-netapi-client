@@ -1,0 +1,65 @@
+{
+  "Mesa": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555134,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-32bit": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555139,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-libEGL1": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555132,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-libEGL1-32bit": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555135,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-libGL1": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555135,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-libGL1-32bit": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555141,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-libglapi0": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555102,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "Mesa-libglapi0-32bit": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498555120,
+      "version": "10.0.2-90.17"
+    }
+  ],
+  "MozillaFirefox": [
+    {
+      "arch": "x86_64",
+      "install_date_time_t": 1498659585,
+      "version": "38.7.0esr-63.3"
+    }
+  ]
+}
