@@ -167,6 +167,40 @@ public class Pkg {
         public Optional<Long> getInstallDateUnixTime() {
             return installDateUnixTime;
         }
+
+        @Override
+        public String toString() {
+            String fields = Stream.of(
+                    architecture.map(architecture -> "architecture=" + architecture),
+                    buildDate.map(buildDate -> "buildDate=" + buildDate),
+                    buildDateUnixTime.map(buildDateUnixTime -> "buildDateUnixTime=" +
+                        buildDateUnixTime),
+                    buildHost.map(buildHost -> "buildHost=" + buildHost),
+                    description.map(description -> "description=" + description),
+                    group.map(group -> "group=" + group),
+                    installDate.map(installDate -> "installDate=" + installDate),
+                    installDateUnixTime.map(installDateUnixTime -> "installDateUnixTime=" +
+                        installDateUnixTime),
+                    license.map(license -> "license=" + license),
+                    newFeaturesHaveBeenAdded.map(newFeaturesHaveBeenAdded ->
+                        "newFeaturesHaveBeenAdded=" + newFeaturesHaveBeenAdded),
+                    packager.map(packager -> "packager=" + packager),
+                    release.map(release -> "release=" + release),
+                    relocations.map(relocations -> "relocations=" + relocations),
+                    signature.map(signature -> "signature=" + signature),
+                    size.map(size -> "size=" + size),
+                    source.map(source -> "source=" + source),
+                    summary.map(summary -> "summary=" + summary),
+                    url.map(url -> "url=" + url),
+                    vendor.map(vendor -> "vendor=" + vendor),
+                    version.map(version -> "version=" + version),
+                    epoch.map(epoch -> "epoch=" + epoch)
+            ).filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.joining(","));
+
+            return "Info(" + fields + ")";
+        }
     }
 
     private Pkg() { }
