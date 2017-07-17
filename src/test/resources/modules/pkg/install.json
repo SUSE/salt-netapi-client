@@ -1,0 +1,22 @@
+{
+  "mc": {
+    "new": [
+      {
+        "arch": "x86_64",
+        "install_date_time_t": 1500308350,
+        "version": "4.8.11-2.110"
+      }
+    ],
+    "old": ""
+  },
+  "mc-lang": {
+    "new": [
+      {
+        "arch": "noarch",
+        "install_date_time_t": 1500308350,
+        "version": "4.8.11-2.110"
+      }
+    ],
+    "old": ""
+  }
+}

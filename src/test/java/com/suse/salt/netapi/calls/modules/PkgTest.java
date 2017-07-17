@@ -6,7 +6,6 @@ import static org.junit.Assert.assertFalse;
 import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.calls.modules.Pkg.Info;
 import com.suse.salt.netapi.parser.JsonParser;
-import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.Xor;
 
 import org.junit.Test;
@@ -126,5 +125,26 @@ public class PkgTest {
         assertEquals(Optional.of("x86_64"), actual.getArchitecture());
         assertEquals(Optional.of(1498555135L), actual.getInstallDateUnixTime());
         assertEquals(Optional.of("10.0.2-90.17"), actual.getVersion());
+    }
+
+    @Test
+    public void testInstall() {
+        TypeToken<Map<String, Map<String, Xor<String, List<Info>>>>> type =
+                Pkg.install(false, new ArrayList<String>(), new ArrayList<String>())
+                        .getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/install.json");
+        JsonParser<Map<String, Map<String, Xor<String, List<Info>>>>> parser =
+                new JsonParser<>(type);
+        Map<String, Map<String, Xor<String, List<Info>>>> parsed = parser.parse(is);
+
+        Map<String, Xor<String, List<Info>>> actual = parsed.get("mc");
+
+        assertEquals("", actual.get("old").left().get());
+
+        Info actualNew = actual.get("new").right().get().get(0);
+        assertEquals(Optional.of("4.8.11-2.110"), actualNew.getVersion());
+        assertEquals(Optional.of(1500308350L), actualNew.getInstallDateUnixTime());
+        assertEquals(Optional.of("x86_64"), actualNew.getArchitecture());
     }
 }
