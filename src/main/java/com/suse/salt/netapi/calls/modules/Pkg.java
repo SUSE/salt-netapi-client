@@ -1,6 +1,7 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
+import com.suse.salt.netapi.results.Change;
 import com.suse.salt.netapi.utils.Xor;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -285,19 +286,19 @@ public class Pkg {
      * @param refresh refresh repos before installation
      * @param pkgs list of packages
      * @param attributes list of attributes that should be included in the result
-     * @return the call. For each package, a map that contains an "old" and a "new" key.
+     * @return the call. For each package, a change of old and new value.
      * Those can contain an empty String, or a package version String, or an Info object
      * containing specified attributes. They exact type depends on the Salt version
      * depending on Salt version used and minion support
      */
-    public static LocalCall<Map<String, Map<String, Xor<String, List<Info>>>>> install(
+    public static LocalCall<Map<String, Change<Xor<String, List<Info>>>>> install(
             boolean refresh, List<String> pkgs, List<String> attributes) {
         LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("refresh", refresh);
         kwargs.put("pkgs", pkgs);
         kwargs.put("attr", attributes);
         return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Map<String, Xor<String, List<Info>>>>>(){});
+                new TypeToken<Map<String, Change<Xor<String, List<Info>>>>>(){});
     }
 
     /**
@@ -320,19 +321,19 @@ public class Pkg {
      * @param refresh refresh repos before installation
      * @param pkgs map of packages (name to version) to be installed
      * @param attributes list of attributes that should be included in the result
-     * @return the call. For each package, a map that contains an "old" and a "new" key.
+     * @return the call. For each package, a change of old and new value.
      * Those can contain an empty String, or a package version String, or an Info object
      * containing specified attributes. They exact type depends on the Salt version
      * depending on Salt version used and minion support
      */
-    public static LocalCall<Map<String, Map<String, Xor<String, List<Info>>>>> install(
+    public static LocalCall<Map<String, Change<Xor<String, List<Info>>>>> install(
             boolean refresh, Map<String, String> pkgs, List<String> attributes) {
         LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("refresh", refresh);
         kwargs.put("pkgs", preparePkgs(pkgs));
         kwargs.put("diff_attr", attributes);
         return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
-                new TypeToken<Map<String, Map<String, Xor<String, List<Info>>>>>(){});
+                new TypeToken<Map<String, Change<Xor<String, List<Info>>>>>(){});
     }
 
     /**
