@@ -151,7 +151,7 @@ public class SaltClientTest {
     private void verifyLoginToken(Token token) {
         verify(1, postRequestedFor(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_LOGIN_REQUEST)));
 
         assertEquals("Token mismatch",
@@ -223,9 +223,9 @@ public class SaltClientTest {
         assertEquals(expectedResult, retvals.get("sumarm30").result().orElseGet(null));
         verify(1,
                 postRequestedFor(urlEqualTo("/run"))
-                        .withHeader("Accept", equalTo("application/json"))
-                        .withHeader("Content-Type", equalTo("application/json"))
-                        .withRequestBody(equalToJson(JSON_SSHRAW_RUN_REQUEST)));
+                    .withHeader("Accept", equalTo("application/json"))
+                    .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
+                    .withRequestBody(equalToJson(JSON_SSHRAW_RUN_REQUEST)));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class SaltClientTest {
     private void verifyRunResults(Map<String, Object> retvals) {
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_RUN_REQUEST)));
 
         LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
@@ -436,7 +436,7 @@ public class SaltClientTest {
 
         verify(1, postRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
         assertNotNull(job);
@@ -501,7 +501,7 @@ public class SaltClientTest {
 
         verify(1, postRequestedFor(urlEqualTo("/minions"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
 
         assertNotNull(job);
@@ -748,7 +748,7 @@ public class SaltClientTest {
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalTo(data)));
     }
 
@@ -775,7 +775,7 @@ public class SaltClientTest {
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalTo(data)));
     }
 
@@ -807,7 +807,7 @@ public class SaltClientTest {
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/logout"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalTo("")));
     }
 }

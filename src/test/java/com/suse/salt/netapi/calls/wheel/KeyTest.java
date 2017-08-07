@@ -69,7 +69,7 @@ public class KeyTest {
 
         verify(1, postRequestedFor(urlEqualTo("/"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(
                         "[{'client':'wheel', 'fun':'key.gen','id_':'minion1'}]")));
     }
@@ -93,7 +93,7 @@ public class KeyTest {
 
         verify(1, postRequestedFor(urlEqualTo("/"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(
                         "[{'client':'wheel', 'fun':'key.gen_accept','id_':'minion1'}]")));
     }
