@@ -18,6 +18,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -167,8 +168,7 @@ public class HttpClientConnection<T> implements Connection<T> {
         if (jsonData != null) {
             // POST data
             HttpPost httpPost = new HttpPost(uri);
-            httpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-            httpPost.setEntity(new StringEntity(jsonData));
+            httpPost.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
             httpRequest = httpPost;
         } else {
             // GET request

@@ -144,7 +144,7 @@ public class LocalCallTest {
         run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO);
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_CALL_SYNC_PING_REQUEST)));
     }
 
@@ -165,7 +165,7 @@ public class LocalCallTest {
         run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO, Batch.asAmount(1));
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_CALL_SYNC_BATCH_PING_REQUEST)));
     }
 
@@ -203,7 +203,7 @@ public class LocalCallTest {
         run.callSyncSSH(client, target, config);
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_SSH_PING_REQUEST)));
     }
 }
