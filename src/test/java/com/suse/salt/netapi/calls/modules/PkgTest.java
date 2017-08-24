@@ -1,19 +1,26 @@
 package com.suse.salt.netapi.calls.modules;
 
-import com.suse.salt.netapi.parser.JsonParser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import com.google.gson.reflect.TypeToken;
+import com.suse.salt.netapi.calls.modules.Pkg.Info;
+import com.suse.salt.netapi.parser.JsonParser;
+import com.suse.salt.netapi.results.Change;
+import com.suse.salt.netapi.utils.Xor;
+
+import org.junit.Test;
 
 import java.io.InputStream;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Pkg unit tests.
@@ -91,5 +98,54 @@ public class PkgTest {
         assertEquals("0.4.2-3", parsed.get("weechat"));
         assertEquals("2.3.2-7ubuntu3.1", parsed.get("openvpn"));
         assertEquals(null, parsed.get("tmux")); // already at latest version
+    }
+
+    @Test
+    public void testListPkgsMinimal() {
+        TypeToken<Map<String, List<Xor<String, Info>>>> type =
+                Pkg.listPkgs(new ArrayList<String>()).getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/list_pkgs_minimal.json");
+        JsonParser<Map<String, List<Xor<String, Info>>>> parser = new JsonParser<>(type);
+        Map<String, List<Xor<String, Info>>> parsed = parser.parse(is);
+        assertEquals(Stream.of(Xor.left("10.0.2-90.17")).collect(toList()),
+                parsed.get("Mesa-libGL1"));
+    }
+
+    @Test
+    public void testListPkgsFull() {
+        TypeToken<Map<String, List<Xor<String, Info>>>> type =
+                Pkg.listPkgs(new ArrayList<String>()).getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/list_pkgs_full.json");
+        JsonParser<Map<String, List<Xor<String, Info>>>> parser = new JsonParser<>(type);
+        Map<String, List<Xor<String, Info>>> parsed = parser.parse(is);
+
+        Info actual = parsed.get("Mesa-libGL1").get(0).right().get();
+
+        assertEquals(Optional.of("x86_64"), actual.getArchitecture());
+        assertEquals(Optional.of(1498555135L), actual.getInstallDateUnixTime());
+        assertEquals(Optional.of("10.0.2-90.17"), actual.getVersion());
+    }
+
+    @Test
+    public void testInstall() {
+        TypeToken<Map<String, Change<Xor<String, List<Info>>>>> type =
+                Pkg.install(false, new ArrayList<String>(), new ArrayList<String>())
+                        .getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/install.json");
+        JsonParser<Map<String, Change<Xor<String, List<Info>>>>> parser =
+                new JsonParser<>(type);
+        Map<String, Change<Xor<String, List<Info>>>> parsed = parser.parse(is);
+
+        Change<Xor<String, List<Info>>> actual = parsed.get("mc");
+
+        assertEquals("", actual.getOldValue().left().get());
+
+        Info actualNew = actual.getNewValue().right().get().get(0);
+        assertEquals(Optional.of("4.8.11-2.110"), actualNew.getVersion());
+        assertEquals(Optional.of(1500308350L), actualNew.getInstallDateUnixTime());
+        assertEquals(Optional.of("x86_64"), actualNew.getArchitecture());
     }
 }

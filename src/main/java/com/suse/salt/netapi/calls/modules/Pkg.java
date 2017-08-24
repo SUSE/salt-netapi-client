@@ -1,7 +1,8 @@
 package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
-
+import com.suse.salt.netapi.results.Change;
+import com.suse.salt.netapi.utils.Xor;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
@@ -167,6 +168,40 @@ public class Pkg {
         public Optional<Long> getInstallDateUnixTime() {
             return installDateUnixTime;
         }
+
+        @Override
+        public String toString() {
+            String fields = Stream.of(
+                    architecture.map(architecture -> "architecture=" + architecture),
+                    buildDate.map(buildDate -> "buildDate=" + buildDate),
+                    buildDateUnixTime.map(buildDateUnixTime -> "buildDateUnixTime=" +
+                        buildDateUnixTime),
+                    buildHost.map(buildHost -> "buildHost=" + buildHost),
+                    description.map(description -> "description=" + description),
+                    group.map(group -> "group=" + group),
+                    installDate.map(installDate -> "installDate=" + installDate),
+                    installDateUnixTime.map(installDateUnixTime -> "installDateUnixTime=" +
+                        installDateUnixTime),
+                    license.map(license -> "license=" + license),
+                    newFeaturesHaveBeenAdded.map(newFeaturesHaveBeenAdded ->
+                        "newFeaturesHaveBeenAdded=" + newFeaturesHaveBeenAdded),
+                    packager.map(packager -> "packager=" + packager),
+                    release.map(release -> "release=" + release),
+                    relocations.map(relocations -> "relocations=" + relocations),
+                    signature.map(signature -> "signature=" + signature),
+                    size.map(size -> "size=" + size),
+                    source.map(source -> "source=" + source),
+                    summary.map(summary -> "summary=" + summary),
+                    url.map(url -> "url=" + url),
+                    vendor.map(vendor -> "vendor=" + vendor),
+                    version.map(version -> "version=" + version),
+                    epoch.map(epoch -> "epoch=" + epoch)
+            ).filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.joining(","));
+
+            return "Info(" + fields + ")";
+        }
     }
 
     private Pkg() { }
@@ -188,6 +223,21 @@ public class Pkg {
         args.put("versions_as_list", true);
         return new LocalCall<>("pkg.list_pkgs", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, List<String>>>(){});
+    }
+
+    /**
+     * Call 'pkg.list_pkgs'
+     * @param attributes list of attributes that should be included in the result
+     * @return the call. For each package, the map can contain a String (only the version)
+     * or an Info object containing specified attributes depending on Salt version and
+     * minion support
+     */
+    public static LocalCall<Map<String, List<Xor<String, Info>>>> listPkgs(
+            List<String> attributes) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("attr", attributes);
+        return new LocalCall<>("pkg.list_pkgs", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, List<Xor<String, Info>>>>(){});
     }
 
     /**
@@ -231,6 +281,27 @@ public class Pkg {
     }
 
     /**
+     * Call 'pkg.install' API.
+     *
+     * @param refresh refresh repos before installation
+     * @param pkgs list of packages
+     * @param attributes list of attributes that should be included in the result
+     * @return the call. For each package, a change of old and new value.
+     * Those can contain an empty String, or a package version String, or an Info object
+     * containing specified attributes. They exact type depends on the Salt version
+     * depending on Salt version used and minion support
+     */
+    public static LocalCall<Map<String, Change<Xor<String, List<Info>>>>> install(
+            boolean refresh, List<String> pkgs, List<String> attributes) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", refresh);
+        kwargs.put("pkgs", pkgs);
+        kwargs.put("attr", attributes);
+        return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
+                new TypeToken<Map<String, Change<Xor<String, List<Info>>>>>(){});
+    }
+
+    /**
      * @param refresh set true to perform a refresh before the installation
      * @param pkgs map of packages (name to version) to be installed
      * @return the LocalCall object
@@ -242,6 +313,27 @@ public class Pkg {
         kwargs.put("pkgs", preparePkgs(pkgs));
         return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
                 new TypeToken<Map<String, Object>>(){});
+    }
+
+    /**
+     * Call 'pkg.install' API.
+     *
+     * @param refresh refresh repos before installation
+     * @param pkgs map of packages (name to version) to be installed
+     * @param attributes list of attributes that should be included in the result
+     * @return the call. For each package, a change of old and new value.
+     * Those can contain an empty String, or a package version String, or an Info object
+     * containing specified attributes. They exact type depends on the Salt version
+     * depending on Salt version used and minion support
+     */
+    public static LocalCall<Map<String, Change<Xor<String, List<Info>>>>> install(
+            boolean refresh, Map<String, String> pkgs, List<String> attributes) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", refresh);
+        kwargs.put("pkgs", preparePkgs(pkgs));
+        kwargs.put("diff_attr", attributes);
+        return new LocalCall<>("pkg.install", Optional.empty(), Optional.of(kwargs),
+                new TypeToken<Map<String, Change<Xor<String, List<Info>>>>>(){});
     }
 
     /**
