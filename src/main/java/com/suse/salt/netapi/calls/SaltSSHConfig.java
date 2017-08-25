@@ -14,6 +14,7 @@ public class SaltSSHConfig {
     private final Optional<Boolean> noHostKeys;
     private final Optional<String> passwd;
     private final Optional<String> priv;
+    private final Optional<Boolean> randomThinDir;
     private final Optional<Boolean> refreshCache;
     private final Optional<String> remotePortForwards;
     private final Optional<String> roster;
@@ -33,6 +34,7 @@ public class SaltSSHConfig {
         noHostKeys = builder.noHostKeys;
         passwd = builder.passwd;
         priv = builder.priv;
+        randomThinDir = builder.randomThinDir;
         refreshCache = builder.refreshCache;
         remotePortForwards = builder.remotePortForwards;
         roster = builder.roster;
@@ -71,6 +73,10 @@ public class SaltSSHConfig {
 
     public Optional<String> getPriv() {
         return priv;
+    }
+
+    public Optional<Boolean> getRandomThinDir() {
+        return randomThinDir;
     }
 
     public Optional<Boolean> getRefreshCache() {
@@ -125,6 +131,7 @@ public class SaltSSHConfig {
         private Optional<Boolean> noHostKeys = Optional.empty();
         private Optional<String> passwd = Optional.empty();
         private Optional<String> priv = Optional.empty();
+        private Optional<Boolean> randomThinDir = Optional.empty();
         private Optional<Boolean> refreshCache = Optional.empty();
         private Optional<String> remotePortForwards = Optional.empty();
         private Optional<String> roster = Optional.empty();
@@ -216,6 +223,17 @@ public class SaltSSHConfig {
          */
         public Builder priv(String priv) {
             this.priv = Optional.of(priv);
+            return this;
+        }
+
+        /**
+         * Force the salt-thin to be deployed in a random path every time salt-ssh is called
+         *
+         * @param randomThinDir value to set
+         * @return this builder
+         */
+        public Builder randomThinDir(boolean randomThinDir) {
+            this.randomThinDir = Optional.of(randomThinDir);
             return this;
         }
 

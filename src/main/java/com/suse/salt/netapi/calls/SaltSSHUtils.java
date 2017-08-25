@@ -20,6 +20,7 @@ public class SaltSSHUtils {
         cfg.getNoHostKeys().ifPresent(v -> props.put("no_host_keys", v));
         cfg.getPasswd().ifPresent(v -> props.put("ssh_passwd", v));
         cfg.getPriv().ifPresent(v -> props.put("ssh_priv", v));
+        cfg.getRandomThinDir().ifPresent(v -> props.put("rand_thin_dir", v));
         cfg.getRefreshCache().ifPresent(v -> props.put("refresh_cache", v));
         cfg.getRemotePortForwards()
                 .ifPresent(v -> props.put("ssh_remote_port_forwards", v));
