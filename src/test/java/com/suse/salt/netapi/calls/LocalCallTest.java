@@ -190,6 +190,7 @@ public class LocalCallTest {
                 .noHostKeys(true)
                 .passwd("pa55wd")
                 .priv("/home/user/.ssh/id_rsa")
+                .randomThinDir(true)
                 .refreshCache(true)
                 .remotePortForwards("8888:my.host:443")
                 .roster("flat")
