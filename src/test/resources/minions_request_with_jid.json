@@ -1,0 +1,14 @@
+[
+  {
+    "jid": "customjid",
+    "expr_form": "glob",
+    "tgt": "*",
+    "fun": "pkg.install",
+    "arg": ["i3"],
+    "kwarg": {
+      "refresh": "true",
+      "sysupgrade": "false"
+    }
+  }
+]
+

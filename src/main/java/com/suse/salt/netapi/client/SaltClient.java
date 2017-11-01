@@ -278,7 +278,28 @@ public class SaltClient {
      */
     public <T> ScheduledJob startCommand(final Target<T> target, final String function,
             List<Object> args, Map<String, Object> kwargs) throws SaltException {
-        Map<String, Object> props = new LinkedHashMap<>();
+        return this.startCommand(target, function, args, kwargs, new HashMap<>());
+    }
+
+    /**
+     * Generic interface to start any execution command and immediately return an object
+     * representing the scheduled job.
+     * <p>
+     * {@code POST /minions}
+     *
+     * @param <T> type of the tgt property for this command
+     * @param target the target
+     * @param function the function to execute
+     * @param args list of non-keyword arguments
+     * @param kwargs map containing keyword arguments
+     * @param defaultProps default lowstate properties to be passed (e.g. jid)
+     * @return object representing the scheduled job
+     * @throws SaltException if anything goes wrong
+     */
+    public <T> ScheduledJob startCommand(final Target<T> target, final String function,
+            List<Object> args, Map<String, Object> kwargs, Map<String, Object> defaultProps)
+	           throws SaltException {
+        Map<String, Object> props = new LinkedHashMap<>(defaultProps);
         props.put("tgt", target.getTarget());
         props.put("expr_form", target.getType());
         props.put("fun", function);

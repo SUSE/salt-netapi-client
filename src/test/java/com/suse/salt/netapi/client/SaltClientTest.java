@@ -70,6 +70,8 @@ public class SaltClientTest {
 
     static final String JSON_START_COMMAND_REQUEST = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/minions_request.json"));
+    static final String JSON_START_COMMAND_REQUEST_WITH_JID = ClientUtils.streamToString(
+            SaltClientTest.class.getResourceAsStream("/minions_request_with_jid.json"));
     static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/minions_response.json"));
     static final String JSON_GET_MINIONS_RESPONSE = ClientUtils.streamToString(
@@ -442,6 +444,32 @@ public class SaltClientTest {
         assertNotNull(job);
         assertEquals("20150211105524392307", job.getJid());
         assertEquals(Arrays.asList("myminion"), job.getMinions());
+    }
+
+    @Test
+    public void testStartCommandWithCustomJid() throws Exception {
+        stubFor(any(urlMatching(".*"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_START_COMMAND_RESPONSE)));
+
+        List<Object> args = new ArrayList<>();
+        args.add("i3");
+
+        Map<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", "true");
+        kwargs.put("sysupgrade", "false");
+
+        Map<String, Object> props = new LinkedHashMap<>();
+        props.put("jid", "customjid");
+
+        client.startCommand(new Glob(), "pkg.install", args, kwargs, props);
+
+        verify(1, postRequestedFor(urlEqualTo("/minions"))
+                .withHeader("Accept", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
+                .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST_WITH_JID)));
     }
 
     @Test
