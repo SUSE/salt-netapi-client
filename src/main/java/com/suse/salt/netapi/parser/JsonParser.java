@@ -2,7 +2,6 @@ package com.suse.salt.netapi.parser;
 
 import com.suse.salt.netapi.datatypes.Arguments;
 import com.suse.salt.netapi.datatypes.Event;
-import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.StartTime;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
@@ -53,8 +52,6 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Return<String>>(){});
     public static final JsonParser<Return<List<Token>>> TOKEN =
             new JsonParser<>(new TypeToken<Return<List<Token>>>(){});
-    public static final JsonParser<Return<List<ScheduledJob>>> SCHEDULED_JOB =
-            new JsonParser<>(new TypeToken<Return<List<ScheduledJob>>>(){});
     public static final JsonParser<Return<List<Map<String, Map<String, Object>>>>> RETMAPS =
             new JsonParser<>(
             new TypeToken<Return<List<Map<String, Map<String, Object>>>>>(){});

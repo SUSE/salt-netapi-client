@@ -8,7 +8,6 @@ import com.suse.salt.netapi.calls.SaltSSHUtils;
 import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.config.ProxySettings;
-import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Target;
@@ -195,120 +194,6 @@ public class SaltClient {
      */
     public Future<Boolean> logoutAsync() {
         return executor.submit(() -> (Boolean) this.logout());
-    }
-
-    /**
-     * Query for all minions and immediately return a map of minions keyed by minion id.
-     * <p>
-     * {@code GET /minions}
-     *
-     * @return map containing maps representing minions, keyed by minion id
-     * @throws SaltException if anything goes wrong
-     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
-     *     Grains</a>
-     */
-    public Map<String, Map<String, Object>> getMinions() throws SaltException {
-        return connectionFactory.create("/minions", JsonParser.RETMAPS, config)
-                .getResult().getResult().get(0);
-    }
-
-    /**
-     * Asynchronously query for all minions and return a map of minions keyed by minion id.
-     * <p>
-     * {@code GET /minions}
-     *
-     * @return Future with a map containing maps representing minions, keyed by minion id
-     * @throws SaltException if anything goes wrong
-     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
-     *     Grains</a>
-     */
-    public Future<Map<String, Map<String, Object>>> getMinionsAsync()
-            throws SaltException {
-        return executor.submit(this::getMinions);
-    }
-
-    /**
-     * Query for details (grains) of the specified minion.
-     * <p>
-     * {@code GET /minions/<minion-id>}
-     *
-     * @param minionId the minion ID
-     * @return Map key: grain name, value: grain value
-     * @throws SaltException if anything goes wrong
-     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
-     *     Grains</a>
-     */
-    public Map<String, Object> getMinionDetails(String minionId) throws SaltException {
-        return connectionFactory.create("/minions/" + minionId, JsonParser.RETMAPS, config)
-                .getResult().getResult().get(0).get(minionId);
-    }
-
-    /**
-     * Query for details (grains) of the specified minion asynchronously.
-     * <p>
-     * {@code GET /minions/<minion-id>}
-     *
-     * @param minionId the minion ID
-     * @return Future with a map containing details of the minion
-     * @throws SaltException if anything goes wrong
-     * @see <a href="http://docs.saltstack.com/en/latest/topics/targeting/grains.html">
-     *     Grains</a>
-     */
-    public Future<Map<String, Object>> getMinionDetailsAsync(final String minionId)
-            throws SaltException {
-        return executor.submit(() -> getMinionDetails(minionId));
-    }
-
-    /**
-     * Generic interface to start any execution command and immediately return an object
-     * representing the scheduled job.
-     * <p>
-     * {@code POST /minions}
-     *
-     * @param <T> type of the tgt property for this command
-     * @param target the target
-     * @param function the function to execute
-     * @param args list of non-keyword arguments
-     * @param kwargs map containing keyword arguments
-     * @return object representing the scheduled job
-     * @throws SaltException if anything goes wrong
-     */
-    public <T> ScheduledJob startCommand(final Target<T> target, final String function,
-            List<Object> args, Map<String, Object> kwargs) throws SaltException {
-        Map<String, Object> props = new LinkedHashMap<>();
-        props.putAll(target.getProps());
-        props.put("fun", function);
-        props.put("arg", args);
-        props.put("kwarg", kwargs);
-
-        String payload = gson.toJson(Collections.singleton(props));
-
-        // Connect to the minions endpoint and send the above lowstate data
-        Return<List<ScheduledJob>> result = connectionFactory
-                .create("/minions", JsonParser.SCHEDULED_JOB,  config)
-                .getResult(payload);
-
-        // They return a list of tokens here, we take the first
-        return result.getResult().get(0);
-    }
-
-    /**
-     * Asynchronously start any execution command and immediately return an object
-     * representing the scheduled job.
-     * <p>
-     * {@code POST /minions}
-     *
-     * @param <T> type of the tgt property for this command
-     * @param target the target
-     * @param function the function to execute
-     * @param args list of non-keyword arguments
-     * @param kwargs map containing keyword arguments
-     * @return Future containing the scheduled job
-     */
-    public <T> Future<ScheduledJob> startCommandAsync(final Target<T> target,
-            final String function, final List<Object> args,
-            final Map<String, Object> kwargs) {
-        return executor.submit(() -> startCommand(target, function, args, kwargs));
     }
 
     /**

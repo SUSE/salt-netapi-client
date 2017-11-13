@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.client.impl.JDKConnectionFactory;
-import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Glob;
@@ -59,14 +58,6 @@ public class SaltClientTest {
 
     private static final int MOCK_HTTP_PORT = 8888;
 
-    static final String JSON_START_COMMAND_REQUEST = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/minions_request.json"));
-    static final String JSON_START_COMMAND_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/minions_response.json"));
-    static final String JSON_GET_MINIONS_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/get_minions_response.json"));
-    static final String JSON_GET_MINION_DETAILS_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/minion_details_response.json"));
     static final String JSON_LOGIN_REQUEST = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/login_request.json"));
     static final String JSON_LOGIN_RESPONSE = ClientUtils.streamToString(
@@ -291,163 +282,6 @@ public class SaltClientTest {
                 .withFixedDelay(2000)));
 
         clientWithFastTimeout.login("user", "pass", AUTO);
-    }
-
-    @Test
-    public void testGetMinions() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Accept", "application/json")
-                .withBody(JSON_GET_MINIONS_RESPONSE)));
-
-        Map<String, Map<String, Object>> minions = client.getMinions();
-        verifyMinions(minions);
-    }
-
-    @Test
-    public void testGetMinionsAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Accept", "application/json")
-                .withBody(JSON_GET_MINIONS_RESPONSE)));
-
-        Future<Map<String, Map<String, Object>>> future = client.getMinionsAsync();
-        Map<String, Map<String, Object>> minions = future.get();
-        verifyMinions(minions);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void verifyMinions(Map<String, Map<String, Object>> minions) {
-        verify(1, getRequestedFor(urlEqualTo("/minions"))
-                .withHeader("Accept", equalTo("application/json")));
-
-        assertNotNull(minions);
-        assertEquals(2, minions.size());
-
-        assertTrue(minions.containsKey("minion1"));
-        assertTrue(minions.containsKey("minion2"));
-
-        Map<String, Object> minion1 = minions.get("minion1");
-        assertEquals(56, minion1.size());
-        assertEquals("VirtualBox", minion1.get("biosversion"));
-
-        assertTrue(minion1.get("saltversioninfo") instanceof List);
-        List<String> saltVersionInfo = (List<String>) minion1.get("saltversioninfo");
-        assertEquals(2014.0, saltVersionInfo.get(0));
-        assertEquals(7.0, saltVersionInfo.get(1));
-        assertEquals(5.0, saltVersionInfo.get(2));
-        assertEquals(0.0, saltVersionInfo.get(3));
-
-        assertTrue(minion1.get("locale_info") instanceof Map);
-        Map<String, String> localeInfo = ((Map<String, String>) minion1.get("locale_info"));
-        assertEquals("en_US", localeInfo.get("defaultlanguage"));
-        assertEquals("UTF-8", localeInfo.get("defaultencoding"));
-    }
-
-    @Test
-    public void testGetMinionDetails() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Accept", "application/json")
-                .withBody(JSON_GET_MINION_DETAILS_RESPONSE)));
-
-        Map<String, Object> minion = client.getMinionDetails("minion2");
-        verifyMinionDetails(minion);
-    }
-
-    @Test
-    public void testGetMinionDetailsAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Accept", "application/json")
-                .withBody(JSON_GET_MINION_DETAILS_RESPONSE)));
-
-        Future<Map<String, Object>> future = client.getMinionDetailsAsync("minion2");
-        Map<String, Object> minion = future.get();
-        verifyMinionDetails(minion);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void verifyMinionDetails(Map<String, Object> minion) {
-        verify(1, getRequestedFor(urlEqualTo("/minions/minion2"))
-                .withHeader("Accept", equalTo("application/json")));
-
-        assertNotNull(minion);
-
-        assertEquals(56, minion.size());
-        assertEquals("VirtualBox", minion.get("biosversion"));
-
-        assertTrue(minion.get("saltversioninfo") instanceof List);
-        List<String> saltVersionInfo = (List<String>) minion.get("saltversioninfo");
-        assertEquals(2014.0, saltVersionInfo.get(0));
-        assertEquals(7.0, saltVersionInfo.get(1));
-        assertEquals(5.0, saltVersionInfo.get(2));
-        assertEquals(0.0, saltVersionInfo.get(3));
-
-        assertTrue(minion.get("locale_info") instanceof Map);
-        Map<String, String> localeInfo = ((Map<String, String>) minion.get("locale_info"));
-        assertEquals("en_US", localeInfo.get("defaultlanguage"));
-        assertEquals("UTF-8", localeInfo.get("defaultencoding"));
-    }
-
-    @Test
-    public void testStartCommand() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_START_COMMAND_RESPONSE)));
-
-        List<Object> args = new ArrayList<>();
-        args.add("i3");
-
-        Map<String, Object> kwargs = new LinkedHashMap<>();
-        kwargs.put("refresh", "true");
-        kwargs.put("sysupgrade", "false");
-
-        ScheduledJob job = client.startCommand(new Glob(), "pkg.install", args, kwargs);
-
-        verify(1, postRequestedFor(urlEqualTo("/minions"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
-                .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
-
-        assertNotNull(job);
-        assertEquals("20150211105524392307", job.getJid());
-        assertEquals(Arrays.asList("myminion"), job.getMinions());
-    }
-
-    @Test
-    public void testStartCommandAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_START_COMMAND_RESPONSE)));
-
-        List<Object> args = new ArrayList<>();
-        args.add("i3");
-
-        Map<String, Object> kwargs = new LinkedHashMap<>();
-        kwargs.put("refresh", "true");
-        kwargs.put("sysupgrade", "false");
-
-        Future<ScheduledJob> future = client.startCommandAsync(new Glob(), "pkg.install",
-                args, kwargs);
-        ScheduledJob job = future.get();
-
-        verify(1, postRequestedFor(urlEqualTo("/minions"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
-                .withRequestBody(equalToJson(JSON_START_COMMAND_REQUEST)));
-
-        assertNotNull(job);
-        assertEquals("20150211105524392307", job.getJid());
-        assertEquals(Arrays.asList("myminion"), job.getMinions());
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.suse.salt.netapi.parser;
 
-import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Applications;
 import com.suse.salt.netapi.datatypes.cherrypy.HttpServer;
@@ -36,15 +35,6 @@ import static org.junit.Assert.assertTrue;
  * Json parser unit tests.
  */
 public class JsonParserTest {
-
-    @Test
-    public void testJobsParser() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/minions_response.json");
-        Return<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
-        assertNotNull("failed to parse", result);
-        String jid = result.getResult().get(0).getJid();
-        assertEquals("unable to parse jid", "20150211105524392307", jid);
-    }
 
     @Test
     public void testStringParser() throws Exception {
