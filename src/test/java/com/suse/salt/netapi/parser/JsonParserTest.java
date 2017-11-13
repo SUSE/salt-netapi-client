@@ -1,6 +1,5 @@
 package com.suse.salt.netapi.parser;
 
-import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.datatypes.Arguments;
 import com.suse.salt.netapi.datatypes.Job;
 import com.suse.salt.netapi.datatypes.ScheduledJob;
@@ -157,18 +156,6 @@ public class JsonParserTest {
             assertEquals(6, thread.getWorkTime(), 0);
             assertEquals(7.8, thread.getWriteThroughput(), 0);
         }
-    }
-
-    @Test
-    public void testKeysParser() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/keys_response.json");
-        Return<Key.Names> result = JsonParser.KEYS.parse(is);
-        Key.Names keys = result.getResult();
-        assertNotNull("failed to parse", result);
-        assertEquals(Arrays.asList("master.pem", "master.pub"), keys.getLocal());
-        assertEquals(Arrays.asList("m1"), keys.getMinions());
-        assertEquals(Arrays.asList("m2"), keys.getUnacceptedMinions());
-        assertEquals(Arrays.asList("m3"), keys.getRejectedMinions());
     }
 
     @Test

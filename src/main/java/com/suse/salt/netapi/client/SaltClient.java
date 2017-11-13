@@ -5,7 +5,6 @@ import com.suse.salt.netapi.calls.Call;
 import com.suse.salt.netapi.calls.Client;
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.SaltSSHUtils;
-import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.config.ProxySettings;
@@ -489,34 +488,6 @@ public class SaltClient {
      */
     public Future<Stats> statsAsync() {
         return executor.submit(this::stats);
-    }
-
-    /**
-     * Query general key information.
-     * <p>
-     * Required permissions: {@code @wheel}
-     * <p>
-     * {@code GET /keys}
-     *
-     * @return the keys
-     * @throws SaltException if anything goes wrong
-     */
-    public Key.Names keys() throws SaltException {
-        return connectionFactory.create("/keys", JsonParser.KEYS, config).getResult()
-                .getResult();
-    }
-
-    /**
-     * Asynchronously query general key information.
-     * <p>
-     * Required permissions: {@code @wheel}
-     * <p>
-     * {@code GET /keys}
-     *
-     * @return Future containing the keys
-     */
-    public Future<Key.Names> keysAsync() {
-        return executor.submit(this::keys);
     }
 
     /**

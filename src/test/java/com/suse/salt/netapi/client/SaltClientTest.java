@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.SaltSSHConfig;
-import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.impl.JDKConnectionFactory;
 import com.suse.salt.netapi.datatypes.Job;
 import com.suse.salt.netapi.datatypes.ScheduledJob;
@@ -90,8 +89,6 @@ public class SaltClientTest {
             SaltClientTest.class.getResourceAsStream("/ssh_raw_run_response.json"));
     static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/stats_response.json"));
-    static final String JSON_KEYS_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/keys_response.json"));
     static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/jobs_response.json"));
     static final String JSON_JOBS_RESPONSE_PENDING = ClientUtils.streamToString(
@@ -537,37 +534,6 @@ public class SaltClientTest {
 
         assertNotNull(stats);
         verify(1, getRequestedFor(urlEqualTo("/stats"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test
-    public void testKeys() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_KEYS_RESPONSE)));
-
-        Key.Names keys = client.keys();
-        verifyKeys(keys);
-    }
-
-    @Test
-    public void testKeysAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_KEYS_RESPONSE)));
-
-        Key.Names keys = client.keysAsync().get();
-        verifyKeys(keys);
-    }
-
-    private void verifyKeys(Key.Names keys) {
-        assertNotNull(keys);
-        verify(1, getRequestedFor(urlEqualTo("/keys"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
     }

@@ -1,6 +1,5 @@
 package com.suse.salt.netapi.parser;
 
-import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.datatypes.Arguments;
 import com.suse.salt.netapi.datatypes.Event;
 import com.suse.salt.netapi.datatypes.Job;
@@ -72,8 +71,6 @@ public class JsonParser<T> {
                     new TypeToken<Return<List<Map<String, Result<SSHRawResult>>>>>() { });
     public static final JsonParser<Stats> STATS =
             new JsonParser<>(new TypeToken<Stats>(){});
-    public static final JsonParser<Return<Key.Names>> KEYS =
-            new JsonParser<>(new TypeToken<Return<Key.Names>>(){});
     public static final JsonParser<Map<String, Object>> MAP =
             new JsonParser<>(new TypeToken<Map<String, Object>>(){});
     public static final JsonParser<Event> EVENTS =
