@@ -16,14 +16,12 @@ import static com.suse.salt.netapi.AuthModule.PAM;
 import static com.suse.salt.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.client.impl.JDKConnectionFactory;
-import com.suse.salt.netapi.datatypes.Job;
 import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
@@ -31,8 +29,6 @@ import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.ResultInfo;
-import com.suse.salt.netapi.results.ResultInfoSet;
 import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.utils.ClientUtils;
 
@@ -40,7 +36,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,14 +44,11 @@ import org.junit.rules.ExpectedException;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -89,18 +81,6 @@ public class SaltClientTest {
             SaltClientTest.class.getResourceAsStream("/ssh_raw_run_response.json"));
     static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/stats_response.json"));
-    static final String JSON_JOBS_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/jobs_response.json"));
-    static final String JSON_JOBS_RESPONSE_PENDING = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/jobs_response_pending.json"));
-    static final String JSON_JOBS_RESPONSE_RESULT = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/jobs_response_result.json"));
-    static final String JSON_JOBS_INVALID_START_TIME_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream(
-            "/jobs_response_invalid_start_time.json"));
-    static final String JSON_JOBS_NULL_START_TIME_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream(
-            "/jobs_response_null_start_time.json"));
     static final String JSON_HOOK_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/hook_response.json"));
     static final String JSON_LOGOUT_RESPONSE = ClientUtils.streamToString(
@@ -442,42 +422,6 @@ public class SaltClientTest {
     }
 
     @Test
-    public void testQueryJobResult() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_RESPONSE_RESULT)));
-
-        Map<String, Object> retvals = client.getJobResult("some-job-id")
-                .get(0).getResults();
-
-        verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
-                .withHeader("Accept", equalTo("application/json")));
-
-        LinkedHashMap<String, String> i3 = new LinkedHashMap<>();
-        i3.put("new", "4.10.3-1");
-        i3.put("old", "");
-
-        LinkedHashMap<String, String> i3lock = new LinkedHashMap<>();
-        i3lock.put("new", "2.7-1");
-        i3lock.put("old", "");
-
-        LinkedHashMap<String, String> i3status = new LinkedHashMap<>();
-        i3status.put("new", "2.9-2");
-        i3status.put("old", "");
-
-        Map<String, Map<String, String>> expected = new LinkedHashMap<>();
-        expected.put("i3", i3);
-        expected.put("i3lock", i3lock);
-        expected.put("i3status", i3status);
-
-        assertNotNull(retvals);
-        assertTrue(retvals.containsKey("minion-1"));
-        assertEquals(expected, retvals.get("minion-1"));
-    }
-
-    @Test
     public void testStartCommandAsync() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
@@ -534,159 +478,6 @@ public class SaltClientTest {
 
         assertNotNull(stats);
         verify(1, getRequestedFor(urlEqualTo("/stats"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test
-    public void testJobs() throws Exception {
-        final SimpleDateFormat DATE_FORMAT =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_RESPONSE)));
-
-        Map<String, Job> jobs = client.getJobs();
-
-        assertNotNull(jobs);
-        Job job1 = jobs.get("20150304192951636258");
-        Job job2 = jobs.get("20150304200110485012");
-        assertEquals(Arrays.asList("enable-autodestruction"),
-                job2.getArguments().getArgs());
-        assertEquals(0, job1.getArguments().getArgs().size());
-        assertEquals("2015-03-04 19:29:51", DATE_FORMAT.format(job1.getStartTime()));
-        assertEquals("2015-03-04 20:01:10", DATE_FORMAT.format(job2.getStartTime()));
-        verify(1, getRequestedFor(urlEqualTo("/jobs"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test
-    public void testJobsDiffTz() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_RESPONSE)));
-
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
-        TimeZone defaultTz = TimeZone.getDefault();
-        TimeZone tz = null;
-
-        for (String zone : TimeZone.getAvailableIDs()) {
-            tz = TimeZone.getTimeZone(zone);
-            long diff = tz.getRawOffset() -
-                    df.getTimeZone().getRawOffset();
-
-            // Pick a TZ far enough from default to avoid possible DST issues
-            if (Math.abs(diff) > 3600000 * 3) {
-                break;
-            }
-        }
-
-        Map<String, Job> jobs = client.getJobs();
-        Job job1 = jobs.get("20150304192951636258");
-        Job job2 = jobs.get("20150304200110485012");
-
-        assertEquals(df.parse("2015-03-04 19:29:51.636"), job1.getStartTime(defaultTz));
-        assertEquals(df.parse("2015-03-04 20:01:10.485"), job2.getStartTime(defaultTz));
-        assertEquals(df.parse("2015-03-04 19:29:51.636"), job1.getStartTime());
-        assertEquals(df.parse("2015-03-04 20:01:10.485"), job2.getStartTime());
-
-        df.setTimeZone(tz);
-        assertEquals(df.parse("2015-03-04 19:29:51.636"), job1.getStartTime(tz));
-        assertEquals(df.parse("2015-03-04 20:01:10.485"), job2.getStartTime(tz));
-        assertNotEquals(job1.getStartTime(defaultTz), job1.getStartTime(tz));
-        assertNotEquals(job2.getStartTime(defaultTz), job2.getStartTime(tz));
-
-        verify(1, getRequestedFor(urlEqualTo("/jobs"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test(expected = JsonSyntaxException.class)
-    public void testJobsWithInvalidStartTime() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_INVALID_START_TIME_RESPONSE)));
-        client.getJobs();
-    }
-
-    @Test
-    public void testJobsWithNullStartTime() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_NULL_START_TIME_RESPONSE)));
-
-        Map<String, Job> jobs = client.getJobs();
-
-        assertNotNull(jobs);
-        Job job1 = jobs.get("20150304192951636258");
-        Job job2 = jobs.get("20150304200110485012");
-        assertNull(job1.getStartTime());
-        assertNull(job2.getStartTime());
-        assertNull(job1.getStartTime(TimeZone.getDefault()));
-        assertNull(job2.getStartTime(TimeZone.getDefault()));
-        verify(1, getRequestedFor(urlEqualTo("/jobs"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test
-    public void testJobsAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_RESPONSE)));
-
-        Map<String, Job> jobs = client.getJobsAsync().get();
-
-        assertNotNull(jobs);
-        assertEquals(Arrays.asList("enable-autodestruction"),
-                jobs.get("20150304200110485012").getArguments().getArgs());
-        verify(1, getRequestedFor(urlEqualTo("/jobs"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test
-    public void testJobsPending() throws Exception {
-        final SimpleDateFormat DATE_FORMAT =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_JOBS_RESPONSE_PENDING)));
-
-        ResultInfoSet resultSet = client.getJobResult("some-job-id");
-        assertEquals(1, resultSet.size());
-        ResultInfo results = resultSet.get(0);
-
-        HashSet<String> pendingMinions = new HashSet<>();
-        pendingMinions.add("mira");
-
-        assertNotNull(results);
-        assertEquals(0, results.getResults().size());
-        assertTrue(!results.getResult("mira").isPresent());
-        assertEquals("cmd.run", results.getFunction());
-        assertEquals("*", results.getTarget());
-        assertEquals("adamm", results.getUser());
-        assertEquals(pendingMinions, results.getMinions());
-        assertEquals(pendingMinions, results.getPendingMinions());
-        assertEquals("2015-08-06 16:55:13", DATE_FORMAT.format(results.getStartTime()));
-        assertEquals("2015-08-06 16:55:13",
-                DATE_FORMAT.format(results.getStartTime(DATE_FORMAT.getTimeZone())));
-
-        verify(1, getRequestedFor(urlEqualTo("/jobs/some-job-id"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
     }

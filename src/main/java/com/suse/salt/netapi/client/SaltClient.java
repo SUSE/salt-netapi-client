@@ -8,7 +8,6 @@ import com.suse.salt.netapi.calls.SaltSSHUtils;
 import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.config.ProxySettings;
-import com.suse.salt.netapi.datatypes.Job;
 import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
@@ -20,7 +19,6 @@ import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.results.ResultInfoSet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -311,60 +309,6 @@ public class SaltClient {
             final String function, final List<Object> args,
             final Map<String, Object> kwargs) {
         return executor.submit(() -> startCommand(target, function, args, kwargs));
-    }
-
-    /**
-     * Query for the result of a supplied job.
-     * <p>
-     * {@code GET /job/<job-id>}
-     *
-     * @param job {@link ScheduledJob} object representing scheduled job
-     * @return {@link ResultInfoSet} representing result set from minions
-     * @throws SaltException if anything goes wrong
-     */
-    public ResultInfoSet getJobResult(final ScheduledJob job) throws SaltException {
-        return getJobResult(job.getJid());
-    }
-
-    /**
-     * Query for the result of a supplied job.
-     * <p>
-     * {@code GET /job/<job-id>}
-     *
-     * @param job String representing scheduled job
-     * @return {@link ResultInfoSet} representing result set from minions
-     * @throws SaltException if anything goes wrong
-     */
-    public ResultInfoSet getJobResult(final String job) throws SaltException {
-        return connectionFactory
-                .create("/jobs/" + job, JsonParser.JOB_RESULTS, config)
-                .getResult();
-    }
-
-    /**
-     * Get previously run jobs.
-     * <p>
-     * {@code GET /jobs}
-     *
-     * @return map containing run jobs keyed by job id
-     * @throws SaltException if anything goes wrong
-     */
-    public Map<String, Job> getJobs() throws SaltException {
-        Return<List<Map<String, Job>>> result = connectionFactory
-                .create("/jobs", JsonParser.JOBS, config)
-                .getResult();
-        return result.getResult().get(0);
-    }
-
-    /**
-     * Asynchronously get previously run jobs.
-     * <p>
-     * {@code GET /jobs}
-     *
-     * @return Future with a map containing run jobs keyed by job id
-     */
-    public Future<Map<String, Job>> getJobsAsync() {
-        return executor.submit(this::getJobs);
     }
 
     /**
