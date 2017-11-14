@@ -52,9 +52,6 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Return<String>>(){});
     public static final JsonParser<Return<List<Token>>> TOKEN =
             new JsonParser<>(new TypeToken<Return<List<Token>>>(){});
-    public static final JsonParser<Return<List<Map<String, Map<String, Object>>>>> RETMAPS =
-            new JsonParser<>(
-            new TypeToken<Return<List<Map<String, Map<String, Object>>>>>(){});
     public static final JsonParser<Return<List<Map<String, Object>>>> RUN_RESULTS =
             new JsonParser<>(new TypeToken<Return<List<Map<String, Object>>>>(){});
     public static final JsonParser<Return<List<Map<String, Result<SSHRawResult>>>>>
