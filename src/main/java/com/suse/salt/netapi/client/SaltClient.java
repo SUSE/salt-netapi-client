@@ -342,41 +342,6 @@ public class SaltClient {
     }
 
     /**
-     * Trigger an event in Salt with the specified tag and data.
-     * <p>
-     * {@code POST /hook}
-     *
-     * @param eventTag the event tag
-     * @param eventData the event data. Must be valid JSON.
-     * @return the boolean value returned by Salt. If true the event was triggered
-     * successfully.
-     * A value of false is returned only if Salt itself returns false; it does not mean a
-     * communication failure.
-     * @throws SaltException if anything goes wrong
-     */
-    public boolean sendEvent(String eventTag, String eventData) throws SaltException {
-        String tag = eventTag != null ? eventTag : "";
-        Map<String, Object> result = connectionFactory
-                .create("/hook/" + tag, JsonParser.MAP, config)
-                .getResult(eventData);
-        return Boolean.TRUE.equals(result.get("success"));
-    }
-
-    /**
-     * Asynchronously trigger an event in Salt with the specified tag and data.
-     * <p>
-     * {@code POST /hook}
-     *
-     * @param eventTag the event tag
-     * @param eventData the event data. Must be valid JSON.
-     * @return Future containing a boolean value indicating the success or failure of
-     * triggering the event.
-     */
-    public Future<Boolean> sendEventAsync(final String eventTag, final String eventData) {
-        return executor.submit(() -> { return sendEvent(eventTag, eventData); });
-    }
-
-    /**
      * Generic interface to make a {@link Call} to an endpoint using a given {@link Client}.
      *
      * @param <R> the object type that will be returned

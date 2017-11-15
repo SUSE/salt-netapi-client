@@ -32,9 +32,6 @@ import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,8 +69,6 @@ public class SaltClientTest {
             SaltClientTest.class.getResourceAsStream("/ssh_raw_run_response.json"));
     static final String JSON_STATS_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/stats_response.json"));
-    static final String JSON_HOOK_RESPONSE = ClientUtils.streamToString(
-            SaltClientTest.class.getResourceAsStream("/hook_response.json"));
     static final String JSON_LOGOUT_RESPONSE = ClientUtils.streamToString(
             SaltClientTest.class.getResourceAsStream("/logout_response.json"));
 
@@ -314,60 +309,6 @@ public class SaltClientTest {
         verify(1, getRequestedFor(urlEqualTo("/stats"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withRequestBody(equalTo("")));
-    }
-
-    @Test
-    public void testSendEvent() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_HOOK_RESPONSE)));
-
-        JsonObject json = new JsonObject();
-        json.addProperty("foo", "bar");
-        JsonArray array = new JsonArray();
-        array.add(new JsonPrimitive("one"));
-        array.add(new JsonPrimitive("two"));
-        array.add(new JsonPrimitive("three"));
-        json.add("list", array);
-
-        String data = json.toString();
-
-        boolean success = client.sendEvent("my/tag", data);
-
-        assertTrue(success);
-        verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
-                .withRequestBody(equalTo(data)));
-    }
-
-    @Test
-    public void testSendEventAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_HOOK_RESPONSE)));
-
-        JsonObject json = new JsonObject();
-        json.addProperty("foo", "bar");
-        JsonArray array = new JsonArray();
-        array.add(new JsonPrimitive("one"));
-        array.add(new JsonPrimitive("two"));
-        array.add(new JsonPrimitive("three"));
-        json.add("list", array);
-
-        String data = json.toString();
-
-        boolean success = client.sendEventAsync("my/tag", data).get();
-
-        assertTrue(success);
-        verify(1, postRequestedFor(urlEqualTo("/hook/my/tag"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
-                .withRequestBody(equalTo(data)));
     }
 
     @Test
