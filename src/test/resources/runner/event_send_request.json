@@ -1,0 +1,13 @@
+[
+  {
+    "kwarg": {
+      "tag":"my/custom/event",
+      "data": {
+        "foo": "bar",
+        "some-value": 2
+      }
+    },
+    "client": "runner",
+    "fun": "event.send"
+  }
+]
