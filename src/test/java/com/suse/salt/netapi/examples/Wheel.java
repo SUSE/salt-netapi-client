@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public class Wheel {
 
-    private static final String SALT_API_URL = " http://localhost:8000";
+    private static final String SALT_API_URL = "http://localhost:8000";
     private static final String USER = "saltdev";
     private static final String PASSWORD = "saltdev";
 
