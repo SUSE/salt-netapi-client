@@ -5,6 +5,7 @@ import com.suse.salt.netapi.calls.Call;
 import com.suse.salt.netapi.calls.Client;
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.SaltSSHUtils;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnectionFactory;
 import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.config.ProxySettings;
@@ -23,13 +24,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,13 +39,16 @@ import java.util.concurrent.Future;
 /**
  * Salt API client.
  */
-public class SaltClient {
+public class SaltClient implements AutoCloseable {
 
     /** The configuration object */
     private final ClientConfig config = new ClientConfig();
 
     /** The connection factory object */
     private final ConnectionFactory connectionFactory;
+
+    /** The async connection factory object */
+    private final AsyncConnectionFactory asyncConnectionFactory;
 
     /** The executor for async operations */
     private final ExecutorService executor;
@@ -101,6 +97,9 @@ public class SaltClient {
         config.put(ClientConfig.URL, url);
         this.connectionFactory = connectionFactory;
         this.executor = executor;
+
+        // TODO: Replace connectionFactory with this
+        this.asyncConnectionFactory = new HttpAsyncClientConnectionFactory(config);
     }
 
     /**
@@ -135,53 +134,31 @@ public class SaltClient {
      * <p>
      * {@code POST /login}
      *
-     * @param httpclient the HTTP client
-     * @param username username
-     * @param password password
-     * @param eauth authentication module
-     * @return completion stage
+     * @param username the username
+     * @param password the password
+     * @param eauth the eauth type
+     * @return CompletionStage holding the authentication token
      */
-    public CompletionStage<Token> loginNonBlocking(CloseableHttpAsyncClient httpclient,
-            final String username, final String password, final AuthModule eauth) {
+    public CompletionStage<Token> loginNonBlocking(final String username,
+            final String password, final AuthModule eauth) {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("username", username);
         props.put("password", password);
         props.put("eauth", eauth.getValue());
+
         String payload = gson.toJson(props);
 
-        CompletableFuture<Token> future = new CompletableFuture<>();
-
-        final HttpPost request = new HttpPost(config.get(ClientConfig.URL) + "/login");
-        request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
-        httpclient.execute(request, new FutureCallback<HttpResponse>() {
-
-            @Override
-            public void failed(Exception e) {
-                future.completeExceptionally(e);
-            }
-
-            @Override
-            public void completed(HttpResponse response) {
-                try {
-                    Return<List<Token>> result = JsonParser.TOKEN
-                            .parse(response.getEntity().getContent());
-
-                    // They return a list of tokens here, take the first
-                    Token token = result.getResult().get(0);
+        CompletionStage<Token> result = asyncConnectionFactory
+                .create("/login", JsonParser.TOKEN)
+                .post(payload)
+                .thenApply(r -> {
+                    // They return a list of tokens here, take the first one
+                    Token token = r.getResult().get(0);
                     config.put(ClientConfig.TOKEN, token.getToken());
-                    future.complete(token);
-                } catch (Exception e) {
-                    future.completeExceptionally(e);
-                }
-            }
+                    return token;
+                });
 
-            @Override
-            public void cancelled() {
-                future.cancel(false);
-            }
-        });
-
-        return future;
+        return result;
     }
 
     /**
@@ -445,5 +422,10 @@ public class SaltClient {
     public <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
             throws SaltException {
         return call(call, client, endpoint, Optional.empty(), type);
+    }
+
+    @Override
+    public void close() throws Exception {
+        asyncConnectionFactory.close();
     }
 }
