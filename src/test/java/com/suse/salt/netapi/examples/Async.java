@@ -3,10 +3,6 @@ package com.suse.salt.netapi.examples;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
 
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
-
-import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -21,19 +17,18 @@ public class Async {
     public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
-        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
-        httpclient.start();
 
+        // Clean up afterwards by calling close()
         Runnable cleanup = () -> {
             try {
-                httpclient.close();
-            } catch (IOException e) {
+                client.close();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
 
         // Perform a non-blocking login
-        client.loginNonBlocking(httpclient, USER, PASSWORD, AuthModule.AUTO)
+        client.loginNonBlocking(USER, PASSWORD, AuthModule.AUTO)
                 .thenAccept(t -> System.out.println("Token -> " + t.getToken()))
                 .thenRun(cleanup);
     }
