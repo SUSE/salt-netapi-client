@@ -23,6 +23,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +37,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -119,6 +128,60 @@ public class SaltClient {
                 config.put(ClientConfig.PROXY_PASSWORD, settings.getPassword());
             }
         }
+    }
+
+    /**
+     * Non-blocking version of login() returning a CompletionStage with the token.
+     * <p>
+     * {@code POST /login}
+     *
+     * @param httpclient the HTTP client
+     * @param username username
+     * @param password password
+     * @param eauth authentication module
+     * @return completion stage
+     */
+    public CompletionStage<Token> loginNonBlocking(CloseableHttpAsyncClient httpclient,
+            final String username, final String password, final AuthModule eauth) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("username", username);
+        props.put("password", password);
+        props.put("eauth", eauth.getValue());
+        String payload = gson.toJson(props);
+
+        CompletableFuture<Token> future = new CompletableFuture<>();
+
+        final HttpPost request = new HttpPost(config.get(ClientConfig.URL) + "/login");
+        request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+        httpclient.execute(request, new FutureCallback<HttpResponse>() {
+
+            @Override
+            public void failed(Exception e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void completed(HttpResponse response) {
+                try {
+                    Return<List<Token>> result = JsonParser.TOKEN
+                            .parse(response.getEntity().getContent());
+
+                    // They return a list of tokens here, take the first
+                    Token token = result.getResult().get(0);
+                    config.put(ClientConfig.TOKEN, token.getToken());
+                    future.complete(token);
+                } catch (Exception e) {
+                    future.completeExceptionally(e);
+                }
+            }
+
+            @Override
+            public void cancelled() {
+                future.cancel(false);
+            }
+        });
+
+        return future;
     }
 
     /**
