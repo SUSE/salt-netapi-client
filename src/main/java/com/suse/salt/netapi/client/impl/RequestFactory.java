@@ -7,8 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 /**
  * Helper class for setting up {@link HttpURLConnection} objects.
@@ -59,7 +58,7 @@ public class RequestFactory {
             String proxyUsername = config.get(ClientConfig.PROXY_USERNAME);
             String proxyPassword = config.get(ClientConfig.PROXY_PASSWORD);
             if (proxyUsername != null && proxyPassword != null) {
-                final String encoded = DatatypeConverter.printBase64Binary(
+                final String encoded = Base64.getEncoder().encodeToString(
                         (proxyUsername + ':' + proxyPassword).getBytes());
                 connection.addRequestProperty("Proxy-Authorization", encoded);
             }
