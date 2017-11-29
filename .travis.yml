@@ -1,6 +1,7 @@
 language: java
 jdk:
   - oraclejdk8
+  - oraclejdk9
 install: /bin/true
 script: mvn checkstyle:check javadoc:javadoc test package
 deploy:
