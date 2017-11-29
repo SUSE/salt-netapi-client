@@ -35,19 +35,22 @@ public class State {
     private State() { }
 
     public static LocalCall<Map<String, ApplyResult>> apply(List<String> mods) {
-        return apply(mods, Optional.empty(), Optional.empty());
+        return apply(mods, Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     public static LocalCall<Map<String, ApplyResult>> apply(String... mods) {
-        return apply(Arrays.asList(mods), Optional.empty(), Optional.empty());
+        return apply(Arrays.asList(mods), Optional.empty(), Optional.empty(),
+                Optional.empty());
     }
 
     public static LocalCall<Map<String, ApplyResult>> apply(List<String> mods,
-            Optional<Map<String, Object>> pillar, Optional<Boolean> queue) {
+            Optional<Map<String, Object>> pillar, Optional<Boolean> queue,
+            Optional<Boolean> test) {
         Map<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("mods", mods);
         pillar.ifPresent(p -> kwargs.put("pillar", p));
         queue.ifPresent(q -> kwargs.put("queue", q));
+        test.ifPresent(t -> kwargs.put("test", t));
         return new LocalCall<>("state.apply", Optional.empty(), Optional.of(kwargs),
                 new TypeToken<Map<String, ApplyResult>>(){});
     }
