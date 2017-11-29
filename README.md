@@ -28,6 +28,6 @@ Pull requests are always welcome, please see [issues](https://github.com/SUSE/sa
 ### Style guide
 
 * Indentations are represented with 4 spaces
-* The maximum line length should not exceed 92
+* The maximum line length should not exceed 120
 * Wrapped lines should be indented twice (8 spaces)
 * Files should end with a new line

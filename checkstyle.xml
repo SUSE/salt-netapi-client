@@ -13,7 +13,7 @@
             <property name="message" value="Trailing whitespace"/>
         </module>
         <module name="LineLength">
-            <property name="max" value="92"/>
+            <property name="max" value="120"/>
             <property name="ignorePattern" value="import"/>
         </module>
         <module name="Indentation">
