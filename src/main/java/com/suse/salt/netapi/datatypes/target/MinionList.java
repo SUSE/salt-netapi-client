@@ -1,14 +1,14 @@
 package com.suse.salt.netapi.datatypes.target;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Target for specifying a list of minions.
  */
-public class MinionList implements Target<List<String>>, SSHTarget<List<String>> {
-
-    private final List<String> targets;
+public class MinionList extends AbstractTarget<List<String>> implements Target<List<String>>, SSHTarget<List<String>> {
 
     /**
      * Constructor taking a list of minions as strings.
@@ -16,7 +16,7 @@ public class MinionList implements Target<List<String>>, SSHTarget<List<String>>
      * @param targets as a list of strings
      */
     public MinionList(List<String> targets) {
-        this.targets = targets;
+        super(targets);
     }
 
     /**
@@ -25,15 +25,7 @@ public class MinionList implements Target<List<String>>, SSHTarget<List<String>>
      * @param targets as strings
      */
     public MinionList(String... targets) {
-        this(Arrays.asList(targets));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> getTarget() {
-        return targets;
+        super(Arrays.asList(targets));
     }
 
     /**

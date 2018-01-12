@@ -1,13 +1,17 @@
 package com.suse.salt.netapi.datatypes.target;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Matcher based on salt grains
  */
-public class Grains implements Target<String> {
+public class Grains extends AbstractTarget<String> implements Target<String> {
 
     private final String grain;
     private final String value;
-    private final String target;
+    private final char delimiter;
+    public final static char DEFAULT_DELIMITER = ':';
 
     /**
      * Creates a grains matcher
@@ -16,9 +20,21 @@ public class Grains implements Target<String> {
      * @param value the value to match
      */
     public Grains(String grain, String value) {
+        this(grain, value, DEFAULT_DELIMITER);
+    }
+
+    /**
+     * Creates a grains matcher
+     *
+     * @param grain the grain name
+     * @param value the value to match
+     * @param delimiter the character to delimit nesting in the grain name
+     */
+    public Grains(String grain, String value, char delimiter) {
+        super(grain + delimiter + value);
         this.grain = grain;
         this.value = value;
-        this.target = grain + ":" + value;
+        this.delimiter = delimiter;
     }
 
     /**
@@ -35,13 +51,26 @@ public class Grains implements Target<String> {
         return value;
     }
 
-    @Override
-    public String getTarget() {
-        return target;
+    /**
+     * @return the delimiter used by this target
+     */
+    public char getDelimiter() {
+        return delimiter;
     }
 
     @Override
     public TargetType getType() {
         return TargetType.GRAIN;
+    }
+
+    @Override
+    public Map<String, Object> getProps() {
+        Map<String, Object> props = new HashMap<>();
+        props.put("tgt", getTarget());
+        props.put("expr_form", getType().getValue());
+        if (getDelimiter() != DEFAULT_DELIMITER) {
+            props.put("delimiter", getDelimiter());
+        }
+        return props;
     }
 }
