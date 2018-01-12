@@ -28,7 +28,7 @@ public class NodeGroup implements Target<String> {
      * {@inheritDoc}
      */
     @Override
-    public String getType() {
-        return "nodegroup";
+    public TargetType getType() {
+        return TargetType.NODEGROUP;
     }
 }

@@ -37,7 +37,7 @@ public class Glob implements Target<String>, SSHTarget<String> {
      * {@inheritDoc}
      */
     @Override
-    public String getType() {
-        return "glob";
+    public TargetType getType() {
+        return TargetType.GLOB;
     }
 }

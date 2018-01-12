@@ -40,7 +40,7 @@ public class MinionList implements Target<List<String>>, SSHTarget<List<String>>
      * {@inheritDoc}
      */
     @Override
-    public String getType() {
-        return "list";
+    public TargetType getType() {
+        return TargetType.LIST;
     }
 }

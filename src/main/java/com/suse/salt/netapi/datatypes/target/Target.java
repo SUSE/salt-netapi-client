@@ -19,5 +19,5 @@ public interface Target<T> {
      *
      * @return the target type
      */
-    public String getType();
+    public TargetType getType();
 }

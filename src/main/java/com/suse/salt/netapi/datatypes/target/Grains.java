@@ -41,7 +41,7 @@ public class Grains implements Target<String> {
     }
 
     @Override
-    public String getType() {
-        return "grain";
+    public TargetType getType() {
+        return TargetType.GRAIN;
     }
 }
