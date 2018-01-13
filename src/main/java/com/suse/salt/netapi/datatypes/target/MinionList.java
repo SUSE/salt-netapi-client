@@ -32,7 +32,5 @@ public class MinionList extends AbstractTarget<List<String>> implements Target<L
      * {@inheritDoc}
      */
     @Override
-    public TargetType getType() {
-        return TargetType.LIST;
-    }
+    public TargetType getType() { return TargetType.LIST; }
 }

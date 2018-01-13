@@ -10,19 +10,13 @@ public class Glob extends AbstractTarget<String> implements Target<String>, SSHT
     /**
      * Default constructor.
      */
-    public Glob() {
-        super("*");
-    }
+    public Glob() { super("*"); }
 
-    public Glob(String glob) {
-        super(glob);
-    }
+    public Glob(String glob) { super(glob); }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public TargetType getType() {
-        return TargetType.GLOB;
-    }
+    public TargetType getType() { return TargetType.GLOB; }
 }

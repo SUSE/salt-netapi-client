@@ -18,7 +18,5 @@ public class NodeGroup extends AbstractTarget<String> implements Target<String> 
      * {@inheritDoc}
      */
     @Override
-    public TargetType getType() {
-        return TargetType.NODEGROUP;
-    }
+    public TargetType getType() { return TargetType.NODEGROUP; }
 }
