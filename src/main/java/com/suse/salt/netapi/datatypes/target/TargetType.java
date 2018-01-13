@@ -11,11 +11,13 @@ public enum TargetType {
     GRAIN("grain"),
     GRAIN_PCRE("grain_pcre"),
     PILLAR("pillar"),
+    PILLAR_EXACT("pillar_exact"),
     PILLAR_PCRE("pillar_pcre"),
     NODEGROUP("nodegroup"),
     RANGE("range"),
     COMPOUND("compound"),
-    IPCIDR("ipcidr");
+    IPCIDR("ipcidr"),
+    DATA("data");
 
     private final String value;
 
