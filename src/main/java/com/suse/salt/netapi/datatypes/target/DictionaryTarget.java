@@ -1,7 +1,9 @@
 package com.suse.salt.netapi.datatypes.target;
 
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 abstract class DictionaryTarget extends AbstractTarget<String> {
 
@@ -17,10 +19,16 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
 
     public DictionaryTarget(String target, char delimiter) {
         super(target);
+        this.delimiter = Objects.requireNonNull(delimiter);
+
         int pos = target.lastIndexOf(delimiter);
+        if (pos < 1 || pos == target.length() - 1) {
+            // The delimiter was not found, or was
+            // found and the start or end of the string
+            throw new InvalidParameterException();
+        }
         this.key = target.substring(0, pos);
         this.value = target.substring(pos + 1);
-        this.delimiter = delimiter;
     }
 
     public DictionaryTarget(String key, String value) {
@@ -29,9 +37,9 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
 
     public DictionaryTarget(String key, String value, char delimiter) {
         super(key + delimiter + value);
-        this.key = key;
-        this.value = value;
-        this.delimiter = delimiter;
+        this.key = Objects.requireNonNull(key);
+        this.value = Objects.requireNonNull(value);
+        this.delimiter = Objects.requireNonNull(delimiter);
     }
 
     /**
