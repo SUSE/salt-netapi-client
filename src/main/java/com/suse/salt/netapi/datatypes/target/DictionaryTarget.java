@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Base class for all grain and pillar target types
+ */
 abstract class DictionaryTarget extends AbstractTarget<String> {
 
     public final static char DEFAULT_DELIMITER = ':';
@@ -63,6 +66,10 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
         return delimiter;
     }
 
+    /**
+     * @return a map of items to include in the API call payload
+     *         This will include the 'delimiter' key if not using the default delimiter.
+     */
     @Override
     public Map<String, Object> getProps() {
         Map<String, Object> props = super.getProps();

@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Base class for all target types
+ *
+ * @param <T> The data type of the target class
+ */
 abstract class AbstractTarget<T> {
 
     protected final T target;
@@ -19,7 +24,7 @@ abstract class AbstractTarget<T> {
     abstract TargetType getType();
 
     /**
-     * {@inheritDoc}
+     * @return a map of items to include in the API call payload
      */
     public Map<String, Object> getProps() {
         Map<String, Object> props = new HashMap<>();

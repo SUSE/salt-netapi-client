@@ -1,9 +1,7 @@
 package com.suse.salt.netapi.datatypes.target;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Target for specifying a list of minions.
