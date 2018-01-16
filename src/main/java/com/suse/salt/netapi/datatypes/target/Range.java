@@ -9,12 +9,7 @@ public class Range extends AbstractTarget<String> implements Target<String> {
      * Default constructor.
      */
     public Range(String expression) {
-        super(expression);
+        super(TargetType.RANGE, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() { return TargetType.RANGE; }
 }

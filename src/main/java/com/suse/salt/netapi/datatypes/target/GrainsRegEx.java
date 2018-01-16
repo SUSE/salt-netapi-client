@@ -11,7 +11,7 @@ public class GrainsRegEx extends DictionaryTarget implements Target<String> {
      * @param target the targeting expression
      */
     public GrainsRegEx(String target) {
-        super(target);
+        super(TargetType.GRAIN_PCRE, target);
     }
 
     /**
@@ -21,7 +21,7 @@ public class GrainsRegEx extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the grain name
      */
     public GrainsRegEx(String target, char delimiter) {
-        super(target, delimiter);
+        super(TargetType.GRAIN_PCRE, target, delimiter);
     }
 
     /**
@@ -31,7 +31,7 @@ public class GrainsRegEx extends DictionaryTarget implements Target<String> {
      * @param regex the regular expression to match
      */
     public GrainsRegEx(String grain, String regex) {
-        super(grain, regex);
+        super(TargetType.GRAIN_PCRE, grain, regex);
     }
 
     /**
@@ -42,14 +42,7 @@ public class GrainsRegEx extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the grain name
      */
     public GrainsRegEx(String grain, String regex, char delimiter) {
-        super(grain, regex, delimiter);
+        super(TargetType.GRAIN_PCRE, grain, regex, delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() {
-        return TargetType.GRAIN_PCRE;
-    }
 }

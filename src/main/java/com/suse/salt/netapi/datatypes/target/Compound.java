@@ -8,11 +8,8 @@ public class Compound extends AbstractTarget<String> implements Target<String> {
     /**
      * Default constructor.
      */
-    public Compound(String expression) { super(expression); }
+    public Compound(String expression) {
+        super(TargetType.COMPOUND, expression);
+    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() { return TargetType.COMPOUND; }
 }

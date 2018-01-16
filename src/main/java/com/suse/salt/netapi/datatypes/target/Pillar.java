@@ -11,7 +11,7 @@ public class Pillar extends DictionaryTarget implements Target<String> {
      * @param target the targeting expression
      */
     public Pillar(String target) {
-        super(target);
+        super(TargetType.PILLAR, target);
     }
 
     /**
@@ -21,7 +21,7 @@ public class Pillar extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the grain name
      */
     public Pillar(String target, char delimiter) {
-        super(target, delimiter);
+        super(TargetType.PILLAR, target, delimiter);
     }
 
     /**
@@ -31,7 +31,7 @@ public class Pillar extends DictionaryTarget implements Target<String> {
      * @param value the value to match
      */
     public Pillar(String pillar, String value) {
-        super(pillar, value);
+        super(TargetType.PILLAR, pillar, value);
     }
 
     /**
@@ -42,11 +42,7 @@ public class Pillar extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the pillar name
      */
     public Pillar(String pillar, String value, char delimiter) {
-        super(pillar, value, delimiter);
+        super(TargetType.PILLAR, pillar, value, delimiter);
     }
 
-    @Override
-    public TargetType getType() {
-        return TargetType.PILLAR;
-    }
 }

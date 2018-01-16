@@ -16,12 +16,12 @@ public class TargetTypesTest {
 
     private final String key = "key";
     private final String value = "value";
-    private final char delimiter = DictionaryTargetExpression.DEFAULT_DELIMITER;
+    private final char delimiter = DictionaryTarget.DEFAULT_DELIMITER;
     private final String expr = key + delimiter + value;
 
     @Test
     public void testGrains() {
-        Grains target = new Grains(new DictionaryTargetExpression(expr));
+        Grains target = new Grains(expr);
         assertEquals(TargetType.GRAIN, target.getType());
         dictionaryTargetTestHelper(target);
     }
@@ -35,38 +35,29 @@ public class TargetTypesTest {
 
     @Test
     public void testGrainsRegEx() {
-        GrainsRegEx target = new GrainsRegEx(new DictionaryTargetExpression(expr));
+        GrainsRegEx target = new GrainsRegEx(expr);
         assertEquals(TargetType.GRAIN_PCRE, target.getType());
         dictionaryTargetTestHelper(target);
     }
 
     @Test
     public void testPillar() {
-        Pillar target = new Pillar(new DictionaryTargetExpression(expr));
+        Pillar target = new Pillar(expr);
         assertEquals(TargetType.PILLAR, target.getType());
         dictionaryTargetTestHelper(target);
     }
 
     @Test
     public void testPillarExact() {
-        PillarExact target = new PillarExact(new DictionaryTargetExpression(expr));
+        PillarExact target = new PillarExact(expr);
         assertEquals(TargetType.PILLAR_EXACT, target.getType());
         dictionaryTargetTestHelper(target);
     }
 
     @Test
     public void testPillarRegEx() {
-        PillarRegEx target = new PillarRegEx(new DictionaryTargetExpression(expr));
+        PillarRegEx target = new PillarRegEx(expr);
         assertEquals(TargetType.PILLAR_PCRE, target.getType());
-    }
-
-    @Test
-    public void testAlternateDelimiter() {
-        DictionaryTargetExpression expr = new DictionaryTargetExpression(key, value, '#');
-        Pillar target = new Pillar(expr);
-        assertTrue(target.getProps().containsKey("tgt"));
-        assertTrue(target.getProps().containsKey("expr_form"));
-        assertTrue(target.getProps().containsKey("delimiter"));
     }
 
     @Test

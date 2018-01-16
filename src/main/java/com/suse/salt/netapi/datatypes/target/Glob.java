@@ -8,15 +8,18 @@ public class Glob extends AbstractTarget<String> implements Target<String>, SSHT
     public static final Glob ALL = new Glob("*");
 
     /**
-     * Default constructor.
+     * Creates a glob matcher
      */
-    public Glob() { super("*"); }
-
-    public Glob(String glob) { super(glob); }
+    public Glob() {
+        super(TargetType.GLOB, "*");
+    }
 
     /**
-     * {@inheritDoc}
+     * Creates a glob matcher
+     * @param glob Glob expression
      */
-    @Override
-    public TargetType getType() { return TargetType.GLOB; }
+    public Glob(String glob) {
+        super(TargetType.GLOB, glob);
+    }
+
 }

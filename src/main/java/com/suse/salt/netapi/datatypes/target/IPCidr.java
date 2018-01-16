@@ -8,11 +8,8 @@ public class IPCidr extends AbstractTarget<String> implements Target<String> {
     /**
      * Default constructor.
      */
-    public IPCidr(String cidr) { super(cidr); }
+    public IPCidr(String cidr) {
+        super(TargetType.IPCIDR, cidr);
+    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() { return TargetType.IPCIDR; }
 }

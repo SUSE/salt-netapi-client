@@ -11,12 +11,7 @@ public class NodeGroup extends AbstractTarget<String> implements Target<String> 
      * @param nodegroup the nodegroup as string
      */
     public NodeGroup(String nodegroup) {
-        super(nodegroup);
+        super(TargetType.NODEGROUP, nodegroup);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() { return TargetType.NODEGROUP; }
 }

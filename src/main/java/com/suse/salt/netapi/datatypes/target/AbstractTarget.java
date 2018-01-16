@@ -12,16 +12,18 @@ import java.util.Objects;
 abstract class AbstractTarget<T> {
 
     protected final T target;
+    protected final TargetType type;
 
-    protected AbstractTarget(T target) {
+    protected AbstractTarget(TargetType type, T target) {
         this.target = Objects.requireNonNull(target);
+        this.type = Objects.requireNonNull(type);
     }
 
     public T getTarget() {
         return target;
     }
 
-    abstract TargetType getType();
+    public TargetType getType() { return type; }
 
     /**
      * @return a map of items to include in the API call payload

@@ -14,7 +14,7 @@ public class MinionList extends AbstractTarget<List<String>> implements Target<L
      * @param targets as a list of strings
      */
     public MinionList(List<String> targets) {
-        super(targets);
+        super(TargetType.LIST, targets);
     }
 
     /**
@@ -23,12 +23,7 @@ public class MinionList extends AbstractTarget<List<String>> implements Target<L
      * @param targets as strings
      */
     public MinionList(String... targets) {
-        super(Arrays.asList(targets));
+        super(TargetType.LIST, Arrays.asList(targets));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() { return TargetType.LIST; }
 }

@@ -9,14 +9,7 @@ public class RegEx extends AbstractTarget<String> implements Target<String>, SSH
      * Default constructor.
      */
     public RegEx(String expression) {
-        super(expression);
+        super(TargetType.PCRE, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TargetType getType() {
-        return TargetType.PCRE;
-    }
 }

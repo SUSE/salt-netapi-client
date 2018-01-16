@@ -11,7 +11,7 @@ public class PillarExact extends DictionaryTarget implements Target<String> {
      * @param target the targeting expression
      */
     public PillarExact(String target) {
-        super(target);
+        super(TargetType.PILLAR_EXACT, target);
     }
 
     /**
@@ -21,7 +21,7 @@ public class PillarExact extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the grain name
      */
     public PillarExact(String target, char delimiter) {
-        super(target, delimiter);
+        super(TargetType.PILLAR_EXACT, target, delimiter);
     }
 
     /**
@@ -31,7 +31,7 @@ public class PillarExact extends DictionaryTarget implements Target<String> {
      * @param value the value to match
      */
     public PillarExact(String pillar, String value) {
-        super(pillar, value);
+        super(TargetType.PILLAR_EXACT, pillar, value);
     }
 
     /**
@@ -42,11 +42,7 @@ public class PillarExact extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the pillar name
      */
     public PillarExact(String pillar, String value, char delimiter) {
-        super(pillar, value, delimiter);
+        super(TargetType.PILLAR_EXACT, pillar, value, delimiter);
     }
 
-    @Override
-    public TargetType getType() {
-        return TargetType.PILLAR_EXACT;
-    }
 }

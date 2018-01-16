@@ -16,12 +16,12 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
     protected final String value;
     protected final char delimiter;
 
-    public DictionaryTarget(String target) {
-        this(target, DEFAULT_DELIMITER);
+    public DictionaryTarget(TargetType type, String target) {
+        this(type, target, DEFAULT_DELIMITER);
     }
 
-    public DictionaryTarget(String target, char delimiter) {
-        super(target);
+    public DictionaryTarget(TargetType type, String target, char delimiter) {
+        super(type, target);
         this.delimiter = Objects.requireNonNull(delimiter);
 
         int pos = target.lastIndexOf(delimiter);
@@ -34,12 +34,12 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
         this.value = target.substring(pos + 1);
     }
 
-    public DictionaryTarget(String key, String value) {
-        this(key, value, DEFAULT_DELIMITER);
+    public DictionaryTarget(TargetType type, String key, String value) {
+        this(type, key, value, DEFAULT_DELIMITER);
     }
 
-    public DictionaryTarget(String key, String value, char delimiter) {
-        super(key + delimiter + value);
+    public DictionaryTarget(TargetType type, String key, String value, char delimiter) {
+        super(type, key + delimiter + value);
         this.key = Objects.requireNonNull(key);
         this.value = Objects.requireNonNull(value);
         this.delimiter = Objects.requireNonNull(delimiter);

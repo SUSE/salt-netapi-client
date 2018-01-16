@@ -11,7 +11,7 @@ public class PillarRegEx extends DictionaryTarget implements Target<String> {
      * @param target the targeting expression
      */
     public PillarRegEx(String target) {
-        super(target);
+        super(TargetType.PILLAR_PCRE, target);
     }
 
     /**
@@ -21,7 +21,7 @@ public class PillarRegEx extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the grain name
      */
     public PillarRegEx(String target, char delimiter) {
-        super(target, delimiter);
+        super(TargetType.PILLAR_PCRE, target, delimiter);
     }
 
     /**
@@ -31,7 +31,7 @@ public class PillarRegEx extends DictionaryTarget implements Target<String> {
      * @param regex the regular expression to match
      */
     public PillarRegEx(String pillar, String regex) {
-        super(pillar, regex);
+        super(TargetType.PILLAR_PCRE, pillar, regex);
     }
 
     /**
@@ -42,11 +42,7 @@ public class PillarRegEx extends DictionaryTarget implements Target<String> {
      * @param delimiter the character to delimit nesting in the pillar name
      */
     public PillarRegEx(String pillar, String regex, char delimiter) {
-        super(pillar, regex, delimiter);
+        super(TargetType.PILLAR_PCRE, pillar, regex, delimiter);
     }
 
-    @Override
-    public TargetType getType() {
-        return TargetType.PILLAR_PCRE;
-    }
 }
