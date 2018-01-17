@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,14 +17,36 @@ public class TargetTypesTest {
 
     private final String key = "key";
     private final String value = "value";
-    private final char delimiter = DictionaryTarget.DEFAULT_DELIMITER;
-    private final String expr = key + delimiter + value;
+    private final char alt_delim = '#';
+    private final String def_expr = key + DictionaryTarget.DEFAULT_DELIMITER + value;
+    private final String alt_expr = key + alt_delim + value;
 
     @Test
-    public void testGrains() {
-        Grains target = new Grains(expr);
+    public void testGrains1() {
+        Grains target = new Grains(key, value);
         assertEquals(TargetType.GRAIN, target.getType());
-        dictionaryTargetTestHelper(target);
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testGrains2() {
+        Grains target = new Grains(key, value, alt_delim);
+        assertEquals(TargetType.GRAIN, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testGrains3() {
+        Grains target = new Grains(def_expr);
+        assertEquals(TargetType.GRAIN, target.getType());
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testGrains4() {
+        Grains target = new Grains(alt_expr, alt_delim);
+        assertEquals(TargetType.GRAIN, target.getType());
+        alternateDelimiterTestHelper(target);
     }
 
     @Test
@@ -34,30 +57,115 @@ public class TargetTypesTest {
     }
 
     @Test
-    public void testGrainsRegEx() {
-        GrainsRegEx target = new GrainsRegEx(expr);
+    public void testGrainsRegEx1() {
+        GrainsRegEx target = new GrainsRegEx(key, value);
         assertEquals(TargetType.GRAIN_PCRE, target.getType());
-        dictionaryTargetTestHelper(target);
+        defaultDelimiterTestHelper(target);
     }
 
     @Test
-    public void testPillar() {
-        Pillar target = new Pillar(expr);
+    public void testGrainsRegEx2() {
+        GrainsRegEx target = new GrainsRegEx(key, value, alt_delim);
+        assertEquals(TargetType.GRAIN_PCRE, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testGrainsRegEx3() {
+        GrainsRegEx target = new GrainsRegEx(def_expr);
+        assertEquals(TargetType.GRAIN_PCRE, target.getType());
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testGrainsRegEx4() {
+        GrainsRegEx target = new GrainsRegEx(alt_expr, alt_delim);
+        assertEquals(TargetType.GRAIN_PCRE, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillar1() {
+        Pillar target = new Pillar(key, value);
         assertEquals(TargetType.PILLAR, target.getType());
-        dictionaryTargetTestHelper(target);
+        defaultDelimiterTestHelper(target);
     }
 
     @Test
-    public void testPillarExact() {
-        PillarExact target = new PillarExact(expr);
+    public void testPillar2() {
+        Pillar target = new Pillar(key, value, alt_delim);
+        assertEquals(TargetType.PILLAR, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillar3() {
+        Pillar target = new Pillar(def_expr);
+        assertEquals(TargetType.PILLAR, target.getType());
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillar4() {
+        Pillar target = new Pillar(alt_expr, alt_delim);
+        assertEquals(TargetType.PILLAR, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarExact1() {
+        PillarExact target = new PillarExact(def_expr);
         assertEquals(TargetType.PILLAR_EXACT, target.getType());
-        dictionaryTargetTestHelper(target);
+        defaultDelimiterTestHelper(target);
     }
 
     @Test
-    public void testPillarRegEx() {
-        PillarRegEx target = new PillarRegEx(expr);
+    public void testPillarExact2() {
+        PillarExact target = new PillarExact(alt_expr, alt_delim);
+        assertEquals(TargetType.PILLAR_EXACT, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarExact3() {
+        PillarExact target = new PillarExact(key, value);
+        assertEquals(TargetType.PILLAR_EXACT, target.getType());
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarExact4() {
+        PillarExact target = new PillarExact(key, value, alt_delim);
+        assertEquals(TargetType.PILLAR_EXACT, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarRegEx1() {
+        PillarRegEx target = new PillarRegEx(key, value);
         assertEquals(TargetType.PILLAR_PCRE, target.getType());
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarRegEx2() {
+        PillarRegEx target = new PillarRegEx(key, value, alt_delim);
+        assertEquals(TargetType.PILLAR_PCRE, target.getType());
+        alternateDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarRegEx3() {
+        PillarRegEx target = new PillarRegEx(def_expr);
+        assertEquals(TargetType.PILLAR_PCRE, target.getType());
+        defaultDelimiterTestHelper(target);
+    }
+
+    @Test
+    public void testPillarRegEx4() {
+        PillarRegEx target = new PillarRegEx(alt_expr, alt_delim);
+        assertEquals(TargetType.PILLAR_PCRE, target.getType());
+        alternateDelimiterTestHelper(target);
     }
 
     @Test
@@ -115,13 +223,38 @@ public class TargetTypesTest {
         assertEquals(TargetType.LIST, target.getType());
     }
 
-    private void dictionaryTargetTestHelper(DictionaryTarget target) {
-        assertEquals(expr, target.getTarget());
+    @Test(expected = InvalidParameterException.class)
+    public void testInvalidExpression1() {
+        new Grains(":value");
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testInvalidExpression2() {
+        new Grains("value");
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testInvalidExpression3() {
+        new Grains("value:");
+    }
+
+    private void defaultDelimiterTestHelper(DictionaryTarget target) {
+        assertEquals(def_expr, target.getTarget());
         assertEquals(key, target.getKey());
         assertEquals(value, target.getValue());
-        assertEquals(delimiter, target.getDelimiter());
         assertTrue(target.getProps().containsKey("tgt"));
         assertTrue(target.getProps().containsKey("expr_form"));
         assertFalse(target.getProps().containsKey("delimiter"));
+        assertEquals(DictionaryTarget.DEFAULT_DELIMITER, target.getDelimiter());
+    }
+
+    private void alternateDelimiterTestHelper(DictionaryTarget target) {
+        assertEquals(alt_expr, target.getTarget());
+        assertEquals(key, target.getKey());
+        assertEquals(value, target.getValue());
+        assertTrue(target.getProps().containsKey("tgt"));
+        assertTrue(target.getProps().containsKey("expr_form"));
+        assertTrue(target.getProps().containsKey("delimiter"));
+        assertEquals(alt_delim, target.getDelimiter());
     }
 }
