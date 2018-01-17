@@ -1,7 +1,6 @@
 package com.suse.salt.netapi.datatypes.target;
 
 import java.security.InvalidParameterException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,13 +15,13 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
     protected final String value;
     protected final char delimiter;
 
-    public DictionaryTarget(TargetType type, String target) {
+    DictionaryTarget(TargetType type, String target) {
         this(type, target, DEFAULT_DELIMITER);
     }
 
-    public DictionaryTarget(TargetType type, String target, char delimiter) {
+    DictionaryTarget(TargetType type, String target, char delimiter) {
         super(type, target);
-        this.delimiter = Objects.requireNonNull(delimiter);
+        this.delimiter = delimiter;
 
         int pos = target.lastIndexOf(delimiter);
         if (pos < 1 || pos == target.length() - 1) {
@@ -34,15 +33,15 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
         this.value = target.substring(pos + 1);
     }
 
-    public DictionaryTarget(TargetType type, String key, String value) {
+    DictionaryTarget(TargetType type, String key, String value) {
         this(type, key, value, DEFAULT_DELIMITER);
     }
 
-    public DictionaryTarget(TargetType type, String key, String value, char delimiter) {
+    DictionaryTarget(TargetType type, String key, String value, char delimiter) {
         super(type, key + delimiter + value);
         this.key = Objects.requireNonNull(key);
         this.value = Objects.requireNonNull(value);
-        this.delimiter = Objects.requireNonNull(delimiter);
+        this.delimiter = delimiter;
     }
 
     /**
@@ -73,7 +72,7 @@ abstract class DictionaryTarget extends AbstractTarget<String> {
     @Override
     public Map<String, Object> getProps() {
         Map<String, Object> props = super.getProps();
-        if (getDelimiter() != DEFAULT_DELIMITER) {
+        if (delimiter != DEFAULT_DELIMITER) {
             props.put("delimiter", getDelimiter());
         }
         return props;
