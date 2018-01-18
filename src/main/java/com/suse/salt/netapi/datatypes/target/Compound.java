@@ -6,10 +6,10 @@ package com.suse.salt.netapi.datatypes.target;
 public class Compound extends AbstractTarget<String> implements Target<String> {
 
     /**
-     * Default constructor.
+     * Creates a compound matcher
+     *
+     * @param expression Compound targeting expression
      */
-    public Compound(String expression) {
-        super(TargetType.COMPOUND, expression);
-    }
+    public Compound(String expression) { super(TargetType.COMPOUND, expression); }
 
 }

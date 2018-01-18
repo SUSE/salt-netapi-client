@@ -6,10 +6,12 @@ package com.suse.salt.netapi.datatypes.target;
 public class RegEx extends AbstractTarget<String> implements Target<String>, SSHTarget<String> {
 
     /**
-     * Default constructor.
+     * Creates a regular expression matcher
+     *
+     * @param regex Regular expression
      */
-    public RegEx(String expression) {
-        super(TargetType.PCRE, expression);
+    public RegEx(String regex) {
+        super(TargetType.PCRE, regex);
     }
 
 }

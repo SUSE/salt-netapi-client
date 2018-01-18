@@ -6,7 +6,9 @@ package com.suse.salt.netapi.datatypes.target;
 public class IPCidr extends AbstractTarget<String> implements Target<String> {
 
     /**
-     * Default constructor.
+     * Creates an IPCidr matcher
+     *
+     * @param cidr CIDR targeting expression
      */
     public IPCidr(String cidr) {
         super(TargetType.IPCIDR, cidr);

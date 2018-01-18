@@ -10,16 +10,13 @@ public class Glob extends AbstractTarget<String> implements Target<String>, SSHT
     /**
      * Creates a glob matcher
      */
-    public Glob() {
-        super(TargetType.GLOB, "*");
-    }
+    public Glob() { super(TargetType.GLOB, "*"); }
 
     /**
      * Creates a glob matcher
+     *
      * @param glob Glob expression
      */
-    public Glob(String glob) {
-        super(TargetType.GLOB, glob);
-    }
+    public Glob(String glob) { super(TargetType.GLOB, glob); }
 
 }

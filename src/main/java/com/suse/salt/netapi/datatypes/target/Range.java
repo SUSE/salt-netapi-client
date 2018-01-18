@@ -6,10 +6,12 @@ package com.suse.salt.netapi.datatypes.target;
 public class Range extends AbstractTarget<String> implements Target<String> {
 
     /**
-     * Default constructor.
+     * Creates a range matcher
+     *
+     * @param range Range targeting expression
      */
-    public Range(String expression) {
-        super(TargetType.RANGE, expression);
+    public Range(String range) {
+        super(TargetType.RANGE, range);
     }
 
 }
