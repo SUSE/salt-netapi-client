@@ -129,8 +129,7 @@ public class LocalCall<R> extends AbstractCall<R> {
             throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
-        customArgs.put("tgt", target.getTarget());
-        customArgs.put("expr_form", target.getType());
+        customArgs.putAll(target.getProps());
 
         Return<List<LocalAsyncResult<R>>> wrapper = client.call(
                 this, Client.LOCAL_ASYNC, "/",
@@ -310,8 +309,7 @@ public class LocalCall<R> extends AbstractCall<R> {
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
-        customArgs.put("tgt", target.getTarget());
-        customArgs.put("expr_form", target.getType());
+        customArgs.putAll(target.getProps());
 
         Return<List<LocalAsyncResult<R>>> wrapper = client.call(
                 this, Client.LOCAL_ASYNC, "/run",
@@ -424,8 +422,7 @@ public class LocalCall<R> extends AbstractCall<R> {
             throws SaltException {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
-        customArgs.put("tgt", target.getTarget());
-        customArgs.put("expr_form", target.getType());
+        customArgs.putAll(target.getProps());
         username.ifPresent(v -> customArgs.put("username", v));
         password.ifPresent(v -> customArgs.put("password", v));
         authModule.ifPresent(v -> customArgs.put("eauth", v.getValue()));
@@ -463,8 +460,7 @@ public class LocalCall<R> extends AbstractCall<R> {
             SSHTarget<?> target, SaltSSHConfig cfg) throws SaltException {
         Map<String, Object> args = new HashMap<>();
         args.putAll(getPayload());
-        args.put("tgt", target.getTarget());
-        args.put("expr_form", target.getType());
+        args.putAll(target.getProps());
 
         SaltSSHUtils.mapConfigPropsToArgs(cfg, args);
 

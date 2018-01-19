@@ -279,8 +279,7 @@ public class SaltClient {
     public <T> ScheduledJob startCommand(final Target<T> target, final String function,
             List<Object> args, Map<String, Object> kwargs) throws SaltException {
         Map<String, Object> props = new LinkedHashMap<>();
-        props.put("tgt", target.getTarget());
-        props.put("expr_form", target.getType());
+        props.putAll(target.getProps());
         props.put("fun", function);
         props.put("arg", args);
         props.put("kwarg", kwargs);
@@ -395,8 +394,7 @@ public class SaltClient {
         props.put("password", password);
         props.put("eauth", eauth.getValue());
         props.put("client", client);
-        props.put("tgt", target.getTarget());
-        props.put("expr_form", target.getType());
+        props.putAll(target.getProps());
         props.put("fun", function);
         props.put("arg", args);
         props.put("kwarg", kwargs);
@@ -430,8 +428,7 @@ public class SaltClient {
         throws SaltException {
         Map<String, Object> props = new HashMap<>();
         props.put("client", Client.SSH.getValue());
-        props.put("tgt", target.getTarget());
-        props.put("expr_form", target.getType());
+        props.putAll(target.getProps());
         props.put("fun", command);
         props.put("raw_shell", true);
 

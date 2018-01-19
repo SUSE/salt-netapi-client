@@ -6,9 +6,7 @@ import java.util.List;
 /**
  * Target for specifying a list of minions.
  */
-public class MinionList implements Target<List<String>>, SSHTarget<List<String>> {
-
-    private final List<String> targets;
+public class MinionList extends AbstractTarget<List<String>> implements Target<List<String>>, SSHTarget<List<String>> {
 
     /**
      * Constructor taking a list of minions as strings.
@@ -16,7 +14,7 @@ public class MinionList implements Target<List<String>>, SSHTarget<List<String>>
      * @param targets as a list of strings
      */
     public MinionList(List<String> targets) {
-        this.targets = targets;
+        super(TargetType.LIST, targets);
     }
 
     /**
@@ -25,22 +23,7 @@ public class MinionList implements Target<List<String>>, SSHTarget<List<String>>
      * @param targets as strings
      */
     public MinionList(String... targets) {
-        this(Arrays.asList(targets));
+        super(TargetType.LIST, Arrays.asList(targets));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> getTarget() {
-        return targets;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getType() {
-        return "list";
-    }
 }

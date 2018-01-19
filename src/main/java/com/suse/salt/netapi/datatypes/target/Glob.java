@@ -3,41 +3,20 @@ package com.suse.salt.netapi.datatypes.target;
 /**
  * Target for specifying minions by glob pattern.
  */
-public class Glob implements Target<String>, SSHTarget<String> {
+public class Glob extends AbstractTarget<String> implements Target<String>, SSHTarget<String> {
 
     public static final Glob ALL = new Glob("*");
 
-    private final String glob;
-
     /**
-     * Default constructor.
+     * Creates a glob matcher
      */
-    public Glob() {
-        this("*");
-    }
+    public Glob() { super(TargetType.GLOB, "*"); }
 
     /**
-     * Constructor expecting a glob pattern as string.
+     * Creates a glob matcher
      *
-     * @param glob glob pattern
+     * @param glob Glob expression
      */
-    public Glob(String glob) {
-        this.glob = glob;
-    }
+    public Glob(String glob) { super(TargetType.GLOB, glob); }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getTarget() {
-        return glob;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getType() {
-        return "glob";
-    }
 }

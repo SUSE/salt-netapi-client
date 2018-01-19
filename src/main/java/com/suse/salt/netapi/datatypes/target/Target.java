@@ -1,5 +1,7 @@
 package com.suse.salt.netapi.datatypes.target;
 
+import java.util.Map;
+
 /**
  * Target interface for specifying a group of minions.
  *
@@ -19,5 +21,14 @@ public interface Target<T> {
      *
      * @return the target type
      */
-    public String getType();
+    public TargetType getType();
+
+    /**
+     * Return the properties that belong in a request body.
+     * This will include the `tgt` and `expr_form` properties.
+     * and optionally the `delimiter` property.
+     *
+     * @return a map of property keys and values
+     */
+    public Map<String, Object> getProps();
 }
