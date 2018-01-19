@@ -34,7 +34,7 @@ public class ResultInfo {
     private String user;
 
     @SerializedName("Target")
-    private String target;
+    private Object target;
 
     @SerializedName("Result")
     private HashMap<String, Return<Object>> rawResults;
@@ -91,7 +91,7 @@ public class ResultInfo {
      *
      * @return job submission target
      */
-    public String getTarget() {
+    public Object getTarget() {
         return target;
     }
 
