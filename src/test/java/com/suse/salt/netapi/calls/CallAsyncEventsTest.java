@@ -131,7 +131,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
         assertTrue(results.get("minion1").result().get());
 
         assertTrue(results.get("minion2").error().get() instanceof JsonParsingError);
-        assertEquals("Expected BOOLEAN but was STRING",
+        assertEquals("Expected BOOLEAN but was STRING at path $",
                 ((JsonParsingError) results.get("minion2").error().get())
                         .getThrowable().getMessage());
 
@@ -144,7 +144,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
         assertTrue(delay23 >= 1000);
 
         assertTrue(results.get("minion4").error().get() instanceof JsonParsingError);
-        assertEquals("Expected BOOLEAN but was STRING", ((JsonParsingError)
+        assertEquals("Expected BOOLEAN but was STRING at path $", ((JsonParsingError)
                 results.get("minion4").error().get()).getThrowable().getMessage());
 
         long delay42 = times.get("minion4") - times.get("minion2");
