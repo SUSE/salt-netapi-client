@@ -1,6 +1,6 @@
 [
   {
-    "expr_form": "glob",
+    "tgt_type": "glob",
     "tgt": "*",
     "client": "ssh",
     "fun": "test.ping",

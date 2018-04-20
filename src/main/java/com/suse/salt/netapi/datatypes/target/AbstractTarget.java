@@ -31,7 +31,7 @@ abstract class AbstractTarget<T> {
     public Map<String, Object> getProps() {
         Map<String, Object> props = new HashMap<>();
         props.put("tgt", getTarget());
-        props.put("expr_form", getType().getValue());
+        props.put("tgt_type", getType().getValue());
         return props;
     }
 }

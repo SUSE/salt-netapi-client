@@ -243,7 +243,7 @@ public class TargetTypesTest {
         assertEquals(key, target.getKey());
         assertEquals(value, target.getValue());
         assertTrue(target.getProps().containsKey("tgt"));
-        assertTrue(target.getProps().containsKey("expr_form"));
+        assertTrue(target.getProps().containsKey("tgt_type"));
         assertFalse(target.getProps().containsKey("delimiter"));
         assertEquals(DictionaryTarget.DEFAULT_DELIMITER, target.getDelimiter());
     }
@@ -253,7 +253,7 @@ public class TargetTypesTest {
         assertEquals(key, target.getKey());
         assertEquals(value, target.getValue());
         assertTrue(target.getProps().containsKey("tgt"));
-        assertTrue(target.getProps().containsKey("expr_form"));
+        assertTrue(target.getProps().containsKey("tgt_type"));
         assertTrue(target.getProps().containsKey("delimiter"));
         assertEquals(alt_delim, target.getDelimiter());
     }

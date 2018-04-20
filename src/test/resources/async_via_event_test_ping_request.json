@@ -3,6 +3,6 @@
     "tgt": "*",
     "client": "local_async",
     "fun": "test.ping",
-    "expr_form": "glob"
+    "tgt_type": "glob"
   }
 ]

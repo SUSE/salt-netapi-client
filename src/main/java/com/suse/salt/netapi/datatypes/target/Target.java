@@ -25,7 +25,7 @@ public interface Target<T> {
 
     /**
      * Return the properties that belong in a request body.
-     * This will include the `tgt` and `expr_form` properties.
+     * This will include the `tgt` and `tgt_type` properties.
      * and optionally the `delimiter` property.
      *
      * @return a map of property keys and values
