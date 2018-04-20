@@ -49,7 +49,7 @@ public class Grains extends DictionaryTarget implements Target<String> {
      * @return the grain identifier key
      *
      * @deprecated
-     * Use {@link #getKey()} instead.
+     * Use {@link DictionaryTarget#getKey()} instead.
      */
     @Deprecated
     public String getGrain() { return getKey(); }
