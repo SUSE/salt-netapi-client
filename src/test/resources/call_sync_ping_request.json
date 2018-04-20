@@ -3,7 +3,7 @@
     "tgt": "*",
     "eauth": "auto",
     "password": "pa55wd",
-    "expr_form": "glob",
+    "tgt_type": "glob",
     "client": "local",
     "fun": "test.ping",
     "username": "user"

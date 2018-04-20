@@ -1,7 +1,7 @@
 package com.suse.salt.netapi.datatypes.target;
 
 /**
- * Possible values for the tgt_type or expr_form parameter in salt netapi calls.
+ * Possible values for the tgt_type parameter in salt netapi calls.
  */
 public enum TargetType {
 

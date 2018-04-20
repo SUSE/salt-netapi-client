@@ -2,7 +2,7 @@
   {
     "client": "ssh",
     "tgt": "*",
-    "expr_form": "glob",
+    "tgt_type": "glob",
     "raw_shell": true,
     "fun": "uptime"
   }
