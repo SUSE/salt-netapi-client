@@ -264,15 +264,14 @@ public class Pkg {
      *
      * @param attributes list of attributes that should be included in the result
      * @param reportErrors if true will return an error message instead of corrupted text
-     * @param allVersions if true will return all installed package versions, not only latest
      * @param packages optional give package names, otherwise return info about all packages
      * @return the call
      */
-    public static LocalCall<Map<String, Xor<Info, List<Info>>>> infoInstalled(List<String> attributes,
-            boolean reportErrors, boolean allVersions, String... packages) {
+    public static LocalCall<Map<String, Xor<Info, List<Info>>>> infoInstalledAllVersions(
+            List<String> attributes, boolean reportErrors, String... packages) {
         LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
         kwargs.put("attr", attributes.stream().collect(Collectors.joining(",")));
-        kwargs.put("all_versions", allVersions);
+        kwargs.put("all_versions", true);
         if (reportErrors) {
             kwargs.put("errors", "report");
         }
