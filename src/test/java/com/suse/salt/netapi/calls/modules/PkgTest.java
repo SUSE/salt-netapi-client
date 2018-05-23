@@ -67,6 +67,19 @@ public class PkgTest {
     }
 
     @Test
+    public void testInfoInstalledAllVersions() {
+        TypeToken<Map<String, Xor<Pkg.Info, List<Pkg.Info>>>> type =
+                Pkg.infoInstalledAllVersions(new ArrayList<>(), false, "vim").getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/info_installed_full.json");
+        JsonParser<Map<String, Xor<Pkg.Info, List<Pkg.Info>>>> parser = new JsonParser<>(type);
+        Map<String, Xor<Pkg.Info, List<Pkg.Info>>> parsed = parser.parse(is);
+        List<Pkg.Info> infoList = parsed.get("vim").right().get();
+        assertEquals(Optional.of("x86_64"), infoList.get(0).getArchitecture());
+        assertEquals(Optional.of("i686"), infoList.get(1).getArchitecture());
+    }
+
+    @Test
     public void testUpgradeAvailable() {
         TypeToken<Boolean> type = Pkg.upgradeAvailable("cloud-init").getReturnType();
         InputStream is = this.getClass()

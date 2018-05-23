@@ -1,0 +1,44 @@
+{
+  "vim": [
+    {
+        "build_date": "2014-10-08T03:44:36Z",
+        "group": "Productivity/Editors/Vi",
+        "name": "vim",
+        "license": "Vim",
+        "build_host": "sheep21",
+        "url": "http://www.vim.org/",
+        "relocations": "(not relocatable)",
+        "install_date": "2015-08-24T05:58:22Z",
+        "summary": "Vi IMproved",
+        "source": "vim-7.4.326-2.62.src.rpm",
+        "version": "7.4.326",
+        "arch": "x86_64",
+        "signature": "RSA/SHA256, Wed 08 Oct 2014 03:45:49 PM UTC, Key ID 70af9e8139db7c82",
+        "release": "2.62",
+        "vendor": "SUSE LLC <https://www.suse.com/>",
+        "packager": "https://www.suse.com/",
+        "description": "Vim (Vi IMproved) is an almost compatible version of the UNIX editor\nvi. Almost every possible command can be performed using only ASCII\ncharacters. Only the 'Q' command is missing (you do not need it). Many\nnew features have been added: multilevel undo, command line history,\nfile name completion, block operations, and editing of binary data.\n\nVi is available for the AMIGA, MS-DOS, Windows NT, and various versions\nof UNIX.\n\nFor SUSE Linux, Vim is used as /usr/bin/vi.",
+        "size": "2714880"
+    },
+    {
+        "build_date": "2014-10-08T03:44:36Z",
+        "group": "Productivity/Editors/Vi",
+        "name": "vim",
+        "license": "Vim",
+        "build_host": "sheep21",
+        "url": "http://www.vim.org/",
+        "relocations": "(not relocatable)",
+        "install_date": "2015-08-24T05:58:22Z",
+        "summary": "Vi IMproved",
+        "source": "vim-7.4.326-2.62.src.rpm",
+        "version": "7.4.326",
+        "arch": "i686",
+        "signature": "RSA/SHA256, Wed 08 Oct 2014 03:45:49 PM UTC, Key ID 70af9e8139db7c82",
+        "release": "2.62",
+        "vendor": "SUSE LLC <https://www.suse.com/>",
+        "packager": "https://www.suse.com/",
+        "description": "Vim (Vi IMproved) is an almost compatible version of the UNIX editor\nvi. Almost every possible command can be performed using only ASCII\ncharacters. Only the 'Q' command is missing (you do not need it). Many\nnew features have been added: multilevel undo, command line history,\nfile name completion, block operations, and editing of binary data.\n\nVi is available for the AMIGA, MS-DOS, Windows NT, and various versions\nof UNIX.\n\nFor SUSE Linux, Vim is used as /usr/bin/vi.",
+        "size": "2714880"
+    }
+  ]
+}
