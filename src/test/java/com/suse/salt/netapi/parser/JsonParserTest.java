@@ -1,9 +1,5 @@
 package com.suse.salt.netapi.parser;
 
-import com.suse.salt.netapi.calls.wheel.Key;
-import com.suse.salt.netapi.datatypes.Arguments;
-import com.suse.salt.netapi.datatypes.Job;
-import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Applications;
 import com.suse.salt.netapi.datatypes.cherrypy.HttpServer;
@@ -21,9 +17,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import com.suse.salt.netapi.results.SSHResult;
 import org.junit.Test;
@@ -41,15 +35,6 @@ import static org.junit.Assert.assertTrue;
  * Json parser unit tests.
  */
 public class JsonParserTest {
-
-    @Test
-    public void testJobsParser() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/minions_response.json");
-        Return<List<ScheduledJob>> result = JsonParser.SCHEDULED_JOB.parse(is);
-        assertNotNull("failed to parse", result);
-        String jid = result.getResult().get(0).getJid();
-        assertEquals("unable to parse jid", "20150211105524392307", jid);
-    }
 
     @Test
     public void testStringParser() throws Exception {
@@ -160,61 +145,6 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testKeysParser() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/keys_response.json");
-        Return<Key.Names> result = JsonParser.KEYS.parse(is);
-        Key.Names keys = result.getResult();
-        assertNotNull("failed to parse", result);
-        assertEquals(Arrays.asList("master.pem", "master.pub"), keys.getLocal());
-        assertEquals(Arrays.asList("m1"), keys.getMinions());
-        assertEquals(Arrays.asList("m2"), keys.getUnacceptedMinions());
-        assertEquals(Arrays.asList("m3"), keys.getRejectedMinions());
-    }
-
-    @Test
-    public void testJobsWithArgsParser() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("/jobs_response.json");
-        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
-        assertNotNull("failed to parse", result);
-
-        Map<String, Job> jobs = result.getResult().get(0);
-        Job job = jobs.get("20150304200110485012");
-        assertNotNull(job);
-        Arguments expectedArgs = new Arguments();
-        expectedArgs.getArgs().add("enable-autodestruction");
-        assertEquals(expectedArgs.getArgs(), job.getArguments().getArgs());
-        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
-        assertEquals("test.echo", job.getFunction());
-        assertEquals("*", job.getTarget());
-        assertEquals("glob", job.getTargetType());
-        assertEquals("chuck", job.getUser());
-    }
-
-    @Test
-    public void testJobsWithKwargsParser() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("/jobs_response_kwargs.json");
-        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
-        assertNotNull("failed to parse", result);
-
-        Map<String, Job> jobs = result.getResult().get(0);
-        Job job = jobs.get("20150306023815935637");
-        assertNotNull(job);
-
-        Arguments expectedArgs = new Arguments();
-        expectedArgs.getArgs().add("i3");
-        expectedArgs.getArgs().add(true);
-        expectedArgs.getKwargs().put("sysupgrade", true);
-        expectedArgs.getKwargs().put("otherkwarg", 42.5);
-
-        assertEquals(expectedArgs.getArgs(), job.getArguments().getArgs());
-        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
-        assertEquals("pkg.install", job.getFunction());
-        assertEquals("*", job.getTarget());
-        assertEquals("glob", job.getTargetType());
-        assertEquals("lucid", job.getUser());
-    }
-
-    @Test
     public void testOptionalParser() {
         InputStream is = this.getClass()
                 .getResourceAsStream("/optional_parser_test.json");
@@ -245,70 +175,6 @@ public class JsonParserTest {
         InputStream intValue = this.getClass()
                 .getResourceAsStream("/single_int_value.json");
         assertEquals(new Integer(123), parser.parse(intValue).get());
-    }
-
-    @Test
-    public void testJobsWithArgsAsKwargsParser() throws Exception {
-        InputStream is = this.getClass()
-                .getResourceAsStream("/jobs_response_args_as_kwargs.json");
-        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
-
-        Map<String, Job> jobs = result.getResult().get(0);
-        Job job = jobs.get("20150315163041425361");
-
-        Arguments expectedArgs = new Arguments();
-        Map<String, Object> arg = new LinkedHashMap<String, Object>() {
-            {
-                put("refresh", true);
-            }
-        };
-        expectedArgs.getArgs().add(arg);
-
-        arg = new LinkedHashMap<String, Object>() {
-            {
-                put("somepar", 123.3);
-                put("__kwarg__", false);
-            }
-        };
-        expectedArgs.getArgs().add(arg);
-
-        arg = new LinkedHashMap<String, Object>() {
-            {
-                put("nullparam", null);
-                put("__kwarg__", null);
-            }
-        };
-        expectedArgs.getArgs().add(arg);
-
-        arg = new LinkedHashMap<String, Object>() {
-            {
-                put("otherparam", true);
-                put("__kwarg__", 123.0);
-            }
-        };
-        expectedArgs.getArgs().add(arg);
-        expectedArgs.getArgs().add("i3");
-        expectedArgs.getKwargs().put("sysupgrade", true);
-
-        assertEquals(expectedArgs.getArgs(), job.getArguments().getArgs());
-        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
-    }
-
-    @Test
-    public void testJobsMultipleKwargs() throws Exception {
-        InputStream is = this.getClass()
-                .getResourceAsStream("/jobs_response_multiple_kwarg.json");
-        Return<List<Map<String, Job>>> result = JsonParser.JOBS.parse(is);
-
-        Map<String, Job> jobs = result.getResult().get(0);
-        Job job = jobs.get("20150306023815935637");
-
-        Arguments expectedArgs = new Arguments();
-        expectedArgs.getKwargs().put("multi", false);
-
-        assertEquals(expectedArgs.getKwargs(), job.getArguments().getKwargs());
-        assertEquals(0, job.getArguments().getArgs().size());
-        assertEquals(1, job.getArguments().getKwargs().size());
     }
 
     @Test

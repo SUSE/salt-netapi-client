@@ -1,10 +1,7 @@
 package com.suse.salt.netapi.parser;
 
-import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.datatypes.Arguments;
 import com.suse.salt.netapi.datatypes.Event;
-import com.suse.salt.netapi.datatypes.Job;
-import com.suse.salt.netapi.datatypes.ScheduledJob;
 import com.suse.salt.netapi.datatypes.StartTime;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
@@ -12,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.results.Return;
-import com.suse.salt.netapi.results.ResultInfoSet;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHRawResult;
 import java.io.BufferedReader;
@@ -56,15 +52,6 @@ public class JsonParser<T> {
             new JsonParser<>(new TypeToken<Return<String>>(){});
     public static final JsonParser<Return<List<Token>>> TOKEN =
             new JsonParser<>(new TypeToken<Return<List<Token>>>(){});
-    public static final JsonParser<Return<List<ScheduledJob>>> SCHEDULED_JOB =
-            new JsonParser<>(new TypeToken<Return<List<ScheduledJob>>>(){});
-    public static final JsonParser<Return<List<Map<String, Job>>>> JOBS =
-            new JsonParser<>(new TypeToken<Return<List<Map<String, Job>>>>(){});
-    public static final JsonParser<ResultInfoSet> JOB_RESULTS =
-            new JsonParser<>(new TypeToken<ResultInfoSet>(){});
-    public static final JsonParser<Return<List<Map<String, Map<String, Object>>>>> RETMAPS =
-            new JsonParser<>(
-            new TypeToken<Return<List<Map<String, Map<String, Object>>>>>(){});
     public static final JsonParser<Return<List<Map<String, Object>>>> RUN_RESULTS =
             new JsonParser<>(new TypeToken<Return<List<Map<String, Object>>>>(){});
     public static final JsonParser<Return<List<Map<String, Result<SSHRawResult>>>>>
@@ -72,8 +59,6 @@ public class JsonParser<T> {
                     new TypeToken<Return<List<Map<String, Result<SSHRawResult>>>>>() { });
     public static final JsonParser<Stats> STATS =
             new JsonParser<>(new TypeToken<Stats>(){});
-    public static final JsonParser<Return<Key.Names>> KEYS =
-            new JsonParser<>(new TypeToken<Return<Key.Names>>(){});
     public static final JsonParser<Map<String, Object>> MAP =
             new JsonParser<>(new TypeToken<Map<String, Object>>(){});
     public static final JsonParser<Event> EVENTS =
