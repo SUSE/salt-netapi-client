@@ -17,7 +17,6 @@ import static com.suse.salt.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.SaltSSHConfig;
@@ -45,8 +44,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Salt API client unit tests.
@@ -98,19 +95,6 @@ public class SaltClientTest {
         verifyLoginToken(token);
     }
 
-    @Test
-    public void testLoginAsyncOk() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_LOGIN_RESPONSE)));
-
-        Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
-        Token token = futureToken.get();
-        verifyLoginToken(token);
-    }
-
     private void verifyLoginToken(Token token) {
         verify(1, postRequestedFor(urlEqualTo("/login"))
                 .withHeader("Accept", equalTo("application/json"))
@@ -130,17 +114,6 @@ public class SaltClientTest {
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
         client.login("user", "pass", AUTO);
-    }
-
-    @Test(expected = ExecutionException.class)
-    public void testLoginAsyncFailure() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
-
-        Future<Token> futureToken = client.loginAsync("user", "pass", AUTO);
-        Token token = futureToken.get();
-        assertNull(token);
     }
 
     @Test
@@ -189,27 +162,6 @@ public class SaltClientTest {
                     .withHeader("Accept", equalTo("application/json"))
                     .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                     .withRequestBody(equalToJson(JSON_SSHRAW_RUN_REQUEST)));
-    }
-
-    @Test
-    public void testRunRequestAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
-
-        List<Object> args = new ArrayList<>();
-        args.add("i3");
-
-        Map<String, Object> kwargs = new LinkedHashMap<>();
-        kwargs.put("refresh", "true");
-        kwargs.put("sysupgrade", "false");
-
-        Future<Map<String, Object>> future = client.runAsync("user", "pass",
-                PAM, "local", new Glob(), "pkg.install", args, kwargs);
-        Map<String, Object> retvals = future.get();
-        verifyRunResults(retvals);
     }
 
     private void verifyRunResults(Map<String, Object> retvals) {
@@ -296,22 +248,6 @@ public class SaltClientTest {
     }
 
     @Test
-    public void testStatsAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_STATS_RESPONSE)));
-
-        Stats stats = client.statsAsync().get();
-
-        assertNotNull(stats);
-        verify(1, getRequestedFor(urlEqualTo("/stats"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
-    }
-
-    @Test
     public void testLogout() throws Exception {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
@@ -320,18 +256,6 @@ public class SaltClientTest {
                 .withBody(JSON_LOGOUT_RESPONSE)));
 
         boolean success = client.logout();
-        verifyLogout(success);
-    }
-
-    @Test
-    public void testLogoutAsync() throws Exception {
-        stubFor(any(urlMatching(".*"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_LOGOUT_RESPONSE)));
-
-        boolean success = client.logoutAsync().get();
         verifyLogout(success);
     }
 

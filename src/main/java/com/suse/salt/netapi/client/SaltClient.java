@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Salt API client.
@@ -49,9 +46,6 @@ public class SaltClient implements AutoCloseable {
 
     /** The async connection factory object */
     private final AsyncConnectionFactory asyncConnectionFactory;
-
-    /** The executor for async operations */
-    private final ExecutorService executor;
 
     private final Gson gson = new GsonBuilder().create();
 
@@ -71,32 +65,9 @@ public class SaltClient implements AutoCloseable {
      * @param connectionFactory ConnectionFactory implementation
      */
     public SaltClient(URI url, ConnectionFactory connectionFactory) {
-        this(url, connectionFactory, Executors.newCachedThreadPool());
-    }
-
-    /**
-     * Constructor for connecting to a given URL.
-     *
-     * @param url the Salt API URL
-     * @param executor ExecutorService to be used for async operations
-     */
-    public SaltClient(URI url, ExecutorService executor) {
-        this(url, new HttpClientConnectionFactory(), executor);
-    }
-
-    /**
-     * Constructor for connecting to a given URL using a specific connection factory.
-     *
-     * @param url the Salt API URL
-     * @param connectionFactory ConnectionFactory implementation
-     * @param executor ExecutorService to be used for async operations
-     */
-    public SaltClient(URI url, ConnectionFactory connectionFactory,
-            ExecutorService executor) {
         // Put the URL in the config
         config.put(ClientConfig.URL, url);
         this.connectionFactory = connectionFactory;
-        this.executor = executor;
 
         // TODO: Replace connectionFactory with this
         this.asyncConnectionFactory = new HttpAsyncClientConnectionFactory(config);
@@ -192,21 +163,6 @@ public class SaltClient implements AutoCloseable {
     }
 
     /**
-     * Asynchronously perform login and return a Future with the token.
-     * <p>
-     * {@code POST /login}
-     *
-     * @param username the username
-     * @param password the password
-     * @param eauth the eauth type
-     * @return Future containing the authentication token
-     */
-    public Future<Token> loginAsync(final String username, final String password,
-            final AuthModule eauth) {
-        return executor.submit(() -> login(username, password, eauth));
-    }
-
-    /**
      * Perform logout and clear the session token from the config.
      * <p>
      * {@code POST /logout}
@@ -223,17 +179,6 @@ public class SaltClient implements AutoCloseable {
             config.remove(ClientConfig.TOKEN);
         }
         return result;
-    }
-
-    /**
-     * Asynchronously perform logout and clear the session token from the config.
-     * <p>
-     * {@code POST /logout}
-     *
-     * @return Future containing a boolean result, true if logout was successful
-     */
-    public Future<Boolean> logoutAsync() {
-        return executor.submit(() -> (Boolean) this.logout());
     }
 
     /**
@@ -313,30 +258,6 @@ public class SaltClient implements AutoCloseable {
     }
 
     /**
-     * Asynchronously start any execution command bypassing normal session handling.
-     * <p>
-     * {@code POST /run}
-     *
-     * @param <T> type of the tgt property for this command
-     * @param username the username
-     * @param password the password
-     * @param eauth the eauth type
-     * @param client the client
-     * @param target the target
-     * @param function the function to execute
-     * @param args list of non-keyword arguments
-     * @param kwargs map containing keyword arguments
-     * @return Future containing Map key: minion id, value: command result from that minion
-     */
-    public <T> Future<Map<String, Object>> runAsync(final String username,
-            final String password, final AuthModule eauth, final String client,
-            final Target<T> target, final String function, final List<Object> args,
-            final Map<String, Object> kwargs) {
-        return executor.submit(() ->
-                run(username, password, eauth, client, target, function, args, kwargs));
-    }
-
-    /**
      * Query statistics from the CherryPy Server.
      * <p>
      * {@code GET /stats}
@@ -349,17 +270,6 @@ public class SaltClient implements AutoCloseable {
     }
 
     /**
-     * Asynchronously query statistics from the CherryPy Server.
-     * <p>
-     * {@code GET /stats}
-     *
-     * @return Future containing the stats
-     */
-    public Future<Stats> statsAsync() {
-        return executor.submit(this::stats);
-    }
-
-    /**
      * Returns a WebSocket @ClientEndpoint annotated object connected
      * to the /ws ServerEndpoint.
      * <p>
@@ -367,8 +277,7 @@ public class SaltClient implements AutoCloseable {
      * to register/unregister for stream event notifications as well as close the event
      * stream.
      * <p>
-     * Note: {@link SaltClient#login(String, String, AuthModule)} or
-     * {@link SaltClient#loginAsync(String, String, AuthModule)} must be called prior
+     * Note: {@link SaltClient#login(String, String, AuthModule)} or must be called prior
      * to calling this method.
      * <p>
      * {@code GET /events}
