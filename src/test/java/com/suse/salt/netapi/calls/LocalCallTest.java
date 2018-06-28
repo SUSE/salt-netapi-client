@@ -21,7 +21,6 @@ import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.target.Target;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.reflect.TypeToken;
@@ -131,7 +130,7 @@ public class LocalCallTest {
      * Verify correctness of the request body with an exemplary synchronous call.
      */
     @Test
-    public void testCallSync() throws SaltException {
+    public void testCallSync() {
         stubFor(any(urlMatching("/run"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -141,7 +140,7 @@ public class LocalCallTest {
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
         Target<String> target = new Glob("*");
 
-        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO);
+        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO).toCompletableFuture().join();
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
@@ -152,7 +151,7 @@ public class LocalCallTest {
      * Verify correctness of the request body with an exemplary synchronous batch call.
      */
     @Test
-    public void testCallSyncWithBatch() throws SaltException {
+    public void testCallSyncWithBatch() {
         stubFor(any(urlMatching("/run"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -162,7 +161,7 @@ public class LocalCallTest {
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
         Target<String> target = new Glob("*");
 
-        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO, Batch.asAmount(1));
+        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO, Batch.asAmount(1)).toCompletableFuture().join();
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
@@ -173,7 +172,7 @@ public class LocalCallTest {
      * Verify correctness of the request body with an exemplary salt-ssh call.
      */
     @Test
-    public void testCallSyncSSH() throws SaltException {
+    public void testCallSyncSSH() {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -201,7 +200,7 @@ public class LocalCallTest {
                 .wipe(true)
                 .build();
 
-        run.callSyncSSH(client, target, config);
+        run.callSyncSSH(client, target, config).toCompletableFuture().join();
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))

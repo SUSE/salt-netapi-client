@@ -18,7 +18,6 @@ import org.junit.Test;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.CmdExecCodeAll;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -54,7 +53,7 @@ public class CmdTest {
     }
 
     @Test
-    public void testCmdUptime() throws SaltException {
+    public void testCmdUptime() {
         // First we get the call to use in the tests
         LocalCall<String> call = Cmd.run("uptime");
         assertEquals("cmd.run", call.getPayload().get("fun"));
@@ -67,7 +66,7 @@ public class CmdTest {
                 .withBody(JSON_RUN_RESPONSE)));
 
         Map<String, Result<String>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -77,7 +76,7 @@ public class CmdTest {
     }
 
     @Test
-    public void testCmdHasExec() throws SaltException {
+    public void testCmdHasExec() {
         // First we get the call to use in the tests
         LocalCall<Boolean> call = Cmd.hasExec("uptime");
         assertEquals("cmd.has_exec", call.getPayload().get("fun"));
@@ -90,7 +89,7 @@ public class CmdTest {
                 .withBody(JSON_HAS_EXEC_RESPONSE)));
 
         Map<String, Result<Boolean>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -99,7 +98,7 @@ public class CmdTest {
     }
 
     @Test
-    public void testCmdExecCode() throws SaltException {
+    public void testCmdExecCode() {
         // First we get the call to use in the tests
         LocalCall<String> call =
                 Cmd.execCode("python", "import sys; print sys.version");
@@ -113,7 +112,7 @@ public class CmdTest {
                 .withBody(JSON_EXEC_CODE_RESPONSE)));
 
         Map<String, Result<String>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -123,7 +122,7 @@ public class CmdTest {
     }
 
     @Test
-    public void testCmdExecCodeAll() throws SaltException {
+    public void testCmdExecCodeAll() {
         // First we get the call to use in the tests
         LocalCall<CmdExecCodeAll> call =
                 Cmd.execCodeAll("python", "import sys; print sys.version");
@@ -137,7 +136,7 @@ public class CmdTest {
                 .withBody(JSON_EXEC_CODE_ALL_RESPONSE)));
 
         Map<String, Result<CmdExecCodeAll>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         CmdExecCodeAll result = response.get("minion").result().get();

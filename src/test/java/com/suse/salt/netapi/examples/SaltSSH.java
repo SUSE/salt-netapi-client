@@ -6,7 +6,6 @@ import com.suse.salt.netapi.calls.modules.Test;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.SSHTarget;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
 
@@ -21,7 +20,7 @@ public class SaltSSH {
 
     private static final String SALT_API_URL = "http://localhost:8000";
 
-    public static void main(String[] args) throws SaltException {
+    public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 
@@ -31,7 +30,7 @@ public class SaltSSH {
         // Ping all minions using a glob matcher
         SSHTarget<String> globTarget = new Glob("*");
         Map<String, Result<SSHResult<Boolean>>> minionResults =
-                Test.ping().callSyncSSH(client, globTarget, sshConfig);
+                Test.ping().callSyncSSH(client, globTarget, sshConfig).toCompletableFuture().join();
 
         System.out.println("--> Ping results:\n");
         minionResults.forEach((minion, result) -> {
@@ -43,7 +42,7 @@ public class SaltSSH {
 
         // Get grains from all minions
         Map<String, Result<SSHResult<Map<String, Object>>>> grainResults =
-                Grains.items(false).callSyncSSH(client, globTarget, sshConfig);
+                Grains.items(false).callSyncSSH(client, globTarget, sshConfig).toCompletableFuture().join();
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");

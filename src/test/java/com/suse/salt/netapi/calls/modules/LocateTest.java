@@ -6,7 +6,6 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.errors.JsonParsingError;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import org.junit.Before;
@@ -74,7 +73,7 @@ public class LocateTest {
     }
 
     @Test
-    public final void testVersion() throws SaltException {
+    public final void testVersion() {
         // First we get the call to use in the tests
         LocalCall<List<String>> call = Locate.version();
         assertEquals("locate.version", call.getPayload().get("fun"));
@@ -87,7 +86,7 @@ public class LocateTest {
                 .withBody(JSON_VERSION_OK_RESPONSE)));
 
         Map<String, Result<List<String>>> response = call.callSync(client,
-                new MinionList("minion1"));
+                new MinionList("minion1")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").result().get());
@@ -102,14 +101,14 @@ public class LocateTest {
                 .withBody(JSON_NULL_RESPONSE)));
 
 
-        response = call.callSync(client, new MinionList("minion1"));
+        response = call.callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(JsonNull.INSTANCE,
                 ((JsonParsingError) response.get("minion1").error().get()).getJson());
     }
 
     @Test
-    public final void testUpdatedb() throws SaltException {
+    public final void testUpdatedb() {
         // First we get the call to use in the tests
         LocalCall<List<String>> call = Locate.updatedb();
         assertEquals("locate.updatedb", call.getPayload().get("fun"));
@@ -122,7 +121,7 @@ public class LocateTest {
                 .withBody(JSON_UPDATEDB_OK_RESPONSE)));
 
         Map<String, Result<List<String>>> response = call.callSync(client,
-                new MinionList("minion1"));
+                new MinionList("minion1")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertTrue(response.get("minion1").result().get().isEmpty());
@@ -134,7 +133,7 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_UPDATEDB_ERROR_RESPONSE)));
 
-        response = call.callSync(client, new MinionList("minion1"));
+        response = call.callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").result().get());
@@ -144,7 +143,7 @@ public class LocateTest {
     }
 
     @Test
-    public final void testStats() throws SaltException {
+    public final void testStats() {
         // First we get the call to use in the tests
         LocalCall<Locate.Stats> call = Locate.stats();
         assertEquals("locate.stats", call.getPayload().get("fun"));
@@ -157,7 +156,7 @@ public class LocateTest {
                 .withBody(JSON_STATS_OK_RESPONSE)));
 
         Map<String, Result<Locate.Stats>> response = call.callSync(client,
-                new MinionList("minion1"));
+                new MinionList("minion1")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         Locate.Stats minion1 = response.get("minion1").result().get();
@@ -170,7 +169,7 @@ public class LocateTest {
     }
 
     @Test
-    public final void testLocate() throws SaltException {
+    public final void testLocate() {
         // First we get the call to use in the tests
         LocalCall<List<String>> call = Locate.locate("ld.so.cache", Optional.empty(),
                 Optional.empty(), Optional.empty());
@@ -184,7 +183,7 @@ public class LocateTest {
                 .withBody(JSON_LOCATE_OK_RESPONSE)));
 
         Map<String, Result<List<String>>> response = call.callSync(client,
-                new MinionList("minion1"));
+                new MinionList("minion1")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         List<String> minion1 = response.get("minion1").result().get();
@@ -199,7 +198,7 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOCATE_NOINPUT_RESPONSE)));
 
-        response = call.callSync(client, new MinionList("minion1"));
+        response = call.callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").error().get());

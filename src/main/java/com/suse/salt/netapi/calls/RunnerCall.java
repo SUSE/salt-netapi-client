@@ -4,7 +4,6 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 import com.google.gson.reflect.TypeToken;
@@ -14,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Class representing a function call of a salt runner module.
@@ -49,16 +49,14 @@ public class RunnerCall<R> extends AbstractCall<R> {
      *
      * @param client SaltClient instance
      * @return information about the scheduled job
-     * @throws SaltException if anything goes wrong
      */
-    public RunnerAsyncResult<R> callAsync(final SaltClient client)
-            throws SaltException {
-        Return<List<RunnerAsyncResult<R>>> wrapper = client.call(
-                this, Client.RUNNER_ASYNC, "/",
-                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){});
-        RunnerAsyncResult<R> result = wrapper.getResult().get(0);
-        result.setType(getReturnType());
-        return result;
+    public CompletionStage<RunnerAsyncResult<R>> callAsync(final SaltClient client) {
+        return client.call(this, Client.RUNNER_ASYNC, "/",
+                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){}).thenApply(wrapper -> {
+                    RunnerAsyncResult<R> result = wrapper.getResult().get(0);
+                    result.setType(getReturnType());
+                    return result;
+                });
     }
 
     /**
@@ -71,23 +69,23 @@ public class RunnerCall<R> extends AbstractCall<R> {
      * @param password password for authentication
      * @param authModule authentication module to use
      * @return information about the scheduled job
-     * @throws SaltException if anything goes wrong
      */
-    public RunnerAsyncResult<R> callAsync(final SaltClient client, String username,
-            String password, AuthModule authModule) throws SaltException {
+    public CompletionStage<RunnerAsyncResult<R>> callAsync(final SaltClient client, String username,
+            String password, AuthModule authModule) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
 
-        Return<List<RunnerAsyncResult<R>>> wrapper = client.call(
+        return client.call(
                 this, Client.RUNNER_ASYNC, "/run",
                 Optional.of(customArgs),
-                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){});
-        RunnerAsyncResult<R> result = wrapper.getResult().get(0);
-        result.setType(getReturnType());
-        return result;
+                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){}).thenApply(wrapper -> {
+                    RunnerAsyncResult<R> result = wrapper.getResult().get(0);
+                    result.setType(getReturnType());
+                    return result;
+                });
     }
 
     /**
@@ -100,10 +98,9 @@ public class RunnerCall<R> extends AbstractCall<R> {
      * @param password password for authentication
      * @param authModule authentication module to use
      * @return the result of the called function
-     * @throws SaltException if anything goes wrong
      */
-    public Result<R> callSync(final SaltClient client, String username, String password,
-            AuthModule authModule) throws SaltException {
+    public CompletionStage<Result<R>> callSync(final SaltClient client, String username, String password,
+            AuthModule authModule) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("username", username);
@@ -112,11 +109,14 @@ public class RunnerCall<R> extends AbstractCall<R> {
         Type xor = parameterizedType(null, Result.class, getReturnType().getType());
         Type listType = parameterizedType(null, List.class, xor);
         Type wrapperType = parameterizedType(null, Return.class, listType);
+
         @SuppressWarnings("unchecked")
-        Return<List<Result<R>>> wrapper = client.call(
-                this, Client.RUNNER, "/run", Optional.of(customArgs),
-                (TypeToken<Return<List<Result<R>>>>) TypeToken.get(wrapperType));
-        return wrapper.getResult().get(0);
+        CompletionStage<Result<R>> resultCompletionStage =
+                client.call(
+                        this, Client.RUNNER, "/run", Optional.of(customArgs),
+                        (TypeToken<Return<List<Result<R>>>>) TypeToken.get(wrapperType))
+                        .thenApply(wrapper -> wrapper.getResult().get(0));
+        return resultCompletionStage;
     }
 
     /**
@@ -126,16 +126,18 @@ public class RunnerCall<R> extends AbstractCall<R> {
      *
      * @param client SaltClient instance
      * @return the result of the called function
-     * @throws SaltException if anything goes wrong
      */
-    public Result<R> callSync(final SaltClient client) throws SaltException {
+    public CompletionStage<Result<R>> callSync(final SaltClient client) {
         Type xor = parameterizedType(null, Result.class, getReturnType().getType());
         Type listType = parameterizedType(null, List.class, xor);
         Type wrapperType = parameterizedType(null, Return.class, listType);
+
         @SuppressWarnings("unchecked")
-        Return<List<Result<R>>> wrapper = client.call(this, Client.RUNNER, "/",
-                (TypeToken<Return<List<Result<R>>>>) TypeToken.get(wrapperType));
-        return wrapper.getResult().get(0);
+        CompletionStage<Result<R>> resultCompletionStage =
+                client.call(this, Client.RUNNER, "/",
+                        (TypeToken<Return<List<Result<R>>>>) TypeToken.get(wrapperType))
+                        .thenApply(wrapper -> wrapper.getResult().get(0));
+        return resultCompletionStage;
     }
 
 }

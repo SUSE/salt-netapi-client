@@ -28,7 +28,7 @@ public class Async {
         };
 
         // Perform a non-blocking login
-        client.loginNonBlocking(USER, PASSWORD, AuthModule.AUTO)
+        client.login(USER, PASSWORD, AuthModule.AUTO)
                 .thenAccept(t -> System.out.println("Token -> " + t.getToken()))
                 .thenRun(cleanup);
     }

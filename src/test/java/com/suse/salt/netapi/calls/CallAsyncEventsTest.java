@@ -111,7 +111,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                             new GenericError("canceled"),
                             Duration.of(7, ChronoUnit.SECONDS)
                     )
-                );
+                ).toCompletableFuture().join();
 
         CountDownLatch countDownLatch = new CountDownLatch(5);
         Map<String, Result<Boolean>> results = new HashMap<>();

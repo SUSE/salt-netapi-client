@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import com.suse.salt.netapi.calls.WheelResult;
 import com.suse.salt.netapi.calls.modules.SaltUtilTest;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -52,14 +51,14 @@ public class KeyTest {
     }
 
     @Test
-    public void testGen() throws SaltException {
+    public void testGen() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_KEY_GEN_RESPONSE)));
 
-        WheelResult<Result<Key.Pair>> keyPair = Key.gen("minion1").callSync(client);
+        WheelResult<Result<Key.Pair>> keyPair = Key.gen("minion1").callSync(client).toCompletableFuture().join();
 
         Result<Key.Pair> resultData = keyPair.getData().getResult();
         Key.Pair data = resultData.result().get();
@@ -75,7 +74,7 @@ public class KeyTest {
     }
 
     @Test
-    public void testGenAccept() throws SaltException {
+    public void testGenAccept() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -83,7 +82,7 @@ public class KeyTest {
                 .withBody(JSON_KEY_GEN_ACCEPT_RESPONSE)));
 
         WheelResult<Result<Key.Pair>> keyPair = Key.genAccept(
-                "minion1", Optional.empty()).callSync(client);
+                "minion1", Optional.empty()).callSync(client).toCompletableFuture().join();
 
         Result<Key.Pair> resultData = keyPair.getData().getResult();
         Key.Pair data = resultData.result().get();

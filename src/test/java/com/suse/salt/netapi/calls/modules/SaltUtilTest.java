@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -59,7 +58,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncBeacons() throws SaltException {
+    public void testSyncBeacons() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -68,7 +67,7 @@ public class SaltUtilTest {
 
         Map<String, Result<List<String>>> response = SaltUtil
                 .syncBeacons(Optional.of(true), Optional.empty())
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
@@ -77,7 +76,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncGrains() throws SaltException {
+    public void testSyncGrains() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -86,7 +85,7 @@ public class SaltUtilTest {
 
         Map<String, Result<List<String>>> response = SaltUtil
                 .syncGrains(Optional.of(true), Optional.empty())
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
@@ -95,7 +94,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncModules() throws SaltException {
+    public void testSyncModules() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -104,7 +103,7 @@ public class SaltUtilTest {
 
         Map<String, Result<List<String>>> response = SaltUtil
                 .syncModules(Optional.of(true), Optional.empty())
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(1, response.size());
         assertEquals("minion1", response.entrySet().iterator().next().getKey());
@@ -113,7 +112,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testSyncAll() throws SaltException {
+    public void testSyncAll() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -122,7 +121,7 @@ public class SaltUtilTest {
 
         Map<String, Result<Map<String, Object>>> response = SaltUtil
                 .syncAll(Optional.of(true), Optional.empty())
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(1, response.size());
         assertNotNull(response.get("minion1"));
@@ -140,7 +139,7 @@ public class SaltUtilTest {
     }
 
     @Test
-    public void testRefreshPillar() throws SaltException {
+    public void testRefreshPillar() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -149,7 +148,7 @@ public class SaltUtilTest {
 
         Map<String, Result<Boolean>> response = SaltUtil
                 .refreshPillar(Optional.of(true), Optional.empty())
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
         assertEquals(1, response.size());
         assertNotNull(response.get("minion1"));
         Boolean data = response.get("minion1").result().get();
