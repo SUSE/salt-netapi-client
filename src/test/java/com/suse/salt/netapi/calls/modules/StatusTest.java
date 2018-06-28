@@ -19,7 +19,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 
@@ -57,7 +56,7 @@ public class StatusTest {
     }
 
     @Test
-    public final void testMeminfo() throws SaltException {
+    public final void testMeminfo() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Map<String, Object>>> call = Status.meminfo();
         assertEquals("status.meminfo", call.getPayload().get("fun"));
@@ -70,7 +69,7 @@ public class StatusTest {
                 .withBody(JSON_MEMINFO_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Object>>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -117,7 +116,7 @@ public class StatusTest {
     }
 
     @Test
-    public final void testLoadavg() throws SaltException {
+    public final void testLoadavg() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Double>> call = Status.loadavg();
         assertEquals("status.loadavg", call.getPayload().get("fun"));
@@ -130,7 +129,7 @@ public class StatusTest {
                 .withBody(JSON_LOADAVG_RESPONSE)));
 
         Map<String, Result<Map<String, Double>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Double> minion = response.get("minion").result().get();
@@ -143,7 +142,7 @@ public class StatusTest {
     }
 
     @Test
-    public final void testDiskusage() throws SaltException {
+    public final void testDiskusage() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Map<String, Long>>> call = Status.diskusage();
         assertEquals("status.diskusage", call.getPayload().get("fun"));
@@ -156,7 +155,7 @@ public class StatusTest {
                 .withBody(JSON_DISKUSAGE_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Long>>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Map<String, Long>> minion = response.get("minion").result().get();
@@ -169,7 +168,7 @@ public class StatusTest {
     }
 
     @Test
-    public final void testDiskstats() throws SaltException {
+    public final void testDiskstats() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Map<String, Object>>> call = Status.diskstats();
         assertEquals("status.diskstats", call.getPayload().get("fun"));
@@ -182,7 +181,7 @@ public class StatusTest {
                 .withBody(JSON_DISKSTATS_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Object>>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Map<String, Object>> minion = response.get("minion").result().get();
@@ -207,7 +206,7 @@ public class StatusTest {
     }
 
     @Test
-    public final void testUptime() throws SaltException {
+    public final void testUptime() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Object>> call = Status.uptime();
         assertEquals("status.uptime", call.getPayload().get("fun"));
@@ -220,7 +219,7 @@ public class StatusTest {
                 .withBody(JSON_UPTIME_RESPONSE)));
 
         Map<String, Result<Map<String, Object>>> response = call.callSync(client,
-                new MinionList("minion"));
+                new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Object> minion = response.get("minion").result().get();

@@ -7,7 +7,6 @@ import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.datatypes.target.Target;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 
 import java.net.URI;
@@ -24,14 +23,14 @@ public class Calls {
     private static final String USER = "saltdev";
     private static final String PASSWORD = "saltdev";
 
-    public static void main(String[] args) throws SaltException {
+    public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");
         Map<String, Result<Boolean>> results = Test.ping().callSync(
-                client, globTarget, USER, PASSWORD, AuthModule.AUTO);
+                client, globTarget, USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
 
         System.out.println("--> Ping results:\n");
         results.forEach((minion, result) -> System.out.println(minion + " -> " + result));
@@ -42,7 +41,7 @@ public class Calls {
         // An empty result is returned for targeted minions that are down or minionList
         // entries that do not match actual targets.
         Map<String, Result<Map<String, Object>>> grainResults = Grains.items(false)
-                .callSync(client, minionList, USER, PASSWORD, AuthModule.AUTO);
+                .callSync(client, minionList, USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");

@@ -4,7 +4,6 @@ import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.WheelResult;
 import com.suse.salt.netapi.calls.wheel.Key;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 
 import java.net.URI;
@@ -19,13 +18,13 @@ public class Wheel {
     private static final String USER = "saltdev";
     private static final String PASSWORD = "saltdev";
 
-    public static void main(String[] args) throws SaltException {
+    public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL));
 
         // List accepted and pending minion keys
         WheelResult<Result<Key.Names>> keyResults = Key.listAll().callSync(
-                client, USER, PASSWORD, AuthModule.AUTO);
+                client, USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
         Result<Key.Names> resultKeys = keyResults.getData().getResult();
         Key.Names keys = resultKeys.result().get();
 
@@ -37,7 +36,7 @@ public class Wheel {
         // Generate a new key pair and accept the public key
         WheelResult<Result<Key.Pair>> genResults = Key.genAccept("new.minion.id",
         		      Optional.empty()).callSync(client,
-        		    		  USER, PASSWORD, AuthModule.AUTO);
+        		    		  USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
         Result<Key.Pair> resultKeyPair = genResults.getData().getResult();
         Key.Pair keyPair = resultKeyPair.result().get();
 

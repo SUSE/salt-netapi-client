@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.modules.SaltUtilTest;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -52,7 +51,7 @@ public class EventTest {
     }
 
     @Test
-    public void testEventSend() throws SaltException {
+    public void testEventSend() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse().withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
@@ -63,7 +62,7 @@ public class EventTest {
         data.put("some-value", 2);
 
         boolean success = Event.send("my/custom/event", Optional.of(data))
-                .callSync(client).result().get();
+                .callSync(client).toCompletableFuture().join().result().get();
 
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/"))

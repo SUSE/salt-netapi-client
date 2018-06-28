@@ -20,7 +20,6 @@ import org.junit.Test;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.modules.SaltUtilTest;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 
@@ -51,14 +50,14 @@ public class JobsTest {
     }
 
     @Test
-    public void testListJob() throws SaltException {
+    public void testListJob() {
     	stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LIST_JOB_RESPONSE)));
 
-    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client);
+    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client).toCompletableFuture().join();
 
         assertTrue(result.result().isPresent());
         assertEquals(Optional.empty(), result.error());
@@ -66,14 +65,14 @@ public class JobsTest {
     }
 
     @Test
-    public void testListJobInvalidResponse() throws SaltException {
+    public void testListJobInvalidResponse() {
     	stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LIST_JOB_UNPARSABLE_DATE_RESPONSE)));
 
-    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client);
+    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client).toCompletableFuture().join();
 
     	assertEquals(Optional.empty(), result.result());
     	assertTrue(result.error().isPresent());
@@ -82,14 +81,14 @@ public class JobsTest {
     }
 
     @Test
-    public void testResponseWithException() throws SaltException {
+    public void testResponseWithException() {
     	stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SALT_EXCEPTION_RESPONSE)));
 
-    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client);
+    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client).toCompletableFuture().join();
 
     	assertEquals(Optional.empty(), result.result());
     	assertTrue(result.error().isPresent());

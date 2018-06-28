@@ -6,7 +6,6 @@ import com.suse.salt.netapi.calls.Client;
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.SaltSSHUtils;
 import com.suse.salt.netapi.client.impl.HttpAsyncClientConnectionFactory;
-import com.suse.salt.netapi.client.impl.HttpClientConnectionFactory;
 import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.config.ProxySettings;
 import com.suse.salt.netapi.datatypes.Token;
@@ -16,7 +15,6 @@ import com.suse.salt.netapi.event.EventListener;
 import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
-import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.results.Result;
 
@@ -39,10 +37,7 @@ import java.util.concurrent.CompletionStage;
 public class SaltClient implements AutoCloseable {
 
     /** The configuration object */
-    private final ClientConfig config = new ClientConfig();
-
-    /** The connection factory object */
-    private final ConnectionFactory connectionFactory;
+    private final ClientConfig config;
 
     /** The async connection factory object */
     private final AsyncConnectionFactory asyncConnectionFactory;
@@ -55,19 +50,19 @@ public class SaltClient implements AutoCloseable {
      * @param url the Salt API URL
      */
     public SaltClient(URI url) {
-        this(url, new HttpClientConnectionFactory());
+        this(url, new ClientConfig());
     }
 
     /**
-     * Constructor for connecting to a given URL using a specific connection factory.
+     * Constructor for connecting to a given URL.
      *
      * @param url the Salt API URL
-     * @param connectionFactory ConnectionFactory implementation
+     * @param config client config
      */
-    public SaltClient(URI url, ConnectionFactory connectionFactory) {
+    public SaltClient(URI url, ClientConfig config) {
+        this.config = config;
         // Put the URL in the config
         config.put(ClientConfig.URL, url);
-        this.connectionFactory = connectionFactory;
 
         // TODO: Replace connectionFactory with this
         this.asyncConnectionFactory = new HttpAsyncClientConnectionFactory(config);
@@ -110,7 +105,7 @@ public class SaltClient implements AutoCloseable {
      * @param eauth the eauth type
      * @return CompletionStage holding the authentication token
      */
-    public CompletionStage<Token> loginNonBlocking(final String username,
+    public CompletionStage<Token> login(final String username,
             final String password, final AuthModule eauth) {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("username", username);
@@ -133,52 +128,17 @@ public class SaltClient implements AutoCloseable {
     }
 
     /**
-     * Perform login and return the token.
-     * <p>
-     * {@code POST /login}
-     *
-     * @param username the username
-     * @param password the password
-     * @param eauth the eauth type
-     * @return the authentication token
-     * @throws SaltException if anything goes wrong
-     */
-    public Token login(final String username, final String password, final AuthModule eauth)
-            throws SaltException {
-        Map<String, String> props = new LinkedHashMap<>();
-        props.put("username", username);
-        props.put("password", password);
-        props.put("eauth", eauth.getValue());
-
-        String payload = gson.toJson(props);
-
-        Return<List<Token>> result = connectionFactory
-                .create("/login", JsonParser.TOKEN, config)
-                .getResult(payload);
-
-        // For whatever reason they return a list of tokens here, take the first
-        Token token = result.getResult().get(0);
-        config.put(ClientConfig.TOKEN, token.getToken());
-        return token;
-    }
-
-    /**
      * Perform logout and clear the session token from the config.
      * <p>
      * {@code POST /logout}
      *
      * @return true if the logout was successful, otherwise false
-     * @throws SaltException if anything goes wrong
      */
-    public boolean logout() throws SaltException {
-        Return<String> stringResult = connectionFactory
-                .create("/logout", JsonParser.STRING, config).getResult("");
-        String logoutMessage = "Your token has been cleared";
-        boolean result = logoutMessage.equals((stringResult.getResult()));
-        if (result) {
-            config.remove(ClientConfig.TOKEN);
-        }
-        return result;
+    public CompletionStage<Boolean> logout() {
+        return asyncConnectionFactory
+                .create("/logout", JsonParser.STRING)
+                .post("")
+                .thenApply(s -> "Your token has been cleared".contentEquals(s.getResult()));
     }
 
     /**
@@ -196,12 +156,10 @@ public class SaltClient implements AutoCloseable {
      * @param args list of non-keyword arguments
      * @param kwargs map containing keyword arguments
      * @return Map key: minion id, value: command result from that minion
-     * @throws SaltException if anything goes wrong
      */
-    public <T> Map<String, Object> run(final String username, final String password,
+    public <T> CompletionStage<Map<String, Object>> run(final String username, final String password,
             final AuthModule eauth, final String client, final Target<T> target,
-            final String function, List<Object> args, Map<String, Object> kwargs)
-            throws SaltException {
+            final String function, List<Object> args, Map<String, Object> kwargs) {
         Map<String, Object> props = new HashMap<>();
         props.put("username", username);
         props.put("password", password);
@@ -216,12 +174,11 @@ public class SaltClient implements AutoCloseable {
 
         String payload = gson.toJson(list);
 
-        Return<List<Map<String, Object>>> result = connectionFactory
-                .create("/run", JsonParser.RUN_RESULTS, config)
-                .getResult(payload);
-
-        // A list with one element is returned, we take the first
-        return result.getResult().get(0);
+        CompletionStage<Map<String, Object>> result = asyncConnectionFactory
+                .create("/run", JsonParser.RUN_RESULTS)
+                .post(payload)
+                .thenApply(s -> s.getResult().get(0));
+        return result;
     }
 
     /**
@@ -234,11 +191,9 @@ public class SaltClient implements AutoCloseable {
      * @param cfg SaltSSH config holder
      * @return a map in which every key is a host associated to the result of the
      * raw command
-     * @throws SaltException if anything goes wrong
      */
-    public <T> Map<String, Result<SSHRawResult>> runRawSSHCommand(final String command,
-            final Target<T> target, SaltSSHConfig cfg)
-        throws SaltException {
+    public <T> CompletionStage<Map<String, Result<SSHRawResult>>> runRawSSHCommand(final String command,
+            final Target<T> target, SaltSSHConfig cfg) {
         Map<String, Object> props = new HashMap<>();
         props.put("client", Client.SSH.getValue());
         props.putAll(target.getProps());
@@ -251,10 +206,12 @@ public class SaltClient implements AutoCloseable {
 
         String payload = gson.toJson(list);
 
-        Return<List<Map<String, Result<SSHRawResult>>>> result = connectionFactory
-                .create("/run", JsonParser.RUNSSHRAW_RESULTS, config).getResult(payload);
+        CompletionStage<Map<String, Result<SSHRawResult>>> result = asyncConnectionFactory
+                .create("/run", JsonParser.RUNSSHRAW_RESULTS)
+                .post(payload)
+                .thenApply(r -> r.getResult().get(0));
 
-        return result.getResult().get(0);
+        return result;
     }
 
     /**
@@ -263,10 +220,9 @@ public class SaltClient implements AutoCloseable {
      * {@code GET /stats}
      *
      * @return the stats
-     * @throws SaltException if anything goes wrong
      */
-    public Stats stats() throws SaltException {
-        return connectionFactory.create("/stats", JsonParser.STATS, config).getResult();
+    public CompletionStage<Stats> stats() {
+        return asyncConnectionFactory.create("/stats", JsonParser.STATS).get();
     }
 
     /**
@@ -300,10 +256,9 @@ public class SaltClient implements AutoCloseable {
      * @param custom map of arguments
      * @param type return type as a TypeToken
      * @return the result of the call
-     * @throws SaltException if anything goes wrong
      */
-    public <R> R call(Call<?> call, Client client, String endpoint, Optional<Map<String,
-            Object>> custom, TypeToken<R> type) throws SaltException {
+    public <R> CompletionStage<R> call(Call<?> call, Client client, String endpoint, Optional<Map<String,
+            Object>> custom, TypeToken<R> type) {
         Map<String, Object> props = new HashMap<>();
         props.putAll(call.getPayload());
         props.put("client", client.getValue());
@@ -312,9 +267,11 @@ public class SaltClient implements AutoCloseable {
         List<Map<String, Object>> list = Collections.singletonList(props);
         String payload = gson.toJson(list);
 
-        return connectionFactory
-                .create(endpoint, new JsonParser<>(type), config)
-                .getResult(payload);
+        CompletionStage<R> result = asyncConnectionFactory
+                .create(endpoint, new JsonParser<>(type))
+                .post(payload);
+
+        return result;
     }
 
     /**
@@ -326,10 +283,8 @@ public class SaltClient implements AutoCloseable {
      * @param endpoint the endpoint
      * @param type return type as a TypeToken
      * @return the result of the call
-     * @throws SaltException if anything goes wrong
      */
-    public <R> R call(Call<?> call, Client client, String endpoint, TypeToken<R> type)
-            throws SaltException {
+    public <R> CompletionStage<R> call(Call<?> call, Client client, String endpoint, TypeToken<R> type) {
         return call(call, client, endpoint, Optional.empty(), type);
     }
 

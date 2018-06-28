@@ -20,7 +20,6 @@ import org.junit.Test;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.errors.ModuleNotSupported;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -56,7 +55,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testRecordsOne() throws SaltException {
+    public void testRecordsOne() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -65,7 +64,7 @@ public class SmbiosTest {
 
         Map<String, Result<List<Smbios.Record>>> response =
                 Smbios.records(Smbios.RecordType.BIOS)
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(1, response.size());
         Map.Entry<String, Result<List<Smbios.Record>>> first = response
@@ -85,7 +84,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testRecordsAll() throws SaltException {
+    public void testRecordsAll() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -93,7 +92,7 @@ public class SmbiosTest {
                 .withBody(JSON_ALL_RESPONSE)));
 
         Map<String, Result<List<Smbios.Record>>> response = Smbios.records(null)
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
 
         assertEquals(1, response.size());
         Map.Entry<String, Result<List<Smbios.Record>>> first = response
@@ -103,7 +102,7 @@ public class SmbiosTest {
     }
 
     @Test
-    public void testEmptyResponse() throws SaltException {
+    public void testEmptyResponse() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -112,12 +111,12 @@ public class SmbiosTest {
 
         Map<String, Result<List<Smbios.Record>>> response =
                 Smbios.records(Smbios.RecordType.BIOS)
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
         assertEquals(0, response.size());
     }
 
     @Test
-    public void testErrorResponse() throws SaltException {
+    public void testErrorResponse() {
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -126,7 +125,7 @@ public class SmbiosTest {
 
         Map<String, Result<List<Smbios.Record>>> result =
                 Smbios.records(Smbios.RecordType.BIOS)
-                .callSync(client, new MinionList("minion1"));
+                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
         assertEquals(Xor.left(new ModuleNotSupported("smbios")),
                 result.get("minion1").toXor());
     }

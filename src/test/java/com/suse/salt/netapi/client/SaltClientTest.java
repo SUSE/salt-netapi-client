@@ -5,7 +5,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -14,17 +13,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.suse.salt.netapi.AuthModule.AUTO;
 import static com.suse.salt.netapi.AuthModule.PAM;
 import static com.suse.salt.netapi.config.ClientConfig.SOCKET_TIMEOUT;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.calls.SaltSSHConfig;
-import com.suse.salt.netapi.client.impl.JDKConnectionFactory;
+import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Glob;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHRawResult;
@@ -38,12 +36,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 
 /**
  * Salt API client unit tests.
@@ -84,14 +84,14 @@ public class SaltClientTest {
     }
 
     @Test
-    public void testLoginOk() throws Exception {
+    public void testLoginOk() {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGIN_RESPONSE)));
 
-        Token token = client.login("user", "pass", AUTO);
+        Token token = client.login("user", "pass", AUTO).toCompletableFuture().join();
         verifyLoginToken(token);
     }
 
@@ -108,16 +108,18 @@ public class SaltClientTest {
         assertEquals("Perms mismatch", Arrays.asList(".*", "@wheel"), token.getPerms());
     }
 
-    @Test(expected = SaltUserUnauthorizedException.class)
-    public void testLoginFailure() throws Exception {
+    @Test
+    public void testLoginFailure() {
+        exception.expect(CompletionException.class);
+        exception.expectCause(instanceOf(SaltUserUnauthorizedException.class));
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)));
-        client.login("user", "pass", AUTO);
+        client.login("user", "pass", AUTO).toCompletableFuture().join();
     }
 
     @Test
-    public void testRunRequest() throws Exception {
+    public void testRunRequest() {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
@@ -133,12 +135,12 @@ public class SaltClientTest {
 
         Map<String, Object> retvals =
                 client.run("user", "pass", PAM, "local", new Glob(),
-                "pkg.install", args, kwargs);
+                "pkg.install", args, kwargs).toCompletableFuture().join();
         verifyRunResults(retvals);
     }
 
     @Test
-    public void testRunRawSSHCommand() throws SaltException {
+    public void testRunRawSSHCommand() {
         Map<String, Result<SSHRawResult>> retvals = null;
 
         stubFor(any(urlMatching(".*"))
@@ -147,7 +149,7 @@ public class SaltClientTest {
                         .withBody(JSON_SSHRAW_RUN_RESPONSE)));
 
         retvals = client.runRawSSHCommand("uptime", new Glob(),
-                new SaltSSHConfig.Builder().build());
+                new SaltSSHConfig.Builder().build()).toCompletableFuture().join();
 
         SSHRawResult expectedResult = new SSHRawResult(0,
                 "Password: \n 17:42pm  up  19:16,  0 users,  "
@@ -192,54 +194,36 @@ public class SaltClientTest {
         assertEquals(expected, retvals.get("minion-1"));
     }
 
+    //TODO: test needs to be adjusted
     @Test
-    public void testRunRequestWithSocketTimeout() throws Exception {
-        exception.expect(SaltException.class);
-        exception.expectMessage(containsString("Read timed out"));
+    public void testRunRequestWithSocketTimeout() {
+        exception.expect(CompletionException.class);
+        exception.expectCause(instanceOf(SocketTimeoutException.class));
 
         // create a local SaltClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        SaltClient clientWithFastTimeout = new SaltClient(uri);
-        clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
+        ClientConfig config = new ClientConfig();
+        config.put(SOCKET_TIMEOUT, 1000);
+        SaltClient clientWithFastTimeout = new SaltClient(uri, config);
+
 
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withFixedDelay(2000)));
 
-        clientWithFastTimeout.login("user", "pass", AUTO);
+        clientWithFastTimeout.login("user", "pass", AUTO).toCompletableFuture().join();
     }
 
     @Test
-    public void testRunRequestWithSocketTimeoutThroughJDKConnection() throws Exception {
-        exception.expect(SaltException.class);
-        exception.expectMessage(containsString("Read timed out"));
-
-        // create a local SaltClient with a fast timeout configuration
-        // to do not lock tests more than 2s
-        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        SaltClient clientWithFastTimeout = new SaltClient(uri,
-                new JDKConnectionFactory());
-        clientWithFastTimeout.getConfig().put(SOCKET_TIMEOUT, 1000);
-
-        stubFor(post(urlEqualTo("/login"))
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .willReturn(aResponse()
-                .withFixedDelay(2000)));
-
-        clientWithFastTimeout.login("user", "pass", AUTO);
-    }
-
-    @Test
-    public void testStats() throws Exception {
+    public void testStats() {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_STATS_RESPONSE)));
 
-        Stats stats = client.stats();
+        Stats stats = client.stats().toCompletableFuture().join();
 
         assertNotNull(stats);
         verify(1, getRequestedFor(urlEqualTo("/stats"))
@@ -248,14 +232,14 @@ public class SaltClientTest {
     }
 
     @Test
-    public void testLogout() throws Exception {
+    public void testLogout() {
         stubFor(any(urlMatching(".*"))
                 .willReturn(aResponse()
                 .withStatus(HttpURLConnection.HTTP_OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOGOUT_RESPONSE)));
 
-        boolean success = client.logout();
+        boolean success = client.logout().toCompletableFuture().join();
         verifyLogout(success);
     }
 
