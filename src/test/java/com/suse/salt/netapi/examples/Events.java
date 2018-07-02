@@ -2,14 +2,19 @@ package com.suse.salt.netapi.examples;
 
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.config.ClientConfig;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
 import com.suse.salt.netapi.datatypes.Event;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.event.EventListener;
 import com.suse.salt.netapi.event.EventStream;
+import com.suse.salt.netapi.utils.TestUtils;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 import java.net.URI;
-
 import javax.websocket.CloseReason;
 
 /**
@@ -23,8 +28,20 @@ public class Events {
 
     public static void main(String[] args) {
         // Init client and set the timeout to infinite
-        SaltClient client = new SaltClient(URI.create(SALT_API_URL));
-        client.getConfig().put(ClientConfig.SOCKET_TIMEOUT, 0);
+        SaltClient client = new SaltClient(URI.create(SALT_API_URL),
+                new HttpAsyncClientConnection(TestUtils.defaultClient()));
+
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(0)
+                .setConnectTimeout(0)
+                .setSocketTimeout(0)
+                .setCookieSpec(CookieSpecs.STANDARD)
+                .build();
+        HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom();
+        httpClientBuilder.setDefaultRequestConfig(requestConfig);
+
+        CloseableHttpAsyncClient asyncHttpClient = httpClientBuilder.build();
+        asyncHttpClient.start();
 
         try {
             // Get a login token
@@ -32,19 +49,21 @@ public class Events {
             System.out.println("Token: " + token.getToken());
 
             // Init the event stream with a basic listener implementation
-            EventStream eventStream = client.events(new EventListener() {
-                @Override
-                public void notify(Event e) {
-                    System.out.println("Tag  -> " + e.getTag());
-                    System.out.println("Data -> " + e.getData());
-                }
+            EventStream eventStream = client.events(
+                    token, 0, 0, 0,
+                    new EventListener() {
+                        @Override
+                        public void notify(Event e) {
+                            System.out.println("Tag  -> " + e.getTag());
+                            System.out.println("Data -> " + e.getData());
+                        }
 
-                @Override
-                public void eventStreamClosed(CloseReason closeReason) {
-                    System.out.println("Event stream closed: " +
-                            closeReason.getReasonPhrase());
-                }
-            });
+                        @Override
+                        public void eventStreamClosed(CloseReason closeReason) {
+                            System.out.println("Event stream closed: " +
+                                    closeReason.getReasonPhrase());
+                        }
+                    });
 
             // Wait for events and close the event stream after 30 seconds
             System.out.println("-- Waiting for events --");

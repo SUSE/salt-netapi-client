@@ -8,6 +8,13 @@ import java.util.List;
  */
 public class Token {
 
+    public Token() {
+    }
+
+    public Token(String token) {
+        this.token = token;
+    }
+
     // String attributes
     private String eauth;
     private String token;

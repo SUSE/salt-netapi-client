@@ -4,7 +4,11 @@ import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.runner.Event;
 import com.suse.salt.netapi.calls.runner.Manage;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.PasswordAuth;
 import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.TestUtils;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -20,21 +24,23 @@ public class Runner {
     private static final String SALT_API_URL = "http://localhost:8000";
     private static final String USER = "saltdev";
     private static final String PASSWORD = "saltdev";
+    static final AuthMethod AUTH = new AuthMethod(new PasswordAuth(USER, PASSWORD, AuthModule.AUTO));
 
     public static void main(String[] args) {
         // Init the client
-        SaltClient client = new SaltClient(URI.create(SALT_API_URL));
+        SaltClient client = new SaltClient(URI.create(SALT_API_URL),
+                new HttpAsyncClientConnection(TestUtils.defaultClient()));
 
         // Send a custom event with some data (salt.runners.event)
         Map<String, Object> data = new HashMap<>();
         data.put("foo", "bar");
         Result<Boolean> result = Event.send("my/custom/event", Optional.of(data))
-                .callSync(client, USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
+                .callSync(client, AUTH).toCompletableFuture().join();
         System.out.println("event.send: " + result);
 
         // List all minions that are up (salt.runners.manage)
         Result<List<String>> resultUp = Manage.present()
-                .callSync(client, USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
+                .callSync(client, AUTH).toCompletableFuture().join();
         System.out.println("manage.present: " + resultUp);
     }
 }

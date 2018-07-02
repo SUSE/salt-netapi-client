@@ -14,8 +14,8 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import javax.websocket.server.ServerEndpoint;
 
-import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.datatypes.Event;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.exception.MessageTooBigException;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
@@ -48,7 +48,7 @@ public class EventStream implements AutoCloseable {
     private final int defaultBufferSize = 0x400;
 
     /**
-     * Maximum message length in characters, configurable via {@link ClientConfig}.
+     * Maximum message length in characters
      */
     private final int maxMessageLength;
 
@@ -72,37 +72,35 @@ public class EventStream implements AutoCloseable {
      * Constructor used to create an event stream: open a websocket connection and start
      * event processing.
      *
-     * @param config client configuration containing the URL, token, timeouts, etc.
      * @param listeners event listeners to be added before stream initialization
      * @throws SaltException in case of an error during stream initialization
      */
-    public EventStream(ClientConfig config, EventListener... listeners)
+    public EventStream(URI uri, Token token, long sessionIdleTimeout, long idleTimeout,
+                       int maxMsgSize, EventListener... listeners)
             throws SaltException {
-        maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) > 0 ?
-                config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) : Integer.MAX_VALUE;
+        maxMessageLength = maxMsgSize > 0 ?
+                maxMsgSize : Integer.MAX_VALUE;
         Arrays.asList(listeners).forEach(this::addEventListener);
-        initializeStream(config);
+        initializeStream(uri, token, sessionIdleTimeout, idleTimeout);
     }
 
     /**
      * Connect the WebSocket to the server pointing to /ws/{token} to receive events.
      *
-     * @param config the client configuration
      * @throws SaltException in case of an error during stream initialization
      */
-    private void initializeStream(ClientConfig config) throws SaltException {
+    private void initializeStream(URI uri, Token token, long sessionIdleTimeout, long idleTimeout)
+            throws SaltException {
         try {
-            URI uri = config.get(ClientConfig.URL);
             uri = new URI(uri.getScheme() == "https" ? "wss" : "ws",
                     uri.getSchemeSpecificPart(), uri.getFragment())
-                    .resolve("/ws/" + config.get(ClientConfig.TOKEN));
-            websocketContainer.setDefaultMaxSessionIdleTimeout(
-                    (long) config.get(ClientConfig.SOCKET_TIMEOUT));
+                    .resolve("/ws/" + token.getToken());
+            websocketContainer.setDefaultMaxSessionIdleTimeout(sessionIdleTimeout);
 
             // Initiate the websocket handshake
             synchronized (websocketContainer) {
                 session = websocketContainer.connectToServer(this, uri);
-                session.setMaxIdleTimeout((long) config.get(ClientConfig.SOCKET_TIMEOUT));
+                session.setMaxIdleTimeout(idleTimeout);
             }
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltException(e);

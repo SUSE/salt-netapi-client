@@ -2,12 +2,13 @@ package com.suse.salt.netapi.calls;
 
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
-import com.suse.salt.netapi.AuthModule;
+import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.calls.runner.Jobs;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Batch;
-import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.Event;
+import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.errors.GenericError;
 import com.suse.salt.netapi.event.EventListener;
@@ -17,12 +18,10 @@ import com.suse.salt.netapi.event.RunnerReturnEvent;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHResult;
-
-import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.utils.ClientUtils;
 
-import javax.websocket.CloseReason;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.websocket.CloseReason;
 
 /**
  * Class representing a function call of a salt execution module.
@@ -123,15 +123,10 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param target the target for the function
      * @return information about the scheduled job
      */
-    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target) {
-        Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(getPayload());
-        customArgs.putAll(target.getProps());
-
+    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth) {
         return client.call(
-                this, Client.LOCAL_ASYNC, "/",
-                Optional.of(customArgs),
-                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){})
+                this, Client.LOCAL_ASYNC, Optional.of(target), Collections.emptyMap(),
+                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){}, auth)
                 .thenApply(wrapper -> {
                     LocalAsyncResult<R> result = wrapper.getResult().get(0);
                     result.setType(getReturnType());
@@ -139,38 +134,6 @@ public class LocalCall<R> extends AbstractCall<R> {
                 });
     }
 
-
-    /**
-     * Calls this salt call via the async client and returns the results
-     * as they come in via the event stream.
-     *
-     * @param client SaltClient instance
-     * @param target the target for the function
-     * @param username username for authentication
-     * @param password password for authentication
-     * @param authModule authentication module to use
-     * @param events the event stream to use
-     * @param cancel future to cancel the action
-     * @return a map from minion id to future of the result.
-     */
-    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
-            SaltClient client,
-            Target<?> target,
-            String username,
-            String password,
-            AuthModule authModule,
-            EventStream events,
-            CompletionStage<GenericError> cancel) {
-        return callAsync(
-                localCall -> localCall.callAsync(client, target, username,
-                        password, authModule),
-                runnerCall -> runnerCall.callAsync(client, username,
-                        password, authModule),
-                events,
-                cancel
-        );
-    }
-
     /**
      * Calls this salt call via the async client and returns the results
      * as they come in via the event stream.
@@ -184,11 +147,12 @@ public class LocalCall<R> extends AbstractCall<R> {
     public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
             SaltClient client,
             Target<?> target,
+            AuthMethod auth,
             EventStream events,
             CompletionStage<GenericError> cancel) {
         return callAsync(
-                localCall -> localCall.callAsync(client, target),
-                runnerCall -> runnerCall.callAsync(client),
+                localCall -> localCall.callAsync(client, target, auth),
+                runnerCall -> runnerCall.callAsync(client, auth),
                 events,
                 cancel
         );
@@ -283,38 +247,6 @@ public class LocalCall<R> extends AbstractCall<R> {
         });
     }
 
-    /**
-     * Calls a execution module function on the given target asynchronously and
-     * returns information about the scheduled job that can be used to query the result.
-     * Authentication is done with the given credentials no session token is created.
-     *
-     * @param client SaltClient instance
-     * @param target the target for the function
-     * @param username username for authentication
-     * @param password password for authentication
-     * @param authModule authentication module to use
-     * @return information about the scheduled job
-     */
-
-    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target,
-                                                          String username, String password, AuthModule authModule) {
-        Map<String, Object> customArgs = new HashMap<>();
-        customArgs.putAll(getPayload());
-        customArgs.put("username", username);
-        customArgs.put("password", password);
-        customArgs.put("eauth", authModule.getValue());
-        customArgs.putAll(target.getProps());
-
-        return client.call(
-                this, Client.LOCAL_ASYNC, "/run",
-                Optional.of(customArgs),
-                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){})
-                .thenApply(wrapper -> {
-                    LocalAsyncResult<R> result = wrapper.getResult().get(0);
-                    result.setType(getReturnType());
-                    return result;
-                });
-    }
 
     /**
      * Calls a execution module function on the given target and synchronously
@@ -325,9 +257,9 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param target the target for the function
      * @return a map containing the results with the minion name as key
      */
-    public CompletionStage<Map<String, Result<R>>> callSync(final SaltClient client, Target<?> target) {
-        return callSyncHelperNonBlock(client, target, Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.empty())
+    public CompletionStage<Map<String, Result<R>>> callSync(final SaltClient client, Target<?> target,
+            AuthMethod auth) {
+        return callSyncHelperNonBlock(client, target, auth, Optional.empty())
                 .thenApply(r -> r.get(0));
     }
 
@@ -343,50 +275,8 @@ public class LocalCall<R> extends AbstractCall<R> {
      * the results with the minion names as keys.
      */
     public CompletionStage<List<Map<String, Result<R>>>> callSync(final SaltClient client, Target<?> target,
-                                                                  Batch batch) {
-        return callSyncHelperNonBlock(client, target, Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.of(batch));
-    }
-
-    /**
-     * Calls a execution module function on the given target and synchronously
-     * waits for the result. Authentication is done with the given credentials
-     * no session token is created.
-     *
-     * @param client SaltClient instance
-     * @param target the target for the function
-     * @param username username for authentication
-     * @param password password for authentication
-     * @param authModule authentication module to use
-     * @return a map containing the results with the minion name as key
-     */
-    public CompletionStage<Map<String, Result<R>>> callSync(
-            final SaltClient client, Target<?> target,
-            String username, String password, AuthModule authModule) {
-        return callSyncHelperNonBlock(client, target, Optional.of(username),
-                Optional.of(password), Optional.of(authModule), Optional.empty())
-                .thenApply(r -> r.get(0));
-    }
-
-    /**
-     * Calls a execution module function on the given target with batching and
-     * synchronously waits for the result. Authentication is done with the given
-     * credentials no session token is created.
-     *
-     * @param client SaltClient instance
-     * @param target the target for the function
-     * @param username username for authentication
-     * @param password password for authentication
-     * @param authModule authentication module to use
-     * @param batch the batch specification
-     * @return A list of maps with each list representing each batch, and maps containing
-     * the results with the minion names as keys.
-     */
-    public CompletionStage<List<Map<String, Result<R>>>> callSync(
-            final SaltClient client, Target<?> target,
-            String username, String password, AuthModule authModule, Batch batch) {
-        return callSyncHelperNonBlock(client, target, Optional.of(username),
-                Optional.of(password), Optional.of(authModule), Optional.of(batch));
+            AuthMethod auth, Batch batch) {
+        return callSyncHelperNonBlock(client, target, auth, Optional.of(batch));
     }
 
     /**
@@ -396,43 +286,33 @@ public class LocalCall<R> extends AbstractCall<R> {
      *
      * @param client SaltClient instance
      * @param target the target for the function
-     * @param username username for authentication, empty for token auth
-     * @param password password for authentication, empty for token auth
-     * @param authModule authentication module to use, empty for token auth
      * @param batch the batch parameter, empty for unbatched
      * @return A list of maps with each list representing each batch, and maps containing
      * the results with the minion names as keys. The first list is the entire
      * output for unbatched input.
      */
     private CompletionStage<List<Map<String, Result<R>>>> callSyncHelperNonBlock(
-            final SaltClient client, Target<?> target,
-            Optional<String> username, Optional<String> password,
-            Optional<AuthModule> authModule, Optional<Batch> batch) {
+            final SaltClient client, Target<?> target, AuthMethod auth, Optional<Batch> batch) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.putAll(target.getProps());
-        username.ifPresent(v -> customArgs.put("username", v));
-        password.ifPresent(v -> customArgs.put("password", v));
-        authModule.ifPresent(v -> customArgs.put("eauth", v.getValue()));
         batch.ifPresent(v -> customArgs.put("batch", v.toString()));
 
         Client clientType = batch.isPresent() ? Client.LOCAL_BATCH : Client.LOCAL;
-        // We need a different endpoint for credentials vs token auth
-        String endPoint = username.isPresent() ? "/run" : "/";
 
         Type xor = parameterizedType(null, Result.class, getReturnType().getType());
         Type map = parameterizedType(null, Map.class, String.class, xor);
         Type listType = parameterizedType(null, List.class, map);
         Type wrapperType = parameterizedType(null, Return.class, listType);
+        TypeToken<Return<List<Map<String, Result<R>>>>> typeToken =
+                (TypeToken<Return<List<Map<String, Result<R>>>>>) TypeToken.get(wrapperType);
 
-        @SuppressWarnings("unchecked")
-        CompletionStage<List<Map<String, Result<R>>>> listCompletionStage = client.call(this,
-                clientType, endPoint,
-                Optional.of(customArgs),
-                (TypeToken<Return<List<Map<String, Result<R>>>>>)
-                        TypeToken.get(wrapperType))
-                .thenApply(Return::getResult);
-        return listCompletionStage;
+        return client.call(this,
+                clientType,
+                Optional.of(target),
+                customArgs,
+                typeToken,
+                auth).thenApply(Return::getResult);
     }
 
     /**
@@ -445,7 +325,7 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @return a map containing the results with the minion name as key
      */
     public CompletionStage<Map<String, Result<SSHResult<R>>>> callSyncSSH(final SaltClient client,
-            SSHTarget<?> target, SaltSSHConfig cfg) {
+            SSHTarget<?> target, SaltSSHConfig cfg, AuthMethod authMethod) {
         Map<String, Object> args = new HashMap<>();
         args.putAll(getPayload());
         args.putAll(target.getProps());
@@ -459,10 +339,11 @@ public class LocalCall<R> extends AbstractCall<R> {
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         return client.call(this,
-                Client.SSH, "/run",
-                Optional.of(args),
+                Client.SSH,
+                Optional.of(target),
+                args,
                 (TypeToken<Return<List<Map<String, Result<SSHResult<R>>>>>>)
-                        TypeToken.get(wrapperType))
+                        TypeToken.get(wrapperType), authMethod)
                 .thenApply(wrapper -> wrapper.getResult().get(0));
     }
 

@@ -1,13 +1,18 @@
 package com.suse.salt.netapi.examples;
 
+import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.modules.Grains;
 import com.suse.salt.netapi.calls.modules.Test;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
+import com.suse.salt.netapi.utils.TestUtils;
 
 import java.net.URI;
 import java.util.Map;
@@ -22,15 +27,20 @@ public class SaltSSH {
 
     public static void main(String[] args) {
         // Init the client
-        SaltClient client = new SaltClient(URI.create(SALT_API_URL));
+        SaltClient client = new SaltClient(URI.create(SALT_API_URL),
+                new HttpAsyncClientConnection(TestUtils.defaultClient()));
 
         // Setup the configuration for Salt SSH (use defaults)
         SaltSSHConfig sshConfig = new SaltSSHConfig.Builder().build();
 
         // Ping all minions using a glob matcher
         SSHTarget<String> globTarget = new Glob("*");
+
+        Token token = client.login("saltdev", "saltdev", AuthModule.AUTO)
+                .toCompletableFuture().join();
         Map<String, Result<SSHResult<Boolean>>> minionResults =
-                Test.ping().callSyncSSH(client, globTarget, sshConfig).toCompletableFuture().join();
+                Test.ping().callSyncSSH(client, globTarget, sshConfig, new AuthMethod(token))
+                        .toCompletableFuture().join();
 
         System.out.println("--> Ping results:\n");
         minionResults.forEach((minion, result) -> {
@@ -42,7 +52,8 @@ public class SaltSSH {
 
         // Get grains from all minions
         Map<String, Result<SSHResult<Map<String, Object>>>> grainResults =
-                Grains.items(false).callSyncSSH(client, globTarget, sshConfig).toCompletableFuture().join();
+                Grains.items(false).callSyncSSH(client, globTarget, sshConfig,
+                        new AuthMethod(token)).toCompletableFuture().join();
 
         grainResults.forEach((minion, grains) -> {
             System.out.println("\n--> Listing grains for '" + minion + "':\n");

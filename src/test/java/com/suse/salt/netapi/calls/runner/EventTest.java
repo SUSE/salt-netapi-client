@@ -11,12 +11,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.Assert.assertTrue;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.modules.SaltUtilTest;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.utils.ClientUtils;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,12 +44,14 @@ public class EventTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     private SaltClient client;
 
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientConnection(TestUtils.defaultClient()));
     }
 
     @Test
@@ -62,7 +66,7 @@ public class EventTest {
         data.put("some-value", 2);
 
         boolean success = Event.send("my/custom/event", Optional.of(data))
-                .callSync(client).toCompletableFuture().join().result().get();
+                .callSync(client, AUTH).toCompletableFuture().join().result().get();
 
         assertTrue(success);
         verify(1, postRequestedFor(urlEqualTo("/"))

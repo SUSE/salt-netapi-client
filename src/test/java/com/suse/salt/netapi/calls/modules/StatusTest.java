@@ -7,20 +7,23 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.Map;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.suse.salt.netapi.calls.LocalCall;
+import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
+import com.suse.salt.netapi.datatypes.target.MinionList;
+import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.suse.salt.netapi.calls.LocalCall;
-import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.ClientUtils;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * Status module unit tests.
@@ -49,10 +52,12 @@ public class StatusTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
-        client = new SaltClient(uri);
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        client = new SaltClient(uri, new HttpAsyncClientConnection(TestUtils.defaultClient()));
     }
 
     @Test
@@ -69,7 +74,7 @@ public class StatusTest {
                 .withBody(JSON_MEMINFO_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Object>>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -129,7 +134,7 @@ public class StatusTest {
                 .withBody(JSON_LOADAVG_RESPONSE)));
 
         Map<String, Result<Map<String, Double>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Double> minion = response.get("minion").result().get();
@@ -155,7 +160,7 @@ public class StatusTest {
                 .withBody(JSON_DISKUSAGE_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Long>>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Map<String, Long>> minion = response.get("minion").result().get();
@@ -181,7 +186,7 @@ public class StatusTest {
                 .withBody(JSON_DISKSTATS_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Object>>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Map<String, Object>> minion = response.get("minion").result().get();
@@ -219,7 +224,7 @@ public class StatusTest {
                 .withBody(JSON_UPTIME_RESPONSE)));
 
         Map<String, Result<Map<String, Object>>> response = call.callSync(client,
-                new MinionList("minion")).toCompletableFuture().join();
+                new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         Map<String, Object> minion = response.get("minion").result().get();

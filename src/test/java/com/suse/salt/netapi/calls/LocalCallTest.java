@@ -13,18 +13,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.modules.Cmd;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.SaltClientTest;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
+import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Batch;
+import com.suse.salt.netapi.datatypes.PasswordAuth;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.utils.ClientUtils;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.gson.reflect.TypeToken;
-
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,12 +61,15 @@ public class LocalCallTest {
             SaltClientTest.class.getResourceAsStream(
                     "/call_sync_batch_ping_response.json"));
 
+    static final AuthMethod AUTH = new AuthMethod(new PasswordAuth("user", "pa55wd", AuthModule.AUTO));
+    static final AuthMethod TOKEN_AUTH = new AuthMethod(new Token());
+
     private SaltClient client;
 
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientConnection(TestUtils.defaultClient()));
     }
 
     @Test
@@ -140,7 +147,9 @@ public class LocalCallTest {
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
         Target<String> target = new Glob("*");
 
-        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO).toCompletableFuture().join();
+        run.callSync(client, target, new AuthMethod(
+                new PasswordAuth("user", "pa55wd", AuthModule.AUTO)
+        )).toCompletableFuture().join();
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
@@ -161,7 +170,7 @@ public class LocalCallTest {
         LocalCall<Boolean> run = com.suse.salt.netapi.calls.modules.Test.ping();
         Target<String> target = new Glob("*");
 
-        run.callSync(client, target, "user", "pa55wd", AuthModule.AUTO, Batch.asAmount(1)).toCompletableFuture().join();
+        run.callSync(client, target, AUTH, Batch.asAmount(1)).toCompletableFuture().join();
         verify(1, postRequestedFor(urlEqualTo("/run"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
@@ -200,8 +209,8 @@ public class LocalCallTest {
                 .wipe(true)
                 .build();
 
-        run.callSyncSSH(client, target, config).toCompletableFuture().join();
-        verify(1, postRequestedFor(urlEqualTo("/run"))
+        run.callSyncSSH(client, target, config, TOKEN_AUTH).toCompletableFuture().join();
+        verify(1, postRequestedFor(urlEqualTo("/"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(JSON_SSH_PING_REQUEST)));

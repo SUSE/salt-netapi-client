@@ -8,20 +8,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.Optional;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.suse.salt.netapi.calls.modules.SaltUtilTest;
+import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientConnection;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
+import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.suse.salt.netapi.calls.modules.SaltUtilTest;
-import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.ClientUtils;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Optional;
 
 /**
  * Tests for the runner Jobs module.
@@ -41,12 +44,14 @@ public class JobsTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     private SaltClient client;
 
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientConnection(TestUtils.defaultClient()));
     }
 
     @Test
@@ -57,7 +62,7 @@ public class JobsTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LIST_JOB_RESPONSE)));
 
-    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client).toCompletableFuture().join();
+    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client, AUTH).toCompletableFuture().join();
 
         assertTrue(result.result().isPresent());
         assertEquals(Optional.empty(), result.error());
@@ -72,7 +77,7 @@ public class JobsTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LIST_JOB_UNPARSABLE_DATE_RESPONSE)));
 
-    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client).toCompletableFuture().join();
+    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client, AUTH).toCompletableFuture().join();
 
     	assertEquals(Optional.empty(), result.result());
     	assertTrue(result.error().isPresent());
@@ -88,7 +93,7 @@ public class JobsTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_SALT_EXCEPTION_RESPONSE)));
 
-    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client).toCompletableFuture().join();
+    	Result<Jobs.Info> result = Jobs.listJob("111").callSync(client, AUTH).toCompletableFuture().join();
 
     	assertEquals(Optional.empty(), result.result());
     	assertTrue(result.error().isPresent());

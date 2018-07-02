@@ -1,13 +1,14 @@
 package com.suse.salt.netapi.client;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.Call;
 import com.suse.salt.netapi.calls.Client;
 import com.suse.salt.netapi.calls.SaltSSHConfig;
 import com.suse.salt.netapi.calls.SaltSSHUtils;
-import com.suse.salt.netapi.client.impl.HttpAsyncClientConnectionFactory;
-import com.suse.salt.netapi.config.ClientConfig;
-import com.suse.salt.netapi.config.ProxySettings;
+import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Target;
@@ -15,12 +16,8 @@ import com.suse.salt.netapi.event.EventListener;
 import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
-import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.results.Result;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import com.suse.salt.netapi.results.SSHRawResult;
 
 import java.net.URI;
 import java.util.Collections;
@@ -34,13 +31,11 @@ import java.util.concurrent.CompletionStage;
 /**
  * Salt API client.
  */
-public class SaltClient implements AutoCloseable {
-
-    /** The configuration object */
-    private final ClientConfig config;
+public class SaltClient {
 
     /** The async connection factory object */
-    private final AsyncConnectionFactory asyncConnectionFactory;
+    private final AsyncConnection asyncHttpClient;
+    private final URI uri;
 
     private final Gson gson = new GsonBuilder().create();
 
@@ -49,50 +44,10 @@ public class SaltClient implements AutoCloseable {
      *
      * @param url the Salt API URL
      */
-    public SaltClient(URI url) {
-        this(url, new ClientConfig());
-    }
-
-    /**
-     * Constructor for connecting to a given URL.
-     *
-     * @param url the Salt API URL
-     * @param config client config
-     */
-    public SaltClient(URI url, ClientConfig config) {
-        this.config = config;
-        // Put the URL in the config
-        config.put(ClientConfig.URL, url);
-
+    public SaltClient(URI url, AsyncConnection asyncHttpClient) {
         // TODO: Replace connectionFactory with this
-        this.asyncConnectionFactory = new HttpAsyncClientConnectionFactory(config);
-    }
-
-    /**
-     * Directly access the configuration.
-     *
-     * @return the configuration object
-     */
-    public ClientConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * Configure to use a proxy when connecting to the Salt API.
-     *
-     * @param settings the proxy settings
-     */
-    public void setProxy(ProxySettings settings) {
-        if (settings.getHostname() != null) {
-            config.put(ClientConfig.PROXY_HOSTNAME, settings.getHostname());
-            config.put(ClientConfig.PROXY_PORT, settings.getPort());
-        }
-        if (settings.getUsername() != null) {
-            config.put(ClientConfig.PROXY_USERNAME, settings.getUsername());
-            if (settings.getPassword() != null) {
-                config.put(ClientConfig.PROXY_PASSWORD, settings.getPassword());
-            }
-        }
+        this.uri = url;
+        this.asyncHttpClient = asyncHttpClient;
     }
 
     /**
@@ -114,13 +69,11 @@ public class SaltClient implements AutoCloseable {
 
         String payload = gson.toJson(props);
 
-        CompletionStage<Token> result = asyncConnectionFactory
-                .create("/login", JsonParser.TOKEN)
-                .post(payload)
+        CompletionStage<Token> result = asyncHttpClient
+                .post(uri.resolve("/login"), payload, JsonParser.TOKEN)
                 .thenApply(r -> {
                     // They return a list of tokens here, take the first one
                     Token token = r.getResult().get(0);
-                    config.put(ClientConfig.TOKEN, token.getToken());
                     return token;
                 });
 
@@ -135,9 +88,8 @@ public class SaltClient implements AutoCloseable {
      * @return true if the logout was successful, otherwise false
      */
     public CompletionStage<Boolean> logout() {
-        return asyncConnectionFactory
-                .create("/logout", JsonParser.STRING)
-                .post("")
+        return asyncHttpClient
+                .post(uri.resolve("/logout"), "", JsonParser.STRING)
                 .thenApply(s -> "Your token has been cleared".contentEquals(s.getResult()));
     }
 
@@ -174,9 +126,8 @@ public class SaltClient implements AutoCloseable {
 
         String payload = gson.toJson(list);
 
-        CompletionStage<Map<String, Object>> result = asyncConnectionFactory
-                .create("/run", JsonParser.RUN_RESULTS)
-                .post(payload)
+        CompletionStage<Map<String, Object>> result = asyncHttpClient
+                .post(uri.resolve("/run"), payload, JsonParser.RUN_RESULTS)
                 .thenApply(s -> s.getResult().get(0));
         return result;
     }
@@ -206,9 +157,8 @@ public class SaltClient implements AutoCloseable {
 
         String payload = gson.toJson(list);
 
-        CompletionStage<Map<String, Result<SSHRawResult>>> result = asyncConnectionFactory
-                .create("/run", JsonParser.RUNSSHRAW_RESULTS)
-                .post(payload)
+        CompletionStage<Map<String, Result<SSHRawResult>>> result = asyncHttpClient
+                .post(uri.resolve("/run"), payload, JsonParser.RUNSSHRAW_RESULTS)
                 .thenApply(r -> r.getResult().get(0));
 
         return result;
@@ -222,7 +172,7 @@ public class SaltClient implements AutoCloseable {
      * @return the stats
      */
     public CompletionStage<Stats> stats() {
-        return asyncConnectionFactory.create("/stats", JsonParser.STATS).get();
+        return asyncHttpClient.get(uri.resolve("/stats"), JsonParser.STATS);
     }
 
     /**
@@ -242,54 +192,37 @@ public class SaltClient implements AutoCloseable {
      * @return the event stream
      * @throws SaltException in case of an error during websocket stream initialization
      */
-    public EventStream events(EventListener... listeners) throws SaltException {
-        return new EventStream(config, listeners);
+    public EventStream events(Token token, long sessionIdleTimeout, long idleTimeout,
+                       int maxMsgSize, EventListener... listeners) throws SaltException {
+        return new EventStream(uri, token, sessionIdleTimeout, idleTimeout, maxMsgSize, listeners);
     }
 
-    /**
-     * Generic interface to make a {@link Call} to an endpoint using a given {@link Client}.
-     *
-     * @param <R> the object type that will be returned
-     * @param call the call
-     * @param client the client to use
-     * @param endpoint the endpoint
-     * @param custom map of arguments
-     * @param type return type as a TypeToken
-     * @return the result of the call
-     */
-    public <R> CompletionStage<R> call(Call<?> call, Client client, String endpoint, Optional<Map<String,
-            Object>> custom, TypeToken<R> type) {
+    public <R> CompletionStage<R> call(Call<?> call, Client client, Optional<Target<?>> target,
+                Map<String, Object> custom, TypeToken<R> type, AuthMethod auth) {
+        Map<String, String> headers = new HashMap<>();
         Map<String, Object> props = new HashMap<>();
-        props.putAll(call.getPayload());
+        auth.getInternal().consume(token -> {
+            headers.put("X-Auth-Token", token.getToken());
+        }, pass -> {
+                props.put("username", pass.getUsername());
+                props.put("password", pass.getPassword());
+                props.put("eauth", pass.getModule().getValue());
+            });
+
+        target.ifPresent(t -> props.putAll(t.getProps()));
         props.put("client", client.getValue());
-        custom.ifPresent(props::putAll);
+        props.putAll(call.getPayload());
+        props.putAll(custom);
+
+
+        String endpoint = auth.getInternal().isRight() ? "/run" : "/";
 
         List<Map<String, Object>> list = Collections.singletonList(props);
         String payload = gson.toJson(list);
-
-        CompletionStage<R> result = asyncConnectionFactory
-                .create(endpoint, new JsonParser<>(type))
-                .post(payload);
+        CompletionStage<R> result = asyncHttpClient
+                .post(uri.resolve(endpoint), headers, payload, new JsonParser<>(type));
 
         return result;
     }
 
-    /**
-     * Convenience method to make a call without arguments.
-     *
-     * @param <R> the object type that will be returned
-     * @param call the call
-     * @param client the client to use
-     * @param endpoint the endpoint
-     * @param type return type as a TypeToken
-     * @return the result of the call
-     */
-    public <R> CompletionStage<R> call(Call<?> call, Client client, String endpoint, TypeToken<R> type) {
-        return call(call, client, endpoint, Optional.empty(), type);
-    }
-
-    @Override
-    public void close() throws Exception {
-        asyncConnectionFactory.close();
-    }
 }
