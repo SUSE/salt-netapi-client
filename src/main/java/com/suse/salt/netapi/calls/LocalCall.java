@@ -14,14 +14,12 @@ import com.suse.salt.netapi.event.EventListener;
 import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.event.JobReturnEvent;
 import com.suse.salt.netapi.event.RunnerReturnEvent;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHResult;
 
 import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.utils.ClientUtils;
-import com.suse.salt.netapi.utils.FunctionE;
 
 import javax.websocket.CloseReason;
 import java.lang.reflect.Type;
@@ -31,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -123,22 +122,23 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param client SaltClient instance
      * @param target the target for the function
      * @return information about the scheduled job
-     * @throws SaltException if anything goes wrong
      */
-    public LocalAsyncResult<R> callAsync(final SaltClient client, Target<?> target)
-            throws SaltException {
+    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.putAll(target.getProps());
 
-        Return<List<LocalAsyncResult<R>>> wrapper = client.call(
+        return client.call(
                 this, Client.LOCAL_ASYNC, "/",
                 Optional.of(customArgs),
-                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){});
-        LocalAsyncResult<R> result = wrapper.getResult().get(0);
-        result.setType(getReturnType());
-        return result;
+                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){})
+                .thenApply(wrapper -> {
+                    LocalAsyncResult<R> result = wrapper.getResult().get(0);
+                    result.setType(getReturnType());
+                    return result;
+                });
     }
+
 
     /**
      * Calls this salt call via the async client and returns the results
@@ -152,17 +152,15 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param events the event stream to use
      * @param cancel future to cancel the action
      * @return a map from minion id to future of the result.
-     * @throws SaltException if anything goes wrong
      */
-    public Map<String, CompletionStage<Result<R>>> callAsync(
+    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
             SaltClient client,
             Target<?> target,
             String username,
             String password,
             AuthModule authModule,
             EventStream events,
-            CompletionStage<GenericError> cancel)
-            throws SaltException {
+            CompletionStage<GenericError> cancel) {
         return callAsync(
                 localCall -> localCall.callAsync(client, target, username,
                         password, authModule),
@@ -182,14 +180,12 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param events the event stream to use
      * @param cancel future to cancel the action
      * @return a map from minion id to future of the result.
-     * @throws SaltException if anything goes wrong
      */
-    public Map<String, CompletionStage<Result<R>>> callAsync(
+    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
             SaltClient client,
             Target<?> target,
             EventStream events,
-            CompletionStage<GenericError> cancel)
-            throws SaltException {
+            CompletionStage<GenericError> cancel) {
         return callAsync(
                 localCall -> localCall.callAsync(client, target),
                 runnerCall -> runnerCall.callAsync(client),
@@ -207,85 +203,84 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param events the event stream to use
      * @param cancel future to cancel the action
      * @return a map from minion id to future of the result.
-     * @throws SaltException if anything goes wrong
      */
-    public Map<String, CompletionStage<Result<R>>> callAsync(
-            FunctionE<LocalCall<R>, LocalAsyncResult<R>> localAsync,
-            FunctionE<RunnerCall<Map<String, R>>,
-                    RunnerAsyncResult<Map<String, R>>> runnerAsync,
+    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
+            Function<LocalCall<R>, CompletionStage<LocalAsyncResult<R>>> localAsync,
+            Function<RunnerCall<Map<String, R>>,
+                                CompletionStage<RunnerAsyncResult<Map<String, R>>>> runnerAsync,
             EventStream events,
-            CompletionStage<GenericError> cancel)
-            throws SaltException {
+            CompletionStage<GenericError> cancel) {
 
-        LocalAsyncResult<R> lar = localAsync.apply(this);
-        TypeToken<R> returnTypeToken = this.getReturnType();
-        Type result = ClientUtils.parameterizedType(null,
-                Result.class, returnTypeToken.getType());
-        @SuppressWarnings("unchecked")
-        TypeToken<Result<R>> typeToken = (TypeToken<Result<R>>) TypeToken.get(result);
+        return localAsync.apply(this).thenApply(lar -> {
+            TypeToken<R> returnTypeToken = this.getReturnType();
+            Type result = ClientUtils.parameterizedType(null,
+                    Result.class, returnTypeToken.getType());
+            @SuppressWarnings("unchecked")
+            TypeToken<Result<R>> typeToken = (TypeToken<Result<R>>) TypeToken.get(result);
 
-        Map<String, CompletableFuture<Result<R>>> futures =
-                lar.getMinions().stream().collect(Collectors.toMap(
-                        mid -> mid,
-                        mid -> new CompletableFuture<>()
-                    )
-                );
-
-        EventListener listener = new EventListener() {
-            @Override
-            public void notify(Event event) {
-                Optional<JobReturnEvent> jobReturnEvent = JobReturnEvent.parse(event);
-                if (jobReturnEvent.isPresent()) {
-                    jobReturnEvent.ifPresent(e ->
-                            onJobReturn(lar.getJid(), e, typeToken, futures)
+            Map<String, CompletableFuture<Result<R>>> futures =
+                    lar.getMinions().stream().collect(Collectors.toMap(
+                            mid -> mid,
+                            mid -> new CompletableFuture<>()
+                            )
                     );
-                } else {
-                    RunnerReturnEvent.parse(event).ifPresent(e ->
-                            onRunnerReturn(lar.getJid(), e, typeToken, futures)
-                    );
+
+            EventListener listener = new EventListener() {
+                @Override
+                public void notify(Event event) {
+                    Optional<JobReturnEvent> jobReturnEvent = JobReturnEvent.parse(event);
+                    if (jobReturnEvent.isPresent()) {
+                        jobReturnEvent.ifPresent(e ->
+                                onJobReturn(lar.getJid(), e, typeToken, futures)
+                        );
+                    } else {
+                        RunnerReturnEvent.parse(event).ifPresent(e ->
+                                onRunnerReturn(lar.getJid(), e, typeToken, futures)
+                        );
+                    }
                 }
-            }
 
-            @Override
-            public void eventStreamClosed(CloseReason closeReason) {
-                Result<R> error = Result.error(
-                        new GenericError(
-                                "EventStream closed with reason "
-                                        + closeReason));
-                futures.values().forEach(f -> f.complete(error));
-            }
-        };
+                @Override
+                public void eventStreamClosed(CloseReason closeReason) {
+                    Result<R> error = Result.error(
+                            new GenericError(
+                                    "EventStream closed with reason "
+                                            + closeReason));
+                    futures.values().forEach(f -> f.complete(error));
+                }
+            };
 
-        CompletableFuture<Void> allResolves = CompletableFuture.allOf(
-                futures.entrySet().stream().map(entry ->
-                    // mask errors since CompletableFuture.allOf resolves on first error
-                    entry.getValue().<Integer>handle((v, e) -> 0)
-                ).toArray(CompletableFuture[]::new)
-        );
+            CompletableFuture<Void> allResolves = CompletableFuture.allOf(
+                    futures.entrySet().stream().map(entry ->
+                            // mask errors since CompletableFuture.allOf resolves on first error
+                            entry.getValue().<Integer>handle((v, e) -> 0)
+                    ).toArray(CompletableFuture[]::new)
+            );
 
-        allResolves.whenComplete((v, e) ->
-                events.removeEventListener(listener)
-        );
+            allResolves.whenComplete((v, e) ->
+                    events.removeEventListener(listener)
+            );
 
-        cancel.whenComplete((v, e) -> {
-            if (v != null) {
-                Result<R> error = Result.error(v);
-                futures.values().forEach(f -> f.complete(error));
-            } else if (e != null) {
-                futures.values().forEach(f -> f.completeExceptionally(e));
-            }
+            cancel.whenComplete((v, e) -> {
+                if (v != null) {
+                    Result<R> error = Result.error(v);
+                    futures.values().forEach(f -> f.complete(error));
+                } else if (e != null) {
+                    futures.values().forEach(f -> f.completeExceptionally(e));
+                }
+            });
+
+            events.addEventListener(listener);
+
+            // fire off lookup to get a result event for minions that already finished
+            // before we installed the listeners
+            runnerAsync.apply(Jobs.lookupJid(lar));
+
+            return futures.entrySet().stream().collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> (CompletionStage<Result<R>>) e.getValue()
+            ));
         });
-
-        events.addEventListener(listener);
-
-        // fire off lookup to get a result event for minions that already finished
-        // before we installed the listeners
-        runnerAsync.apply(Jobs.lookupJid(lar));
-
-        return futures.entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
-                e -> (CompletionStage<Result<R>>) e.getValue()
-        ));
     }
 
     /**
@@ -299,11 +294,10 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param password password for authentication
      * @param authModule authentication module to use
      * @return information about the scheduled job
-     * @throws SaltException if anything goes wrong
      */
-    public LocalAsyncResult<R> callAsync(final SaltClient client, Target<?> target,
-            String username, String password, AuthModule authModule)
-            throws SaltException {
+
+    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target,
+                                                          String username, String password, AuthModule authModule) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("username", username);
@@ -311,13 +305,15 @@ public class LocalCall<R> extends AbstractCall<R> {
         customArgs.put("eauth", authModule.getValue());
         customArgs.putAll(target.getProps());
 
-        Return<List<LocalAsyncResult<R>>> wrapper = client.call(
+        return client.call(
                 this, Client.LOCAL_ASYNC, "/run",
                 Optional.of(customArgs),
-                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){});
-        LocalAsyncResult<R> result = wrapper.getResult().get(0);
-        result.setType(getReturnType());
-        return result;
+                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){})
+                .thenApply(wrapper -> {
+                    LocalAsyncResult<R> result = wrapper.getResult().get(0);
+                    result.setType(getReturnType());
+                    return result;
+                });
     }
 
     /**
@@ -328,12 +324,11 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param client SaltClient instance
      * @param target the target for the function
      * @return a map containing the results with the minion name as key
-     * @throws SaltException if anything goes wrong
      */
-    public Map<String, Result<R>> callSync(final SaltClient client, Target<?> target)
-            throws SaltException {
-        return callSyncHelper(client, target, Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.empty()).get(0);
+    public CompletionStage<Map<String, Result<R>>> callSync(final SaltClient client, Target<?> target) {
+        return callSyncHelperNonBlock(client, target, Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty())
+                .thenApply(r -> r.get(0));
     }
 
     /**
@@ -346,12 +341,10 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param batch  the batch specification
      * @return A list of maps with each list representing each batch, and maps containing
      * the results with the minion names as keys.
-     * @throws SaltException if anything goes wrong
      */
-    public List<Map<String, Result<R>>> callSync(final SaltClient client, Target<?> target,
-            Batch batch)
-            throws SaltException {
-        return callSyncHelper(client, target, Optional.empty(),
+    public CompletionStage<List<Map<String, Result<R>>>> callSync(final SaltClient client, Target<?> target,
+                                                                  Batch batch) {
+        return callSyncHelperNonBlock(client, target, Optional.empty(),
                 Optional.empty(), Optional.empty(), Optional.of(batch));
     }
 
@@ -366,14 +359,13 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param password password for authentication
      * @param authModule authentication module to use
      * @return a map containing the results with the minion name as key
-     * @throws SaltException if anything goes wrong
      */
-    public Map<String, Result<R>> callSync(
+    public CompletionStage<Map<String, Result<R>>> callSync(
             final SaltClient client, Target<?> target,
-            String username, String password, AuthModule authModule)
-            throws SaltException {
-        return callSyncHelper(client, target, Optional.of(username),
-                Optional.of(password), Optional.of(authModule), Optional.empty()).get(0);
+            String username, String password, AuthModule authModule) {
+        return callSyncHelperNonBlock(client, target, Optional.of(username),
+                Optional.of(password), Optional.of(authModule), Optional.empty())
+                .thenApply(r -> r.get(0));
     }
 
     /**
@@ -389,13 +381,11 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param batch the batch specification
      * @return A list of maps with each list representing each batch, and maps containing
      * the results with the minion names as keys.
-     * @throws SaltException if anything goes wrong
      */
-    public List<Map<String, Result<R>>> callSync(
+    public CompletionStage<List<Map<String, Result<R>>>> callSync(
             final SaltClient client, Target<?> target,
-            String username, String password, AuthModule authModule, Batch batch)
-            throws SaltException {
-        return callSyncHelper(client, target, Optional.of(username),
+            String username, String password, AuthModule authModule, Batch batch) {
+        return callSyncHelperNonBlock(client, target, Optional.of(username),
                 Optional.of(password), Optional.of(authModule), Optional.of(batch));
     }
 
@@ -413,13 +403,11 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @return A list of maps with each list representing each batch, and maps containing
      * the results with the minion names as keys. The first list is the entire
      * output for unbatched input.
-     * @throws SaltException
      */
-    private List<Map<String, Result<R>>> callSyncHelper(
+    private CompletionStage<List<Map<String, Result<R>>>> callSyncHelperNonBlock(
             final SaltClient client, Target<?> target,
             Optional<String> username, Optional<String> password,
-            Optional<AuthModule> authModule, Optional<Batch> batch)
-            throws SaltException {
+            Optional<AuthModule> authModule, Optional<Batch> batch) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.putAll(target.getProps());
@@ -438,12 +426,13 @@ public class LocalCall<R> extends AbstractCall<R> {
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Return<List<Map<String, Result<R>>>> wrapper = client.call(this,
+        CompletionStage<List<Map<String, Result<R>>>> listCompletionStage = client.call(this,
                 clientType, endPoint,
                 Optional.of(customArgs),
                 (TypeToken<Return<List<Map<String, Result<R>>>>>)
-                TypeToken.get(wrapperType));
-        return wrapper.getResult();
+                        TypeToken.get(wrapperType))
+                .thenApply(Return::getResult);
+        return listCompletionStage;
     }
 
     /**
@@ -454,10 +443,9 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param target the target for the function
      * @param cfg Salt SSH configuration object
      * @return a map containing the results with the minion name as key
-     * @throws SaltException if anything goes wrong
      */
-    public Map<String, Result<SSHResult<R>>> callSyncSSH(final SaltClient client,
-            SSHTarget<?> target, SaltSSHConfig cfg) throws SaltException {
+    public CompletionStage<Map<String, Result<SSHResult<R>>>> callSyncSSH(final SaltClient client,
+            SSHTarget<?> target, SaltSSHConfig cfg) {
         Map<String, Object> args = new HashMap<>();
         args.putAll(getPayload());
         args.putAll(target.getProps());
@@ -470,13 +458,12 @@ public class LocalCall<R> extends AbstractCall<R> {
         Type listType = parameterizedType(null, List.class, map);
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
-        @SuppressWarnings("unchecked")
-        Return<List<Map<String, Result<SSHResult<R>>>>> wrapper = client.call(this,
+        return client.call(this,
                 Client.SSH, "/run",
                 Optional.of(args),
                 (TypeToken<Return<List<Map<String, Result<SSHResult<R>>>>>>)
-                TypeToken.get(wrapperType));
-        return wrapper.getResult().get(0);
+                        TypeToken.get(wrapperType))
+                .thenApply(wrapper -> wrapper.getResult().get(0));
     }
 
     private static <R> void onRunnerReturn(

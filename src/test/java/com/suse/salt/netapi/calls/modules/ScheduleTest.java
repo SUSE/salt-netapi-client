@@ -22,7 +22,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 
@@ -48,7 +47,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public final void testList() throws SaltException {
+    public final void testList() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Map<String, Object>>> call = Schedule.list(true);
         assertEquals("schedule.list", call.getPayload().get("fun"));
@@ -61,7 +60,7 @@ public class ScheduleTest {
                 .withBody(JSON_LIST_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Object>>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -87,7 +86,7 @@ public class ScheduleTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    public final void testAddDateTimeFormat() throws SaltException {
+    public final void testAddDateTimeFormat() {
         LocalDateTime scheduleDate = LocalDateTime.of(2017, 12, 24, 15, 30, 12, 345000000);
         assertEquals("2017-12-24T15:30:12.345",
                 scheduleDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));

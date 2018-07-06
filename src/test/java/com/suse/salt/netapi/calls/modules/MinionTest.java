@@ -21,7 +21,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 
@@ -53,7 +52,7 @@ public class MinionTest {
     }
 
     @Test
-    public final void testList() throws SaltException {
+    public final void testList() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Set<String>>> call = Minion.list();
         assertEquals("minion.list", call.getPayload().get("fun"));
@@ -66,7 +65,7 @@ public class MinionTest {
                 .withBody(JSON_LIST_RESPONSE)));
 
         Map<String, Result<Map<String, Set<String>>>> response =
-                call.callSync(client, new MinionList("master"));
+                call.callSync(client, new MinionList("master")).toCompletableFuture().join();
 
         assertNotNull(response.get("master"));
 
@@ -99,7 +98,7 @@ public class MinionTest {
     }
 
     @Test
-    public final void testKill() throws SaltException {
+    public final void testKill() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Object>> call = Minion.kill();
         assertEquals("minion.kill", call.getPayload().get("fun"));
@@ -112,7 +111,7 @@ public class MinionTest {
                 .withBody(JSON_KILL_RESPONSE)));
 
         Map<String, Result<Map<String, Object>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -125,7 +124,7 @@ public class MinionTest {
     }
 
     @Test
-    public final void testRestart() throws SaltException {
+    public final void testRestart() {
         // First we get the call to use in the tests
         LocalCall<Map<String, Object>> call = Minion.restart();
         assertEquals("minion.restart", call.getPayload().get("fun"));
@@ -138,7 +137,7 @@ public class MinionTest {
                 .withBody(JSON_RESTART_RESPONSE)));
 
         Map<String, Result<Map<String, Object>>> response =
-                call.callSync(client, new MinionList("minion"));
+                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 

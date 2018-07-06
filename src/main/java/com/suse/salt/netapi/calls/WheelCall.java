@@ -4,7 +4,6 @@ import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 import com.google.gson.reflect.TypeToken;
@@ -14,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Class representing a function call of a salt wheel module.
@@ -49,16 +49,16 @@ public class WheelCall<R> extends AbstractCall<R> {
      *
      * @param client SaltClient instance
      * @return information about the scheduled job
-     * @throws SaltException if anything goes wrong
      */
-    public WheelAsyncResult<R> callAsync(final SaltClient client)
-            throws SaltException {
-        Return<List<WheelAsyncResult<R>>> wrapper = client.call(
+    public CompletionStage<WheelAsyncResult<R>> callAsync(final SaltClient client) {
+        return client.call(
                 this, Client.WHEEL_ASYNC, "/",
-                new TypeToken<Return<List<WheelAsyncResult<R>>>>(){});
-        WheelAsyncResult<R> result = wrapper.getResult().get(0);
-        result.setType(getReturnType());
-        return result;
+                new TypeToken<Return<List<WheelAsyncResult<R>>>>(){})
+                .thenApply(wrapper -> {
+                    WheelAsyncResult<R> result = wrapper.getResult().get(0);
+                    result.setType(getReturnType());
+                    return result;
+                });
     }
 
     /**
@@ -71,23 +71,24 @@ public class WheelCall<R> extends AbstractCall<R> {
      * @param password password for authentication
      * @param authModule authentication module to use
      * @return information about the scheduled job
-     * @throws SaltException if anything goes wrong
      */
-    public WheelAsyncResult<R> callAsync(final SaltClient client, String username,
-            String password, AuthModule authModule) throws SaltException {
+    public CompletionStage<WheelAsyncResult<R>> callAsync(final SaltClient client, String username,
+            String password, AuthModule authModule) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("username", username);
         customArgs.put("password", password);
         customArgs.put("eauth", authModule.getValue());
 
-        Return<List<WheelAsyncResult<R>>> wrapper = client.call(
+        return client.call(
                 this, Client.WHEEL_ASYNC, "/run",
                 Optional.of(customArgs),
-                new TypeToken<Return<List<WheelAsyncResult<R>>>>(){});
-        WheelAsyncResult<R> result = wrapper.getResult().get(0);
-        result.setType(getReturnType());
-        return result;
+                new TypeToken<Return<List<WheelAsyncResult<R>>>>(){})
+                .thenApply(wrapper -> {
+                    WheelAsyncResult<R> result = wrapper.getResult().get(0);
+                    result.setType(getReturnType());
+                    return result;
+                });
     }
 
     /**
@@ -97,20 +98,20 @@ public class WheelCall<R> extends AbstractCall<R> {
      *
      * @param client SaltClient instance
      * @return the result of the called function
-     * @throws SaltException if anything goes wrong
      */
-    public WheelResult<Result<R>> callSync(final SaltClient client)
-            throws SaltException {
-    	Type xor = parameterizedType(null, Result.class, getReturnType().getType());
-    	Type wheelResult = parameterizedType(null, WheelResult.class, xor);
+    public CompletionStage<WheelResult<Result<R>>> callSync(final SaltClient client) {
+        Type xor = parameterizedType(null, Result.class, getReturnType().getType());
+        Type wheelResult = parameterizedType(null, WheelResult.class, xor);
         Type listType = parameterizedType(null, List.class, wheelResult);
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Return<List<WheelResult<Result<R>>>> wrapper = client.call(this, Client.WHEEL, "/",
-                (TypeToken<Return<List<WheelResult<Result<R>>>>>)
-                			TypeToken.get(wrapperType));
-        return wrapper.getResult().get(0);
+        CompletionStage<WheelResult<Result<R>>> wheelResultCompletionStage =
+                client.call(this, Client.WHEEL, "/",
+                        (TypeToken<Return<List<WheelResult<Result<R>>>>>)
+                                TypeToken.get(wrapperType))
+                        .thenApply(wrapper -> wrapper.getResult().get(0));
+        return wheelResultCompletionStage;
     }
 
     /**
@@ -123,11 +124,10 @@ public class WheelCall<R> extends AbstractCall<R> {
      * @param password password for authentication
      * @param authModule authentication module to use
      * @return the result of the called function
-     * @throws SaltException if anything goes wrong
      */
-    public WheelResult<Result<R>> callSync(final SaltClient client,
-            String username, String password,
-            AuthModule authModule) throws SaltException {
+    public CompletionStage<WheelResult<Result<R>>> callSync(final SaltClient client,
+                                                            String username, String password,
+                                                            AuthModule authModule) {
         Map<String, Object> customArgs = new HashMap<>();
         customArgs.putAll(getPayload());
         customArgs.put("username", username);
@@ -140,10 +140,12 @@ public class WheelCall<R> extends AbstractCall<R> {
         Type wrapperType = parameterizedType(null, Return.class, listType);
 
         @SuppressWarnings("unchecked")
-        Return<List<WheelResult<Result<R>>>> wrapper = client.call(this, Client.WHEEL,
-        		      "/run", Optional.of(customArgs),
-        		      (TypeToken<Return<List<WheelResult<Result<R>>>>>)
-                		TypeToken.get(wrapperType));
-        return wrapper.getResult().get(0);
+        CompletionStage<WheelResult<Result<R>>> wheelResultCompletionStage =
+                client.call(this, Client.WHEEL,
+                        "/run", Optional.of(customArgs),
+                        (TypeToken<Return<List<WheelResult<Result<R>>>>>)
+                                TypeToken.get(wrapperType))
+                        .thenApply(wrapper -> wrapper.getResult().get(0));
+        return wheelResultCompletionStage;
     }
 }

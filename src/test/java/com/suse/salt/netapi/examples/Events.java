@@ -28,7 +28,7 @@ public class Events {
 
         try {
             // Get a login token
-            Token token = client.login(USER, PASSWORD, AuthModule.AUTO);
+            Token token = client.login(USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
             System.out.println("Token: " + token.getToken());
 
             // Init the event stream with a basic listener implementation
