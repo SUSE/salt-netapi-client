@@ -8,6 +8,7 @@ import com.suse.salt.netapi.errors.GenericError;
 import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.event.WebSocketEventStream;
 import com.suse.salt.netapi.event.AbstractEventsTest;
+import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -100,7 +101,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                         .withBody(json("/async_via_event_list_job_response.json"))));
 
 
-        WebSocketEventStream events = new WebSocketEventStream(clientConfig);
+        EventStream events = new WebSocketEventStream(clientConfig);
 
         Map<String, CompletionStage<Result<Boolean>>> call =
                 com.suse.salt.netapi.calls.modules.Test.ping().callAsync(

@@ -31,11 +31,10 @@ import java.util.stream.Collectors;
 /**
  * Event stream implementation based on a {@link ClientEndpoint} WebSocket.
  * It is used to connect the WebSocket to a {@link ServerEndpoint}
- * and receive messages from it; for each message a bunch of {@link EventListener}
- * will be recalled and notified with it.
+ * and receive messages from it.
  */
 @ClientEndpoint
-public class WebSocketEventStream implements AutoCloseable {
+public class WebSocketEventStream implements EventStream {
 
     /**
      * Listeners that are notified of a new events.
@@ -110,10 +109,9 @@ public class WebSocketEventStream implements AutoCloseable {
     }
 
     /**
-     * Implementation of {@link WebSocketEventStream#addEventListener(EventListener)}
-     *
-     * @param listener Reference to the class that implements {@link EventListener}.
+     * {@inheritDoc}
      */
+    @Override
     public void addEventListener(EventListener listener) {
         synchronized (listeners) {
             listeners.add(listener);
@@ -121,10 +119,9 @@ public class WebSocketEventStream implements AutoCloseable {
     }
 
     /**
-     * Implementation of {@link WebSocketEventStream#removeEventListener(EventListener)}.
-     *
-     * @param listener Reference to the class that implements {@link EventListener}.
+     * {@inheritDoc}
      */
+    @Override
     public void removeEventListener(EventListener listener) {
         synchronized (listeners) {
             listeners.remove(listener);
@@ -132,10 +129,9 @@ public class WebSocketEventStream implements AutoCloseable {
     }
 
     /**
-     * Helper method that returns the current number of subscribed listeners.
-     *
-     * @return The current number listeners.
+     * {@inheritDoc}
      */
+    @Override
     public int getListenerCount() {
         synchronized (listeners) {
             return listeners.size();
@@ -143,19 +139,15 @@ public class WebSocketEventStream implements AutoCloseable {
     }
 
     /**
-     * Helper method to check if the WebSocket Session exists and is open.
-     *
-     * @return A flag indicating the {@link WebSocketEventStream}
-     * WebSocket {@link Session} state.
+     * {@inheritDoc}
      */
+    @Override
     public boolean isEventStreamClosed() {
         return this.session == null || !this.session.isOpen();
     }
 
     /**
-     * Close the WebSocket {@link Session}.
-     *
-     * @throws IOException in case of an error when closing the session
+     * {@inheritDoc}
      */
     @Override
     public void close() throws IOException {
