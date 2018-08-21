@@ -12,7 +12,7 @@ import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.event.EventListener;
-import com.suse.salt.netapi.event.EventStream;
+import com.suse.salt.netapi.event.WebSocketEventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.SSHRawResult;
@@ -228,7 +228,7 @@ public class SaltClient implements AutoCloseable {
      * Returns a WebSocket @ClientEndpoint annotated object connected
      * to the /ws ServerEndpoint.
      * <p>
-     * The stream object supports the {@link EventStream} interface which allows the caller
+     * The stream object supports the {@link WebSocketEventStream} interface which allows the caller
      * to register/unregister for stream event notifications as well as close the event
      * stream.
      * <p>
@@ -241,8 +241,8 @@ public class SaltClient implements AutoCloseable {
      * @return the event stream
      * @throws SaltException in case of an error during websocket stream initialization
      */
-    public EventStream events(EventListener... listeners) throws SaltException {
-        return new EventStream(config, listeners);
+    public WebSocketEventStream events(EventListener... listeners) throws SaltException {
+        return new WebSocketEventStream(config, listeners);
     }
 
     /**

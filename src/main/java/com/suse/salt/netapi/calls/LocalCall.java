@@ -11,7 +11,7 @@ import com.suse.salt.netapi.datatypes.Event;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.errors.GenericError;
 import com.suse.salt.netapi.event.EventListener;
-import com.suse.salt.netapi.event.EventStream;
+import com.suse.salt.netapi.event.WebSocketEventStream;
 import com.suse.salt.netapi.event.JobReturnEvent;
 import com.suse.salt.netapi.event.RunnerReturnEvent;
 import com.suse.salt.netapi.results.Result;
@@ -159,7 +159,7 @@ public class LocalCall<R> extends AbstractCall<R> {
             String username,
             String password,
             AuthModule authModule,
-            EventStream events,
+            WebSocketEventStream events,
             CompletionStage<GenericError> cancel) {
         return callAsync(
                 localCall -> localCall.callAsync(client, target, username,
@@ -184,7 +184,7 @@ public class LocalCall<R> extends AbstractCall<R> {
     public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
             SaltClient client,
             Target<?> target,
-            EventStream events,
+            WebSocketEventStream events,
             CompletionStage<GenericError> cancel) {
         return callAsync(
                 localCall -> localCall.callAsync(client, target),
@@ -208,7 +208,7 @@ public class LocalCall<R> extends AbstractCall<R> {
             Function<LocalCall<R>, CompletionStage<LocalAsyncResult<R>>> localAsync,
             Function<RunnerCall<Map<String, R>>,
                                 CompletionStage<RunnerAsyncResult<Map<String, R>>>> runnerAsync,
-            EventStream events,
+            WebSocketEventStream events,
             CompletionStage<GenericError> cancel) {
 
         return localAsync.apply(this).thenApply(lar -> {
