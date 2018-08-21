@@ -2,8 +2,6 @@ package com.suse.salt.netapi.event;
 
 import com.suse.salt.netapi.datatypes.Event;
 
-import javax.websocket.CloseReason;
-
 /**
  * Defines a client notification interface for events stream.
  */
@@ -18,7 +16,8 @@ public interface EventListener {
     /**
      * Notify the listener that the backing event stream was closed.  Listener may
      * need to recreate the event stream or take other actions.
-     * @param closeReason the close reason
+     * @param code an integer code to represent the reason for closing
+     * @param phrase a String representation of code
      */
-    void eventStreamClosed(CloseReason closeReason);
+    void eventStreamClosed(int code, String phrase);
 }

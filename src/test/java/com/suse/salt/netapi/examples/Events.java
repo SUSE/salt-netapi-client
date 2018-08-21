@@ -10,8 +10,6 @@ import com.suse.salt.netapi.event.WebSocketEventStream;
 
 import java.net.URI;
 
-import javax.websocket.CloseReason;
-
 /**
  * Example code listening for events on salt's event bus.
  */
@@ -40,9 +38,8 @@ public class Events {
                 }
 
                 @Override
-                public void eventStreamClosed(CloseReason closeReason) {
-                    System.out.println("Event stream closed: " +
-                            closeReason.getReasonPhrase());
+                public void eventStreamClosed(int code, String phrase) {
+                    System.out.println("Event stream closed: " + phrase);
                 }
             });
 

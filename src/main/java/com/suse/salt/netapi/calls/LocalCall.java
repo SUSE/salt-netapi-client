@@ -23,7 +23,6 @@ import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.suse.salt.netapi.utils.FunctionE;
 
-import javax.websocket.CloseReason;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -247,11 +246,11 @@ public class LocalCall<R> extends AbstractCall<R> {
             }
 
             @Override
-            public void eventStreamClosed(CloseReason closeReason) {
+            public void eventStreamClosed(int code, String phrase) {
                 Result<R> error = Result.error(
                         new GenericError(
                                 "EventStream closed with reason "
-                                        + closeReason));
+                                        + phrase));
                 futures.values().forEach(f -> f.complete(error));
             }
         };

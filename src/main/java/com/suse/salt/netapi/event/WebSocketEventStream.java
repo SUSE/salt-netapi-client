@@ -250,7 +250,9 @@ public class WebSocketEventStream implements EventStream {
 
         // Notify all the listeners and cleanup
         synchronized (listeners) {
-            listeners.stream().forEach(listener -> listener.eventStreamClosed(closeReason));
+            int code = closeReason.getCloseCode().getCode();
+            String phrase = closeReason.getReasonPhrase();
+            listeners.stream().forEach(l -> l.eventStreamClosed(code, phrase));
 
             // Clear out the listeners
             listeners.clear();
