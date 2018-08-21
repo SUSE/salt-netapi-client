@@ -6,7 +6,6 @@ import com.suse.salt.netapi.datatypes.Event;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,10 +93,10 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
         WebSocketEventStream streamEvents = new WebSocketEventStream(clientConfig, eventListener);
         streamEvents.close();
         Assert.assertTrue(streamEvents.isEventStreamClosed());
-        Assert.assertEquals(CloseCodes.GOING_AWAY,
-                eventListener.closeReason.getCloseCode());
+        Assert.assertEquals(CloseCodes.GOING_AWAY.getCode(),
+                eventListener.closeCode);
         String message = "The listener has closed the event stream";
-        Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
+        Assert.assertEquals(message, eventListener.closePhrase);
     }
 
     /**
@@ -131,11 +130,11 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
         try (EventStream streamEvents = new WebSocketEventStream(clientConfig, eventListener)) {
             latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue(streamEvents.isEventStreamClosed());
-            Assert.assertEquals(CloseCodes.TOO_BIG,
-                    eventListener.closeReason.getCloseCode());
+            Assert.assertEquals(CloseCodes.TOO_BIG.getCode(),
+                    eventListener.closeCode);
             String message = "Message length exceeded the configured maximum (" +
                     maxMessageLength + " characters)";
-            Assert.assertEquals(message, eventListener.closeReason.getReasonPhrase());
+            Assert.assertEquals(message, eventListener.closePhrase);
         }
     }
 
@@ -161,7 +160,7 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
         }
 
         @Override
-        public void eventStreamClosed(CloseReason closeReason) {
+        public void eventStreamClosed(int code, String phrase) {
         }
     }
 
@@ -187,7 +186,7 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
         }
 
         @Override
-        public void eventStreamClosed(CloseReason closeReason) {
+        public void eventStreamClosed(int code, String phrase) {
         }
     }
 
@@ -195,15 +194,17 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
      * Simple Event ListenerClient
      */
     private class SimpleEventListenerClient implements EventListener {
-        CloseReason closeReason;
+        int closeCode;
+        String closePhrase;
 
         @Override
         public void notify(Event event) {
         }
 
         @Override
-        public void eventStreamClosed(CloseReason closeReason) {
-            this.closeReason = closeReason;
+        public void eventStreamClosed(int code, String phrase) {
+            this.closeCode = code;
+            this.closePhrase = phrase;
         }
     }
 
@@ -212,7 +213,8 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
      */
     private class EventStreamClosedClient implements EventListener {
         private final CountDownLatch latch;
-        CloseReason closeReason;
+        int closeCode;
+        String closePhrase;
 
         public EventStreamClosedClient(CountDownLatch latchIn) {
             this.latch = latchIn;
@@ -224,8 +226,9 @@ public class TyrusWebSocketEventsTest extends AbstractEventsTest {
         }
 
         @Override
-        public void eventStreamClosed(CloseReason closeReason) {
-            this.closeReason = closeReason;
+        public void eventStreamClosed(int code, String phrase) {
+            this.closeCode = code;
+            this.closePhrase = phrase;
             this.latch.countDown();
         }
     }
