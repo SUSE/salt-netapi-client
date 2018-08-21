@@ -169,7 +169,7 @@ public class EventStream implements AutoCloseable {
      * @param closeReason the reason for the websocket closure
      * @throws IOException in case of an error when closing the session
      */
-    public void close(CloseReason closeReason) throws IOException {
+    private void close(CloseReason closeReason) throws IOException {
         if (!isEventStreamClosed()) {
             session.close(closeReason);
         }
