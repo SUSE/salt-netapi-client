@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * will be recalled and notified with it.
  */
 @ClientEndpoint
-public class EventStream implements AutoCloseable {
+public class WebSocketEventStream implements AutoCloseable {
 
     /**
      * Listeners that are notified of a new events.
@@ -76,7 +76,7 @@ public class EventStream implements AutoCloseable {
      * @param listeners event listeners to be added before stream initialization
      * @throws SaltException in case of an error during stream initialization
      */
-    public EventStream(ClientConfig config, EventListener... listeners)
+    public WebSocketEventStream(ClientConfig config, EventListener... listeners)
             throws SaltException {
         maxMessageLength = config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) > 0 ?
                 config.get(ClientConfig.WEBSOCKET_MAX_MESSAGE_LENGTH) : Integer.MAX_VALUE;
@@ -110,7 +110,7 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Implementation of {@link EventStream#addEventListener(EventListener)}
+     * Implementation of {@link WebSocketEventStream#addEventListener(EventListener)}
      *
      * @param listener Reference to the class that implements {@link EventListener}.
      */
@@ -121,7 +121,7 @@ public class EventStream implements AutoCloseable {
     }
 
     /**
-     * Implementation of {@link EventStream#removeEventListener(EventListener)}.
+     * Implementation of {@link WebSocketEventStream#removeEventListener(EventListener)}.
      *
      * @param listener Reference to the class that implements {@link EventListener}.
      */
@@ -145,7 +145,7 @@ public class EventStream implements AutoCloseable {
     /**
      * Helper method to check if the WebSocket Session exists and is open.
      *
-     * @return A flag indicating the {@link EventStream}
+     * @return A flag indicating the {@link WebSocketEventStream}
      * WebSocket {@link Session} state.
      */
     public boolean isEventStreamClosed() {
