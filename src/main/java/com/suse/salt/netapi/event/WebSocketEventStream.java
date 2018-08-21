@@ -23,10 +23,7 @@ import com.suse.salt.netapi.parser.JsonParser;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Event stream implementation based on a {@link ClientEndpoint} WebSocket.
@@ -34,12 +31,7 @@ import java.util.stream.Collectors;
  * and receive messages from it.
  */
 @ClientEndpoint
-public class WebSocketEventStream implements EventStream {
-
-    /**
-     * Listeners that are notified of a new events.
-     */
-    private final List<EventListener> listeners = new ArrayList<>();
+public class WebSocketEventStream extends AbstractEventStream {
 
     /**
      * Default message buffer size in characters.
@@ -105,36 +97,6 @@ public class WebSocketEventStream implements EventStream {
             }
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new SaltException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addEventListener(EventListener listener) {
-        synchronized (listeners) {
-            listeners.add(listener);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeEventListener(EventListener listener) {
-        synchronized (listeners) {
-            listeners.remove(listener);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getListenerCount() {
-        synchronized (listeners) {
-            return listeners.size();
         }
     }
 
@@ -214,11 +176,7 @@ public class WebSocketEventStream implements EventStream {
             if (!message.equals("server received message")) {
                 // Salt API adds a "data: " prefix that we need to ignore
                 Event event = JsonParser.EVENTS.parse(message.substring(6));
-                synchronized (listeners) {
-                    List<EventListener> collect = listeners.stream()
-                            .collect(Collectors.toList());
-                    collect.forEach(listener -> listener.notify(event));
-                }
+                notifyListeners(event);
             }
         } else {
             messageBuffer.append(partialMessage);
@@ -248,14 +206,6 @@ public class WebSocketEventStream implements EventStream {
     public void onClose(Session session, CloseReason closeReason) {
         this.session = session;
 
-        // Notify all the listeners and cleanup
-        synchronized (listeners) {
-            int code = closeReason.getCloseCode().getCode();
-            String phrase = closeReason.getReasonPhrase();
-            listeners.stream().forEach(l -> l.eventStreamClosed(code, phrase));
-
-            // Clear out the listeners
-            listeners.clear();
-        }
+        clearListeners(closeReason.getCloseCode().getCode(), closeReason.getReasonPhrase());
     }
 }
