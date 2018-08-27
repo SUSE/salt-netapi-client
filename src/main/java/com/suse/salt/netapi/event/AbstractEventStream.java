@@ -67,7 +67,9 @@ public abstract class AbstractEventStream implements EventStream {
      */
     protected void notifyListeners(Event event) {
         synchronized (listeners) {
-            listeners.forEach(l -> l.notify(event));
+            for (EventListener listener : new ArrayList<>(listeners)) {
+                listener.notify(event);
+            }
         }
     }
 
