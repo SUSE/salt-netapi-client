@@ -6,11 +6,9 @@ import com.suse.salt.netapi.config.ClientConfig;
 import com.suse.salt.netapi.datatypes.Event;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.event.EventListener;
-import com.suse.salt.netapi.event.EventStream;
+import com.suse.salt.netapi.event.WebSocketEventStream;
 
 import java.net.URI;
-
-import javax.websocket.CloseReason;
 
 /**
  * Example code listening for events on salt's event bus.
@@ -32,7 +30,7 @@ public class Events {
             System.out.println("Token: " + token.getToken());
 
             // Init the event stream with a basic listener implementation
-            EventStream eventStream = client.events(new EventListener() {
+            WebSocketEventStream eventStream = client.events(new EventListener() {
                 @Override
                 public void notify(Event e) {
                     System.out.println("Tag  -> " + e.getTag());
@@ -40,9 +38,8 @@ public class Events {
                 }
 
                 @Override
-                public void eventStreamClosed(CloseReason closeReason) {
-                    System.out.println("Event stream closed: " +
-                            closeReason.getReasonPhrase());
+                public void eventStreamClosed(int code, String phrase) {
+                    System.out.println("Event stream closed: " + phrase);
                 }
             });
 
