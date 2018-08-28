@@ -12,14 +12,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.suse.salt.netapi.AuthModule.AUTO;
 import static com.suse.salt.netapi.AuthModule.PAM;
-import static com.suse.salt.netapi.config.ClientConfig.SOCKET_TIMEOUT;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.SaltSSHConfig;
-import com.suse.salt.netapi.config.ClientConfig;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.cherrypy.Stats;
 import com.suse.salt.netapi.datatypes.target.Glob;
@@ -27,9 +27,12 @@ import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHRawResult;
 import com.suse.salt.netapi.utils.ClientUtils;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
+import com.suse.salt.netapi.utils.TestUtils;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,7 +83,7 @@ public class SaltClientTest {
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -200,12 +203,20 @@ public class SaltClientTest {
         exception.expect(CompletionException.class);
         exception.expectCause(instanceOf(SocketTimeoutException.class));
 
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(1000)
+                .setCookieSpec(CookieSpecs.STANDARD)
+                .build();
+        HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom();
+        httpClientBuilder.setDefaultRequestConfig(requestConfig);
+
+        CloseableHttpAsyncClient asyncHttpClient = httpClientBuilder.build();
+        asyncHttpClient.start();
+
         // create a local SaltClient with a fast timeout configuration
         // to do not lock tests more than 2s
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        ClientConfig config = new ClientConfig();
-        config.put(SOCKET_TIMEOUT, 1000);
-        SaltClient clientWithFastTimeout = new SaltClient(uri, config);
+        SaltClient clientWithFastTimeout = new SaltClient(uri, new HttpAsyncClientImpl(asyncHttpClient));
 
 
         stubFor(any(urlMatching(".*"))

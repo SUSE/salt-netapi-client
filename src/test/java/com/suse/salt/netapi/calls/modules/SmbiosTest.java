@@ -6,23 +6,25 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.Assert.assertEquals;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
+import com.suse.salt.netapi.datatypes.target.MinionList;
+import com.suse.salt.netapi.errors.ModuleNotSupported;
 import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
 import com.suse.salt.netapi.utils.Xor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.errors.ModuleNotSupported;
-import com.suse.salt.netapi.utils.ClientUtils;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SaltUtil unit tests.
@@ -43,6 +45,8 @@ public class SmbiosTest {
     static final String JSON_ALL_RESPONSE = ClientUtils.streamToString(
             SmbiosTest.class.getResourceAsStream("/modules/smbios/all_records.json"));
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
@@ -51,7 +55,7 @@ public class SmbiosTest {
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -64,7 +68,8 @@ public class SmbiosTest {
 
         Map<String, Result<List<Smbios.Record>>> response =
                 Smbios.records(Smbios.RecordType.BIOS)
-                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+                .callSync(client, new MinionList("minion1"), AUTH)
+                        .toCompletableFuture().join();
 
         assertEquals(1, response.size());
         Map.Entry<String, Result<List<Smbios.Record>>> first = response
@@ -92,7 +97,8 @@ public class SmbiosTest {
                 .withBody(JSON_ALL_RESPONSE)));
 
         Map<String, Result<List<Smbios.Record>>> response = Smbios.records(null)
-                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+                .callSync(client, new MinionList("minion1"), AUTH)
+                .toCompletableFuture().join();
 
         assertEquals(1, response.size());
         Map.Entry<String, Result<List<Smbios.Record>>> first = response
@@ -111,7 +117,8 @@ public class SmbiosTest {
 
         Map<String, Result<List<Smbios.Record>>> response =
                 Smbios.records(Smbios.RecordType.BIOS)
-                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+                .callSync(client, new MinionList("minion1"), AUTH)
+                        .toCompletableFuture().join();
         assertEquals(0, response.size());
     }
 
@@ -125,7 +132,8 @@ public class SmbiosTest {
 
         Map<String, Result<List<Smbios.Record>>> result =
                 Smbios.records(Smbios.RecordType.BIOS)
-                .callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+                .callSync(client, new MinionList("minion1"), AUTH)
+                        .toCompletableFuture().join();
         assertEquals(Xor.left(new ModuleNotSupported("smbios")),
                 result.get("minion1").toXor());
     }

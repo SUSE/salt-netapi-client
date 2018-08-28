@@ -7,23 +7,28 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.suse.salt.netapi.AuthModule;
+import com.suse.salt.netapi.calls.LocalCall;
+import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.PasswordAuth;
+import com.suse.salt.netapi.datatypes.Token;
+import com.suse.salt.netapi.datatypes.target.MinionList;
+import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.suse.salt.netapi.calls.LocalCall;
-import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.ClientUtils;
 
 /**
  * Schedule module unit tests.
@@ -40,10 +45,13 @@ public class ScheduleTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod TOKEN_AUTH = new AuthMethod(new Token());
+    static final AuthMethod AUTH = new AuthMethod(new PasswordAuth("", "", AuthModule.AUTO));
+
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
-        client = new SaltClient(uri);
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -60,7 +68,7 @@ public class ScheduleTest {
                 .withBody(JSON_LIST_RESPONSE)));
 
         Map<String, Result<Map<String, Map<String, Object>>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), TOKEN_AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 

@@ -1,11 +1,9 @@
 package com.suse.salt.netapi.client.impl;
 
-import com.suse.salt.netapi.client.AsyncConnection;
-import com.suse.salt.netapi.config.ClientConfig;
+import com.suse.salt.netapi.client.AsyncHttpClient;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.salt.netapi.parser.JsonParser;
-
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -18,59 +16,47 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.nio.client.HttpAsyncClient;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
- * Representation of a connection to Salt for issuing API requests using Apache's
- * HttpAsyncClient.
+ * AsyncHttpClient implemented with Apache's HttpAsyncClient.
  *
- * @param <T> type of result retrieved using this HTTP connection
  */
-public class HttpAsyncClientConnection<T> implements AsyncConnection<T> {
+public class HttpAsyncClientImpl implements AsyncHttpClient {
 
     /** HTTP client instance */
     private final HttpAsyncClient httpClient;
 
-    /** Endpoint */
-    private final String endpoint;
-
-    /** Configuration */
-    private final ClientConfig config;
-
-    /** Parser to parse the returned result */
-    private final JsonParser<T> parser;
+    public static HttpAsyncClient defaultClient() {
+        //TODO
+        return null;
+    }
 
     /**
      * Init a connection to a given Salt API endpoint.
      *
      * @param httpClientIn the HTTP client
-     * @param endpointIn the endpoint
-     * @param parserIn the parser
-     * @param configIn the config
      */
-    public HttpAsyncClientConnection(HttpAsyncClient httpClientIn, String endpointIn,
-            JsonParser<T> parserIn, ClientConfig configIn) {
+    public HttpAsyncClientImpl(HttpAsyncClient httpClientIn) {
         httpClient = httpClientIn;
-        endpoint = endpointIn;
-        config = configIn;
-        parser = parserIn;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<T> post(String data) {
-        return request(data);
+    public <T> CompletionStage<T> post(URI uri, Map<String, String> headers, String data, JsonParser<T> parser) {
+        return request(uri, headers, data, parser);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<T> get() {
-        return request(null);
+    public <T> CompletionStage<T> get(URI uri, Map<String, String> headers, JsonParser<T> parser) {
+        return request(uri, headers, null, parser);
     }
 
     /**
@@ -79,8 +65,8 @@ public class HttpAsyncClientConnection<T> implements AsyncConnection<T> {
      * @param data the data to send with the request
      * @return CompletionStage holding object of type T
      */
-    private CompletionStage<T> request(String data) {
-        return executeRequest(httpClient, prepareRequest(data));
+    private <T> CompletionStage<T> request(URI uri, Map<String, String> headers, String data, JsonParser<T> parser) {
+        return executeRequest(httpClient, prepareRequest(uri, headers, data), parser);
     }
 
     /**
@@ -90,8 +76,7 @@ public class HttpAsyncClientConnection<T> implements AsyncConnection<T> {
      * @param jsonData json POST data, will use GET if null
      * @return HttpUriRequest object the prepared request
      */
-    private HttpUriRequest prepareRequest(String jsonData) {
-        URI uri = config.get(ClientConfig.URL).resolve(endpoint);
+    private <T> HttpUriRequest prepareRequest(URI uri, Map<String, String> headers, String jsonData) {
         HttpUriRequest httpRequest;
         if (jsonData != null) {
             // POST data
@@ -103,12 +88,7 @@ public class HttpAsyncClientConnection<T> implements AsyncConnection<T> {
             httpRequest = new HttpGet(uri);
         }
         httpRequest.addHeader(HttpHeaders.ACCEPT, "application/json");
-
-        // Token authentication
-        String token = config.get(ClientConfig.TOKEN);
-        if (token != null) {
-            httpRequest.addHeader("X-Auth-Token", token);
-        }
+        headers.forEach(httpRequest::addHeader);
 
         return httpRequest;
     }
@@ -120,8 +100,8 @@ public class HttpAsyncClientConnection<T> implements AsyncConnection<T> {
      * @param httpRequest the prepared request to perform
      * @return CompletionStage holding object of type T
      */
-    private CompletionStage<T> executeRequest(HttpAsyncClient httpClient,
-            HttpUriRequest httpRequest) {
+    private <T> CompletionStage<T> executeRequest(HttpAsyncClient httpClient,
+            HttpUriRequest httpRequest, JsonParser<T> parser) {
         CompletableFuture<T> future = new CompletableFuture<>();
         httpClient.execute(httpRequest, new FutureCallback<HttpResponse>() {
             @Override

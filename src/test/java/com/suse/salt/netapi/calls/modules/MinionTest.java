@@ -8,21 +8,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.Map;
-import java.util.Set;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.suse.salt.netapi.calls.LocalCall;
+import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
+import com.suse.salt.netapi.datatypes.target.MinionList;
+import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.suse.salt.netapi.calls.LocalCall;
-import com.suse.salt.netapi.client.SaltClient;
-import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.ClientUtils;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Minion module unit tests.
@@ -45,10 +48,12 @@ public class MinionTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
-        client = new SaltClient(uri);
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -65,7 +70,7 @@ public class MinionTest {
                 .withBody(JSON_LIST_RESPONSE)));
 
         Map<String, Result<Map<String, Set<String>>>> response =
-                call.callSync(client, new MinionList("master")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("master"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("master"));
 
@@ -111,7 +116,7 @@ public class MinionTest {
                 .withBody(JSON_KILL_RESPONSE)));
 
         Map<String, Result<Map<String, Object>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -137,7 +142,7 @@ public class MinionTest {
                 .withBody(JSON_RESTART_RESPONSE)));
 
         Map<String, Result<Map<String, Object>>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 

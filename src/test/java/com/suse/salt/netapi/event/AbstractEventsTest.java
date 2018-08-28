@@ -1,13 +1,12 @@
 package com.suse.salt.netapi.event;
 
-import com.suse.salt.netapi.config.ClientConfig;
 import org.glassfish.tyrus.server.Server;
 import org.junit.After;
 import org.junit.Before;
 
-import javax.websocket.DeploymentException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.websocket.DeploymentException;
 
 /**
  * Base class for running tests involving the WebSocket based event stream.
@@ -26,12 +25,7 @@ public abstract class AbstractEventsTest {
     /**
      * The WebSocket URI path to connect to the server.
      */
-    protected URI wsUri;
-
-    /**
-     * Client configuration used in every test
-     */
-    protected ClientConfig clientConfig;
+    protected URI uri;
 
     /**
      * For each test make sure that the server endpoint to serve the event stream is started
@@ -47,12 +41,7 @@ public abstract class AbstractEventsTest {
                 MOCK_WEBSOCKET_PATH, null, config());
         serverEndpoint.start();
 
-        wsUri = new URI("ws://" + MOCK_WEBSOCKET_HOST + ":" + MOCK_WEBSOCKET_PORT)
-                .resolve(MOCK_WEBSOCKET_PATH);
-
-        clientConfig = new ClientConfig();
-        clientConfig.put(ClientConfig.TOKEN, "token");
-        clientConfig.put(ClientConfig.URL, wsUri);
+        uri = new URI("http://" + MOCK_WEBSOCKET_HOST + ":" + MOCK_WEBSOCKET_PORT);
     }
 
     @After

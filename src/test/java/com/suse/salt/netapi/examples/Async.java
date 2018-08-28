@@ -2,6 +2,9 @@ package com.suse.salt.netapi.examples;
 
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.utils.TestUtils;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 import java.net.URI;
 
@@ -15,13 +18,14 @@ public class Async {
     private static final String PASSWORD = "saltdev";
 
     public static void main(String[] args) {
+        CloseableHttpAsyncClient httpClient = TestUtils.defaultClient();
         // Init the client
-        SaltClient client = new SaltClient(URI.create(SALT_API_URL));
+        SaltClient client = new SaltClient(URI.create(SALT_API_URL), new HttpAsyncClientImpl(httpClient));
 
         // Clean up afterwards by calling close()
         Runnable cleanup = () -> {
             try {
-                client.close();
+                httpClient.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

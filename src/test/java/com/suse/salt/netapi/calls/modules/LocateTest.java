@@ -1,13 +1,25 @@
 package com.suse.salt.netapi.calls.modules;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonNull;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,14 +29,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.any;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Locate module unit tests.
@@ -66,10 +70,12 @@ public class LocateTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
-        client = new SaltClient(uri);
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -86,7 +92,7 @@ public class LocateTest {
                 .withBody(JSON_VERSION_OK_RESPONSE)));
 
         Map<String, Result<List<String>>> response = call.callSync(client,
-                new MinionList("minion1")).toCompletableFuture().join();
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").result().get());
@@ -101,7 +107,7 @@ public class LocateTest {
                 .withBody(JSON_NULL_RESPONSE)));
 
 
-        response = call.callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+        response = call.callSync(client, new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertEquals(JsonNull.INSTANCE,
                 ((JsonParsingError) response.get("minion1").error().get()).getJson());
@@ -121,7 +127,7 @@ public class LocateTest {
                 .withBody(JSON_UPDATEDB_OK_RESPONSE)));
 
         Map<String, Result<List<String>>> response = call.callSync(client,
-                new MinionList("minion1")).toCompletableFuture().join();
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertTrue(response.get("minion1").result().get().isEmpty());
@@ -133,7 +139,7 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_UPDATEDB_ERROR_RESPONSE)));
 
-        response = call.callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+        response = call.callSync(client, new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").result().get());
@@ -156,7 +162,7 @@ public class LocateTest {
                 .withBody(JSON_STATS_OK_RESPONSE)));
 
         Map<String, Result<Locate.Stats>> response = call.callSync(client,
-                new MinionList("minion1")).toCompletableFuture().join();
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         Locate.Stats minion1 = response.get("minion1").result().get();
@@ -183,7 +189,7 @@ public class LocateTest {
                 .withBody(JSON_LOCATE_OK_RESPONSE)));
 
         Map<String, Result<List<String>>> response = call.callSync(client,
-                new MinionList("minion1")).toCompletableFuture().join();
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         List<String> minion1 = response.get("minion1").result().get();
@@ -198,7 +204,7 @@ public class LocateTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_LOCATE_NOINPUT_RESPONSE)));
 
-        response = call.callSync(client, new MinionList("minion1")).toCompletableFuture().join();
+        response = call.callSync(client, new MinionList("minion1"), AUTH).toCompletableFuture().join();
 
         assertNotNull(response.get("minion1"));
         assertNotNull(response.get("minion1").error().get());

@@ -7,21 +7,24 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.results.CmdExecCodeAll;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.suse.salt.netapi.utils.TestUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * Cmd unit tests.
@@ -41,6 +44,8 @@ public class CmdTest {
     static final String JSON_EXEC_CODE_ALL_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/exec_code_all.json"));
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     private SaltClient client;
 
     @Rule
@@ -48,8 +53,8 @@ public class CmdTest {
 
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
-        client = new SaltClient(uri);
+        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -66,7 +71,8 @@ public class CmdTest {
                 .withBody(JSON_RUN_RESPONSE)));
 
         Map<String, Result<String>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -89,7 +95,8 @@ public class CmdTest {
                 .withBody(JSON_HAS_EXEC_RESPONSE)));
 
         Map<String, Result<Boolean>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -112,7 +119,8 @@ public class CmdTest {
                 .withBody(JSON_EXEC_CODE_RESPONSE)));
 
         Map<String, Result<String>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
@@ -136,7 +144,8 @@ public class CmdTest {
                 .withBody(JSON_EXEC_CODE_ALL_RESPONSE)));
 
         Map<String, Result<CmdExecCodeAll>> response =
-                call.callSync(client, new MinionList("minion")).toCompletableFuture().join();
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
         CmdExecCodeAll result = response.get("minion").result().get();
