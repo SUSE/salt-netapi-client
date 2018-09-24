@@ -1,14 +1,19 @@
 package com.suse.salt.netapi.client;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.AuthModule;
+import com.suse.salt.netapi.calls.modules.Minion;
 import com.suse.salt.netapi.datatypes.Token;
+import com.suse.salt.netapi.datatypes.target.Glob;
+import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
+import com.suse.salt.netapi.results.Result;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,19 +23,17 @@ import org.junit.rules.ExpectedException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.Set;
+import java.util.concurrent.CompletionException;
 
 /**
  * SaltStack API unit tests against a running SaltStack Master with NetAPI
  * module enabled. In order to pass these tests you MUST have a salt-master
  * NetAPI enabled listening at: http://SALT_NETAPI_SERVER:SALT_NETAPI_PASSWORD/
- *
+ * <p>
  * If you are looking for a quick way to bring up a SaltStack Master with NETAPI
  * enabled locally, take a look at .travis.yml
- *
  */
 public class SaltClientDockerTest {
 
@@ -53,8 +56,8 @@ public class SaltClientDockerTest {
 
     @Test
     public void testLoginOk() throws Exception {
-        Token token =
-                client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH);
+        Token token = client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                .toCompletableFuture().join();
         assertNotNull(token);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime tokenStart = LocalDateTime.ofInstant(token.getStart().toInstant(),
@@ -66,53 +69,81 @@ public class SaltClientDockerTest {
         assertTrue(tokenExpiration.isAfter(now));
     }
 
-    @Test(expected = SaltUserUnauthorizedException.class)
+    @Test
     public void testLoginFailure() throws Exception {
-        client.login("user", "pass", AuthModule.DJANGO);
+        exception.expect(CompletionException.class);
+        exception.expectCause(instanceOf(SaltUserUnauthorizedException.class));
+        client.login("user", "pass", AuthModule.DJANGO).toCompletableFuture().join();
     }
 
     @Test
     public void testLoginAsyncOk() throws Exception {
-        Future<Token> futureToken =
-                client.loginAsync(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH);
-        Token token = futureToken.get();
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime tokenStart = LocalDateTime.ofInstant(token.getStart().toInstant(),
-                ZoneId.systemDefault());
-        LocalDateTime tokenExpiration = LocalDateTime
-                .ofInstant(token.getExpire().toInstant(), ZoneId.systemDefault());
+        Runnable cleanup = () -> {
+            try {
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
 
-        assertTrue(tokenStart.isBefore(now));
-        assertTrue(tokenExpiration.isAfter(now));
-    }
+        client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                .thenAccept(token -> {
+                    LocalDateTime now = LocalDateTime.now();
+                    LocalDateTime tokenStart = LocalDateTime.ofInstant(token.getStart().toInstant(),
+                            ZoneId.systemDefault());
+                    LocalDateTime tokenExpiration = LocalDateTime
+                            .ofInstant(token.getExpire().toInstant(), ZoneId.systemDefault());
 
-    @Test(expected = ExecutionException.class)
-    public void testLoginAsyncFailure() throws Exception {
-        Future<Token> futureToken = client.loginAsync("user", "pass", AuthModule.DJANGO);
-        Token token = futureToken.get();
-        assertNull(token);
+                    assertTrue(tokenStart.isBefore(now));
+                    assertTrue(tokenExpiration.isAfter(now));
+                })
+                .thenRun(cleanup);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    public void testLoginAsyncFailure() throws Exception {
+        Runnable cleanup = () -> {
+            try {
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+
+        client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                .thenAccept(token -> {
+                    assertNull(token);
+                })
+                .thenRun(cleanup);
+    }
+
+    @Test
     public void testGetMinions() throws Exception {
-        client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH);
-        Map<String, Map<String, Object>> minions = client.getMinions();
+        SaltClient client = new SaltClient(URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT));
+
+        Target<String> globTarget = new Glob("*");
+        Map<String, Result<Map<String, Set<String>>>> minions = Minion.list().callSync(
+                client, globTarget, SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                .toCompletableFuture().join();
 
         assertNotNull(minions);
         assertEquals(2, minions.size());
+    }
 
-        minions.keySet().forEach(minionHostname -> {
-            Map<String, Object> minionInfo = minions.get(minionHostname);
-            assertEquals("Linux", minionInfo.get("kernel"));
-            assertEquals("openSUSE Leap", minionInfo.get("lsb_distrib_id"));
-            assertEquals("42.2", minionInfo.get("lsb_distrib_release"));
-            assertTrue(minionInfo.get("saltversioninfo") instanceof List);
-            List<String> saltVersionInfo = (List<String>) minionInfo.get("saltversioninfo");
-            assertEquals(2016.0, saltVersionInfo.get(0));
-            assertEquals(3.0, saltVersionInfo.get(1));
-            assertEquals(4.0, saltVersionInfo.get(2));
-            assertEquals(0.0, saltVersionInfo.get(3));
+    @Test
+    public void testTestVersions() throws Exception {
+        SaltClient client = new SaltClient(URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT));
+
+        Target<String> globTarget = new Glob("*");
+        Map<String, Result<com.suse.salt.netapi.calls.modules.Test.VersionInformation>> results =
+                com.suse.salt.netapi.calls.modules.Test.versionsInformation().callSync(
+                        client, globTarget, SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(results);
+        assertEquals(2, results.size());
+        results.forEach((minion, result) -> {
+            assertEquals("2018.3.2", result.result().get().getSalt().get("Salt"));
         });
     }
 }
