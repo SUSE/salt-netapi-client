@@ -17,8 +17,8 @@ package com.suse.salt.netapi.event;
 
 import com.suse.salt.netapi.datatypes.Event;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Implements basic listener bookkeeping for EventStream.
@@ -28,16 +28,14 @@ public abstract class AbstractEventStream implements EventStream {
     /**
      * Listeners that are notified of a new events.
      */
-    private final List<EventListener> listeners = new ArrayList<>();
+    private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void addEventListener(EventListener listener) {
-        synchronized (listeners) {
-            listeners.add(listener);
-        }
+        listeners.add(listener);
     }
 
     /**
@@ -45,9 +43,7 @@ public abstract class AbstractEventStream implements EventStream {
      */
     @Override
     public void removeEventListener(EventListener listener) {
-        synchronized (listeners) {
-            listeners.remove(listener);
-        }
+        listeners.remove(listener);
     }
 
     /**
@@ -55,9 +51,7 @@ public abstract class AbstractEventStream implements EventStream {
      */
     @Override
     public int getListenerCount() {
-        synchronized (listeners) {
-            return listeners.size();
-        }
+        return listeners.size();
     }
 
     /**
@@ -66,10 +60,8 @@ public abstract class AbstractEventStream implements EventStream {
      * @param event the event
      */
     protected void notifyListeners(Event event) {
-        synchronized (listeners) {
-            for (EventListener listener : new ArrayList<>(listeners)) {
-                listener.notify(event);
-            }
+        for (EventListener listener : listeners) {
+            listener.notify(event);
         }
     }
 
@@ -80,11 +72,9 @@ public abstract class AbstractEventStream implements EventStream {
      * @param phrase a String representation of code
      */
     protected void clearListeners(int code, String phrase) {
-        synchronized (listeners) {
-            listeners.forEach(listener -> listener.eventStreamClosed(code, phrase));
+        listeners.forEach(listener -> listener.eventStreamClosed(code, phrase));
 
-            // Clear out the listeners
-            listeners.clear();
-        }
+        // Clear out the listeners
+        listeners.clear();
     }
 }
