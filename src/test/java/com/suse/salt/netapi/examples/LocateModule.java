@@ -10,7 +10,7 @@ import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.TestUtils;
+import com.suse.salt.netapi.utils.HttpClientUtils;
 
 import java.net.URI;
 import java.util.List;
@@ -29,7 +29,7 @@ public class LocateModule {
     public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL),
-                new HttpAsyncClientImpl(TestUtils.defaultClient()));
+                new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
         Token token = client.login(USER, PASSWORD, AuthModule.AUTO).toCompletableFuture().join();
         AuthMethod tokenAuth = new AuthMethod(token);
 

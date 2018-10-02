@@ -6,7 +6,7 @@ import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.Event;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.event.EventListener;
-import com.suse.salt.netapi.utils.TestUtils;
+import com.suse.salt.netapi.utils.HttpClientUtils;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -28,7 +28,7 @@ public class Events {
     public static void main(String[] args) {
         // Init client and set the timeout to infinite
         SaltClient client = new SaltClient(URI.create(SALT_API_URL),
-                new HttpAsyncClientImpl(TestUtils.defaultClient()));
+                new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
 
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(0)

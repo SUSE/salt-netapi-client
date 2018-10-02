@@ -11,7 +11,7 @@ import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.datatypes.target.Target;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.TestUtils;
+import com.suse.salt.netapi.utils.HttpClientUtils;
 
 import java.net.URI;
 import java.util.List;
@@ -31,7 +31,7 @@ public class Calls {
     public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL),
-                new HttpAsyncClientImpl(TestUtils.defaultClient()));
+                new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
 
         // Ping all minions using a glob matcher
         Target<String> globTarget = new Glob("*");

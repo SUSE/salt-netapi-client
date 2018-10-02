@@ -12,7 +12,7 @@ import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.SSHTarget;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHResult;
-import com.suse.salt.netapi.utils.TestUtils;
+import com.suse.salt.netapi.utils.HttpClientUtils;
 
 import java.net.URI;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class SaltSSH {
     public static void main(String[] args) {
         // Init the client
         SaltClient client = new SaltClient(URI.create(SALT_API_URL),
-                new HttpAsyncClientImpl(TestUtils.defaultClient()));
+                new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
 
         // Setup the configuration for Salt SSH (use defaults)
         SaltSSHConfig sshConfig = new SaltSSHConfig.Builder().build();

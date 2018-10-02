@@ -8,7 +8,7 @@ import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.PasswordAuth;
 import com.suse.salt.netapi.results.Result;
-import com.suse.salt.netapi.utils.TestUtils;
+import com.suse.salt.netapi.utils.HttpClientUtils;
 
 import java.net.URI;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class Wheel {
         // Init the client
 
         SaltClient client = new SaltClient(URI.create(SALT_API_URL),
-                new HttpAsyncClientImpl(TestUtils.defaultClient()));
+                new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
 
         // List accepted and pending minion keys
         WheelResult<Result<Key.Names>> keyResults = Key.listAll().callSync(
