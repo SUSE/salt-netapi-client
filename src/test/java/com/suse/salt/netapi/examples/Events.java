@@ -16,7 +16,6 @@ import com.suse.salt.netapi.event.WebSocketEventStream;
 
 import java.net.URI;
 
-
 /**
  * Example code listening for events on salt's event bus.
  */

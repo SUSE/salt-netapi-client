@@ -29,11 +29,6 @@ public class HttpAsyncClientImpl implements AsyncHttpClient {
     /** HTTP client instance */
     private final HttpAsyncClient httpClient;
 
-    public static HttpAsyncClient defaultClient() {
-        //TODO
-        return null;
-    }
-
     /**
      * Init a connection to a given Salt API endpoint.
      *

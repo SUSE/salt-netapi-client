@@ -197,7 +197,6 @@ public class SaltClientTest {
         assertEquals(expected, retvals.get("minion-1"));
     }
 
-    //TODO: test needs to be adjusted
     @Test
     public void testRunRequestWithSocketTimeout() {
         exception.expect(CompletionException.class);
