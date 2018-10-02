@@ -8,12 +8,15 @@ import static org.junit.Assert.assertTrue;
 
 import com.suse.salt.netapi.AuthModule;
 import com.suse.salt.netapi.calls.modules.Minion;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.PasswordAuth;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.datatypes.target.Target;
-import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.utils.TestUtils;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,18 +47,20 @@ public class SaltClientDockerTest {
     private static final AuthModule SALT_NETAPI_AUTH = AuthModule.PAM;
 
     private SaltClient client;
+    private AuthMethod SALT_AUTH = new AuthMethod(
+            new PasswordAuth(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH));
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
-    public void init() throws SaltException {
+    public void init() {
         URI uri = URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT);
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
-    public void testLoginOk() throws Exception {
+    public void testLoginOk() {
         Token token = client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
                 .toCompletableFuture().join();
         assertNotNull(token);
@@ -70,22 +75,14 @@ public class SaltClientDockerTest {
     }
 
     @Test
-    public void testLoginFailure() throws Exception {
+    public void testLoginFailure() {
         exception.expect(CompletionException.class);
         exception.expectCause(instanceOf(SaltUserUnauthorizedException.class));
         client.login("user", "pass", AuthModule.DJANGO).toCompletableFuture().join();
     }
 
     @Test
-    public void testLoginAsyncOk() throws Exception {
-        Runnable cleanup = () -> {
-            try {
-                client.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        };
-
+    public void testLoginAsyncOk() {
         client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
                 .thenAccept(token -> {
                     LocalDateTime now = LocalDateTime.now();
@@ -96,34 +93,26 @@ public class SaltClientDockerTest {
 
                     assertTrue(tokenStart.isBefore(now));
                     assertTrue(tokenExpiration.isAfter(now));
-                })
-                .thenRun(cleanup);
+                });
     }
 
     @Test
-    public void testLoginAsyncFailure() throws Exception {
-        Runnable cleanup = () -> {
-            try {
-                client.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        };
-
+    public void testLoginAsyncFailure() {
         client.login(SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
                 .thenAccept(token -> {
                     assertNull(token);
-                })
-                .thenRun(cleanup);
+                });
     }
 
     @Test
-    public void testGetMinions() throws Exception {
-        SaltClient client = new SaltClient(URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT));
+    public void testGetMinions() {
+
+        SaltClient client = new SaltClient(URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT),
+                new HttpAsyncClientImpl(TestUtils.defaultClient()));
 
         Target<String> globTarget = new Glob("*");
         Map<String, Result<Map<String, Set<String>>>> minions = Minion.list().callSync(
-                client, globTarget, SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                client, globTarget, SALT_AUTH)
                 .toCompletableFuture().join();
 
         assertNotNull(minions);
@@ -131,13 +120,14 @@ public class SaltClientDockerTest {
     }
 
     @Test
-    public void testTestVersions() throws Exception {
-        SaltClient client = new SaltClient(URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT));
+    public void testTestVersions() {
+        SaltClient client = new SaltClient(URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT),
+                new HttpAsyncClientImpl(TestUtils.defaultClient()));
 
         Target<String> globTarget = new Glob("*");
         Map<String, Result<com.suse.salt.netapi.calls.modules.Test.VersionInformation>> results =
                 com.suse.salt.netapi.calls.modules.Test.versionsInformation().callSync(
-                        client, globTarget, SALT_NETAPI_USER, SALT_NETAPI_PASSWORD, SALT_NETAPI_AUTH)
+                        client, globTarget, SALT_AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(results);
