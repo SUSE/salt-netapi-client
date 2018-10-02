@@ -2,8 +2,8 @@ package com.suse.salt.netapi.calls.wheel;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -11,13 +11,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.Assert.assertTrue;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.calls.WheelResult;
 import com.suse.salt.netapi.calls.modules.SaltUtilTest;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,12 +45,14 @@ public class KeyTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     private SaltClient client;
 
     @Before
     public void init() {
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Test
@@ -58,7 +63,7 @@ public class KeyTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_KEY_GEN_RESPONSE)));
 
-        WheelResult<Result<Key.Pair>> keyPair = Key.gen("minion1").callSync(client).toCompletableFuture().join();
+        WheelResult<Result<Key.Pair>> keyPair = Key.gen("minion1").callSync(client, AUTH).toCompletableFuture().join();
 
         Result<Key.Pair> resultData = keyPair.getData().getResult();
         Key.Pair data = resultData.result().get();
@@ -82,7 +87,7 @@ public class KeyTest {
                 .withBody(JSON_KEY_GEN_ACCEPT_RESPONSE)));
 
         WheelResult<Result<Key.Pair>> keyPair = Key.genAccept(
-                "minion1", Optional.empty()).callSync(client).toCompletableFuture().join();
+                "minion1", Optional.empty()).callSync(client, AUTH).toCompletableFuture().join();
 
         Result<Key.Pair> resultData = keyPair.getData().getResult();
         Key.Pair data = resultData.result().get();

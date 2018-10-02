@@ -1,8 +1,19 @@
 package com.suse.salt.netapi.calls;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.client.SaltClient;
+import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
+import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.errors.GenericError;
 import com.suse.salt.netapi.errors.JsonParsingError;
@@ -12,11 +23,11 @@ import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
+import com.suse.salt.netapi.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.websocket.DeploymentException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -29,15 +40,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import javax.websocket.DeploymentException;
 
 /**
  * Tests for callAsync() taking an event stream to return results as they come in.
@@ -49,13 +52,15 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
+    static final AuthMethod AUTH = new AuthMethod(new Token());
+
     private SaltClient client;
 
     @Before
     public void init() throws URISyntaxException, DeploymentException {
         super.init();
         URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri);
+        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
     }
 
     @Override
@@ -101,12 +106,13 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                         .withBody(json("/async_via_event_list_job_response.json"))));
 
 
-        EventStream events = new WebSocketEventStream(clientConfig);
+        EventStream events = new WebSocketEventStream(uri, new Token("token"), 0, 0, 0);
 
         Map<String, CompletionStage<Result<Boolean>>> call =
                 com.suse.salt.netapi.calls.modules.Test.ping().callAsync(
                     client,
                     Glob.ALL,
+                    AUTH,
                     events,
                     completeAfter(
                             new GenericError("canceled"),
