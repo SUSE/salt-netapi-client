@@ -46,7 +46,7 @@ public class SaltClient {
      * @param url the Salt API URL
      */
     public SaltClient(URI url, AsyncHttpClient asyncHttpClient) {
-        this.uri = url;
+        this.uri = url.resolve("/");
         this.asyncHttpClient = asyncHttpClient;
     }
 
@@ -70,7 +70,7 @@ public class SaltClient {
         String payload = gson.toJson(props);
 
         CompletionStage<Token> result = asyncHttpClient
-                .post(uri.resolve("/login"), payload, JsonParser.TOKEN)
+                .post(uri.resolve("login"), payload, JsonParser.TOKEN)
                 .thenApply(r -> {
                     // They return a list of tokens here, take the first one
                     Token token = r.getResult().get(0);
@@ -89,7 +89,7 @@ public class SaltClient {
      */
     public CompletionStage<Boolean> logout() {
         return asyncHttpClient
-                .post(uri.resolve("/logout"), "", JsonParser.STRING)
+                .post(uri.resolve("logout"), "", JsonParser.STRING)
                 .thenApply(s -> "Your token has been cleared".contentEquals(s.getResult()));
     }
 
@@ -127,7 +127,7 @@ public class SaltClient {
         String payload = gson.toJson(list);
 
         CompletionStage<Map<String, Object>> result = asyncHttpClient
-                .post(uri.resolve("/run"), payload, JsonParser.RUN_RESULTS)
+                .post(uri.resolve("run"), payload, JsonParser.RUN_RESULTS)
                 .thenApply(s -> s.getResult().get(0));
         return result;
     }
@@ -158,7 +158,7 @@ public class SaltClient {
         String payload = gson.toJson(list);
 
         CompletionStage<Map<String, Result<SSHRawResult>>> result = asyncHttpClient
-                .post(uri.resolve("/run"), payload, JsonParser.RUNSSHRAW_RESULTS)
+                .post(uri.resolve("run"), payload, JsonParser.RUNSSHRAW_RESULTS)
                 .thenApply(r -> r.getResult().get(0));
 
         return result;
@@ -172,7 +172,7 @@ public class SaltClient {
      * @return the stats
      */
     public CompletionStage<Stats> stats() {
-        return asyncHttpClient.get(uri.resolve("/stats"), JsonParser.STATS);
+        return asyncHttpClient.get(uri.resolve("stats"), JsonParser.STATS);
     }
 
     /**
@@ -217,16 +217,11 @@ public class SaltClient {
         props.put("client", client.getValue());
         props.putAll(call.getPayload());
         props.putAll(custom);
-
-
-        String endpoint = auth.getInternal().isRight() ? "/run" : "/";
-
         List<Map<String, Object>> list = Collections.singletonList(props);
         String payload = gson.toJson(list);
-        CompletionStage<R> result = asyncHttpClient
-                .post(uri.resolve(endpoint), headers, payload, new JsonParser<>(type));
 
-        return result;
+        URI endpoint = auth.getInternal().isRight() ? uri.resolve("run") : uri;
+        return asyncHttpClient.post(endpoint, headers, payload, new JsonParser<>(type));
     }
 
 }

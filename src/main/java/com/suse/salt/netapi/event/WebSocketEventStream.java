@@ -77,7 +77,7 @@ public class WebSocketEventStream extends AbstractEventStream {
         maxMessageLength = maxMsgSize > 0 ?
                 maxMsgSize : Integer.MAX_VALUE;
         Arrays.asList(listeners).forEach(this::addEventListener);
-        initializeStream(uri, token, sessionIdleTimeout, idleTimeout);
+        initializeStream(uri.resolve("/"), token, sessionIdleTimeout, idleTimeout);
     }
 
     /**
@@ -90,7 +90,7 @@ public class WebSocketEventStream extends AbstractEventStream {
         try {
             URI adjustedURI = new URI(uri.getScheme() == "https" ? "wss" : "ws",
                     uri.getSchemeSpecificPart(), uri.getFragment())
-                    .resolve("/ws/" + token.getToken());
+                    .resolve("ws/" + token.getToken());
             websocketContainer.setDefaultMaxSessionIdleTimeout(sessionIdleTimeout);
 
             // Initiate the websocket handshake
