@@ -75,7 +75,7 @@ public class KeyTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(
-                        "[{'client':'wheel', 'fun':'key.gen','id_':'minion1'}]")));
+                        "[{'client':'wheel', 'fun':'key.gen','kwarg': { 'id_': 'minion1'}}]")));
     }
 
     @Test
@@ -99,6 +99,6 @@ public class KeyTest {
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson(
-                        "[{'client':'wheel', 'fun':'key.gen_accept','id_':'minion1'}]")));
+                        "[{'client':'wheel', 'fun':'key.gen_accept','kwarg': { 'id_': 'minion1'}}]")));
     }
 }

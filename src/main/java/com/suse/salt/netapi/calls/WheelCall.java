@@ -38,7 +38,7 @@ public class WheelCall<R> extends AbstractCall<R> {
     public Map<String, Object> getPayload() {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("fun", getFunction());
-        kwargs.ifPresent(payload::putAll);
+        kwargs.ifPresent(kwarg -> payload.put("kwarg", kwarg));
         return payload;
     }
 
