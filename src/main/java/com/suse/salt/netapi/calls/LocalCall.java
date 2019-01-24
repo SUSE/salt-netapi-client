@@ -21,7 +21,6 @@ import com.suse.salt.netapi.results.SSHResult;
 import com.suse.salt.netapi.utils.ClientUtils;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,17 +120,58 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param client SaltClient instance
      * @param target the target for the function
      * @param auth authentication credentials to use
+     * @param batch parameter for enabling and configuring batching
      * @return information about the scheduled job
      */
-    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth) {
+    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth,
+                                                          Batch batch) {
+        return callAsync(client, target, auth, Optional.of(batch));
+    }
+
+    /**
+     * Calls a execution module function on the given target asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the token therefore you have to login prior
+     * to using this function.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param auth authentication credentials to use
+     * @param batch parameter for enabling and configuring batching
+     * @return information about the scheduled job
+     */
+    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth,
+            Optional<Batch> batch) {
+
+        Map<String, Object> customArgs = new HashMap<>();
+        batch.ifPresent(v -> {
+            customArgs.put("batch", v.getBatch());
+            v.getDelay().ifPresent(d -> customArgs.put("batch_delay", d));
+        });
+
         return client.call(
-                this, Client.LOCAL_ASYNC, Optional.of(target), Collections.emptyMap(),
+                this, Client.LOCAL_ASYNC, Optional.of(target), customArgs,
                 new TypeToken<Return<List<LocalAsyncResult<R>>>>(){}, auth)
                 .thenApply(wrapper -> {
                     LocalAsyncResult<R> result = wrapper.getResult().get(0);
                     result.setType(getReturnType());
                     return result;
                 });
+    }
+
+    /**
+     * Calls a execution module function on the given target asynchronously and
+     * returns information about the scheduled job that can be used to query the result.
+     * Authentication is done with the token therefore you have to login prior
+     * to using this function.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param auth authentication credentials to use
+     * @return information about the scheduled job
+     */
+    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth) {
+        return callAsync(client, target, auth, Optional.empty());
     }
 
     /**
@@ -143,6 +183,7 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param events the event stream to use
      * @param cancel future to cancel the action
      * @param auth authentication credentials to use
+     * @param batch parameter for enabling and configuring batching
      * @return a map from minion id to future of the result.
      */
     public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
@@ -150,9 +191,10 @@ public class LocalCall<R> extends AbstractCall<R> {
             Target<?> target,
             AuthMethod auth,
             EventStream events,
-            CompletionStage<GenericError> cancel) {
+            CompletionStage<GenericError> cancel,
+            Optional<Batch> batch) {
         return callAsync(
-                localCall -> localCall.callAsync(client, target, auth),
+                localCall -> localCall.callAsync(client, target, auth, batch),
                 runnerCall -> runnerCall.callAsync(client, auth),
                 events,
                 cancel

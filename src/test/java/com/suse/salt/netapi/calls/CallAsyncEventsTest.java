@@ -34,6 +34,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
@@ -117,7 +118,8 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                     completeAfter(
                             new GenericError("canceled"),
                             Duration.of(7, ChronoUnit.SECONDS)
-                    )
+                    ),
+                    Optional.empty()
                 ).toCompletableFuture().join();
 
         CountDownLatch countDownLatch = new CountDownLatch(5);
