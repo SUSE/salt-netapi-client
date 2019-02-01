@@ -321,7 +321,24 @@ public class LocalCall<R> extends AbstractCall<R> {
      */
     public CompletionStage<List<Map<String, Result<R>>>> callSync(final SaltClient client, Target<?> target,
             AuthMethod auth, Batch batch) {
-        return callSyncHelperNonBlock(client, target, auth, Optional.of(batch));
+        return callSync(client, target, auth, Optional.of(batch));
+    }
+
+    /**
+     * Calls a execution module function on the given target with batching and
+     * synchronously waits for the result. Authentication is done with the token
+     * therefore you have to login prior to using this function.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param auth authentication credentials to use
+     * @param batch parameter for enabling and configuring batching
+     * @return A list of maps with each list representing each batch, and maps containing
+     * the results with the minion names as keys.
+     */
+    public CompletionStage<List<Map<String, Result<R>>>> callSync(final SaltClient client, Target<?> target,
+            AuthMethod auth, Optional<Batch> batch) {
+        return callSyncHelperNonBlock(client, target, auth, batch);
     }
 
     /**
