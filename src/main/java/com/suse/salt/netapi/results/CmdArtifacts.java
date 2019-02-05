@@ -28,6 +28,9 @@ public class CmdArtifacts {
 
     @Override
     public String toString() {
-        return "CmdArtifacts(pid=" + pid + ", retcode=" + retcode + ", stderr=\"" + stderr + "\", stdout=\"" + stdout + "\")";
+        return "CmdArtifacts(pid=" + pid +
+                ", retcode=" + retcode +
+                ", stderr=\"" + stderr +
+                "\", stdout=\"" + stdout + "\")";
     }
 }
