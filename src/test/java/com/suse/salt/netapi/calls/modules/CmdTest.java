@@ -33,7 +33,7 @@ public class CmdTest {
     private static final int MOCK_HTTP_PORT = 8888;
 
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
-            SaltUtilTest.class.getResourceAsStream("/modules/cmd/uptime.json"));
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/run.json"));
 
     static final String JSON_RUN_ALL_RESPONSE_SUCCESS = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/run_all.json"));
@@ -76,17 +76,13 @@ public class CmdTest {
     }
 
     @Test
-    public void testCmdUptime() {
+    public void testCmdRun() {
         // First we get the call to use in the tests
         LocalCall<String> call = Cmd.run("uptime");
         assertEquals("cmd.run", call.getPayload().get("fun"));
 
         // Test with an successful response
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_RESPONSE)));
+        mockOkResponseWith(JSON_RUN_RESPONSE);
 
         Map<String, Result<String>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -104,11 +100,7 @@ public class CmdTest {
         LocalCall<CmdArtifacts> call = Cmd.runAll("uptime");
         assertEquals("cmd.run_all", call.getPayload().get("fun"));
 
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_ALL_RESPONSE_SUCCESS)));
+        mockOkResponseWith(JSON_RUN_ALL_RESPONSE_SUCCESS);
 
         Map<String, Result<CmdArtifacts>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -128,11 +120,7 @@ public class CmdTest {
         LocalCall<CmdArtifacts> call = Cmd.runAll("misspelled_command");
         assertEquals("cmd.run_all", call.getPayload().get("fun"));
 
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_RUN_ALL_RESPONSE_ERROR)));
+        mockOkResponseWith(JSON_RUN_ALL_RESPONSE_ERROR);
 
         Map<String, Result<CmdArtifacts>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -154,11 +142,7 @@ public class CmdTest {
         assertEquals("cmd.has_exec", call.getPayload().get("fun"));
 
         // Test with an successful response
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_HAS_EXEC_RESPONSE)));
+        mockOkResponseWith(JSON_HAS_EXEC_RESPONSE);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -178,11 +162,7 @@ public class CmdTest {
         assertEquals("cmd.exec_code", call.getPayload().get("fun"));
 
         // Test with an successful response
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_EXEC_CODE_RESPONSE)));
+        mockOkResponseWith(JSON_EXEC_CODE_RESPONSE);
 
         Map<String, Result<String>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -203,11 +183,7 @@ public class CmdTest {
         assertEquals("cmd.exec_code_all", call.getPayload().get("fun"));
 
         // Test with an successful response
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                .withStatus(HttpURLConnection.HTTP_OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JSON_EXEC_CODE_ALL_RESPONSE)));
+        mockOkResponseWith(JSON_EXEC_CODE_ALL_RESPONSE);
 
         Map<String, Result<CmdArtifacts>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -227,11 +203,7 @@ public class CmdTest {
         LocalCall<CmdArtifacts> call = Cmd.script("salt://foo.sh");
         assertEquals("cmd.script", call.getPayload().get("fun"));
 
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_SCRIPT_RESPONSE_SUCCESS)));
+        mockOkResponseWith(JSON_SCRIPT_RESPONSE_SUCCESS);
 
         Map<String, Result<CmdArtifacts>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -251,11 +223,7 @@ public class CmdTest {
         LocalCall<CmdArtifacts> call = Cmd.script("salt://err.sh");
         assertEquals("cmd.script", call.getPayload().get("fun"));
 
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_SCRIPT_RESPONSE_ERROR)));
+        mockOkResponseWith(JSON_SCRIPT_RESPONSE_ERROR);
 
         Map<String, Result<CmdArtifacts>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -275,11 +243,7 @@ public class CmdTest {
         LocalCall<Integer> call = Cmd.scriptRetcode("salt://foo.sh");
         assertEquals("cmd.script_retcode", call.getPayload().get("fun"));
 
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_SCRIPT_RETCODE_RESPONSE_SUCCESS)));
+        mockOkResponseWith(JSON_SCRIPT_RETCODE_RESPONSE_SUCCESS);
 
         Map<String, Result<Integer>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -296,11 +260,7 @@ public class CmdTest {
         LocalCall<Integer> call = Cmd.scriptRetcode("salt://err.sh");
         assertEquals("cmd.script_retcode", call.getPayload().get("fun"));
 
-        stubFor(any(urlMatching("/"))
-                .willReturn(aResponse()
-                        .withStatus(HttpURLConnection.HTTP_OK)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_SCRIPT_RETCODE_RESPONSE_ERROR)));
+        mockOkResponseWith(JSON_SCRIPT_RETCODE_RESPONSE_ERROR);
 
         Map<String, Result<Integer>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -310,5 +270,13 @@ public class CmdTest {
 
         Integer output = response.get("minion").result().get();
         assertEquals(Integer.valueOf(127), output);
+    }
+
+    private static void mockOkResponseWith(String json) {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(json)));
     }
 }
