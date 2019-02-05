@@ -19,17 +19,11 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * TypeAdaptorFactory creating TypeAdapters for Xor
  */
 public class XorTypeAdapterFactory implements TypeAdapterFactory {
-
-    private static final Pattern FN_UNAVAILABLE =
-            Pattern.compile("'([^']+)' is not available.");
-    private static final Pattern MODULE_NOT_SUPPORTED =
-            Pattern.compile("'([^']+)' __virtual__ returned False");
 
     @Override
     @SuppressWarnings("unchecked")
