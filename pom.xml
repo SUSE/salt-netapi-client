@@ -4,7 +4,7 @@
   <groupId>com.suse.salt</groupId>
   <artifactId>salt-netapi-client</artifactId>
   <packaging>jar</packaging>
-  <version>0.16.1-SNAPSHOT</version>
+  <version>0.15.2</version>
   <name>salt-netapi-client</name>
   <url>https://github.com/SUSE/salt-netapi-client</url>
   <description>Java bindings for the Salt API</description>
@@ -88,6 +88,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.0.1</version>
+        <configuration>
+            <source>8</source>
+        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>
