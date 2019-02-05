@@ -1,0 +1,12 @@
+{
+  "return": [
+    {
+      "minion": {
+        "pid": 28870,
+        "retcode": 0,
+        "stderr": "",
+        "stdout": " 15:13:42 up  2:55,  1 user,  load average: 0.01, 0.00, 0.00"
+      }
+    }
+  ]
+}

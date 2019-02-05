@@ -14,7 +14,7 @@ import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.results.CmdExecCodeAll;
+import com.suse.salt.netapi.results.CmdArtifacts;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.suse.salt.netapi.utils.TestUtils;
@@ -35,6 +35,12 @@ public class CmdTest {
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/uptime.json"));
 
+    static final String JSON_RUN_ALL_RESPONSE_SUCCESS = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/run_all.json"));
+
+    static final String JSON_RUN_ALL_RESPONSE_ERROR = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/run_all_error.json"));
+
     static final String JSON_HAS_EXEC_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/has_exec.json"));
 
@@ -43,6 +49,18 @@ public class CmdTest {
 
     static final String JSON_EXEC_CODE_ALL_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/exec_code_all.json"));
+
+    static final String JSON_SCRIPT_RESPONSE_SUCCESS = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/script.json"));
+
+    static final String JSON_SCRIPT_RESPONSE_ERROR = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/script_error.json"));
+
+    static final String JSON_SCRIPT_RETCODE_RESPONSE_SUCCESS = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/script_retcode.json"));
+
+    static final String JSON_SCRIPT_RETCODE_RESPONSE_ERROR = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/script_retcode_error.json"));
 
     static final AuthMethod AUTH = new AuthMethod(new Token());
 
@@ -79,6 +97,54 @@ public class CmdTest {
         String output = response.get("minion").result().get();
         assertEquals(" 16:51:23 up 22 min,  0 users,  load average: 0.00, 0.02, 0.09",
                 output);
+    }
+
+    @Test
+    public void testCmdRunAllSuccess() {
+        LocalCall<CmdArtifacts> call = Cmd.runAll("uptime");
+        assertEquals("cmd.run_all", call.getPayload().get("fun"));
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_ALL_RESPONSE_SUCCESS)));
+
+        Map<String, Result<CmdArtifacts>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        CmdArtifacts result = response.get("minion").result().get();
+        assertEquals(28870, result.getPid());
+        assertEquals(0, result.getRetcode());
+        assertEquals("", result.getStderr());
+        assertEquals(" 15:13:42 up  2:55,  1 user,  load average: 0.01, 0.00, 0.00", result.getStdout());
+    }
+
+    @Test
+    public void testCmdRunAllError() {
+        LocalCall<CmdArtifacts> call = Cmd.runAll("misspelled_command");
+        assertEquals("cmd.run_all", call.getPayload().get("fun"));
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                .withStatus(HttpURLConnection.HTTP_OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(JSON_RUN_ALL_RESPONSE_ERROR)));
+
+        Map<String, Result<CmdArtifacts>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        CmdArtifacts result = response.get("minion").result().get();
+        assertEquals(29333, result.getPid());
+        assertEquals(127, result.getRetcode());
+        assertEquals("/bin/sh: 1: misspelled_command: not found", result.getStderr());
+        assertEquals("", result.getStdout());
     }
 
     @Test
@@ -132,7 +198,7 @@ public class CmdTest {
     @Test
     public void testCmdExecCodeAll() {
         // First we get the call to use in the tests
-        LocalCall<CmdExecCodeAll> call =
+        LocalCall<CmdArtifacts> call =
                 Cmd.execCodeAll("python", "import sys; print sys.version");
         assertEquals("cmd.exec_code_all", call.getPayload().get("fun"));
 
@@ -143,16 +209,106 @@ public class CmdTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(JSON_EXEC_CODE_ALL_RESPONSE)));
 
-        Map<String, Result<CmdExecCodeAll>> response =
+        Map<String, Result<CmdArtifacts>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
-        CmdExecCodeAll result = response.get("minion").result().get();
+        CmdArtifacts result = response.get("minion").result().get();
         assertEquals(27299, result.getPid());
         assertEquals(0, result.getRetcode());
         assertEquals("", result.getStderr());
         assertEquals("2.6.6 (r266:84292, Jul 23 2015, 15:22:56) "
                 + "[GCC 4.4.7 20120313 (Red Hat 4.4.7-11)]", result.getStdout());
+    }
+
+    @Test
+    public void testScriptSuccess() {
+        LocalCall<CmdArtifacts> call = Cmd.script("salt://foo.sh");
+        assertEquals("cmd.script", call.getPayload().get("fun"));
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_SCRIPT_RESPONSE_SUCCESS)));
+
+        Map<String, Result<CmdArtifacts>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        CmdArtifacts result = response.get("minion").result().get();
+        assertEquals(29059, result.getPid());
+        assertEquals(0, result.getRetcode());
+        assertEquals("", result.getStderr());
+        assertEquals("Test echo script", result.getStdout());
+    }
+
+    @Test
+    public void testScriptError() {
+        LocalCall<CmdArtifacts> call = Cmd.script("salt://err.sh");
+        assertEquals("cmd.script", call.getPayload().get("fun"));
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_SCRIPT_RESPONSE_ERROR)));
+
+        Map<String, Result<CmdArtifacts>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        CmdArtifacts result = response.get("minion").result().get();
+        assertEquals(29200, result.getPid());
+        assertEquals(127, result.getRetcode());
+        assertEquals("/tmp/__salt.tmp.9B1I7L.sh: line 3: misspelled_command: command not found", result.getStderr());
+        assertEquals("", result.getStdout());
+    }
+
+    @Test
+    public void testCmdScriptRetcodeSuccess() {
+        LocalCall<Integer> call = Cmd.scriptRetcode("salt://foo.sh");
+        assertEquals("cmd.script_retcode", call.getPayload().get("fun"));
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_SCRIPT_RETCODE_RESPONSE_SUCCESS)));
+
+        Map<String, Result<Integer>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        Integer output = response.get("minion").result().get();
+        assertEquals(Integer.valueOf(0), output);
+    }
+
+    @Test
+    public void testCmdScriptRetcodeError() {
+        LocalCall<Integer> call = Cmd.scriptRetcode("salt://err.sh");
+        assertEquals("cmd.script_retcode", call.getPayload().get("fun"));
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_SCRIPT_RETCODE_RESPONSE_ERROR)));
+
+        Map<String, Result<Integer>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        Integer output = response.get("minion").result().get();
+        assertEquals(Integer.valueOf(127), output);
     }
 }
