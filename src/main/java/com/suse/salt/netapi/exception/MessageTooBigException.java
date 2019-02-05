@@ -6,6 +6,8 @@ package com.suse.salt.netapi.exception;
  */
 public class MessageTooBigException extends SaltException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor.
      *

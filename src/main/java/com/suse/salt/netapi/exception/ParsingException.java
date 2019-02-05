@@ -7,6 +7,8 @@ import java.io.IOException;
  */
 public class ParsingException extends IOException {
 
+    private static final long serialVersionUID = 2L;
+
     /**
      * Constructor expecting a custom cause.
      *
