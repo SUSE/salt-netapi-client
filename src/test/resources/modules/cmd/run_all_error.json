@@ -1,0 +1,12 @@
+{
+  "return": [
+    {
+      "minion": {
+        "pid": 29333,
+        "retcode": 127,
+        "stderr": "/bin/sh: 1: misspelled_command: not found",
+        "stdout": ""
+      }
+    }
+  ]
+}
