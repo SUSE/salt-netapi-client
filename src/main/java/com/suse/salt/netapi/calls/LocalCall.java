@@ -192,6 +192,28 @@ public class LocalCall<R> extends AbstractCall<R> {
             AuthMethod auth,
             EventStream events,
             CompletionStage<GenericError> cancel,
+            Batch batch) {
+        return callAsync(client, target, auth, events, cancel, Optional.of(batch));
+    }
+
+    /**
+     * Calls this salt call via the async client and returns the results
+     * as they come in via the event stream.
+     *
+     * @param client SaltClient instance
+     * @param target the target for the function
+     * @param events the event stream to use
+     * @param cancel future to cancel the action
+     * @param auth authentication credentials to use
+     * @param batch parameter for enabling and configuring batching
+     * @return a map from minion id to future of the result.
+     */
+    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
+            SaltClient client,
+            Target<?> target,
+            AuthMethod auth,
+            EventStream events,
+            CompletionStage<GenericError> cancel,
             Optional<Batch> batch) {
         return callAsync(
                 localCall -> localCall.callAsync(client, target, auth, batch),
