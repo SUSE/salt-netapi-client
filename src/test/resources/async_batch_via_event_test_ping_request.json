@@ -1,0 +1,9 @@
+[
+  {
+    "tgt": "*",
+    "client": "local_async",
+    "batch": "1",
+    "fun": "test.ping",
+    "tgt_type": "glob"
+  }
+]
