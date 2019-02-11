@@ -13,6 +13,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.AuthMethod;
+import com.suse.salt.netapi.datatypes.Batch;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.Glob;
 import com.suse.salt.netapi.errors.GenericError;
@@ -57,6 +58,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
 
     private SaltClient client;
 
+    @Override
     @Before
     public void init() throws URISyntaxException, DeploymentException {
         super.init();
@@ -120,6 +122,84 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                             Duration.of(7, ChronoUnit.SECONDS)
                     ),
                     Optional.empty()
+                ).toCompletableFuture().join();
+
+        CountDownLatch countDownLatch = new CountDownLatch(5);
+        Map<String, Result<Boolean>> results = new HashMap<>();
+        Map<String, Long> times = new HashMap<>();
+        call.forEach((key, value) -> {
+            value.whenComplete((v, e) -> {
+                if (v != null) {
+                    results.put(key, v);
+                }
+                times.put(key, System.currentTimeMillis());
+                countDownLatch.countDown();
+            });
+        });
+
+        countDownLatch.await(10, TimeUnit.SECONDS);
+        assertEquals(5, results.size());
+        assertTrue(results.get("minion1").result().get());
+
+        assertTrue(results.get("minion2").error().get() instanceof JsonParsingError);
+        assertEquals("Expected BOOLEAN but was STRING at path $",
+                ((JsonParsingError) results.get("minion2").error().get())
+                        .getThrowable().getMessage());
+
+        long delay12 = times.get("minion2") - times.get("minion1");
+        assertTrue(delay12 >= 1000);
+
+        assertTrue(results.get("minion3").result().get());
+
+        long delay23 = times.get("minion3") - times.get("minion2");
+        assertTrue(delay23 >= 1000);
+
+        assertTrue(results.get("minion4").error().get() instanceof JsonParsingError);
+        assertEquals("Expected BOOLEAN but was STRING at path $", ((JsonParsingError)
+                results.get("minion4").error().get()).getThrowable().getMessage());
+
+        long delay42 = times.get("minion4") - times.get("minion2");
+        assertTrue(delay42 >= 1000);
+
+        assertTrue(results.get("minion5").error().get() instanceof GenericError);
+        assertEquals("canceled",
+                ((GenericError) results.get("minion5").error().get()).getMessage());
+    }
+
+    @Test
+    public void testAsyncBatchCall() throws SaltException, InterruptedException {
+        stubFor(post(urlMatching("/"))
+                .withRequestBody(equalToJson(
+                        json("/async_batch_via_event_test_ping_request.json")
+                ))
+
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(json("/async_via_event_test_ping_response.json"))));
+
+        stubFor(post(urlMatching("/"))
+                .withRequestBody(equalToJson(
+                        json("/async_via_event_list_job_request.json")
+                ))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(json("/async_via_event_list_job_response.json"))));
+
+        EventStream events = new WebSocketEventStream(uri, new Token("token"), 0, 0, 0);
+
+        Map<String, CompletionStage<Result<Boolean>>> call =
+                com.suse.salt.netapi.calls.modules.Test.ping().callAsync(
+                    client,
+                    Glob.ALL,
+                    AUTH,
+                    events,
+                    completeAfter(
+                            new GenericError("canceled"),
+                            Duration.of(7, ChronoUnit.SECONDS)
+                    ),
+                    Optional.of(Batch.asAmount(1))
                 ).toCompletableFuture().join();
 
         CountDownLatch countDownLatch = new CountDownLatch(5);
