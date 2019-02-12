@@ -3,7 +3,7 @@ package com.suse.salt.netapi.results;
 /**
  * Result structure as returned by cmd.exec_code_all, cmd.run_all, cmd.script to be parsed from event data.
  */
-public class CmdArtifacts {
+public class CmdResult {
 
     private long pid;
     private int retcode;
@@ -28,7 +28,7 @@ public class CmdArtifacts {
 
     @Override
     public String toString() {
-        return "CmdArtifacts(pid=" + pid +
+        return "CmdResult(pid=" + pid +
                 ", retcode=" + retcode +
                 ", stderr=\"" + stderr +
                 "\", stdout=\"" + stdout + "\")";

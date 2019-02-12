@@ -14,7 +14,7 @@ import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.MinionList;
-import com.suse.salt.netapi.results.CmdArtifacts;
+import com.suse.salt.netapi.results.CmdResult;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.suse.salt.netapi.utils.TestUtils;
@@ -97,18 +97,18 @@ public class CmdTest {
 
     @Test
     public void testCmdRunAllSuccess() {
-        LocalCall<CmdArtifacts> call = Cmd.runAll("uptime");
+        LocalCall<CmdResult> call = Cmd.runAll("uptime");
         assertEquals("cmd.run_all", call.getPayload().get("fun"));
 
         mockOkResponseWith(JSON_RUN_ALL_RESPONSE_SUCCESS);
 
-        Map<String, Result<CmdArtifacts>> response =
+        Map<String, Result<CmdResult>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
-        CmdArtifacts result = response.get("minion").result().get();
+        CmdResult result = response.get("minion").result().get();
         assertEquals(28870, result.getPid());
         assertEquals(0, result.getRetcode());
         assertEquals("", result.getStderr());
@@ -117,18 +117,18 @@ public class CmdTest {
 
     @Test
     public void testCmdRunAllError() {
-        LocalCall<CmdArtifacts> call = Cmd.runAll("misspelled_command");
+        LocalCall<CmdResult> call = Cmd.runAll("misspelled_command");
         assertEquals("cmd.run_all", call.getPayload().get("fun"));
 
         mockOkResponseWith(JSON_RUN_ALL_RESPONSE_ERROR);
 
-        Map<String, Result<CmdArtifacts>> response =
+        Map<String, Result<CmdResult>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
-        CmdArtifacts result = response.get("minion").result().get();
+        CmdResult result = response.get("minion").result().get();
         assertEquals(29333, result.getPid());
         assertEquals(127, result.getRetcode());
         assertEquals("/bin/sh: 1: misspelled_command: not found", result.getStderr());
@@ -178,19 +178,19 @@ public class CmdTest {
     @Test
     public void testCmdExecCodeAll() {
         // First we get the call to use in the tests
-        LocalCall<CmdArtifacts> call =
+        LocalCall<CmdResult> call =
                 Cmd.execCodeAll("python", "import sys; print sys.version");
         assertEquals("cmd.exec_code_all", call.getPayload().get("fun"));
 
         // Test with an successful response
         mockOkResponseWith(JSON_EXEC_CODE_ALL_RESPONSE);
 
-        Map<String, Result<CmdArtifacts>> response =
+        Map<String, Result<CmdResult>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
-        CmdArtifacts result = response.get("minion").result().get();
+        CmdResult result = response.get("minion").result().get();
         assertEquals(27299, result.getPid());
         assertEquals(0, result.getRetcode());
         assertEquals("", result.getStderr());
@@ -200,18 +200,18 @@ public class CmdTest {
 
     @Test
     public void testScriptSuccess() {
-        LocalCall<CmdArtifacts> call = Cmd.script("salt://foo.sh");
+        LocalCall<CmdResult> call = Cmd.script("salt://foo.sh");
         assertEquals("cmd.script", call.getPayload().get("fun"));
 
         mockOkResponseWith(JSON_SCRIPT_RESPONSE_SUCCESS);
 
-        Map<String, Result<CmdArtifacts>> response =
+        Map<String, Result<CmdResult>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
-        CmdArtifacts result = response.get("minion").result().get();
+        CmdResult result = response.get("minion").result().get();
         assertEquals(29059, result.getPid());
         assertEquals(0, result.getRetcode());
         assertEquals("", result.getStderr());
@@ -220,18 +220,18 @@ public class CmdTest {
 
     @Test
     public void testScriptError() {
-        LocalCall<CmdArtifacts> call = Cmd.script("salt://err.sh");
+        LocalCall<CmdResult> call = Cmd.script("salt://err.sh");
         assertEquals("cmd.script", call.getPayload().get("fun"));
 
         mockOkResponseWith(JSON_SCRIPT_RESPONSE_ERROR);
 
-        Map<String, Result<CmdArtifacts>> response =
+        Map<String, Result<CmdResult>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
                         .toCompletableFuture().join();
 
         assertNotNull(response.get("minion"));
 
-        CmdArtifacts result = response.get("minion").result().get();
+        CmdResult result = response.get("minion").result().get();
         assertEquals(29200, result.getPid());
         assertEquals(127, result.getRetcode());
         assertEquals("/tmp/__salt.tmp.9B1I7L.sh: line 3: misspelled_command: command not found", result.getStderr());
