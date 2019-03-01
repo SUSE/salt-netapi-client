@@ -1,0 +1,12 @@
+{
+  "return": [
+    {
+      "minion": {
+        "pid": 29200,
+        "retcode": 127,
+        "stderr": "/tmp/__salt.tmp.9B1I7L.sh: line 3: misspelled_command: command not found",
+        "stdout": ""
+      }
+    }
+  ]
+}
