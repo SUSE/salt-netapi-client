@@ -46,4 +46,64 @@ public class Grains {
         return new LocalCall<>("grains.has_value", Optional.empty(), Optional.of(args),
                 new TypeToken<Boolean>(){});
     }
+
+    public static LocalCall<Map<String, Object>> set(String key,  Optional<Map<String, Object>> extraArgs) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("key", key);
+        extraArgs.ifPresent(args::putAll);
+        return new LocalCall<>("grains.set", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, Object>>() { });
+    }
+
+    public static LocalCall<Map<String, Object>> setValue(String key, String value, Optional<Boolean> destructive) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("key", key);
+        args.put("val", value);
+        destructive.ifPresent(dest -> { args.put("destructive", dest); });
+        return new LocalCall<>("grains.setval", Optional.empty(), Optional.of(args),
+               new TypeToken<Map<String, Object>>() { });
+    }
+
+    public static LocalCall<Map<String, Object>> setValues(Map<String, Object> grains, Optional<Boolean> destructive) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("grains", grains);
+        destructive.ifPresent(dest -> { args.put("destructive", dest); });
+        return new LocalCall<>("grains.setvals", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, Object>>() { });
+    }
+
+    public static LocalCall<Map<String, Object>> append(String key, String value, Optional<Boolean> convert,
+                Optional<Boolean> delimiter) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("key", key);
+        args.put("val", value);
+        convert.ifPresent(cnvrt -> { args.put("convert", cnvrt); });
+        delimiter.ifPresent(dlmtr -> { args.put("delimiter", dlmtr); });
+        return new LocalCall<>("grains.append", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, Object>>() { });
+    }
+
+    public static LocalCall<Map<String, Object>> deleteKey(String key) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("key", key);
+        return new LocalCall<>("grains.delkey", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, Object>>() { });
+    }
+
+    public static LocalCall<Map<String, Object>> deleteValue(String key, Optional<Boolean> destructive) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("key", key);
+        destructive.ifPresent(dest -> { args.put("destructive", dest); });
+        return new LocalCall<>("grains.delval", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, Object>>() { });
+    }
+
+    public static LocalCall<Map<String, Object>> remove(String key, String value, Optional<Boolean> delimiter) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("key", key);
+        args.put("val", value);
+        delimiter.ifPresent(dlmtr -> { args.put("delimiter", dlmtr); });
+        return new LocalCall<>("grains.remove", Optional.empty(), Optional.of(args),
+                new TypeToken<Map<String, Object>>() { });
+    }
 }
