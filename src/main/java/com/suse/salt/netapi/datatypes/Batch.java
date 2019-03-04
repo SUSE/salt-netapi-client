@@ -13,12 +13,14 @@ public class Batch {
     // The actual batch string
     private String batch;
     private Optional<Double> delay;
-    private Optional<Integer> presencePingTimeout;
+    private Optional<Integer> gatherJobTimeout;
+    private Optional<Integer> timeout;
 
     private Batch(BatchBuilder builder) {
         this.batch = builder.batch;
         this.delay = builder.delay;
-        this.presencePingTimeout = builder.presencePingTimeout;
+        this.gatherJobTimeout = builder.gatherJobTimeout;
+        this.timeout = builder.timeout;
     }
 
     @Override
@@ -34,8 +36,8 @@ public class Batch {
         return delay;
     }
 
-    public Optional<Integer> getPresencePingTimeout() {
-        return presencePingTimeout;
+    public Optional<Integer> getGatherJobTimeout() {
+        return gatherJobTimeout;
     }
 
     public Map<String, Object> getParams() {
@@ -43,6 +45,12 @@ public class Batch {
         customArgs.put("batch", batch);
         delay.ifPresent(d -> {
             customArgs.put("batch_delay", d);
+        });
+        gatherJobTimeout.ifPresent(d -> {
+            customArgs.put("gather_job_timeout", d);
+        });
+        timeout.ifPresent(d -> {
+            customArgs.put("timeout", d);
         });
         return customArgs;
     }
@@ -80,7 +88,8 @@ public class Batch {
     public static class BatchBuilder {
         private String batch;
         private Optional<Double> delay;
-        private Optional<Integer> presencePingTimeout;
+        private Optional<Integer> gatherJobTimeout;
+        private Optional<Integer> timeout;
 
         /**
          * Constructor for BatchBuilder.
@@ -89,7 +98,8 @@ public class Batch {
          */
         private BatchBuilder() {
             this.delay = Optional.empty();
-            this.presencePingTimeout = Optional.empty();
+            this.gatherJobTimeout = Optional.empty();
+            this.timeout = Optional.empty();
         }
 
         /**
@@ -133,14 +143,41 @@ public class Batch {
         }
 
         /**
-         * Batch presence ping timeout specifies the timeout in seconds of the presence ping performed in
-         * salt minions to determine which minions are available during salt batch calls.
+         * Salt will execute an implicit ping to all the targets of this call before the call itself
+         * in order to compute the list of minions that will actually be batched.
          *
-         * @param presencePingTimeoutIn time to wait in seconds.
+         * If any minions haven't responded within {@link Batch#timeout} seconds, Salt will call `find_job` to
+         * determine if a job is at least running on them.
+         *
+         * This parameter specifies the maximum number of seconds `find_job` will wait before assuming the minion
+         * is not responsive, thus skipping it.
+         *
+         * The total amount of time before any minion is skipped is thus:
+         * {@link Batch#timeout} + {@link Batch#gatherJobTimeout}
+         *
+         * @param gatherJobTimeoutIn time to wait in seconds.
+         * @return this BatchBuilder instance with the gather job timeout.
+         */
+        public BatchBuilder withGatherJobTimeout(Integer gatherJobTimeoutIn) {
+            this.gatherJobTimeout = Optional.of(gatherJobTimeoutIn);
+            return this;
+        }
+
+        /**
+         * Salt will execute an implicit ping to all the targets of this call before the call itself
+         * in order to compute the list of minions that will actually be batched.
+         *
+         * If any minions haven't responded within this amount of seconds, Salt will call `find_job` to
+         * determine if a job is at least running on them.
+         *
+         * The total amount of time before any minion is skipped is thus:
+         * {@link Batch#timeout} + {@link Batch#gatherJobTimeout}
+         *
+         * @param timeoutIn time to wait in seconds.
          * @return this BatchBuilder instance with the specified batch presence ping timeout.
          */
-        public BatchBuilder withPresencePingTimeout(Integer presencePingTimeoutIn) {
-            this.presencePingTimeout = Optional.of(presencePingTimeoutIn);
+        public BatchBuilder withTimeout(Integer timeoutIn) {
+            this.timeout = Optional.of(timeoutIn);
             return this;
         }
 
