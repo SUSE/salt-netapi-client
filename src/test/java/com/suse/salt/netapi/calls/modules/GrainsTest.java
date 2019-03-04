@@ -85,7 +85,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testItem(){
+    public final void testItem() {
         LocalCall<Map<String, Object>> call = Grains.item(false, "os");
         assertEquals("grains.item", call.getPayload().get("fun"));
 
@@ -107,7 +107,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testItems(){
+    public final void testItems() {
         LocalCall<Map<String, Object>> call = Grains.items(false);
         assertEquals("grains.items", call.getPayload().get("fun"));
 
@@ -129,7 +129,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testHasValue(){
+    public final void testHasValue() {
         LocalCall<Boolean> call = Grains.hasValue("os_family");
         assertEquals("grains.has_value", call.getPayload().get("fun"));
 
@@ -147,8 +147,8 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testSet(){
-        Map<String,Object> args = new HashMap<>();
+    public final void testSet() {
+        Map<String, Object> args = new HashMap<>();
         args.put("val", "1234");
         args.put("force", true);
 
@@ -173,7 +173,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testSetValue(){
+    public final void testSetValue() {
         LocalCall<Map<String, Object>> call = Grains.setValue("productname", "ABCD", Optional.of(false));
         assertEquals("grains.setval", call.getPayload().get("fun"));
 
@@ -194,8 +194,8 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testSetValues(){
-        Map<String,Object> grains = new HashMap<>();
+    public final void testSetValues() {
+        Map<String, Object> grains = new HashMap<>();
         grains.put("hostname", "minior");
         grains.put("server_id", "3A9D");
 
@@ -220,7 +220,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testAppend(){
+    public final void testAppend() {
         LocalCall<Map<String, Object>> call = Grains.append("saltversioninfo", "rc1",
                 Optional.of(true), Optional.empty());
         assertEquals("grains.append", call.getPayload().get("fun"));
@@ -239,7 +239,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testDeleteKey(){
+    public final void testDeleteKey() {
         LocalCall<Map<String, Object>> call = Grains.deleteKey("machine_id");
         assertEquals("grains.delkey", call.getPayload().get("fun"));
 
@@ -258,7 +258,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testDeleteValue(){
+    public final void testDeleteValue() {
         LocalCall<Map<String, Object>> call = Grains.deleteValue("machine_id", Optional.empty());
         assertEquals("grains.delval", call.getPayload().get("fun"));
 
@@ -277,7 +277,7 @@ public class GrainsTest {
     }
 
     @Test
-    public final void testRemove(){
+    public final void testRemove() {
         LocalCall<Map<String, Object>> call = Grains.remove("saltversioninfo", "rc1", Optional.empty());
         assertEquals("grains.remove", call.getPayload().get("fun"));
 
