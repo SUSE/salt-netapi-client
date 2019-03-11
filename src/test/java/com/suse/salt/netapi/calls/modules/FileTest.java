@@ -331,7 +331,6 @@ public class FileTest {
         assertEquals("0755", response.get("minion1").result().get());
     }
 
-
     @Test
     public final void testGetUid() {
         stubFor(any(urlMatching("/"))
@@ -464,7 +463,6 @@ public class FileTest {
                 ((JsonParsingError) response.get("minion1").error().get()).getJson());
     }
 
-
     @Test
     public final void testIsLink() {
         // true response
@@ -496,7 +494,6 @@ public class FileTest {
         assertFalse(response.get("minion1").result().get());
 
     }
-
 
     @Test
     public final void testSymlink() {
