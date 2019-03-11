@@ -75,6 +75,18 @@ public class FileTest {
             FileTest.class.getResourceAsStream(
             "/modules/file/move_exception_response.json"));
 
+    static final String JSON_UID_RESPONSE = ClientUtils.streamToString(
+            FileTest.class.getResourceAsStream(
+                    "/modules/file/uid_response.json"));
+
+    static final String JSON_USER_RESPONSE = ClientUtils.streamToString(
+            FileTest.class.getResourceAsStream(
+                    "/modules/file/user_response.json"));
+
+    static final String JSON_PATHNOTFOUND_EXCEPTION_RESPONSE = ClientUtils.streamToString(
+            FileTest.class.getResourceAsStream(
+                    "/modules/file/path_not_found_response.json"));
+
     static final String JSON_REMOVE_EXCEPTION_RESPONSE = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream(
             "/modules/file/remove_exception_response.json"));
@@ -319,6 +331,65 @@ public class FileTest {
         assertEquals("0755", response.get("minion1").result().get());
     }
 
+
+    @Test
+    public final void testGetUid() {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_UID_RESPONSE)));
+
+        LocalCall<String> call = File.getUid("/test", true);
+        assertEquals("file.get_uid", call.getPayload().get("fun"));
+
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertEquals("0", response.get("minion1").result().get());
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_PATHNOTFOUND_EXCEPTION_RESPONSE)));
+
+        call = File.getUid("/test", true);
+        assertEquals("file.get_uid", call.getPayload().get("fun"));
+
+        response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertEquals("ERROR: Path not found: /test", response.get("minion1").result().get());
+    }
+
+    @Test
+    public final void testGetUser() {
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_USER_RESPONSE)));
+
+        LocalCall<String> call = File.getUser("/test", true);
+        assertEquals("file.get_user", call.getPayload().get("fun"));
+
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertEquals("root", response.get("minion1").result().get());
+
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_PATHNOTFOUND_EXCEPTION_RESPONSE)));
+
+        call = File.getUser("/test", true);
+        assertEquals("file.get_user", call.getPayload().get("fun"));
+
+        response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertEquals("ERROR: Path not found: /test", response.get("minion1").result().get());
+    }
+
     @Test
     public final void testMkdir() {
         stubFor(any(urlMatching("/"))
@@ -391,5 +462,71 @@ public class FileTest {
         String errorMessage = "ERROR: A valid directory was not specified.";
         assertEquals(new JsonPrimitive(errorMessage),
                 ((JsonParsingError) response.get("minion1").error().get()).getJson());
+    }
+
+
+    @Test
+    public final void testIsLink() {
+        // true response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_TRUE_RESPONSE)));
+
+        LocalCall<Boolean> call = File.isLink("/test/");
+        assertEquals("file.is_link", call.getPayload().get("fun"));
+
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertTrue(response.get("minion1").result().get());
+
+        // false response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_FALSE_RESPONSE)));
+
+        call = File.isLink("/test/");
+        assertEquals("file.is_link", call.getPayload().get("fun"));
+
+        response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertFalse(response.get("minion1").result().get());
+
+    }
+
+
+    @Test
+    public final void testSymlink() {
+        // true response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_TRUE_RESPONSE)));
+
+        LocalCall<Boolean> call = File.symlink("/test/", "/link");
+        assertEquals("file.symlink", call.getPayload().get("fun"));
+
+        Map<String, Result<Boolean>> response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertTrue(response.get("minion1").result().get());
+
+        // false response
+        stubFor(any(urlMatching("/"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JSON_FALSE_RESPONSE)));
+
+        call = File.symlink("/test/", "/link");
+        assertEquals("file.symlink", call.getPayload().get("fun"));
+
+        response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        assertFalse(response.get("minion1").result().get());
+
     }
 }
