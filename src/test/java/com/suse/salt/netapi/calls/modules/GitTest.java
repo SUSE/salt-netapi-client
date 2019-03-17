@@ -82,7 +82,7 @@ public class GitTest {
         GitResult output = response.get("myminion").result().get();
         assertTrue(output.getModified().size() == 2);
         assertEquals("src/main/java/com/suse/salt/netapi/client/SaltClient.java," +
-        		"src/test/java/com/suse/salt/netapi/examples/Calls.java",
+                "src/test/java/com/suse/salt/netapi/examples/Calls.java",
                 output.getModified().stream().collect(Collectors.joining(",")));
     }
 
@@ -122,7 +122,7 @@ public class GitTest {
 
         String output = response.get("myminion").result().get();
         assertEquals("ERROR: Command 'git add --verbose -- add_test_file.txt' failed: fatal: " +
-        		"pathspec 'add_test_file.txt' did not match any files",
+                "pathspec 'add_test_file.txt' did not match any files",
                 output);
     }
 
@@ -130,7 +130,7 @@ public class GitTest {
     public void testCommit() {
         // First we get the call to use in the tests
         LocalCall<String> call = Git.commit("/dev", "Test commit message", "", "",
-        		Optional.empty(), Optional.empty());
+                Optional.empty(), Optional.empty());
         assertEquals("git.commit", call.getPayload().get("fun"));
 
         // Test with a successful response
@@ -144,7 +144,7 @@ public class GitTest {
 
         String output = response.get("myminion").result().get();
         assertEquals("[master a5d60b640] Test commit\n 1 file changed, 1 insertion(+)\n create mode " +
-        		"100644 add_test_file.txt",
+                "100644 add_test_file.txt",
                 output);
     }
 
