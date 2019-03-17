@@ -23,7 +23,7 @@ public class Git {
         return new LocalCall<>("git.status", Optional.of(args),
                 Optional.of(emptyMap()), new TypeToken<GitResult>(){});
     }
-    
+
     public static LocalCall<String> add(String cwd, String filename,
             String opts, String gitOpts, Optional<String> user) {
         List<String> args = Arrays.asList(cwd, filename, opts, gitOpts);
@@ -31,7 +31,7 @@ public class Git {
         return new LocalCall<>("git.add", Optional.of(args),
                 Optional.of(emptyMap()), new TypeToken<String>(){});
     }
-    
+
     public static LocalCall<String> commit(String cwd, String message,
             String opts, String gitOpts, Optional<String> user, Optional<String> filename) {
         List<String> args = Arrays.asList(cwd, message, opts, gitOpts);
@@ -40,7 +40,7 @@ public class Git {
         return new LocalCall<>("git.commit", Optional.of(args),
                 Optional.of(emptyMap()), new TypeToken<String>(){});
     }
-    
+
     public static LocalCall<Boolean> branch(String cwd, String branch,
             String opts, String gitOpts, Optional<String> user) {
         List<String> args = Arrays.asList(cwd, branch, opts, gitOpts);

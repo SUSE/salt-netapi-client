@@ -47,7 +47,7 @@ public class GitTest {
 
     static final String JSON_COMMIT_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/git/git_commit.json"));
-    
+
     static final String JSON_BRANCH_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/git/git_branch.json"));
 
@@ -76,7 +76,7 @@ public class GitTest {
         Map<String, Result<GitResult>> response =
                 call.callSync(client, new MinionList("myminion"), AUTH)
                         .toCompletableFuture().join();
-        
+
         assertNotNull(response.get("myminion"));
 
         GitResult output = response.get("myminion").result().get();
@@ -98,7 +98,7 @@ public class GitTest {
         Map<String, Result<String>> response =
                 call.callSync(client, new MinionList("myminion"), AUTH)
                         .toCompletableFuture().join();
-        
+
         assertNotNull(response.get("myminion"));
 
         String output = response.get("myminion").result().get();
@@ -117,7 +117,7 @@ public class GitTest {
         Map<String, Result<String>> response =
                 call.callSync(client, new MinionList("myminion"), AUTH)
                         .toCompletableFuture().join();
-        
+
         assertNotNull(response.get("myminion"));
 
         String output = response.get("myminion").result().get();
@@ -139,7 +139,7 @@ public class GitTest {
         Map<String, Result<String>> response =
                 call.callSync(client, new MinionList("myminion"), AUTH)
                         .toCompletableFuture().join();
-        
+
         assertNotNull(response.get("myminion"));
 
         String output = response.get("myminion").result().get();
@@ -160,7 +160,7 @@ public class GitTest {
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("myminion"), AUTH)
                         .toCompletableFuture().join();
-        
+
         assertNotNull(response.get("myminion"));
 
         Boolean output = response.get("myminion").result().get();

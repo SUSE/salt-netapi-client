@@ -21,7 +21,7 @@ public class GitResult {
     }
 
     @Override
-    public String toString() {        
+    public String toString() {
         List<List<String>> allFiles = Arrays.asList(modified, untracked);
         return allFiles.stream()
                 .filter(list -> list != null)
