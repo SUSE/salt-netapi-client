@@ -341,7 +341,7 @@ public class File {
         Map<String, Object> args = new LinkedHashMap<>();
         args.put("src", src);
         args.put("path", path);
-        return new LocalCall<>("file.symlink", Optional.empty(), Optional.of(args)
-                , new TypeToken<Boolean>(){});
+        return new LocalCall<>("file.symlink", Optional.empty(), Optional.of(args),
+                new TypeToken<Boolean>(){});
     }
 }
