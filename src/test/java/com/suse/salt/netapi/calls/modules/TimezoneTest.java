@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TimezoneTest {
 
-    private static final int MOCK_HTTP_PORT = 8889;
+    private static final int MOCK_HTTP_PORT = 8888;
 
     private static final String JSON_NULL_RESPONSE = ClientUtils.streamToString(
             TimezoneTest.class.getResourceAsStream(
