@@ -37,9 +37,9 @@ public class TimezoneTest {
             TimezoneTest.class.getResourceAsStream(
             "/modules/timezone/null_response.json"));
 
-    private static final String JSON_GETOFFESET_OK_RESPONSE = ClientUtils.streamToString(
+    private static final String JSON_GETOFFSET_OK_RESPONSE = ClientUtils.streamToString(
             TimezoneTest.class.getResourceAsStream(
-            "/modules/timezone/getOffset_ok.json"));
+            "/modules/timezone/get_offset_ok.json"));
 
     private SaltClient client;
 
@@ -76,7 +76,7 @@ public class TimezoneTest {
                 .willReturn(aResponse()
                         .withStatus(HttpURLConnection.HTTP_OK)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(JSON_GETOFFESET_OK_RESPONSE)));
+                        .withBody(JSON_GETOFFSET_OK_RESPONSE)));
 
         response = call.callSync(client, new MinionList("minion1"), AUTH).toCompletableFuture().join();
         assertEquals("+0100", response.get("minion1").result().get());
