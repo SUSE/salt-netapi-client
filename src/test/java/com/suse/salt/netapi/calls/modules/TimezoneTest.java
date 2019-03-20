@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TimezoneTest {
 
-    private static final int MOCK_HTTP_PORT = 8888;
+    private static final int MOCK_HTTP_PORT = 8889;
 
     private static final String JSON_NULL_RESPONSE = ClientUtils.streamToString(
             TimezoneTest.class.getResourceAsStream(
@@ -55,7 +55,7 @@ public class TimezoneTest {
     }
 
     @Test
-    public final void testGetOffset() {
+    public final void testGetOffsetNUllResponse() {
         // Test for successful null response
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -70,7 +70,10 @@ public class TimezoneTest {
                 new MinionList("minion1"), AUTH).toCompletableFuture().join();
         assertEquals(JsonNull.INSTANCE,
                 ((JsonParsingError) response.get("minion1").error().get()).getJson());
+    }
 
+    @Test
+    public final void testGetOffsetSuccessResponse() {
         // Test for successful responses
         stubFor(any(urlMatching("/"))
                 .willReturn(aResponse()
@@ -78,8 +81,11 @@ public class TimezoneTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody(JSON_GETOFFSET_OK_RESPONSE)));
 
-        response = call.callSync(client, new MinionList("minion1"), AUTH).toCompletableFuture().join();
+        LocalCall<String> call = Timezone.getOffset();
+        assertEquals("timezone.get_offset", call.getPayload().get("fun"));
+
+        Map<String, Result<String>> response = call.callSync(client,
+                new MinionList("minion1"), AUTH).toCompletableFuture().join();
         assertEquals("+0100", response.get("minion1").result().get());
     }
-
 }
