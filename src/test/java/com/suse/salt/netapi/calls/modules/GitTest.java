@@ -111,7 +111,7 @@ public class GitTest {
         LocalCall<String> call = Git.add("/dev", "add_test_file.txt", "", "", Optional.empty());
         assertEquals("git.add", call.getPayload().get("fun"));
 
-        // Test with a successful response
+        // Test with an error response
         mockOkResponseWith(JSON_ADD_ERROR_RESPONSE);
 
         Map<String, Result<String>> response =
