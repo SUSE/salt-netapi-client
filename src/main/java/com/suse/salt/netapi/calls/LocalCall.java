@@ -123,8 +123,8 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param batch parameter for enabling and configuring batching
      * @return information about the scheduled job
      */
-    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth,
-                                                          Batch batch) {
+    public CompletionStage<Optional<LocalAsyncResult<R>>> callAsync(final SaltClient client, Target<?> target,
+                                                                    AuthMethod auth, Batch batch) {
         return callAsync(client, target, auth, Optional.of(batch));
     }
 
@@ -140,8 +140,8 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param batch parameter for enabling and configuring batching
      * @return information about the scheduled job
      */
-    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth,
-            Optional<Batch> batch) {
+    public CompletionStage<Optional<LocalAsyncResult<R>>> callAsync(final SaltClient client, Target<?> target,
+                                                                    AuthMethod auth, Optional<Batch> batch) {
 
         Map<String, Object> customArgs = new HashMap<>();
         batch.ifPresent(v -> {
@@ -155,7 +155,11 @@ public class LocalCall<R> extends AbstractCall<R> {
                 .thenApply(wrapper -> {
                     LocalAsyncResult<R> result = wrapper.getResult().get(0);
                     result.setType(getReturnType());
-                    return result;
+                    if (result.getJid() == null) {
+                        return Optional.empty();
+                    } else {
+                        return Optional.of(result);
+                    }
                 });
     }
 
@@ -170,7 +174,8 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param auth authentication credentials to use
      * @return information about the scheduled job
      */
-    public CompletionStage<LocalAsyncResult<R>> callAsync(final SaltClient client, Target<?> target, AuthMethod auth) {
+    public CompletionStage<Optional<LocalAsyncResult<R>>> callAsync(final SaltClient client, Target<?> target,
+                                                                    AuthMethod auth) {
         return callAsync(client, target, auth, Optional.empty());
     }
 
@@ -186,7 +191,7 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param batch parameter for enabling and configuring batching
      * @return a map from minion id to future of the result.
      */
-    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
+    public CompletionStage<Optional<Map<String, CompletionStage<Result<R>>>>> callAsync(
             SaltClient client,
             Target<?> target,
             AuthMethod auth,
@@ -208,7 +213,7 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param batch parameter for enabling and configuring batching
      * @return a map from minion id to future of the result.
      */
-    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
+    public CompletionStage<Optional<Map<String, CompletionStage<Result<R>>>>> callAsync(
             SaltClient client,
             Target<?> target,
             AuthMethod auth,
@@ -233,82 +238,84 @@ public class LocalCall<R> extends AbstractCall<R> {
      * @param cancel future to cancel the action
      * @return a map from minion id to future of the result.
      */
-    public CompletionStage<Map<String, CompletionStage<Result<R>>>> callAsync(
-            Function<LocalCall<R>, CompletionStage<LocalAsyncResult<R>>> localAsync,
+    public CompletionStage<Optional<Map<String, CompletionStage<Result<R>>>>> callAsync(
+            Function<LocalCall<R>, CompletionStage<Optional<LocalAsyncResult<R>>>> localAsync,
             Function<RunnerCall<Map<String, R>>,
                                 CompletionStage<RunnerAsyncResult<Map<String, R>>>> runnerAsync,
             EventStream events,
             CompletionStage<GenericError> cancel) {
 
-        return localAsync.apply(this).thenApply(lar -> {
+        return localAsync.apply(this).thenApply(optLar -> {
             TypeToken<R> returnTypeToken = this.getReturnType();
             Type result = ClientUtils.parameterizedType(null,
                     Result.class, returnTypeToken.getType());
             @SuppressWarnings("unchecked")
             TypeToken<Result<R>> typeToken = (TypeToken<Result<R>>) TypeToken.get(result);
 
-            Map<String, CompletableFuture<Result<R>>> futures =
-                    lar.getMinions().stream().collect(Collectors.toMap(
-                            mid -> mid,
-                            mid -> new CompletableFuture<>()
-                            )
-                    );
+            return optLar.map(lar -> {
+                Map<String, CompletableFuture<Result<R>>> futures =
+                        lar.getMinions().stream().collect(Collectors.toMap(
+                                mid -> mid,
+                                mid -> new CompletableFuture<>()
+                                )
+                        );
 
-            EventListener listener = new EventListener() {
-                @Override
-                public void notify(Event event) {
-                    Optional<JobReturnEvent> jobReturnEvent = JobReturnEvent.parse(event);
-                    if (jobReturnEvent.isPresent()) {
-                        jobReturnEvent.ifPresent(e ->
-                                onJobReturn(lar.getJid(), e, typeToken, futures)
-                        );
-                    } else {
-                        RunnerReturnEvent.parse(event).ifPresent(e ->
-                                onRunnerReturn(lar.getJid(), e, typeToken, futures)
-                        );
+                EventListener listener = new EventListener() {
+                    @Override
+                    public void notify(Event event) {
+                        Optional<JobReturnEvent> jobReturnEvent = JobReturnEvent.parse(event);
+                        if (jobReturnEvent.isPresent()) {
+                            jobReturnEvent.ifPresent(e ->
+                                    onJobReturn(lar.getJid(), e, typeToken, futures)
+                            );
+                        } else {
+                            RunnerReturnEvent.parse(event).ifPresent(e ->
+                                    onRunnerReturn(lar.getJid(), e, typeToken, futures)
+                            );
+                        }
                     }
-                }
 
-                @Override
-                public void eventStreamClosed(int code, String phrase) {
-                    Result<R> error = Result.error(
-                            new GenericError(
-                                    "EventStream closed with reason "
-                                            + phrase));
-                    futures.values().forEach(f -> f.complete(error));
-                }
-            };
+                    @Override
+                    public void eventStreamClosed(int code, String phrase) {
+                        Result<R> error = Result.error(
+                                new GenericError(
+                                        "EventStream closed with reason "
+                                                + phrase));
+                        futures.values().forEach(f -> f.complete(error));
+                    }
+                };
 
-            CompletableFuture<Void> allResolves = CompletableFuture.allOf(
-                    futures.entrySet().stream().map(entry ->
-                            // mask errors since CompletableFuture.allOf resolves on first error
-                            entry.getValue().<Integer>handle((v, e) -> 0)
-                    ).toArray(CompletableFuture[]::new)
-            );
+                CompletableFuture<Void> allResolves = CompletableFuture.allOf(
+                        futures.entrySet().stream().map(entry ->
+                                // mask errors since CompletableFuture.allOf resolves on first error
+                                entry.getValue().<Integer>handle((v, e) -> 0)
+                        ).toArray(CompletableFuture[]::new)
+                );
 
-            allResolves.whenComplete((v, e) ->
-                    events.removeEventListener(listener)
-            );
+                allResolves.whenComplete((v, e) ->
+                        events.removeEventListener(listener)
+                );
 
-            cancel.whenComplete((v, e) -> {
-                if (v != null) {
-                    Result<R> error = Result.error(v);
-                    futures.values().forEach(f -> f.complete(error));
-                } else if (e != null) {
-                    futures.values().forEach(f -> f.completeExceptionally(e));
-                }
+                cancel.whenComplete((v, e) -> {
+                    if (v != null) {
+                        Result<R> error = Result.error(v);
+                        futures.values().forEach(f -> f.complete(error));
+                    } else if (e != null) {
+                        futures.values().forEach(f -> f.completeExceptionally(e));
+                    }
+                });
+
+                events.addEventListener(listener);
+
+                // fire off lookup to get a result event for minions that already finished
+                // before we installed the listeners
+                runnerAsync.apply(Jobs.lookupJid(lar));
+
+                return futures.entrySet().stream().collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> (CompletionStage<Result<R>>) e.getValue()
+                ));
             });
-
-            events.addEventListener(listener);
-
-            // fire off lookup to get a result event for minions that already finished
-            // before we installed the listeners
-            runnerAsync.apply(Jobs.lookupJid(lar));
-
-            return futures.entrySet().stream().collect(Collectors.toMap(
-                    Map.Entry::getKey,
-                    e -> (CompletionStage<Result<R>>) e.getValue()
-            ));
         });
     }
 
