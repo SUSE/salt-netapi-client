@@ -202,6 +202,36 @@ public class File {
     }
 
     /**
+     * Return the id of the user that owns a given file
+     *
+     * @param path              File or directory of which to get the uid owner
+     * @param followSymlinks    Indicated if symlinks should be followed
+     * @return                  The {@link LocalCall} object to make the call
+     */
+    public static LocalCall<String> getUid(String path, boolean followSymlinks) {
+        Map<String, Object> args = new LinkedHashMap<>();
+        args.put("path", path);
+        args.put("follow_symlinks", followSymlinks);
+        return new LocalCall<>("file.get_uid", Optional.empty(), Optional.of(args),
+                new TypeToken<String>(){});
+    }
+
+    /**
+     * Return the user that owns a given file
+     *
+     * @param path              File or directory of which to get the user owner
+     * @param followSymlinks    Indicated if symlinks should be followed
+     * @return                  The {@link LocalCall} object to make the call
+     */
+    public static LocalCall<String> getUser(String path, boolean followSymlinks) {
+        Map<String, Object> args = new LinkedHashMap<>();
+        args.put("path", path);
+        args.put("follow_symlinks", followSymlinks);
+        return new LocalCall<>("file.get_user", Optional.empty(), Optional.of(args),
+                new TypeToken<String>(){});
+    }
+
+    /**
      * Ensures that a directory is available
      *
      * @param path  Path to directory
@@ -287,5 +317,31 @@ public class File {
     public static LocalCall<Boolean> rmdir(String path) {
         return new LocalCall<>("file.rmdir", Optional.of(Collections.singletonList(path)),
                 Optional.empty(), new TypeToken<Boolean>(){});
+    }
+
+    /**
+     * Check if the path is a symbolic link
+     *
+     * @param path  Path to file or directory
+     * @return      The {@link LocalCall} object to make the call
+     */
+    public static LocalCall<Boolean> isLink(String path) {
+        return new LocalCall<>("file.is_link", Optional.of(Collections.singletonList(path)),
+                Optional.empty(), new TypeToken<Boolean>(){});
+    }
+
+    /**
+     * Create a symbolic link (symlink, soft link) to a file
+     *
+     * @param src   Path to file or directory
+     * @param path  Path to symbolic link
+     * @return      The {@link LocalCall} object to make the call
+     */
+    public static LocalCall<Boolean> symlink(String src, String path) {
+        Map<String, Object> args = new LinkedHashMap<>();
+        args.put("src", src);
+        args.put("path", path);
+        return new LocalCall<>("file.symlink", Optional.empty(), Optional.of(args),
+                new TypeToken<Boolean>(){});
     }
 }
