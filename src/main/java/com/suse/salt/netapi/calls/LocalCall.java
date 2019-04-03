@@ -376,7 +376,7 @@ public class LocalCall<R> extends AbstractCall<R> {
     private CompletionStage<List<Map<String, Result<R>>>> callSyncHelperNonBlock(
             final SaltClient client, Target<?> target, AuthMethod auth, Optional<Batch> batch) {
         Map<String, Object> customArgs = new HashMap<>();
-        batch.ifPresent(v -> customArgs.put("batch", v.toString()));
+        batch.ifPresent(v -> customArgs.putAll(v.getParams()));
 
         Client clientType = batch.isPresent() ? Client.LOCAL_BATCH : Client.LOCAL;
 
