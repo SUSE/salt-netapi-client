@@ -144,10 +144,7 @@ public class LocalCall<R> extends AbstractCall<R> {
                                                                     AuthMethod auth, Optional<Batch> batch) {
 
         Map<String, Object> customArgs = new HashMap<>();
-        batch.ifPresent(v -> {
-            customArgs.put("batch", v.getBatch());
-            v.getDelay().ifPresent(d -> customArgs.put("batch_delay", d));
-        });
+        batch.ifPresent(v -> customArgs.putAll(v.getParams()));
 
         return client.call(
                 this, Client.LOCAL_ASYNC, Optional.of(target), customArgs,
