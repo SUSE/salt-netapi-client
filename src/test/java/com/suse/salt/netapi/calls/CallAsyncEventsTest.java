@@ -122,7 +122,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                             Duration.of(7, ChronoUnit.SECONDS)
                     ),
                     Optional.empty()
-                ).toCompletableFuture().join();
+                ).toCompletableFuture().join().get();
 
         CountDownLatch countDownLatch = new CountDownLatch(5);
         Map<String, Result<Boolean>> results = new HashMap<>();
@@ -200,7 +200,7 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
                             Duration.of(7, ChronoUnit.SECONDS)
                     ),
                     Optional.of(Batch.asAmount(1))
-                ).toCompletableFuture().join();
+                ).toCompletableFuture().join().get();
 
         CountDownLatch countDownLatch = new CountDownLatch(5);
         Map<String, Result<Boolean>> results = new HashMap<>();
