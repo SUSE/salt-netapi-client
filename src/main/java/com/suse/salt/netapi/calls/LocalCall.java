@@ -2,6 +2,7 @@ package com.suse.salt.netapi.calls;
 
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.suse.salt.netapi.calls.runner.Jobs;
 import com.suse.salt.netapi.client.SaltClient;
@@ -15,6 +16,7 @@ import com.suse.salt.netapi.event.EventListener;
 import com.suse.salt.netapi.event.EventStream;
 import com.suse.salt.netapi.event.JobReturnEvent;
 import com.suse.salt.netapi.event.RunnerReturnEvent;
+import com.suse.salt.netapi.parser.JsonParser;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHResult;
@@ -367,6 +369,41 @@ public class LocalCall<R> extends AbstractCall<R> {
         return callSyncHelperNonBlock(client, target, auth, batch);
     }
 
+    // This is a big hack and should be fixed in salt: https://github.com/saltstack/salt/issues/52762
+    // Salt "randomly" inject a retcode into the called function result if called in local batch mode.
+    // This retcode it totally useless and unreliable since:
+    // - its gets only injected if the result is an object so functions returning for example a string wont have it.
+    // - it does not override it if a function already returns an object with retcode i.e cmd.runAll. Making it
+    //   unreliable in its meaning.
+    // - its injected directly into the functions result object which mixes function result structure with metadata
+    //   specific to how a function is dispatched.
+    private List<Map<String, Result<R>>> handleRetcodeBatchingHack(List<Map<String, Result<R>>> list, Type xor) {
+        return list.stream().map(m -> {
+            return m.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> {
+                return e.getValue().fold(err -> {
+                    return err.<Result<R>>fold(
+                            Result::error,
+                            Result::error,
+                            parsingError -> {
+                                if (parsingError.getJson().isJsonObject()) {
+                                    JsonObject jsonObject = parsingError.getJson().getAsJsonObject();
+                                    if (jsonObject.has("retcode")) {
+                                        jsonObject.remove("retcode");
+                                        return JsonParser.GSON.fromJson(jsonObject, xor);
+                                    } else {
+                                        return Result.error(parsingError);
+                                    }
+                                } else {
+                                    return Result.error(parsingError);
+                                }
+                            },
+                            Result::error
+                    );
+                }, Result::success);
+            }));
+        }).collect(Collectors.toList());
+    }
+
     /**
      * Helper to call an execution module function on the given target for batched or
      * unbatched while also providing an option to use the given credentials or to use a
@@ -394,12 +431,24 @@ public class LocalCall<R> extends AbstractCall<R> {
         TypeToken<Return<List<Map<String, Result<R>>>>> typeToken =
                 (TypeToken<Return<List<Map<String, Result<R>>>>>) TypeToken.get(wrapperType);
 
-        return client.call(this,
-                clientType,
-                Optional.of(target),
-                customArgs,
-                typeToken,
-                auth).thenApply(Return::getResult);
+        if (batch.isPresent()) {
+            return client.call(this,
+                    clientType,
+                    Optional.of(target),
+                    customArgs,
+                    typeToken,
+                    auth)
+                    .thenApply(Return::getResult)
+                    .thenApply(results -> handleRetcodeBatchingHack(results, xor));
+        } else {
+            return client.call(this,
+                    clientType,
+                    Optional.of(target),
+                    customArgs,
+                    typeToken,
+                    auth)
+                    .thenApply(Return::getResult);
+        }
     }
 
     /**
