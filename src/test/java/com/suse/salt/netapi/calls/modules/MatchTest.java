@@ -40,7 +40,7 @@ public class MatchTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(MOCK_HTTP_PORT);
 
-    static final String JSON_CONFIG_MANAGE_MODE = ClientUtils.streamToString(
+    static final String JSON_MATCH_OUTPUT = ClientUtils.streamToString(
             FileTest.class.getResourceAsStream("/modules/match/match_output.json"));
 
     private static final AuthMethod AUTH = new AuthMethod(new Token());
@@ -64,7 +64,7 @@ public class MatchTest {
         LocalCall<Boolean> call = Match.compound("foo", Optional.of("minion"));
         assertEquals("match.compound", call.getPayload().get("fun"));
 
-        mockOkResponseWith(JSON_CONFIG_MANAGE_MODE);
+        mockOkResponseWith(JSON_MATCH_OUTPUT);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -82,7 +82,7 @@ public class MatchTest {
         LocalCall<Boolean> call = Match.glob("foo");
         assertEquals("match.glob", call.getPayload().get("fun"));
 
-        mockOkResponseWith(JSON_CONFIG_MANAGE_MODE);
+        mockOkResponseWith(JSON_MATCH_OUTPUT);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -100,7 +100,7 @@ public class MatchTest {
         LocalCall<Boolean> call = Match.grain("foo", Optional.empty());
         assertEquals("match.grain", call.getPayload().get("fun"));
 
-        mockOkResponseWith(JSON_CONFIG_MANAGE_MODE);
+        mockOkResponseWith(JSON_MATCH_OUTPUT);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -118,7 +118,7 @@ public class MatchTest {
         LocalCall<Boolean> call = Match.pillar("foo", Optional.empty());
         assertEquals("match.pillar", call.getPayload().get("fun"));
 
-        mockOkResponseWith(JSON_CONFIG_MANAGE_MODE);
+        mockOkResponseWith(JSON_MATCH_OUTPUT);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -136,7 +136,7 @@ public class MatchTest {
         LocalCall<Boolean> call = Match.data("foo");
         assertEquals("match.data", call.getPayload().get("fun"));
 
-        mockOkResponseWith(JSON_CONFIG_MANAGE_MODE);
+        mockOkResponseWith(JSON_MATCH_OUTPUT);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)
@@ -154,7 +154,7 @@ public class MatchTest {
         LocalCall<Boolean> call = Match.list("foo", "foo2", "foo3");
         assertEquals("match.list", call.getPayload().get("fun"));
 
-        mockOkResponseWith(JSON_CONFIG_MANAGE_MODE);
+        mockOkResponseWith(JSON_MATCH_OUTPUT);
 
         Map<String, Result<Boolean>> response =
                 call.callSync(client, new MinionList("minion"), AUTH)

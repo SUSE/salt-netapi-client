@@ -17,8 +17,8 @@ public class Match {
 
     /**
      * Return True if the minion ID matches the given compound target
-     * @param tgt
-     * @param minionId
+     * @param tgt pillar target
+     * @param minionId optional id of the minion
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> compound(String tgt, Optional<String> minionId) {
@@ -31,7 +31,7 @@ public class Match {
 
     /**
      * Return True if it matches the given compound target
-     * @param tgt
+     * @param tgt pillar target
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> compound(String tgt) {
@@ -40,8 +40,8 @@ public class Match {
 
     /**
      * Return True if the minion ID matches the given glob target
-     * @param tgt
-     * @param minionId
+     * @param tgt pillar target
+     * @param minionId optional id of the minion
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> glob(String tgt, Optional<String> minionId) {
@@ -54,7 +54,7 @@ public class Match {
 
     /**
      * Return True if it matches the given glob target
-     * @param tgt
+     * @param tgt pillar target
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> glob(String tgt) {
@@ -64,8 +64,8 @@ public class Match {
     /**
      * Return True if the minion matches the given grain target.
      * The delimiter argument can be used to specify a different delimiter.
-     * @param tgt
-     * @param delimiter
+     * @param tgt pillar target
+     * @param delimiter optional different delimiter
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> grain(String tgt, Optional<String> delimiter) {
@@ -79,8 +79,8 @@ public class Match {
     /**
      * Return True if the minion matches the given pillar target.
      * The delimiter argument can be used to specify a different delimiter.
-     * @param tgt
-     * @param delimiter
+     * @param tgt pillar target
+     * @param delimiter optional different delimiter
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> pillar(String tgt, Optional<String> delimiter) {
@@ -93,7 +93,7 @@ public class Match {
 
     /**
      * Return True if the minion matches the given data target
-     * @param tgt
+     * @param tgt pillar target
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> data(String tgt) {
@@ -105,8 +105,8 @@ public class Match {
 
     /**
      * Return True if the minion ID matches the given list target
-     * @param tgt
-     * @param minionId
+     * @param tgt pillar target
+     * @param minionId optional id of the minion
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> list(List<String> tgt, Optional<String> minionId) {
@@ -119,7 +119,7 @@ public class Match {
 
     /**
      * Return True if it matches the given list target
-     * @param tgt
+     * @param tgt pillar target
      * @return the {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> list(String... tgt) {
