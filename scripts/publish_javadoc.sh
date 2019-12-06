@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$TRAVIS_JDK_VERSION" == "oraclejdk8"  &&  "$TRAVIS_PULL_REQUEST" == "false"  &&  ("$TRAVIS_BRANCH" == "master" || "$TRAVIS_TAG") ]]; then
+if [[ "$TRAVIS_JDK_VERSION" == "openjdk11"  &&  "$TRAVIS_PULL_REQUEST" == "false"  &&  ("$TRAVIS_BRANCH" == "master" || "$TRAVIS_TAG") ]]; then
 
   cp -R target/site/apidocs $HOME/javadoc-latest
 
