@@ -55,7 +55,6 @@ public class ResultEvent {
         return minionId;
     }
 
-
     /**
      * Return event data as Map
      * @return event data as map

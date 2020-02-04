@@ -90,7 +90,6 @@ public class RunnerReturnEvent {
         return jobId;
     }
 
-
     /**
      * @return the event data
      */

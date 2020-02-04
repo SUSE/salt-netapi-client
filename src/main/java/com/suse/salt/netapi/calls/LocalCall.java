@@ -318,7 +318,6 @@ public class LocalCall<R> extends AbstractCall<R> {
         });
     }
 
-
     /**
      * Calls a execution module function on the given target and synchronously
      * waits for the result. Authentication is done with the token therefore you
