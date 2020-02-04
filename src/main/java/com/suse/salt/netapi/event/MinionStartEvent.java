@@ -63,7 +63,6 @@ public class MinionStartEvent {
         return GSON.fromJson(data, type);
     }
 
-
     /**
      * Return event data as Map
      * @return event data as map
