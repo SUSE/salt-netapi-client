@@ -9,12 +9,14 @@ public enum AuthModule {
 
     AUTO("auto"),
     DJANGO("django"),
+    FILE("file"),
     KEYSTONE("keystone"),
     LDAP("ldap"),
     MYSQL("mysql"),
     PAM("pam"),
     PKI("pki"),
-    STORMPATH_MOD("stormpath_mod"),
+    REST("rest"),
+    SHAREDSECRET("sharedsecret"),
     YUBICO("yubico");
 
     private final String value;
