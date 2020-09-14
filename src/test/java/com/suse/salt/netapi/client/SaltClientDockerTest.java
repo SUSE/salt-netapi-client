@@ -18,11 +18,14 @@ import com.suse.salt.netapi.exception.SaltUserUnauthorizedException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.TestUtils;
 
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -53,10 +56,18 @@ public class SaltClientDockerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    private CloseableHttpAsyncClient closeableHttpAsyncClient;
+
     @Before
     public void init() {
         URI uri = URI.create(SALT_NETAPI_SERVER + ":" + SALT_NETAPI_PORT);
-        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
+        closeableHttpAsyncClient = TestUtils.defaultClient();
+        client = new SaltClient(uri, new HttpAsyncClientImpl(closeableHttpAsyncClient));
+    }
+
+    @After
+    public void cleanup() throws IOException {
+        closeableHttpAsyncClient.close();
     }
 
     @Test

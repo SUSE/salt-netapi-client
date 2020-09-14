@@ -17,11 +17,14 @@ import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.suse.salt.netapi.utils.TestUtils;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Optional;
@@ -48,10 +51,18 @@ public class JobsTest {
 
     private SaltClient client;
 
+    private CloseableHttpAsyncClient closeableHttpAsyncClient;
+
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
+        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
+        closeableHttpAsyncClient = TestUtils.defaultClient();
+        client = new SaltClient(uri, new HttpAsyncClientImpl(closeableHttpAsyncClient));
+    }
+
+    @After
+    public void cleanup() throws IOException {
+        closeableHttpAsyncClient.close();
     }
 
     @Test

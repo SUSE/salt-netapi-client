@@ -25,10 +25,13 @@ import com.suse.salt.netapi.exception.SaltException;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.suse.salt.netapi.utils.TestUtils;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -58,12 +61,25 @@ public class CallAsyncEventsTest extends AbstractEventsTest {
 
     private SaltClient client;
 
+    private CloseableHttpAsyncClient closeableHttpAsyncClient;
+
     @Override
     @Before
     public void init() throws URISyntaxException, DeploymentException {
         super.init();
-        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
+        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
+        closeableHttpAsyncClient = TestUtils.defaultClient();
+        client = new SaltClient(uri, new HttpAsyncClientImpl(closeableHttpAsyncClient));
+    }
+
+    @After
+    public void cleanup() {
+        super.cleanup();
+        try {
+            closeableHttpAsyncClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
