@@ -33,11 +33,13 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -80,10 +82,18 @@ public class SaltClientTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    private CloseableHttpAsyncClient closeableHttpAsyncClient;
+
     @Before
     public void init() {
-        URI uri = URI.create("http://localhost:" + Integer.toString(MOCK_HTTP_PORT));
-        client = new SaltClient(uri, new HttpAsyncClientImpl(TestUtils.defaultClient()));
+        URI uri = URI.create("http://localhost:" + MOCK_HTTP_PORT);
+        closeableHttpAsyncClient = TestUtils.defaultClient();
+        client = new SaltClient(uri, new HttpAsyncClientImpl(closeableHttpAsyncClient));
+    }
+
+    @After
+    public void cleanup() throws IOException {
+        closeableHttpAsyncClient.close();
     }
 
     @Test
