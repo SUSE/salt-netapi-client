@@ -4,6 +4,8 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.results.GitResult;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -47,5 +49,28 @@ public class Git {
         user.ifPresent(usr -> args.add(usr));
         return new LocalCall<>("git.branch", Optional.of(args),
                 Optional.of(emptyMap()), new TypeToken<Boolean>(){});
+    }
+
+    public static LocalCall<Boolean> clone(String cwd, String url, Optional<String> name, String opts, String gitOpts,
+            Optional<String> user, Optional<String> httpsUser, Optional<String>httpsPass) {
+
+        List<String> args = new ArrayList<>(Arrays.asList(cwd, url));
+        args.add(name.orElse(null));
+        args.add(opts);
+        args.add(gitOpts);
+        args.add(user.orElse(null));
+        args.add(null); //password (only windows)
+        args.add(null); //identity (to implement)
+        args.add(httpsUser.orElse(null));
+        args.add(httpsPass.orElse(null));
+
+        LocalCall<Boolean> run = new LocalCall<>(
+                "git.clone", Optional.of(args), Optional.of(emptyMap()), new TypeToken<Boolean>(){});
+        // set a higher timeout if HTTPS user and pass are given, otherwise no timeout
+        if (httpsUser.isPresent()) {
+            return run.withTimeouts(Optional.of(4), Optional.of(1));
+        } else {
+            return run;
+        }
     }
 }
