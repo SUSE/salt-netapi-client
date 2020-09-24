@@ -62,7 +62,6 @@ public class GitTest {
     static final String JSON_CLONE_ERROR_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/git/git_clone_error.json"));
 
-
     static final AuthMethod AUTH = new AuthMethod(new Token());
 
     private SaltClient client;
@@ -194,7 +193,7 @@ public class GitTest {
                 "/dev",
                 "https://github.com/SUSE/salt-netapi-client.git",
                 Optional.empty(),
-                "","",
+                "", "",
                 Optional.empty(), Optional.empty(), Optional.empty());
         assertEquals("git.clone", call.getPayload().get("fun"));
 
@@ -218,7 +217,7 @@ public class GitTest {
                 "/dev",
                 "https://github.com/SUSE/salt-netapi-client.git",
                 Optional.empty(),
-                "","",
+                "", "",
                 Optional.empty(), Optional.empty(), Optional.empty());
         assertEquals("git.clone", call.getPayload().get("fun"));
 
