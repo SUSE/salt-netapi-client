@@ -30,8 +30,8 @@ public class GitModule {
     private static final String HTTPS_PASS = "saltgit";
 
     public static void main(String[] args) {
-		// Init the client
-    	SaltClient client =
+        // the client
+        SaltClient client =
                 new SaltClient(URI.create(SALT_API_URL),
                 new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
         Token token = client.login(USER, PASSWORD, AuthModule.PAM).toCompletableFuture().join();
@@ -48,7 +48,7 @@ public class GitModule {
                 // substitute above line for the below line of no user and password
                 // Optional.empty(), Optional.empty(), Optional.empty());
 
-    	Map<String, Result<Boolean>> results =
+        Map<String, Result<Boolean>> results =
                 call.callSync(client, new MinionList(MINION_ID), tokenAuth).toCompletableFuture().join();
 
         System.out.println("Response from minions:");
