@@ -60,4 +60,24 @@ public class State {
                 new TypeToken<Object>(){});
     }
 
+    public static LocalCall<Map<String, ApplyResult>> apply(List<String> mods, Optional<Map<String, Object>> pillar) {
+        return apply(mods, pillar, Optional.of(true), Optional.empty());
+    }
+
+    public static <R> LocalCall<R> apply(List<String> mods, Optional<Map<String, Object>> pillar,
+                                         Optional<Boolean> queue, Optional<Boolean> test, Class<R> returnType) {
+        return apply(mods, pillar, queue, test, TypeToken.get(returnType));
+    }
+
+    public static <R> LocalCall<R> apply(List<String> mods, Optional<Map<String, Object>> pillar,
+                                         Optional<Boolean> queue, Optional<Boolean> test,
+                                         TypeToken<R> returnType) {
+        Map<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("mods", mods);
+        pillar.ifPresent(p -> kwargs.put("pillar", p));
+        queue.ifPresent(q -> kwargs.put("queue", q));
+        test.ifPresent(t -> kwargs.put("test", t));
+        return new LocalCall<>("state.apply", Optional.empty(), Optional.of(kwargs), returnType);
+    }
+
 }

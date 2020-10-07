@@ -44,6 +44,17 @@ public class MinionStartEvent {
     }
 
     /**
+     * Gets the grains defined against start_event_grains.
+     * @param <T> T type to be returned after parsing
+     * @param type class of type T
+     * @return grains defined in start_event_grains
+     */
+    public <T> Optional<T> getStartUpGrains(Class<T> type) {
+        return Optional.ofNullable(data.getAsJsonObject().get("grains"))
+                .map(g -> JsonParser.GSON.fromJson(g, type));
+    }
+
+    /**
      * Return the event data parsed into the given type.
      * @param type type token to parse data
      * @param <R> type to parse the data into

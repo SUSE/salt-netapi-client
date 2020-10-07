@@ -106,4 +106,11 @@ public class Grains {
         return new LocalCall<>("grains.remove", Optional.empty(), Optional.of(args),
                 new TypeToken<Map<String, Object>>() { });
     }
+
+    public static <T> LocalCall<T> item(boolean sanitize, TypeToken<T> type, String... items) {
+        LinkedHashMap<String, Object> args = new LinkedHashMap<>();
+        args.put("sanitize", sanitize);
+        return new LocalCall<T>("grains.item", Optional.of(Arrays.asList(items)),
+                Optional.of(args), type);
+    }
 }
