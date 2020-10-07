@@ -9,12 +9,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.JsonPrimitive;
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.client.SaltClient;
 import com.suse.salt.netapi.client.impl.HttpAsyncClientImpl;
 import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.MinionList;
+import com.suse.salt.netapi.errors.JsonParsingError;
 import com.suse.salt.netapi.results.GitResult;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
@@ -53,6 +55,12 @@ public class GitTest {
 
     static final String JSON_BRANCH_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/git/git_branch.json"));
+
+    static final String JSON_CLONE_SUCCESS_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/git/git_clone_success.json"));
+
+    static final String JSON_CLONE_ERROR_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/git/git_clone_error.json"));
 
     static final AuthMethod AUTH = new AuthMethod(new Token());
 
@@ -176,6 +184,61 @@ public class GitTest {
 
         Boolean output = response.get("myminion").result().get();
         assertEquals(true, output);
+    }
+
+    @Test
+    public void testCloneSuccess() {
+        // First we get the call to use in the tests
+        LocalCall<Boolean> call = Git.clone(
+                "/dev",
+                "https://github.com/SUSE/salt-netapi-client.git",
+                Optional.empty(),
+                "", "",
+                Optional.empty(), Optional.empty(), Optional.empty());
+        assertEquals("git.clone", call.getPayload().get("fun"));
+
+        // Test with a successful response
+        mockOkResponseWith(JSON_CLONE_SUCCESS_RESPONSE);
+
+        Map<String, Result<Boolean>> response =
+                call.callSync(client, new MinionList("myminion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("myminion"));
+
+        Boolean output = response.get("myminion").result().get();
+        assertEquals(true, output);
+    }
+
+    @Test
+    public void testCloneError() {
+        // First we get the call to use in the tests
+        LocalCall<Boolean> call = Git.clone(
+                "/dev",
+                "https://github.com/SUSE/salt-netapi-client.git",
+                Optional.empty(),
+                "", "",
+                Optional.empty(), Optional.empty(), Optional.empty());
+        assertEquals("git.clone", call.getPayload().get("fun"));
+
+        // Test with a error response
+        mockOkResponseWith(JSON_CLONE_ERROR_RESPONSE);
+
+        Map<String, Result<Boolean>> response =
+                call.callSync(client, new MinionList("myminion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("myminion"));
+
+
+        Boolean output = response.get("myminion").result().orElse(Boolean.FALSE);
+        assertEquals(false, output);
+        String errorMessage =
+                "ERROR: Command 'git clone -- https://github.com/SUSE/salt-netapi-client.error netapi' " +
+                        "failed: Cloning into 'netapi'...\nfatal: could not read Username for 'https://github.com': " +
+                        "No such device or address";
+        assertEquals(new JsonPrimitive(errorMessage),
+                ((JsonParsingError) response.get("myminion").error().get()).getJson());
     }
 
     private static void mockOkResponseWith(String json) {

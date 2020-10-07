@@ -1,0 +1,1 @@
+{"return":[{"myminion": "ERROR: Command 'git clone -- https://github.com/SUSE/salt-netapi-client.error netapi' failed: Cloning into 'netapi'...\nfatal: could not read Username for 'https://github.com': No such device or address"}]}
