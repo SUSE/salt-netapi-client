@@ -379,7 +379,7 @@ public class LocalCall<R> extends AbstractCall<R> {
     private List<Map<String, Result<R>>> handleRetcodeBatchingHack(List<Map<String, Result<R>>> list, Type xor) {
         return list.stream().map(m -> {
             return m.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> {
-                return e.getValue().fold(err -> {
+                return e.getValue().<Result<R>>fold(err -> {
                     return err.<Result<R>>fold(
                             Result::error,
                             Result::error,
