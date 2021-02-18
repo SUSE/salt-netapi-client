@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Pkg unit tests.
@@ -160,5 +161,20 @@ public class PkgTest {
         assertEquals(Optional.of("4.8.11-2.110"), actualNew.getVersion());
         assertEquals(Optional.of(1500308350L), actualNew.getInstallDateUnixTime());
         assertEquals(Optional.of("x86_64"), actualNew.getArchitecture());
+    }
+
+    @Test
+    public void testListPatterns() {
+        TypeToken<Optional<Map<String, Pkg.PatternInfo>>> type = Pkg.listPatterns(false).getReturnType();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/modules/pkg/list_patterns.json");
+        JsonParser<Optional<Map<String, Pkg.PatternInfo>>> parser =
+                new JsonParser<>(type);
+        Optional<Map<String, Pkg.PatternInfo>> parsed = parser.parse(is);
+        parsed.ifPresent(pattern -> {
+            assertTrue(pattern.get("base").isInstalled());
+            assertFalse(pattern.get("32bit").isInstalled());
+            assertEquals("Help and Support Documentation", pattern.get("documentation").getSummary());
+        });
     }
 }
