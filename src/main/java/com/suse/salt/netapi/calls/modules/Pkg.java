@@ -2,6 +2,7 @@ package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.results.Change;
+import com.suse.salt.netapi.results.PatternInfo;
 import com.suse.salt.netapi.utils.Xor;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -201,28 +202,6 @@ public class Pkg {
                     .collect(Collectors.joining(","));
 
             return "Info(" + fields + ")";
-        }
-    }
-
-    /**
-     * Information about a pattern as returned by "pkg.list_patterns".
-     */
-    public static class PatternInfo {
-
-        private String summary;
-        private boolean installed;
-
-        public String getSummary() {
-            return summary;
-        }
-
-        public boolean isInstalled() {
-            return installed;
-        }
-
-        @Override
-        public String toString() {
-            return "{Summary: " + summary + ", installed: " + installed + "}";
         }
     }
 
