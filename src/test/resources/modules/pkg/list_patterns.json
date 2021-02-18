@@ -1,0 +1,102 @@
+{
+    "32bit": {
+        "installed": false,
+        "summary": "32-Bit Runtime Environment"
+    },
+    "apparmor": {
+        "installed": false,
+        "summary": "AppArmor"
+    },
+    "base": {
+        "installed": true,
+        "summary": "Minimal Base System"
+    },
+    "common-criteria": {
+        "installed": false,
+        "summary": "Tools and scripts for Common Criteria"
+    },
+    "dhcp_dns_server": {
+        "installed": false,
+        "summary": "DHCP and DNS Server"
+    },
+    "directory_server": {
+        "installed": false,
+        "summary": "Directory Server (LDAP)"
+    },
+    "documentation": {
+        "installed": false,
+        "summary": "Help and Support Documentation"
+    },
+    "enhanced_base": {
+        "installed": false,
+        "summary": "Enhanced Base System"
+    },
+    "file_server": {
+        "installed": false,
+        "summary": "File Server"
+    },
+    "fips": {
+        "installed": false,
+        "summary": "FIPS 140-2 specific packages"
+    },
+    "fonts": {
+        "installed": false,
+        "summary": "Fonts"
+    },
+    "gateway_server": {
+        "installed": false,
+        "summary": "Internet Gateway"
+    },
+    "kvm_server": {
+        "installed": false,
+        "summary": "KVM Host Server"
+    },
+    "kvm_tools": {
+        "installed": false,
+        "summary": "KVM Virtualization Host and tools"
+    },
+    "lamp_server": {
+        "installed": false,
+        "summary": "Web and LAMP Server"
+    },
+    "mail_server": {
+        "installed": false,
+        "summary": "Mail and News Server"
+    },
+    "ofed": {
+        "installed": false,
+        "summary": "Infiniband (OFED)"
+    },
+    "oracle_server": {
+        "installed": false,
+        "summary": "Oracle Server Base"
+    },
+    "print_server": {
+        "installed": false,
+        "summary": "Print Server"
+    },
+    "sap_server": {
+        "installed": false,
+        "summary": "SAP Application Server Base"
+    },
+    "sw_management": {
+        "installed": false,
+        "summary": "Software Management"
+    },
+    "x11": {
+        "installed": false,
+        "summary": "X Window System"
+    },
+    "xen_server": {
+        "installed": false,
+        "summary": "Xen Virtual Machine Host Server"
+    },
+    "xen_tools": {
+        "installed": false,
+        "summary": "XEN Virtualization Host and tools"
+    },
+    "yast2_basis": {
+        "installed": false,
+        "summary": "YaST System Administration"
+    }
+}

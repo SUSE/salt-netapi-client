@@ -2,6 +2,7 @@ package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.results.Change;
+import com.suse.salt.netapi.results.PatternInfo;
 import com.suse.salt.netapi.utils.Xor;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -384,6 +385,19 @@ public class Pkg {
         return new LocalCall<>("pkg.latest_version",
                 Optional.of(Arrays.asList(firstPackageName, secondPackageName, packages)),
                 Optional.empty(), new TypeToken<Map<String, String>>(){});
+    }
+
+    /**
+     * Call 'pkg.list_patterns' via Salt API.
+     *
+     * @param refresh refresh repos
+     * @return the call. Only returns a populated map for SUSE-based distros using zypper
+     */
+    public static LocalCall<Optional<Map<String, PatternInfo>>> listPatterns(boolean refresh) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", refresh);
+        return new LocalCall<>("pkg.list_patterns", Optional.empty(),
+                Optional.of(kwargs), new TypeToken<Optional<Map<String, PatternInfo>>>(){});
     }
 
     /**
