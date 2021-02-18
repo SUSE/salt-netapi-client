@@ -204,6 +204,28 @@ public class Pkg {
         }
     }
 
+    /**
+     * Information about a pattern as returned by "pkg.list_patterns".
+     */
+    public static class PatternInfo {
+
+        private String summary;
+        private boolean installed;
+
+        public String getSummary() {
+            return summary;
+        }
+
+        public boolean isInstalled() {
+            return installed;
+        }
+
+        @Override
+        public String toString() {
+            return "{Summary: " + summary + ", installed: " + installed + "}";
+        }
+    }
+
     private Pkg() { }
 
     public static LocalCall<Map<String, PackageInfo>> search(String criteria) {
@@ -384,6 +406,19 @@ public class Pkg {
         return new LocalCall<>("pkg.latest_version",
                 Optional.of(Arrays.asList(firstPackageName, secondPackageName, packages)),
                 Optional.empty(), new TypeToken<Map<String, String>>(){});
+    }
+
+    /**
+     * Call 'pkg.list_patterns' via Salt API.
+     *
+     * @param refresh refresh repos
+     * @return the call. Only returns a populated map for SUSE-based distros using zypper
+     */
+    public static LocalCall<Optional<Map<String, PatternInfo>>> listPatterns(boolean refresh) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("refresh", refresh);
+        return new LocalCall<>("pkg.list_patterns", Optional.empty(),
+                Optional.of(kwargs), new TypeToken<Optional<Map<String, PatternInfo>>>(){});
     }
 
     /**
