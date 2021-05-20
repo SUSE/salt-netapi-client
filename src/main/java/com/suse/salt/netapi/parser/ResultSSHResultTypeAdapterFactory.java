@@ -10,16 +10,19 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.suse.salt.netapi.errors.JsonParsingError;
-import com.suse.salt.netapi.errors.SaltError;
+import com.suse.salt.netapi.errors.SaltSSHError;
 import com.suse.salt.netapi.results.Result;
+import com.suse.salt.netapi.results.Return;
 import com.suse.salt.netapi.results.SSHResult;
 import com.suse.salt.netapi.utils.SaltErrorUtils;
-import com.suse.salt.netapi.utils.Xor;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+
+import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 /**
  * {@link TypeAdapterFactory} for creating type adapters for parsing wrapped
@@ -70,12 +73,24 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                         throw new NullPointerException("No salt ssh return value," +
                                 " return code: " + value.getRetcode());
                     }
-                    return new Result<>(Xor.right(value));
+                    return Result.success(value);
                 } catch (Throwable e) {
-                    Optional<SaltError> saltError =
-                            extractStdErr(json).flatMap(SaltErrorUtils::deriveError);
-                    return new Result<>(Xor.left(
-                            saltError.orElse(new JsonParsingError(json, e))));
+                    Type sshResultType = parameterizedType(null, SSHResult.class, JsonElement.class);
+                    TypeToken<Return<List<Map<String, Result<R>>>>> typeToken =
+                            (TypeToken<Return<List<Map<String, Result<R>>>>>) TypeToken.get(sshResultType);
+                    SSHResult<JsonElement> result = JsonParser.GSON.fromJson(json, typeToken.getType());
+                    if (result.getRetcode() != 0) {
+                        return Result.error(
+                                result.getStderr()
+                                        .flatMap(SaltErrorUtils::deriveError)
+                                        .orElse(
+                                                new SaltSSHError(result.getRetcode(),
+                                                        result.getStderr().orElse(""))
+                                        )
+                        );
+                    } else {
+                        return Result.error(new JsonParsingError(json, e));
+                    }
                 }
             }
 
@@ -84,17 +99,6 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                 throw new JsonParseException("Writing Xor is not supported");
             }
 
-            private Optional<String> extractStdErr(JsonElement json) {
-                if (json.isJsonObject() && json.getAsJsonObject().has("stderr") &&
-                        json.getAsJsonObject().get("stderr").isJsonPrimitive() &&
-                        json.getAsJsonObject().get("stderr")
-                                .getAsJsonPrimitive().isString()) {
-                    return Optional.of(json.getAsJsonObject().get("stderr")
-                            .getAsJsonPrimitive().getAsString());
-                }
-
-                return Optional.empty();
-            }
         };
     }
 
