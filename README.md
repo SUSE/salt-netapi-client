@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/SUSE/salt-netapi-client.svg?branch=master)](https://travis-ci.org/SUSE/salt-netapi-client)
-[![Maven Central](https://img.shields.io/maven-central/v/com.suse.salt/salt-netapi-client.svg)](https://mvnrepository.com/artifact/com.suse.salt/salt-netapi-client)
+[![Build Status](https://github.com/SUSE/salt-netapi-client/actions/workflows/maven.yml/badge.svg)](https://github.com/SUSE/salt-netapi-client/actions/workflows/maven.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.suse.salt/salt-netapi-client)](https://mvnrepository.com/artifact/com.suse.salt/salt-netapi-client)
 
 # salt-netapi-client
 
