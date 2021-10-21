@@ -1,0 +1,66 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      salt-master:
+        image: mbologna/saltstack-master
+        options: --name saltmaster
+        ports:
+          - 8000:9080
+      salt-minion1:
+        image: mbologna/saltstack-minion
+        options: --name saltminion1 --link saltmaster:salt
+      salt-minion2:
+        image: mbologna/saltstack-minion
+        options: --name saltminion2 --link saltmaster:salt
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: Build and test with Maven
+        run: mvn checkstyle:check javadoc:javadoc test package
+      - name: Get branch name or tag
+        if: success()
+        uses: tj-actions/branch-names@v5
+        id: branch-name
+      - name: Publish javadoc for the default branch
+        if: success() && steps.branch-name.outputs.is_default == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/apidocs
+          destination_dir: docs/${{ steps.branch-name.outputs.current_branch }}
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Publish javadoc for a tagged release
+        if: success() && steps.branch-name.outputs.is_tag == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/apidocs
+          destination_dir: docs/${{ steps.branch-name.outputs.tag }}
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Create tagged release
+        if: success() && steps.branch-name.outputs.is_tag == 'true'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          files: |
+            target/salt-netapi-client*.jar
