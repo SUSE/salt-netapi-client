@@ -415,4 +415,54 @@ public class Pkg {
                                 toMap(Map.Entry::getKey, Map.Entry::getValue))))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * List current package locks.
+     *
+     * @return the call. For each package, the map can contain a String (only the version)
+     * or an Info object containing specified attributes depending on Salt version and
+     * minion support
+     */
+    public static LocalCall<Map<String, List<Xor<String, Info>>>> listLocks() {
+        return new LocalCall<>("pkg.list_locks",Optional.empty(),Optional.empty(),
+                new TypeToken<Map<String, List<Xor<String, Info>>>>(){});
+    }
+
+    /**
+     * Remove unused locks that do not currently (with regard to repositories used)
+     * lock any package.
+     *
+     * @return the LocalCall object
+     */
+    public static LocalCall<Map<String, Object>> cleanLocks() {
+        return new LocalCall<>("pkg.clean_locks",
+                Optional.empty(), Optional.empty(),
+                new TypeToken<Map<String, Object>>(){});
+    }
+
+    /**
+     * Remove a package lock.
+     *
+     * @param packageName A package name, or a comma-separated list of package names.
+     * @return the LocalCall object
+     */
+    public static LocalCall<Map<String, Object>> removeLock(String packageName) {
+        return new LocalCall<>("pkg.remove_lock",
+                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+                new TypeToken<Map<String, Object>>(){});
+    }
+
+    /**
+     * Add a package lock.
+     *
+     * @param packageName A package name, or a comma-separated list of package names.
+     * @return the LocalCall object
+     */
+    public static LocalCall<Map<String, Object>> addLock(String... packageName) {
+        return new LocalCall<>("pkg.add_lock",
+                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+                new TypeToken<Map<String, Object>>(){});
+    }
+
 }
+
