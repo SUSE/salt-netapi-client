@@ -444,7 +444,7 @@ public class Pkg {
      * @param packageName A package name, or a comma-separated list of package names.
      * @return the LocalCall object
      */
-    public static LocalCall<Map<String, Object>> removeLock(String packageName) {
+    public static LocalCall<Map<String, Object>> removeLock(String... packageName) {
         return new LocalCall<>("pkg.remove_lock",
                 Optional.of(Arrays.asList(packageName)), Optional.empty(),
                 new TypeToken<Map<String, Object>>(){});
