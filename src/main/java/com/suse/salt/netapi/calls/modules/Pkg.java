@@ -419,20 +419,18 @@ public class Pkg {
     /**
      * List current package locks.
      *
-     * @return the call. For each package, the map can contain a String (only the version)
-     * or an Info object containing specified attributes depending on Salt version and
-     * minion support
+     * @return the LocalCall object. For each package, a list of attributed
      */
     public static LocalCall<Map<String, List<Xor<String, Info>>>> listLocks() {
         return new LocalCall<>("pkg.list_locks", Optional.empty(), Optional.empty(),
-                new TypeToken<Map<String, List<Xor<String, Info>>>>(){});
+                new TypeToken<Map<String, List<String>>>(){});
     }
 
     /**
      * Remove unused locks that do not currently (with regard to repositories used)
      * lock any package.
      *
-     * @return the LocalCall object
+     * @return the LocalCall object.
      */
     public static LocalCall<Map<String, Object>> cleanLocks() {
         return new LocalCall<>("pkg.clean_locks",
