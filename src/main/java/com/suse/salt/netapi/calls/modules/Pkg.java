@@ -421,7 +421,7 @@ public class Pkg {
      *
      * @return the LocalCall object. For each package, a list of attributed
      */
-    public static LocalCall<Map<String, List<String, Info>>> listLocks() {
+    public static LocalCall<Map<String, List<String>>> listLocks() {
         return new LocalCall<>("pkg.list_locks", Optional.empty(), Optional.empty(),
                 new TypeToken<Map<String, List<String>>>(){});
     }
