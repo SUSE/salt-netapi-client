@@ -424,7 +424,7 @@ public class Pkg {
      * minion support
      */
     public static LocalCall<Map<String, List<Xor<String, Info>>>> listLocks() {
-        return new LocalCall<>("pkg.list_locks",Optional.empty(),Optional.empty(),
+        return new LocalCall<>("pkg.list_locks", Optional.empty(), Optional.empty(),
                 new TypeToken<Map<String, List<Xor<String, Info>>>>(){});
     }
 
