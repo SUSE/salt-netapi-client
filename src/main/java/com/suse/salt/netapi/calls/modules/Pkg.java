@@ -439,26 +439,30 @@ public class Pkg {
     }
 
     /**
-     * Remove a package lock.
+     * Remove a package hold.
      *
-     * @param packageName A package name, or a comma-separated list of package names.
+     * @param pkgs A list of packages to hold.
      * @return the LocalCall object
      */
-    public static LocalCall<Map<String, Object>> removeLock(String... packageName) {
-        return new LocalCall<>("pkg.remove_lock",
-                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+    public static LocalCall<Map<String, Object>> hold(List<String> pkgs) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("pkgs", pkgs);
+        return new LocalCall<>("pkg.hold",
+                Optional.empty(), Optional.of(kwargs),
                 new TypeToken<Map<String, Object>>(){});
     }
 
     /**
-     * Add a package lock.
+     * Add a package unhold.
      *
-     * @param packageName A package name, or a comma-separated list of package names.
+     * @param pkgs A list of packages to unhold.
      * @return the LocalCall object
      */
-    public static LocalCall<Map<String, Object>> addLock(String... packageName) {
-        return new LocalCall<>("pkg.add_lock",
-                Optional.of(Arrays.asList(packageName)), Optional.empty(),
+    public static LocalCall<Map<String, Object>> unhold(List<String> pkgs) {
+        LinkedHashMap<String, Object> kwargs = new LinkedHashMap<>();
+        kwargs.put("pkgs", pkgs);
+        return new LocalCall<>("pkg.unhold",
+                Optional.empty(),Optional.of(kwargs),
                 new TypeToken<Map<String, Object>>(){});
     }
 
