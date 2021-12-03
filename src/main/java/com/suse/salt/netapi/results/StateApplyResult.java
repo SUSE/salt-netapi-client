@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 public class StateApplyResult<R> {
 
     private String comment;
-    private String name;
+    private Object name;
     @SerializedName("start_time")
     private String startTime;
     private boolean result;
@@ -24,7 +24,7 @@ public class StateApplyResult<R> {
     }
 
     public String getName() {
-        return name;
+        return name.toString();
     }
 
     public String getStartTime() {
