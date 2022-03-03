@@ -85,7 +85,7 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
                                         .flatMap(SaltErrorUtils::deriveError)
                                         .orElse(
                                                 new SaltSSHError(result.getRetcode(),
-                                                        result.getStderr().orElse(""))
+                                                        result.getStderr().orElse(result.getStdout().orElse("")))
                                         )
                         );
                     } else {
