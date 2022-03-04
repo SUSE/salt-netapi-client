@@ -43,7 +43,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           skip_check_run: false
           minimum_coverage: 60
-          fail_below_threshold: true
+          fail_below_threshold: false
       - name: Get branch name or tag
         if: success()
         uses: tj-actions/branch-names@v5
