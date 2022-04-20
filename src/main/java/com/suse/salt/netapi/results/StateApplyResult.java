@@ -1,6 +1,9 @@
 package com.suse.salt.netapi.results;
 
 import com.google.gson.annotations.SerializedName;
+import com.suse.salt.netapi.utils.Xor;
+
+import java.util.Optional;
 
 /**
  * Result structure as returned by state.apply to be parsed from event data.
@@ -10,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
 public class StateApplyResult<R> {
 
     private String comment;
-    private String name;
+    private Optional<Xor<String[], String>> name = Optional.empty();
     @SerializedName("start_time")
     private String startTime;
     private boolean result;
@@ -23,7 +26,7 @@ public class StateApplyResult<R> {
         return comment;
     }
 
-    public String getName() {
+    public Optional<Xor<String[], String>> getName() {
         return name;
     }
 
