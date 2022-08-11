@@ -4,6 +4,7 @@ import com.suse.salt.netapi.calls.LocalCall;
 
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
@@ -21,7 +22,8 @@ public class System {
         at_time.ifPresent(t -> {
             args.put("at_time", t);
         });
-        return new LocalCall<>("system.reboot", Optional.empty(), Optional.of(args),
+        return new LocalCall<>("system.reboot", Optional.of(Arrays.asList("--module-executors=['direct_call']")),
+                Optional.of(args),
                 new TypeToken<String>(){});
     }
 }
