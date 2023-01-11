@@ -15,10 +15,14 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.nio.client.HttpAsyncClient;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 /**
  * AsyncHttpClient implemented with Apache's HttpAsyncClient.
@@ -118,7 +122,7 @@ public class HttpAsyncClientImpl implements AsyncHttpClient {
                         future.completeExceptionally(e);
                     }
                 } else {
-                    future.completeExceptionally(createSaltException(statusCode));
+                    future.completeExceptionally(createSaltException(response));
                 }
             }
 
@@ -132,16 +136,27 @@ public class HttpAsyncClientImpl implements AsyncHttpClient {
     }
 
     /**
-     * Create the appropriate exception for the given HTTP status code.
+     * Create the appropriate exception for the given HTTP response.
      *
-     * @param statusCode HTTP status code
+     * @param response HTTP response
      * @return {@link SaltException} instance
      */
-    private SaltException createSaltException(int statusCode) {
+    private SaltException createSaltException(HttpResponse response) {
+        int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
             return new SaltUserUnauthorizedException(
                     "Salt user does not have sufficient permissions");
         }
-        return new SaltException("Response code: " + statusCode);
+        else {
+            String content = "";
+            try {
+                content = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))
+                        .lines().parallel().collect(Collectors.joining("\n"));
+            }
+            catch (IOException e) {
+                // error trying to get the response body, nothing to do...
+            }
+            return new SaltException("Response code: " + statusCode + ". Response body:\n" + content);
+        }
     }
 }
