@@ -397,6 +397,7 @@ public class LocalCall<R> extends AbstractCall<R> {
                                 }
                             },
                             Result::error,
+                            Result::error,
                             Result::error
                     );
                 }, Result::success);

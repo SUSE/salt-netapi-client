@@ -22,12 +22,13 @@ final public class ModuleNotSupported implements SaltError {
         return "ModuleNotSupported(" + moduleName + ")";
     }
 
+    @Override
     public <T> T fold(Function<FunctionNotAvailable, ? extends T> fnNotAvail,
             Function<ModuleNotSupported, ? extends T> modNotSupported,
             Function<JsonParsingError, ? extends T> jsonError,
             Function<GenericError, ? extends T> generic,
-            Function<SaltSSHError, ? extends T> saltSSHError
-    ) {
+            Function<SaltSSHError, ? extends T> saltSSHError,
+            Function<InvalidArgs, ? extends T> invalidArgs) {
         return modNotSupported.apply(this);
     }
 

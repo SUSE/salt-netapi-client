@@ -11,7 +11,8 @@ public interface SaltError {
             Function<ModuleNotSupported, ? extends T> modNotSupported,
             Function<JsonParsingError, ? extends T> jsonError,
             Function<GenericError, ? extends T> generic,
-            Function<SaltSSHError, ? extends T> saltSSHError);
+            Function<SaltSSHError, ? extends T> saltSSHError,
+            Function<InvalidArgs, ? extends  T> invalidArgs);
 
 }
 
