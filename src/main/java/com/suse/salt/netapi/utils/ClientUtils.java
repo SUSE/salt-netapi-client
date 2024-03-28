@@ -7,8 +7,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Scanner;
 
-import static com.google.gson.internal.$Gson$Types.newParameterizedTypeWithOwner;
-
 import com.suse.salt.netapi.client.SaltClient;
 
 /**
@@ -61,11 +59,9 @@ public class ClientUtils {
      * @param rawType the raw type
      * @param typeArguments the type arguments
      * @return the parameterized type object
-     * @see com.google.gson.internal.$Gson$Types#newParameterizedTypeWithOwner
      */
-    public static ParameterizedType parameterizedType(Type ownerType, Type rawType,
-            Type... typeArguments) {
-        return newParameterizedTypeWithOwner(ownerType, rawType, typeArguments);
+    public static ParameterizedType parameterizedType(Type ownerType, Type rawType, Type... typeArguments) {
+        return new ParameterizedTypeImpl(ownerType, rawType, typeArguments);
     }
 
     /**
