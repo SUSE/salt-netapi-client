@@ -25,6 +25,8 @@ There is some basic [code examples](https://github.com/SUSE/salt-netapi-client/t
 
 Pull requests are always welcome, please see [issues](https://github.com/SUSE/salt-netapi-client/issues) for a list of things to possibly tackle.
 
+Make sure you have Git commit signing enabled. If you are not doing it already, check out the [GitHub documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification).
+
 ### Style guide
 
 * Indentations are represented with 4 spaces
