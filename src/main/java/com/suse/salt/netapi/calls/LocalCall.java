@@ -63,6 +63,14 @@ public class LocalCall<R> extends AbstractCall<R> {
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
+                     Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+                     Optional<?> metadata, Optional<Integer> timeout,
+                     Optional<Integer> gatherJobTimeout) {
+        this(functionName, arg, kwarg, returnType, metadata, timeout, gatherJobTimeout,
+                Optional.empty(), Optional.empty());
+    }
+
+    public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<Integer> timeout, Optional<Integer> gatherJobTimeout) {
         this(functionName, arg, kwarg, returnType, Optional.empty(),
