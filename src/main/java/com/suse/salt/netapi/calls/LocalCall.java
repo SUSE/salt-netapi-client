@@ -44,31 +44,44 @@ public class LocalCall<R> extends AbstractCall<R> {
     private final Optional<?> metadata;
     private final Optional<Integer> timeout;
     private final Optional<Integer> gatherJobTimeout;
+    private final Optional<List<String>> executors;
+    private final Optional<Map<String, ?>> executorOptions;
 
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<?> metadata, Optional<Integer> timeout,
-            Optional<Integer> gatherJobTimeout) {
+            Optional<Integer> gatherJobTimeout, Optional<List<String>> executors,
+            Optional<Map<String, ?>> executorOptions) {
         super(functionName, returnType);
         this.arg = arg;
         this.kwarg = kwarg;
         this.metadata = metadata;
         this.timeout = timeout;
         this.gatherJobTimeout = gatherJobTimeout;
+        this.executors = executors;
+        this.executorOptions = executorOptions;
+    }
+
+    public LocalCall(String functionName, Optional<List<?>> arg,
+                     Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+                     Optional<?> metadata, Optional<Integer> timeout,
+                     Optional<Integer> gatherJobTimeout) {
+        this(functionName, arg, kwarg, returnType, metadata, timeout, gatherJobTimeout,
+                Optional.empty(), Optional.empty());
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<Integer> timeout, Optional<Integer> gatherJobTimeout) {
         this(functionName, arg, kwarg, returnType, Optional.empty(),
-                timeout, gatherJobTimeout);
+                timeout, gatherJobTimeout, Optional.empty(), Optional.empty());
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<?> metadata) {
         this(functionName, arg, kwarg, returnType, metadata, Optional.empty(),
-                Optional.empty());
+                Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
@@ -78,23 +91,34 @@ public class LocalCall<R> extends AbstractCall<R> {
 
     public LocalCall<R> withMetadata(Object metadata) {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(),
-                Optional.of(metadata), timeout, gatherJobTimeout);
+                Optional.of(metadata), timeout, gatherJobTimeout, executors, executorOptions);
     }
 
     public LocalCall<R> withoutMetadata() {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(),
-                Optional.empty(), timeout, gatherJobTimeout);
+                Optional.empty(), timeout, gatherJobTimeout, executors, executorOptions);
     }
 
     public LocalCall<R> withTimeouts(Optional<Integer> timeout,
             Optional<Integer> gatherJobTimeout) {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
-                timeout, gatherJobTimeout);
+                timeout, gatherJobTimeout, executors, executorOptions);
     }
 
     public LocalCall<R> withoutTimeouts() {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
-                Optional.empty(), Optional.empty());
+                Optional.empty(), Optional.empty(), executors, executorOptions);
+    }
+
+    public LocalCall<R> withExecutors(Optional<List<String>> executors,
+                                     Optional<Map<String, ?>> executorOptions) {
+        return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
+                timeout, gatherJobTimeout, executors, executorOptions);
+    }
+
+    public LocalCall<R> withoutExecutors() {
+        return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
+                timeout, gatherJobTimeout, Optional.empty(), Optional.empty());
     }
 
     /**
@@ -110,6 +134,8 @@ public class LocalCall<R> extends AbstractCall<R> {
         timeout.ifPresent(timeout -> payload.put("timeout", timeout));
         gatherJobTimeout.ifPresent(gatherJobTimeout -> payload.put("gather_job_timeout",
                 gatherJobTimeout));
+        executors.ifPresent(exe -> payload.put("module_executors", exe));
+        executorOptions.ifPresent(opts -> payload.put("executor_opts", opts));
         return payload;
     }
 
