@@ -6,7 +6,7 @@ import org.junit.Before;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.websocket.DeploymentException;
+import jakarta.websocket.DeploymentException;
 
 /**
  * Base class for running tests involving the WebSocket based event stream.

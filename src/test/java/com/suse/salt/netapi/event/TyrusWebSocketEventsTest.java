@@ -5,7 +5,7 @@ import com.suse.salt.netapi.datatypes.Token;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.websocket.CloseReason.CloseCodes;
+import jakarta.websocket.CloseReason.CloseCodes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
