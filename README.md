@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.suse.salt/salt-netapi-client)](https://mvnrepository.com/artifact/com.suse.salt/salt-netapi-client)
 
 # IMPORTANT
-Starting from v1.0.0, salt-netapi-client uses jakarta instead of javax. If you still want to use javax version, please use v0.x.x.
+Starting from v1.0.0, salt-netapi-client uses jakarta instead of javax. If you still want to use javax version (based on `javax` branch), please use v0.x.x.
 
 # salt-netapi-client
 
@@ -28,7 +28,7 @@ There is some basic [code examples](https://github.com/SUSE/salt-netapi-client/t
 
 Pull requests are always welcome, please see [issues](https://github.com/SUSE/salt-netapi-client/issues) for a list of things to possibly tackle.
 
-If you want to contribute to salt-netapi-client lib which use javax, please create a PR againsts 5.1 branch.
+If you want to contribute to salt-netapi-client lib which use javax, please create a PR againsts `javax` branch.
 
 Make sure you have Git commit signing enabled. If you are not doing it already, check out the [GitHub documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification).
 
