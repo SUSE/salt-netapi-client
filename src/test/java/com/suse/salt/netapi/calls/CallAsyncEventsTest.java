@@ -45,7 +45,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.websocket.DeploymentException;
+import jakarta.websocket.DeploymentException;
 
 /**
  * Tests for callAsync() taking an event stream to return results as they come in.

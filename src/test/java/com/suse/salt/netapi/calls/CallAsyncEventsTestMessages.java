@@ -3,7 +3,7 @@ package com.suse.salt.netapi.calls;
 import com.suse.salt.netapi.event.MockingWebSocket;
 import com.suse.salt.netapi.utils.ClientUtils;
 
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpoint;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 

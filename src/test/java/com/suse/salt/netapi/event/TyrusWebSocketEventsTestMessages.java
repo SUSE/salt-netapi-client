@@ -2,7 +2,7 @@ package com.suse.salt.netapi.event;
 
 import com.suse.salt.netapi.utils.ClientUtils;
 
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpoint;
 import java.util.stream.Stream;
 
 /**
