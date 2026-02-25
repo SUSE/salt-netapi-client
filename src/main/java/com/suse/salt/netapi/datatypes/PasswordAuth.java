@@ -32,6 +32,6 @@ public class PasswordAuth {
     @Override
     public String toString() {
         return "PasswordAuth(username = " + username +
-               ", password = <REDACTED>, authModule = " + module.getValue() + ")";
+                ", password = <REDACTED>, authModule = " + module.getValue() + ")";
     }
 }

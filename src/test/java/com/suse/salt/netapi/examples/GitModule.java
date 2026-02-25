@@ -33,7 +33,7 @@ public class GitModule {
         // the client
         SaltClient client =
                 new SaltClient(URI.create(SALT_API_URL),
-                new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
+                        new HttpAsyncClientImpl(HttpClientUtils.defaultClient()));
         Token token = client.login(USER, PASSWORD, AuthModule.PAM).toCompletableFuture().join();
         AuthMethod tokenAuth = new AuthMethod(token);
 

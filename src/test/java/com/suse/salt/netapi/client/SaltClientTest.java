@@ -3,6 +3,7 @@ package com.suse.salt.netapi.client;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -248,7 +249,7 @@ public class SaltClientTest {
         assertNotNull(stats);
         verify(1, getRequestedFor(urlEqualTo("/stats"))
                 .withHeader("Accept", equalTo("application/json"))
-                .withRequestBody(equalTo("")));
+                .withRequestBody(absent()));
     }
 
     @Test
@@ -268,6 +269,6 @@ public class SaltClientTest {
         verify(1, postRequestedFor(urlEqualTo("/logout"))
                 .withHeader("Accept", equalTo("application/json"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
-                .withRequestBody(equalTo("")));
+                .withRequestBody(absent()));
     }
 }
