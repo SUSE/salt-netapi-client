@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -105,7 +104,7 @@ public class File {
      * @return      The {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> remove(String path) {
-        return new LocalCall<>("file.remove", Optional.of(Collections.singletonList(path)),
+        return new LocalCall<>("file.remove", Optional.of(List.of(path)),
                 Optional.empty(), new TypeToken<Boolean>(){});
     }
 
@@ -302,7 +301,7 @@ public class File {
      * @return      The {@link LocalCall} object to make the call
      */
     public static LocalCall<List<String>> readdir(String path) {
-        return new LocalCall<>("file.readdir", Optional.of(Collections.singletonList(path)),
+        return new LocalCall<>("file.readdir", Optional.of(List.of(path)),
                 Optional.empty(), new TypeToken<List<String>>(){});
     }
 
@@ -315,7 +314,7 @@ public class File {
      * @return      The {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> rmdir(String path) {
-        return new LocalCall<>("file.rmdir", Optional.of(Collections.singletonList(path)),
+        return new LocalCall<>("file.rmdir", Optional.of(List.of(path)),
                 Optional.empty(), new TypeToken<Boolean>(){});
     }
 
@@ -326,7 +325,7 @@ public class File {
      * @return      The {@link LocalCall} object to make the call
      */
     public static LocalCall<Boolean> isLink(String path) {
-        return new LocalCall<>("file.is_link", Optional.of(Collections.singletonList(path)),
+        return new LocalCall<>("file.is_link", Optional.of(List.of(path)),
                 Optional.empty(), new TypeToken<Boolean>(){});
     }
 
