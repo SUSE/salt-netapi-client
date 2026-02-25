@@ -5,7 +5,6 @@ import com.suse.salt.netapi.calls.LocalCall;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,8 +74,7 @@ public class Status {
     }
 
     public static LocalCall<String> pid(String signature) {
-        List<String> args = Collections.singletonList(signature);
-        return new LocalCall<>("status.pid", Optional.of(args), Optional.empty(),
+        return new LocalCall<>("status.pid", Optional.of(List.of(signature)), Optional.empty(),
                 new TypeToken<String>(){});
     }
 

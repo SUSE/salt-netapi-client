@@ -9,7 +9,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -410,9 +409,7 @@ public class Pkg {
      */
     private static List<Map<String, String>> preparePkgs(Map<String, String> pkgs) {
         return pkgs.entrySet().stream()
-                .map(e -> Collections.unmodifiableMap(Stream.of(e)
-                        .collect(Collectors.<Map.Entry<String, String>, String, String>
-                                toMap(Map.Entry::getKey, Map.Entry::getValue))))
+                .map(e -> Stream.of(e).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)))
                 .collect(Collectors.toList());
     }
 }
