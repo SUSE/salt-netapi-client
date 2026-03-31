@@ -20,7 +20,6 @@ import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.SSHRawResult;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -122,9 +121,7 @@ public class SaltClient {
         props.put("arg", args);
         props.put("kwarg", kwargs);
 
-        List<Map<String, Object>> list =  Collections.singletonList(props);
-
-        String payload = gson.toJson(list);
+        String payload = gson.toJson(List.of(props));
 
         CompletionStage<Map<String, Object>> result = asyncHttpClient
                 .post(uri.resolve("run"), payload, JsonParser.RUN_RESULTS)
@@ -153,9 +150,7 @@ public class SaltClient {
 
         SaltSSHUtils.mapConfigPropsToArgs(cfg, props);
 
-        List<Map<String, Object>> list = Collections.singletonList(props);
-
-        String payload = gson.toJson(list);
+        String payload = gson.toJson(List.of(props));
 
         CompletionStage<Map<String, Result<SSHRawResult>>> result = asyncHttpClient
                 .post(uri.resolve("run"), payload, JsonParser.RUNSSHRAW_RESULTS)
@@ -217,8 +212,7 @@ public class SaltClient {
         props.put("client", client.getValue());
         props.putAll(call.getPayload());
         props.putAll(custom);
-        List<Map<String, Object>> list = Collections.singletonList(props);
-        String payload = gson.toJson(list);
+        String payload = gson.toJson(List.of(props));
 
         URI endpoint = auth.getInternal().isRight() ? uri.resolve("run") : uri;
         return asyncHttpClient.post(endpoint, headers, payload, new JsonParser<>(type));

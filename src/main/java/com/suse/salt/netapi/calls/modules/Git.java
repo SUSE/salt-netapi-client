@@ -7,9 +7,8 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
-import static java.util.Collections.emptyMap;
 
 /**
  * salt.modules.git
@@ -22,7 +21,7 @@ public class Git {
         List<String> args = new ArrayList<>(Arrays.asList(cwd));
         user.ifPresent(usr -> args.add(usr));
         return new LocalCall<>("git.status", Optional.of(args),
-                Optional.of(emptyMap()), new TypeToken<GitResult>(){});
+                Optional.of(Map.of()), new TypeToken<GitResult>(){});
     }
 
     public static LocalCall<String> add(String cwd, String filename,
@@ -30,7 +29,7 @@ public class Git {
         List<String> args = new ArrayList<>(Arrays.asList(cwd, filename, opts, gitOpts));
         user.ifPresent(usr -> args.add(usr));
         return new LocalCall<>("git.add", Optional.of(args),
-                Optional.of(emptyMap()), new TypeToken<String>(){});
+                Optional.of(Map.of()), new TypeToken<String>(){});
     }
 
     public static LocalCall<String> commit(String cwd, String message,
@@ -39,7 +38,7 @@ public class Git {
         user.ifPresent(usr -> args.add(usr));
         filename.ifPresent(file -> args.add(file));
         return new LocalCall<>("git.commit", Optional.of(args),
-                Optional.of(emptyMap()), new TypeToken<String>(){});
+                Optional.of(Map.of()), new TypeToken<String>(){});
     }
 
     public static LocalCall<Boolean> branch(String cwd, String branch,
@@ -47,7 +46,7 @@ public class Git {
         List<String> args = new ArrayList<>(Arrays.asList(cwd, branch, opts, gitOpts));
         user.ifPresent(usr -> args.add(usr));
         return new LocalCall<>("git.branch", Optional.of(args),
-                Optional.of(emptyMap()), new TypeToken<Boolean>(){});
+                Optional.of(Map.of()), new TypeToken<Boolean>(){});
     }
 
     public static LocalCall<Boolean> clone(String cwd, String url, Optional<String> name, String opts, String gitOpts,
@@ -64,7 +63,7 @@ public class Git {
         args.add(httpsPass.orElse(null));
 
         LocalCall<Boolean> run = new LocalCall<>(
-                "git.clone", Optional.of(args), Optional.of(emptyMap()), new TypeToken<Boolean>(){});
+                "git.clone", Optional.of(args), Optional.of(Map.of()), new TypeToken<Boolean>(){});
         // set a higher timeout if HTTPS user and pass are given, otherwise no timeout
         if (httpsUser.isPresent()) {
             return run.withTimeouts(Optional.of(4), Optional.of(1));

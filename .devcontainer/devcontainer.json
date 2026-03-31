@@ -1,0 +1,40 @@
+{
+    "name": "developer",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "containerEnv": {
+        "JAVA_HOME": "/usr/lib64/jvm/java-25-openjdk"
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "java.codeGeneration.hashCodeEquals.useInstanceof": true,
+                "java.codeGeneration.hashCodeEquals.useJava7Objects": true,
+                "java.compile.nullAnalysis.mode": "automatic",
+                "java.configuration.runtimes": [
+                    {
+                        "name": "JavaSE-25",
+                        "path": "/usr/lib64/jvm/java-25-openjdk",
+                        "default": true
+                    }
+                ],
+                "java.test.config": {
+                    "vmArgs": [
+                    ]
+                },
+                "java.jdt.ls.java.home": "/usr/lib64/jvm/java-25-openjdk"
+            },
+            "extensions": [
+                "redhat.java",
+                "vscjava.vscode-java-debug",
+                "shengchen.vscode-checkstyle",
+                "vscjava.vscode-java-test",
+                "vscjava.vscode-maven",
+                "vscjava.vscode-java-dependency",
+                "redhat.vscode-xml"
+            ]
+        }
+    },
+    "remoteUser": "develop"
+}

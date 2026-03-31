@@ -30,7 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -111,7 +110,7 @@ public class ScheduleTest {
                 scheduleDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         LocalCall<com.suse.salt.netapi.calls.modules.Schedule.Result> call =
                 Schedule.add("Test Job", com.suse.salt.netapi.calls.modules.Test.ping(),
-                        scheduleDate, Collections.EMPTY_MAP);
+                        scheduleDate, Map.of());
         Map<String, Object> kwarg = (Map<String, Object>) call.getPayload().get("kwarg");
         assertEquals("2017-12-24T15:30:12", kwarg.get("once"));
     }
