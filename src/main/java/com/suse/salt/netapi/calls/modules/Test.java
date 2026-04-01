@@ -18,23 +18,23 @@ public class Test {
 
     private static final LocalCall<Boolean> PING =
             new LocalCall<>("test.ping", Optional.empty(), Optional.empty(),
-            new TypeToken<Boolean>(){});
+                    new TypeToken<Boolean>(){});
 
     private static final LocalCall<String> MISSING_FUNC =
             new LocalCall<>("test.missing_func", Optional.empty(), Optional.empty(),
-            new TypeToken<String>(){});
+                    new TypeToken<String>(){});
 
     private static final LocalCall<VersionInformation> VERSIONS_INFORMATION =
             new LocalCall<>("test.versions_information", Optional.empty(), Optional.empty(),
-            new TypeToken<VersionInformation>(){});
+                    new TypeToken<VersionInformation>(){});
 
     private static final LocalCall<ModuleReport> MODULE_REPORT =
             new LocalCall<>("test.module_report", Optional.empty(), Optional.empty(),
-            new TypeToken<ModuleReport>(){});
+                    new TypeToken<ModuleReport>(){});
 
     private static final LocalCall<Map<String, String>> PROVIDERS =
             new LocalCall<>("test.providers", Optional.empty(), Optional.empty(),
-            new TypeToken<Map<String, String>>(){});
+                    new TypeToken<Map<String, String>>(){});
 
     /**
      * Availability report of all execution modules

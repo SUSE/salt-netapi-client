@@ -23,9 +23,9 @@ public class Config {
      */
     public static LocalCall<String> get(String key) {
         return new LocalCall<>(
-            "config.get",
-            Optional.of(Arrays.asList(key)),
-            Optional.empty(),
-            new TypeToken<String>() { });
+                "config.get",
+                Optional.of(Arrays.asList(key)),
+                Optional.empty(),
+                new TypeToken<String>() { });
     }
 }

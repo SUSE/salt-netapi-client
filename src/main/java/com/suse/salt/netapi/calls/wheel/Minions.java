@@ -17,7 +17,7 @@ public class Minions {
 
     private static final WheelCall<List<String>> CONNECTED =
             new WheelCall<>("minions.connected", Optional.empty(),
-            new TypeToken<List<String>>(){});
+                    new TypeToken<List<String>>(){});
 
     public static WheelCall<List<String>> connected() {
         return CONNECTED;
