@@ -61,7 +61,7 @@ public class Grains {
         args.put("val", value);
         destructive.ifPresent(dest -> { args.put("destructive", dest); });
         return new LocalCall<>("grains.setval", Optional.empty(), Optional.of(args),
-               new TypeToken<Map<String, Object>>() { });
+                new TypeToken<Map<String, Object>>() { });
     }
 
     public static LocalCall<Map<String, Object>> setValues(Map<String, Object> grains, Optional<Boolean> destructive) {
