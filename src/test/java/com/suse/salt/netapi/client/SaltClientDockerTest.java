@@ -144,7 +144,7 @@ public class SaltClientDockerTest {
         assertNotNull(results);
         assertEquals(2, results.size());
         results.forEach((minion, result) -> {
-            assertEquals("3002.2", result.result().get().getSalt().get("Salt"));
+            assertEquals("3006.0", result.result().get().getSalt().get("Salt"));
         });
     }
 }
