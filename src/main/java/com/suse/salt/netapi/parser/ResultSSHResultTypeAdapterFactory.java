@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
-import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -22,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.gson.JsonParser.parseReader;
 import static com.suse.salt.netapi.utils.ClientUtils.parameterizedType;
 
 /**
@@ -66,7 +66,7 @@ public class ResultSSHResultTypeAdapterFactory implements TypeAdapterFactory {
         return new TypeAdapter<Result<SSHResult<R>>>() {
             @Override
             public Result<SSHResult<R>> read(JsonReader in) throws IOException {
-                JsonElement json = TypeAdapters.JSON_ELEMENT.read(in);
+                JsonElement json = parseReader(in);
                 try {
                     SSHResult<R> value = innerAdapter.fromJsonTree(json);
                     if (!value.getReturn().isPresent() && value.getRetcode() != 0) {
