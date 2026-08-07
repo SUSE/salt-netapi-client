@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -15,6 +16,7 @@ import com.suse.salt.netapi.datatypes.AuthMethod;
 import com.suse.salt.netapi.datatypes.Token;
 import com.suse.salt.netapi.datatypes.target.MinionList;
 import com.suse.salt.netapi.results.CmdResult;
+import com.suse.salt.netapi.results.FullCmdResult;
 import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.utils.ClientUtils;
 import com.suse.salt.netapi.utils.TestUtils;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Cmd unit tests.
@@ -37,6 +40,9 @@ public class CmdTest {
 
     static final String JSON_RUN_RESPONSE = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/run.json"));
+
+    static final String JSON_RUN_FULL_RETURN_RESPONSE = ClientUtils.streamToString(
+            SaltUtilTest.class.getResourceAsStream("/modules/cmd/run_full_return.json"));
 
     static final String JSON_RUN_ALL_RESPONSE_SUCCESS = ClientUtils.streamToString(
             SaltUtilTest.class.getResourceAsStream("/modules/cmd/run_all.json"));
@@ -104,6 +110,26 @@ public class CmdTest {
         String output = response.get("minion").result().get();
         assertEquals(" 16:51:23 up 22 min,  0 users,  load average: 0.00, 0.02, 0.09",
                 output);
+    }
+
+    @Test
+    public void testCmdRunFullReturn() {
+        // First we get the call to use in the tests
+        LocalCall<FullCmdResult> call = Cmd.runFullReturn("whoami");
+
+        // Test with an successful response
+        mockOkResponseWith(JSON_RUN_FULL_RETURN_RESPONSE);
+
+        Map<String, Result<FullCmdResult>> response =
+                call.callSync(client, new MinionList("minion"), AUTH)
+                        .toCompletableFuture().join();
+
+        assertNotNull(response.get("minion"));
+
+        FullCmdResult result = response.get("minion").result().get();
+        assertEquals("root", result.getRet());
+        assertEquals(0, result.getRetcode());
+        assertEquals("20260807093652794758", result.getJid());
     }
 
     @Test

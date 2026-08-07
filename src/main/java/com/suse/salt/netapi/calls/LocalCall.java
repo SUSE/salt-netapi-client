@@ -46,12 +46,14 @@ public class LocalCall<R> extends AbstractCall<R> {
     private final Optional<Integer> gatherJobTimeout;
     private final Optional<List<String>> executors;
     private final Optional<Map<String, ?>> executorOptions;
+    private final boolean fullReturn;
+
 
     public LocalCall(String functionName, Optional<List<?>> arg,
             Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
             Optional<?> metadata, Optional<Integer> timeout,
             Optional<Integer> gatherJobTimeout, Optional<List<String>> executors,
-            Optional<Map<String, ?>> executorOptions) {
+            Optional<Map<String, ?>> executorOptions, boolean fullReturn) {
         super(functionName, returnType);
         this.arg = arg;
         this.kwarg = kwarg;
@@ -60,6 +62,16 @@ public class LocalCall<R> extends AbstractCall<R> {
         this.gatherJobTimeout = gatherJobTimeout;
         this.executors = executors;
         this.executorOptions = executorOptions;
+        this.fullReturn = fullReturn;
+    }
+
+    public LocalCall(String functionName, Optional<List<?>> arg,
+            Optional<Map<String, ?>> kwarg, TypeToken<R> returnType,
+            Optional<?> metadata, Optional<Integer> timeout,
+            Optional<Integer> gatherJobTimeout, Optional<List<String>> executors,
+            Optional<Map<String, ?>> executorOptions) {
+        this(functionName, arg, kwarg, returnType, metadata, timeout, gatherJobTimeout,
+                executors, executorOptions, false);
     }
 
     public LocalCall(String functionName, Optional<List<?>> arg,
@@ -91,34 +103,36 @@ public class LocalCall<R> extends AbstractCall<R> {
 
     public LocalCall<R> withMetadata(Object metadata) {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(),
-                Optional.of(metadata), timeout, gatherJobTimeout, executors, executorOptions);
+                Optional.of(metadata), timeout, gatherJobTimeout, executors, executorOptions,
+                fullReturn);
     }
 
     public LocalCall<R> withoutMetadata() {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(),
-                Optional.empty(), timeout, gatherJobTimeout, executors, executorOptions);
+                Optional.empty(), timeout, gatherJobTimeout, executors, executorOptions,
+                fullReturn);
     }
 
     public LocalCall<R> withTimeouts(Optional<Integer> timeout,
             Optional<Integer> gatherJobTimeout) {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
-                timeout, gatherJobTimeout, executors, executorOptions);
+                timeout, gatherJobTimeout, executors, executorOptions, fullReturn);
     }
 
     public LocalCall<R> withoutTimeouts() {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
-                Optional.empty(), Optional.empty(), executors, executorOptions);
+                Optional.empty(), Optional.empty(), executors, executorOptions, fullReturn);
     }
 
     public LocalCall<R> withExecutors(Optional<List<String>> executors,
                                      Optional<Map<String, ?>> executorOptions) {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
-                timeout, gatherJobTimeout, executors, executorOptions);
+                timeout, gatherJobTimeout, executors, executorOptions, fullReturn);
     }
 
     public LocalCall<R> withoutExecutors() {
         return new LocalCall<>(getFunction(), arg, kwarg, getReturnType(), metadata,
-                timeout, gatherJobTimeout, Optional.empty(), Optional.empty());
+                timeout, gatherJobTimeout, Optional.empty(), Optional.empty(), fullReturn);
     }
 
     /**
@@ -136,6 +150,9 @@ public class LocalCall<R> extends AbstractCall<R> {
                 gatherJobTimeout));
         executors.ifPresent(exe -> payload.put("module_executors", exe));
         executorOptions.ifPresent(opts -> payload.put("executor_opts", opts));
+        if (fullReturn) {
+            payload.put("full_return", true);
+        }
         return payload;
     }
 
