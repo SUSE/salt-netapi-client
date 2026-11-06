@@ -2,6 +2,7 @@ package com.suse.salt.netapi.calls.modules;
 
 import com.suse.salt.netapi.calls.LocalCall;
 import com.suse.salt.netapi.results.CmdResult;
+import com.suse.salt.netapi.results.FullCmdResult;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -25,6 +26,12 @@ public class Cmd {
     public static LocalCall<String> run(String cmd) {
         return new LocalCall<>("cmd.run", Optional.empty(), Optional.of(Map.of("cmd", cmd)),
                 new TypeToken<String>(){});
+    }
+
+    public static LocalCall<FullCmdResult> runFullReturn(String cmd) {
+        return new LocalCall<>("cmd.run", Optional.empty(), Optional.of(Map.of("cmd", cmd)),
+                new TypeToken<FullCmdResult>(){}, Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(), true);
     }
 
     public static LocalCall<CmdResult> runAll(String cmd) {
