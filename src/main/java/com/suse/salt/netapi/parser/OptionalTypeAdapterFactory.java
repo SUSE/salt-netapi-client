@@ -2,10 +2,10 @@ package com.suse.salt.netapi.parser;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
-import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -44,7 +44,7 @@ public class OptionalTypeAdapterFactory implements TypeAdapterFactory {
                     in.nextNull();
                     return Optional.empty();
                 } else {
-                    JsonElement json = TypeAdapters.JSON_ELEMENT.read(in);
+                    JsonElement json = JsonParser.parseReader(in);
                     try {
                         A value = innerAdapter.fromJsonTree(json);
                         return Optional.of(value);

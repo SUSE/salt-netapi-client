@@ -3,7 +3,6 @@ package com.suse.salt.netapi.client;
 import com.suse.salt.netapi.parser.JsonParser;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
@@ -32,7 +31,7 @@ public interface AsyncHttpClient {
      * @return CompletionStage holding object of the given return type T
      */
     default <T>  CompletionStage<T> get(URI uri, JsonParser<T> parser) {
-        return get(uri, Collections.emptyMap(), parser);
+        return get(uri, Map.of(), parser);
     }
 
     /**
@@ -57,6 +56,6 @@ public interface AsyncHttpClient {
      * @return CompletionStage holding object of the given return type T
      */
     default <T> CompletionStage<T> post(URI uri, String data, JsonParser<T> parser) {
-        return post(uri, Collections.emptyMap(), data, parser);
+        return post(uri, Map.of(), data, parser);
     }
 }

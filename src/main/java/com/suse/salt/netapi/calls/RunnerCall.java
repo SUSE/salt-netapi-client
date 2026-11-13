@@ -9,7 +9,6 @@ import com.suse.salt.netapi.results.Result;
 import com.suse.salt.netapi.results.Return;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +52,13 @@ public class RunnerCall<R> extends AbstractCall<R> {
      * @return information about the scheduled job
      */
     public CompletionStage<RunnerAsyncResult<R>> callAsync(final SaltClient client, AuthMethod auth) {
-        return client.call(this, Client.RUNNER_ASYNC, Optional.empty(), Collections.emptyMap(),
-                new TypeToken<Return<List<RunnerAsyncResult<R>>>>(){}, auth)
+        Type asyncResultType = parameterizedType(null, RunnerAsyncResult.class, getReturnType().getType());
+        Type listType = parameterizedType(null, List.class, asyncResultType);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
+        @SuppressWarnings("unchecked")
+        TypeToken<Return<List<RunnerAsyncResult<R>>>> typeToken =
+                (TypeToken<Return<List<RunnerAsyncResult<R>>>>) TypeToken.get(wrapperType);
+        return client.call(this, Client.RUNNER_ASYNC, Optional.empty(), Map.of(), typeToken, auth)
                 .thenApply(wrapper -> {
                     RunnerAsyncResult<R> result = wrapper.getResult().get(0);
                     result.setType(getReturnType());
@@ -79,7 +83,7 @@ public class RunnerCall<R> extends AbstractCall<R> {
         @SuppressWarnings("unchecked")
         CompletionStage<Result<R>> resultCompletionStage =
                 client.call(
-                        this, Client.RUNNER, Optional.empty(), Collections.emptyMap(),
+                        this, Client.RUNNER, Optional.empty(), Map.of(),
                         (TypeToken<Return<List<Result<R>>>>) TypeToken.get(wrapperType), auth)
                         .thenApply(wrapper -> wrapper.getResult().get(0));
         return resultCompletionStage;

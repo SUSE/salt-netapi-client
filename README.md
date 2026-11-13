@@ -13,7 +13,7 @@ Add the following dependency to the `pom.xml` file of your project:
 <dependency>
     <groupId>com.suse.salt</groupId>
     <artifactId>salt-netapi-client</artifactId>
-    <version>0.21.0</version>
+    <version>0.22.0</version>
 </dependency>
 ```
 

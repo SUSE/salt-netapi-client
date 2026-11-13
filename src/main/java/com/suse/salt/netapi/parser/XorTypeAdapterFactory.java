@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
-import com.google.gson.internal.bind.TypeAdapters;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -72,7 +72,7 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
         return new TypeAdapter<Xor<L, R>>() {
             @Override
             public Xor<L, R> read(JsonReader in) throws IOException {
-                JsonElement json = TypeAdapters.JSON_ELEMENT.read(in);
+                JsonElement json = JsonParser.parseReader(in);
                 try {
                     R value = rightAdapter.fromJsonTree(json);
                     return Xor.right(value);
@@ -101,7 +101,7 @@ public class XorTypeAdapterFactory implements TypeAdapterFactory {
         return new TypeAdapter<Xor<SaltError, R>>() {
             @Override
             public Xor<SaltError, R> read(JsonReader in) throws IOException {
-                JsonElement json = TypeAdapters.JSON_ELEMENT.read(in);
+                JsonElement json = JsonParser.parseReader(in);
                 try {
                     R value = innerAdapter.fromJsonTree(json);
                     return Xor.right(value);

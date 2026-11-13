@@ -174,9 +174,14 @@ public class LocalCall<R> extends AbstractCall<R> {
         Map<String, Object> customArgs = new HashMap<>();
         batch.ifPresent(v -> customArgs.putAll(v.getParams()));
 
+        Type asyncResultType = parameterizedType(null, LocalAsyncResult.class, getReturnType().getType());
+        Type listType = parameterizedType(null, List.class, asyncResultType);
+        Type wrapperType = parameterizedType(null, Return.class, listType);
+        @SuppressWarnings("unchecked")
+        TypeToken<Return<List<LocalAsyncResult<R>>>> typeToken =
+                (TypeToken<Return<List<LocalAsyncResult<R>>>>) TypeToken.get(wrapperType);
         return client.call(
-                this, Client.LOCAL_ASYNC, Optional.of(target), customArgs,
-                new TypeToken<Return<List<LocalAsyncResult<R>>>>(){}, auth)
+                this, Client.LOCAL_ASYNC, Optional.of(target), customArgs, typeToken, auth)
                 .thenApply(wrapper -> {
                     LocalAsyncResult<R> result = wrapper.getResult().get(0);
                     result.setType(getReturnType());
